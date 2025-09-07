@@ -1,87 +1,133 @@
-# Welcome to React Router!
+# Parents Madrasa Portal
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+A mobile-first Progressive Web Application (PWA) for Islamic education, built with React, TypeScript, and TailwindCSS.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- 📱 Mobile-first responsive design
+- ♿ Accessibility-compliant (WCAG AA)
+- 🔄 Progressive Web App (PWA) capabilities
+- 🎨 TailwindCSS with custom accessibility utilities
+- 🔧 TypeScript for type safety
+- 📋 ESLint + Prettier for code quality
+- 🪝 Husky pre-commit hooks
+- 🚀 Vite for fast development and builds
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
 ### Installation
 
-Install the dependencies:
-
-```bash
-npm install
-```
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
 ### Development
 
-Start the development server with HMR:
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+### Building
 
-## Building for Production
-
-Create a production build:
+Build for production:
 
 ```bash
 npm run build
 ```
 
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
+Preview the production build:
 
 ```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
+npm run preview
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
+### Code Quality
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+Run linting:
 
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+```bash
+npm run lint
+npm run lint:fix
 ```
 
-## Styling
+Format code:
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+```bash
+npm run format
+npm run format:check
+```
 
----
+Type checking:
 
-Built with ❤️ using React Router.
+```bash
+npm run typecheck
+```
+
+## Project Structure
+
+```
+src/
+├── App.tsx          # Main application component
+├── App.css          # Global styles with accessibility utilities
+└── main.tsx         # Application entry point
+
+public/
+├── pwa-*.png        # PWA icons (placeholder)
+├── apple-touch-icon.png
+├── masked-icon.svg
+└── favicon.ico
+```
+
+## Accessibility Features
+
+- Minimum 44px touch targets
+- High contrast mode support
+- Reduced motion support
+- Screen reader compatibility
+- Keyboard navigation
+- ARIA labels and roles
+
+## PWA Features
+
+- Service worker for offline support
+- Web app manifest
+- Installable on mobile devices
+- Background sync capabilities
+
+## Tech Stack
+
+- **Frontend**: React 19 + TypeScript
+- **Styling**: TailwindCSS v4
+- **Build Tool**: Vite
+- **Router**: React Router DOM v6
+- **PWA**: Vite PWA Plugin + Workbox
+- **Code Quality**: ESLint + Prettier + Husky
+
+## Requirements Addressed
+
+This setup addresses the following requirements from the specification:
+
+- **1.1**: Mobile-optimized dashboard with clear navigation
+- **1.2**: 44px minimum touch targets for accessibility
+- **7.1**: AA contrast compliance and accessibility features
+- **7.4**: PWA capabilities for mobile-first experience
+
+## Next Steps
+
+The project is now ready for implementing the core features:
+
+1. Firebase Authentication
+2. Dashboard components
+3. Live class integration
+4. Recording management
+5. Notes and exercises
+6. Exam system
