@@ -68,3 +68,29 @@ body {
 .btn-secondary {
   @apply bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400;
 }
+
+/* Scrolling announcements animation */
+@keyframes scroll {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
+/* Pause animation on hover for accessibility */
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll {
+    animation: none;
+  }
+}

@@ -1,34 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { AuthPage } from './pages/AuthPage';
+import { AuthPage, Dashboard } from './pages';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/layout';
 import './App.css';
-
-// Placeholder components - will be implemented in later tasks
-const Dashboard = () => (
-  <Layout>
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
-          Welcome to Your Dashboard
-        </h2>
-        <p className="text-gray-600" lang="bn">
-          আপনার ড্যাশবোর্ডে স্বাগতম
-        </p>
-      </div>
-      
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <p className="text-gray-700 mb-4">
-          Dashboard content will be implemented in future tasks.
-        </p>
-        <p className="text-sm text-gray-500">
-          Use the navigation below to explore different sections.
-        </p>
-      </div>
-    </div>
-  </Layout>
-);
 
 const LiveClass = () => (
   <Layout 
