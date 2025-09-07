@@ -3,6 +3,7 @@ export { AccessibleButton } from './AccessibleButton';
 export { Card } from './Card';
 export { Modal } from './Modal';
 export { AlertBanner } from './AlertBanner';
+export { NotificationBanner } from './NotificationBanner';
 export { 
   SkeletonLoader, 
   SkeletonCard, 
