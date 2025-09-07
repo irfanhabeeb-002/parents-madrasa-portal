@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can only read and write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // All other collections are read-only for authenticated users
+    // Content management will be handled by admin interface
+    match /classes/{classId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only admin can write
+    }
+    
+    match /recordings/{recordingId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only admin can write
+    }
+    
+    match /notes/{noteId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only admin can write
+    }
+    
+    match /exercises/{exerciseId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only admin can write
+    }
+    
+    match /announcements/{announcementId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only admin can write
+    }
+    
+    // User-specific data - users can read and write their own records
+    match /examResults/{resultId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    match /attendance/{attendanceId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow update: if request.auth != null && 
+        request.auth.uid == resource.data.userId &&
+        // Only allow updating the 'read' field
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow create: if false; // Only system can create notifications
+    }
+  }
+}
