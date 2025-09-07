@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { AuthPage } from './pages/AuthPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { useAuth } from './contexts/AuthContext';
+import { AccessibleButton, Card } from './components/ui';
 import './App.css';
 
 // Placeholder components - will be implemented in later tasks
@@ -17,12 +18,14 @@ const Dashboard = () => {
             <h1 className="text-2xl font-bold">Parents Madrasa Portal</h1>
             <p className="text-gray-600">অভিভাবক মাদ্রাসা পোর্টাল</p>
           </div>
-          <button
+          <AccessibleButton
             onClick={logout}
-            className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+            variant="error"
+            size="sm"
+            ariaLabel="Logout from application"
           >
             Logout
-          </button>
+          </AccessibleButton>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
           <p className="text-gray-700 mb-2">
