@@ -14,7 +14,7 @@ export const AuthPage: React.FC = () => {
   // Show loading spinner while checking auth state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -26,8 +26,8 @@ export const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md">
+    <div className="flex items-center justify-center py-12">
+      <div className="w-full">
         <PhoneAuthForm onSuccess={handleAuthSuccess} />
       </div>
     </div>

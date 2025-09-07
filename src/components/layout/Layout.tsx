@@ -7,6 +7,7 @@ interface LayoutProps {
   children: ReactNode;
   showBottomNav?: boolean;
   showBackButton?: boolean;
+  showLogout?: boolean;
   title?: string;
   malayalamTitle?: string;
   onBack?: () => void;
@@ -16,6 +17,7 @@ export const Layout: React.FC<LayoutProps> = ({
   children,
   showBottomNav = true,
   showBackButton = false,
+  showLogout = true,
   title,
   malayalamTitle,
   onBack,
@@ -25,6 +27,7 @@ export const Layout: React.FC<LayoutProps> = ({
       {/* Header */}
       <Header
         showBackButton={showBackButton}
+        showLogout={showLogout}
         title={title}
         malayalamTitle={malayalamTitle}
         onBack={onBack}

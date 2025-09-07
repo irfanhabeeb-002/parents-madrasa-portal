@@ -2,56 +2,93 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { AuthPage } from './pages/AuthPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { useAuth } from './contexts/AuthContext';
-import { AccessibleButton, Card } from './components/ui';
+import { Layout } from './components/layout';
 import './App.css';
 
 // Placeholder components - will be implemented in later tasks
-const Dashboard = () => {
-  const { user, logout } = useAuth();
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-md mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Parents Madrasa Portal</h1>
-            <p className="text-gray-600">অভিভাবক মাদ্রাসা পোর্টাল</p>
-          </div>
-          <AccessibleButton
-            onClick={logout}
-            variant="error"
-            size="sm"
-            ariaLabel="Logout from application"
-          >
-            Logout
-          </AccessibleButton>
-        </div>
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <p className="text-gray-700 mb-2">
-            Welcome, {user?.name}!
-          </p>
-          <p className="text-sm text-gray-500">
-            Phone: {user?.phone}
-          </p>
-          <p className="text-sm text-gray-500 mt-4">
-            Dashboard will be implemented in future tasks.
-          </p>
-        </div>
+const Dashboard = () => (
+  <Layout>
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          Welcome to Your Dashboard
+        </h2>
+        <p className="text-gray-600" lang="bn">
+          আপনার ড্যাশবোর্ডে স্বাগতম
+        </p>
+      </div>
+      
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <p className="text-gray-700 mb-4">
+          Dashboard content will be implemented in future tasks.
+        </p>
+        <p className="text-sm text-gray-500">
+          Use the navigation below to explore different sections.
+        </p>
       </div>
     </div>
-  );
-};
+  </Layout>
+);
 
-const LiveClass = () => <div className="p-4">Live Class - Coming Soon</div>;
-const Recordings = () => <div className="p-4">Recordings - Coming Soon</div>;
+const LiveClass = () => (
+  <Layout 
+    showBackButton={true}
+    title="Live Class"
+    malayalamTitle="লাইভ ক্লাস"
+  >
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <p className="text-gray-700">Live Class - Coming Soon</p>
+    </div>
+  </Layout>
+);
+
+const Recordings = () => (
+  <Layout 
+    showBackButton={true}
+    title="Recordings"
+    malayalamTitle="রেকর্ডিং"
+  >
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <p className="text-gray-700">Recordings - Coming Soon</p>
+    </div>
+  </Layout>
+);
+
 const NotesExercises = () => (
-  <div className="p-4">Notes & Exercises - Coming Soon</div>
+  <Layout 
+    showBackButton={true}
+    title="Notes & Exercises"
+    malayalamTitle="নোট এবং অনুশীলন"
+  >
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <p className="text-gray-700">Notes & Exercises - Coming Soon</p>
+    </div>
+  </Layout>
 );
+
 const ExamsAttendance = () => (
-  <div className="p-4">Exams & Attendance - Coming Soon</div>
+  <Layout 
+    showBackButton={true}
+    title="Exams & Attendance"
+    malayalamTitle="পরীক্ষা এবং উপস্থিতি"
+  >
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <p className="text-gray-700">Exams & Attendance - Coming Soon</p>
+    </div>
+  </Layout>
 );
-const Profile = () => <div className="p-4">Profile - Coming Soon</div>;
+
+const Profile = () => (
+  <Layout 
+    showBackButton={true}
+    title="Profile"
+    malayalamTitle="প্রোফাইল"
+  >
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <p className="text-gray-700">Profile - Coming Soon</p>
+    </div>
+  </Layout>
+);
 
 function App() {
   return (
@@ -63,7 +100,9 @@ function App() {
               path="/auth"
               element={
                 <ProtectedRoute requireAuth={false}>
-                  <AuthPage />
+                  <Layout showBottomNav={false} showLogout={false}>
+                    <AuthPage />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
