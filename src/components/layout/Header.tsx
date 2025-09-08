@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AccessibleButton } from '../ui/AccessibleButton';
+import { FontSizeToggle } from '../ui/FontSizeToggle';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface HeaderProps {
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [showFontToggle, setShowFontToggle] = useState(false);
 
   const handleBack = () => {
     if (onBack) {
@@ -82,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {title}
                   </h1>
                   {malayalamTitle && (
-                    <p className="text-sm text-gray-600" lang="bn">
+                    <p className="text-sm text-gray-600" lang="ml">
                       {malayalamTitle}
                     </p>
                   )}
@@ -92,37 +94,59 @@ export const Header: React.FC<HeaderProps> = ({
                   <h1 className="text-lg font-semibold text-gray-900">
                     Parents Madrasa Portal
                   </h1>
-                  <p className="text-sm text-gray-600" lang="bn">
-                    অভিভাবক মাদ্রাসা পোর্টাল
+                  <p className="text-sm text-gray-600" lang="ml">
+                    രക്ഷാകർത്താക്കളുടെ മദ്രസ പോർട്ടൽ
                   </p>
                 </>
               )}
             </div>
           </div>
 
-          {/* Right side - User info and logout */}
-          {showLogout && user && (
-            <div className="flex items-center space-x-2">
-              {/* User avatar/initial */}
-              <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-primary-700">
-                  {user.name?.charAt(0).toUpperCase() || 'U'}
-                </span>
-              </div>
-              
-              {/* Logout button */}
-              <AccessibleButton
-                variant="error"
-                size="sm"
-                onClick={logout}
-                ariaLabel="Logout from application"
-                className="!min-h-[36px] text-xs"
-              >
-                Logout
-              </AccessibleButton>
-            </div>
-          )}
+          {/* Right side - Font toggle, User info and logout */}
+          <div className="flex items-center space-x-2">
+            {/* Font size toggle button */}
+            <AccessibleButton
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowFontToggle(!showFontToggle)}
+              ariaLabel="Toggle font size options"
+              className="!min-h-[36px] !min-w-[36px] !p-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </AccessibleButton>
+
+            {showLogout && user && (
+              <>
+                {/* User avatar/initial */}
+                <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-primary-700">
+                    {user.name?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                </div>
+                
+                {/* Logout button */}
+                <AccessibleButton
+                  variant="error"
+                  size="sm"
+                  onClick={logout}
+                  ariaLabel="Logout from application"
+                  className="!min-h-[36px] text-xs"
+                >
+                  Logout
+                </AccessibleButton>
+              </>
+            )}
+          </div>
         </div>
+
+        {/* Font Size Toggle Dropdown */}
+        {showFontToggle && (
+          <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <FontSizeToggle showLabels={true} />
+          </div>
+        )}
       </div>
     </header>
   );

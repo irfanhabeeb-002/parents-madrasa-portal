@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { PhoneAuthForm } from '../components/auth/PhoneAuthForm';
+import { SimpleLoginForm } from '../components/auth/SimpleLoginForm';
 import { useAuth } from '../contexts/AuthContext';
 
 export const AuthPage: React.FC = () => {
@@ -28,7 +28,7 @@ export const AuthPage: React.FC = () => {
   return (
     <div className="flex items-center justify-center py-12">
       <div className="w-full">
-        <PhoneAuthForm onSuccess={handleAuthSuccess} />
+        <SimpleLoginForm onSuccess={handleAuthSuccess} />
       </div>
     </div>
   );

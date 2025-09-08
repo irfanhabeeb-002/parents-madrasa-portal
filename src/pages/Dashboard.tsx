@@ -37,7 +37,7 @@ export const Dashboard: React.FC = () => {
   // Format today's class time
   const todaysClassTime = useMemo(() => {
     if (!todaysClass) return null;
-    return todaysClass.scheduledAt.toDate().toLocaleTimeString('en-US', {
+    return todaysClass.scheduledAt.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true
@@ -47,28 +47,28 @@ export const Dashboard: React.FC = () => {
   const navigationCards = [
     {
       title: "Live Class",
-      malayalamSubtitle: "লাইভ ক্লাস",
+      malayalamSubtitle: "ലൈവ് ക്ലാസ്",
       icon: <VideoCameraIcon className="w-8 h-8" />,
       onClick: () => navigate('/live-class'),
       ariaLabel: "Join live class session"
     },
     {
       title: "Recordings",
-      malayalamSubtitle: "রেকর্ডিং",
+      malayalamSubtitle: "റെക്കോർഡിംഗുകൾ",
       icon: <PlayIcon className="w-8 h-8" />,
       onClick: () => navigate('/recordings'),
       ariaLabel: "View recorded class sessions"
     },
     {
       title: "Notes/Exercises",
-      malayalamSubtitle: "নোট এবং অনুশীলন",
+      malayalamSubtitle: "കുറിപ്പുകളും അഭ്യാസങ്ങളും",
       icon: <DocumentTextIcon className="w-8 h-8" />,
       onClick: () => navigate('/notes-exercises'),
       ariaLabel: "Access lesson notes and practice exercises"
     },
     {
       title: "Exams/Attendance",
-      malayalamSubtitle: "পরীক্ষা এবং উপস্থিতি",
+      malayalamSubtitle: "പരീക്ഷകളും ഹാജരും",
       icon: <AcademicCapIcon className="w-8 h-8" />,
       onClick: () => navigate('/exams-attendance'),
       ariaLabel: "View exams and attendance records"
@@ -76,8 +76,8 @@ export const Dashboard: React.FC = () => {
   ];
 
   const handleWhatsAppClick = () => {
-    // WhatsApp link - replace with actual teacher's number
-    const phoneNumber = "+1234567890"; // This should come from config
+    // WhatsApp link - replace with actual teacher's number (Indian format)
+    const phoneNumber = "+919876543210"; // This should come from config
     const message = encodeURIComponent("Assalamu Alaikum, I need help with my studies.");
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
   };
@@ -90,8 +90,8 @@ export const Dashboard: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Welcome to Your Dashboard
           </h1>
-          <p className="text-gray-600" lang="bn">
-            আপনার ড্যাশবোর্ডে স্বাগতম
+          <p className="text-gray-600 font-malayalam" lang="ml">
+            നിങ്ങളുടെ ഡാഷ്‌ബോർഡിലേക്ക് സ്വാഗതം
           </p>
         </div>
 
@@ -111,7 +111,7 @@ export const Dashboard: React.FC = () => {
             type="info"
             title={`Your class today at ${todaysClassTime}`}
             message={todaysClass.title}
-            malayalamMessage={`আজ ${todaysClassTime} এ আপনার ক্লাস`}
+            malayalamMessage={`ഇന്ന് ${todaysClassTime} ന് നിങ്ങളുടെ ക്ലാസ്`}
           />
         ) : null}
 
@@ -146,8 +146,8 @@ export const Dashboard: React.FC = () => {
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold text-gray-900">
               Announcements
-              <span className="block text-sm text-gray-500 font-normal" lang="bn">
-                ঘোষণা
+              <span className="block text-sm text-gray-500 font-normal font-malayalam" lang="ml">
+                അറിയിപ്പുകൾ
               </span>
             </h2>
             

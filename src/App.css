@@ -11,6 +11,7 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: 'Noto Sans Malayalam', 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Focus styles for accessibility */
@@ -93,4 +94,47 @@ body {
   .animate-scroll {
     animation: none;
   }
+}
+
+/* Malayalam Font Styling */
+[lang="ml"] {
+  font-family: 'Noto Sans Malayalam', sans-serif;
+  line-height: 1.6;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+  min-font-size: 16px;
+}
+
+/* Heading fonts with Manjari */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Manjari', 'Noto Sans Malayalam', sans-serif;
+  font-weight: 600;
+}
+
+/* Font size accessibility classes */
+html.font-small {
+  font-size: 16px;
+}
+
+html.font-medium {
+  font-size: 18px;
+}
+
+html.font-large {
+  font-size: 20px;
+}
+
+/* Ensure Malayalam text is always readable */
+.malayalam-font {
+  font-family: 'Noto Sans Malayalam', sans-serif;
+  line-height: 1.6;
+}
+
+/* Better text rendering for Malayalam */
+.malayalam-text {
+  font-family: 'Noto Sans Malayalam', sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

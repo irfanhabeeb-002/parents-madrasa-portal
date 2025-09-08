@@ -14,7 +14,7 @@ const navigationItems: NavItem[] = [
   {
     id: 'home',
     label: 'Home',
-    malayalamLabel: 'হোম',
+    malayalamLabel: 'ഹോം',
     path: '/',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,7 +30,7 @@ const navigationItems: NavItem[] = [
   {
     id: 'classes',
     label: 'Classes',
-    malayalamLabel: 'ক্লাস',
+    malayalamLabel: 'ക്ലാസുകൾ',
     path: '/live-class',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,7 +46,7 @@ const navigationItems: NavItem[] = [
   {
     id: 'notes',
     label: 'Notes',
-    malayalamLabel: 'নোট',
+    malayalamLabel: 'കുറിപ്പുകൾ',
     path: '/notes-exercises',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,7 +62,7 @@ const navigationItems: NavItem[] = [
   {
     id: 'profile',
     label: 'Profile',
-    malayalamLabel: 'প্রোফাইল',
+    malayalamLabel: 'പ്രൊഫൈൽ',
     path: '/profile',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +142,7 @@ export const BottomNavigation: React.FC = () => {
                   <span className="text-xs font-medium block leading-tight">
                     {item.label}
                   </span>
-                  <span className="text-xs opacity-75 block leading-tight" lang="bn">
+                  <span className="text-xs opacity-75 block leading-tight" lang="ml">
                     {item.malayalamLabel}
                   </span>
                 </div>

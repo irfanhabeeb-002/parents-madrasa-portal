@@ -100,14 +100,14 @@ export const useDashboard = (): DashboardState & DashboardActions => {
 
   // Refresh notifications with retry mechanism
   const refreshNotifications = useCallback(async () => {
-    if (!user?.uid) return;
+    if (!user?.id) return;
     
     setLoading('notifications', true);
     setError('notifications', null);
     
     try {
       const notifications = await withRetry(() => 
-        DashboardService.getUserNotifications(user.uid)
+        DashboardService.getUserNotifications(user.id)
       );
       setState(prev => ({
         ...prev,
@@ -119,7 +119,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
     } finally {
       setLoading('notifications', false);
     }
-  }, [user?.uid, setLoading, setError]);
+  }, [user?.id, setLoading, setError]);
 
   // Refresh today's class with retry mechanism
   const refreshTodaysClass = useCallback(async () => {
@@ -155,17 +155,13 @@ export const useDashboard = (): DashboardState & DashboardActions => {
         }));
         setLoading('announcements', false);
         setError('announcements', null);
-      },
-      (error) => {
-        setError('announcements', error.message);
-        setLoading('announcements', false);
       }
     );
 
     // Subscribe to notifications if user is authenticated
-    if (user?.uid) {
+    if (user?.id) {
       unsubscribeNotifications = DashboardService.subscribeToUserNotifications(
-        user.uid,
+        user.id,
         (notifications) => {
           setState(prev => ({
             ...prev,
@@ -173,10 +169,6 @@ export const useDashboard = (): DashboardState & DashboardActions => {
           }));
           setLoading('notifications', false);
           setError('notifications', null);
-        },
-        (error) => {
-          setError('notifications', error.message);
-          setLoading('notifications', false);
         }
       );
     }
@@ -190,10 +182,6 @@ export const useDashboard = (): DashboardState & DashboardActions => {
         }));
         setLoading('todaysClass', false);
         setError('todaysClass', null);
-      },
-      (error) => {
-        setError('todaysClass', error.message);
-        setLoading('todaysClass', false);
       }
     );
 
@@ -203,7 +191,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
       if (unsubscribeNotifications) unsubscribeNotifications();
       if (unsubscribeTodaysClass) unsubscribeTodaysClass();
     };
-  }, [user?.uid, setLoading, setError]);
+  }, [user?.id, setLoading, setError]);
 
   return {
     ...state,

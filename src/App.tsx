@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { FontSizeProvider } from './contexts/FontSizeContext';
 import { AuthPage, Dashboard } from './pages';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/layout';
@@ -9,10 +10,11 @@ const LiveClass = () => (
   <Layout 
     showBackButton={true}
     title="Live Class"
-    malayalamTitle="লাইভ ক্লাস"
+    malayalamTitle="ലൈവ് ക്ലാസ്"
   >
     <div className="bg-white rounded-lg shadow-md p-6">
       <p className="text-gray-700">Live Class - Coming Soon</p>
+      <p className="text-gray-500 text-sm mt-2" lang="ml">ലൈവ് ക്ലാസ് - ഉടൻ വരുന്നു</p>
     </div>
   </Layout>
 );
@@ -21,10 +23,11 @@ const Recordings = () => (
   <Layout 
     showBackButton={true}
     title="Recordings"
-    malayalamTitle="রেকর্ডিং"
+    malayalamTitle="റെക്കോർഡിംഗുകൾ"
   >
     <div className="bg-white rounded-lg shadow-md p-6">
       <p className="text-gray-700">Recordings - Coming Soon</p>
+      <p className="text-gray-500 text-sm mt-2" lang="ml">റെക്കോർഡിംഗുകൾ - ഉടൻ വരുന്നു</p>
     </div>
   </Layout>
 );
@@ -33,10 +36,11 @@ const NotesExercises = () => (
   <Layout 
     showBackButton={true}
     title="Notes & Exercises"
-    malayalamTitle="নোট এবং অনুশীলন"
+    malayalamTitle="കുറിപ്പുകളും അഭ്യാസങ്ങളും"
   >
     <div className="bg-white rounded-lg shadow-md p-6">
       <p className="text-gray-700">Notes & Exercises - Coming Soon</p>
+      <p className="text-gray-500 text-sm mt-2" lang="ml">കുറിപ്പുകളും അഭ്യാസങ്ങളും - ഉടൻ വരുന്നു</p>
     </div>
   </Layout>
 );
@@ -45,10 +49,11 @@ const ExamsAttendance = () => (
   <Layout 
     showBackButton={true}
     title="Exams & Attendance"
-    malayalamTitle="পরীক্ষা এবং উপস্থিতি"
+    malayalamTitle="പരീക്ഷകളും ഹാജരും"
   >
     <div className="bg-white rounded-lg shadow-md p-6">
       <p className="text-gray-700">Exams & Attendance - Coming Soon</p>
+      <p className="text-gray-500 text-sm mt-2" lang="ml">പരീക്ഷകളും ഹാജരും - ഉടൻ വരുന്നു</p>
     </div>
   </Layout>
 );
@@ -57,20 +62,22 @@ const Profile = () => (
   <Layout 
     showBackButton={true}
     title="Profile"
-    malayalamTitle="প্রোফাইল"
+    malayalamTitle="പ്രൊഫൈൽ"
   >
     <div className="bg-white rounded-lg shadow-md p-6">
       <p className="text-gray-700">Profile - Coming Soon</p>
+      <p className="text-gray-500 text-sm mt-2" lang="ml">പ്രൊഫൈൽ - ഉടൻ വരുന്നു</p>
     </div>
   </Layout>
 );
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="App min-h-screen bg-gray-50">
-          <Routes>
+    <FontSizeProvider>
+      <AuthProvider>
+        <Router>
+          <div className="App min-h-screen bg-gray-50">
+            <Routes>
             <Route
               path="/auth"
               element={
@@ -129,10 +136,11 @@ function App() {
                 </ProtectedRoute>
               }
             />
-          </Routes>
-        </div>
-      </Router>
-    </AuthProvider>
+            </Routes>
+          </div>
+        </Router>
+      </AuthProvider>
+    </FontSizeProvider>
   );
 }
 

@@ -1,16 +1,4 @@
-import { 
-  collection, 
-  query, 
-  orderBy, 
-  limit, 
-  onSnapshot, 
-  getDocs,
-  where,
-  Timestamp,
-  QuerySnapshot
-} from 'firebase/firestore';
-import type { DocumentData } from 'firebase/firestore';
-import { db } from '../config/firebase';
+// Simple data structures for manual login system
 
 // Types for dashboard data
 export interface Announcement {
@@ -19,7 +7,7 @@ export interface Announcement {
   message: string;
   malayalamMessage?: string;
   type: 'general' | 'class' | 'exam' | 'holiday';
-  createdAt: Timestamp;
+  createdAt: Date;
   isActive: boolean;
 }
 
@@ -29,7 +17,7 @@ export interface DashboardNotification {
   title: string;
   message: string;
   malayalamMessage?: string;
-  timestamp: Timestamp;
+  timestamp: Date;
   read: boolean;
   userId: string;
 }
@@ -38,194 +26,143 @@ export interface ClassSession {
   id: string;
   title: string;
   description: string;
-  scheduledAt: Timestamp;
+  scheduledAt: Date;
   zoomMeetingId: string;
   zoomJoinUrl: string;
   isLive: boolean;
   recordingUrl?: string;
 }
 
-// Dashboard Service Class
+// Mock data for demo
+const mockAnnouncements: Announcement[] = [
+  {
+    id: '1',
+    title: 'Welcome to Parents Madrasa Portal',
+    message: 'Access your Islamic education resources easily',
+    malayalamMessage: 'നിങ്ങളുടെ ഇസ്ലാമിക് വിദ്യാഭ്യാസ വിഭവങ്ങൾ എളുപ്പത്തിൽ ആക്സസ് ചെയ്യുക',
+    type: 'general',
+    createdAt: new Date(),
+    isActive: true
+  },
+  {
+    id: '2',
+    title: 'New Class Schedule Available',
+    message: 'Check your dashboard for updated class timings',
+    malayalamMessage: 'അപ്ഡേറ്റ് ചെയ്ത ക്ലാസ് സമയങ്ങൾക്കായി നിങ്ങളുടെ ഡാഷ്ബോർഡ് പരിശോധിക്കുക',
+    type: 'class',
+    createdAt: new Date(Date.now() - 86400000), // 1 day ago
+    isActive: true
+  }
+];
+
+const mockNotifications: DashboardNotification[] = [
+  {
+    id: 'notif-1',
+    type: 'class_reminder',
+    title: 'Class Reminder',
+    message: 'Your Islamic Studies class starts in 15 minutes',
+    malayalamMessage: 'നിങ്ങളുടെ ഇസ്ലാമിക് പഠന ക്ലാസ് 15 മിനിറ്റിനുള്ളിൽ ആരംഭിക്കുന്നു',
+    timestamp: new Date(),
+    read: false,
+    userId: '1'
+  },
+  {
+    id: 'notif-2',
+    type: 'new_recording',
+    title: 'New Recording Available',
+    message: 'Yesterday\'s class recording is now available',
+    malayalamMessage: 'ഇന്നലത്തെ ക്ലാസ് റെക്കോർഡിംഗ് ഇപ്പോൾ ലഭ്യമാണ്',
+    timestamp: new Date(Date.now() - 3600000), // 1 hour ago
+    read: false,
+    userId: '1'
+  }
+];
+
+const mockClassSession: ClassSession = {
+  id: 'class-1',
+  title: 'Islamic Studies - Introduction',
+  description: 'Introduction to Islamic History and Principles',
+  scheduledAt: new Date(Date.now() + 3600000), // 1 hour from now
+  zoomMeetingId: '123456789',
+  zoomJoinUrl: 'https://zoom.us/j/123456789',
+  isLive: false,
+  recordingUrl: undefined
+};
+
+// Dashboard Service Class - Simple implementation without Firebase
 export class DashboardService {
   // Get active announcements
   static async getAnnouncements(): Promise<Announcement[]> {
-    try {
-      const announcementsRef = collection(db, 'announcements');
-      const q = query(
-        announcementsRef,
-        where('isActive', '==', true),
-        orderBy('createdAt', 'desc'),
-        limit(10)
-      );
-      
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Announcement));
-    } catch (error) {
-      console.error('Error fetching announcements:', error);
-      throw new Error('Failed to fetch announcements');
-    }
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return mockAnnouncements.filter(a => a.isActive);
   }
 
-  // Real-time listener for announcements
+  // Simple listener for announcements (simulates real-time updates)
   static subscribeToAnnouncements(
-    callback: (announcements: Announcement[]) => void,
-    onError?: (error: Error) => void
+    callback: (announcements: Announcement[]) => void
   ): () => void {
-    const announcementsRef = collection(db, 'announcements');
-    const q = query(
-      announcementsRef,
-      where('isActive', '==', true),
-      orderBy('createdAt', 'desc'),
-      limit(10)
-    );
-
-    return onSnapshot(
-      q,
-      (snapshot: QuerySnapshot<DocumentData>) => {
-        const announcements = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as Announcement));
-        callback(announcements);
-      },
-      (error) => {
-        console.error('Error in announcements subscription:', error);
-        if (onError) {
-          onError(new Error('Failed to subscribe to announcements'));
-        }
-      }
-    );
+    // Call callback with demo data immediately
+    setTimeout(() => {
+      this.getAnnouncements().then(callback);
+    }, 100);
+    
+    // Return empty unsubscribe function
+    return () => {};
   }
 
   // Get user notifications
   static async getUserNotifications(userId: string): Promise<DashboardNotification[]> {
-    try {
-      const notificationsRef = collection(db, 'notifications');
-      const q = query(
-        notificationsRef,
-        where('userId', '==', userId),
-        orderBy('timestamp', 'desc'),
-        limit(20)
-      );
-      
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as DashboardNotification));
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-      throw new Error('Failed to fetch notifications');
-    }
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Return notifications for the specific user
+    return mockNotifications.filter(notif => notif.userId === userId);
   }
 
-  // Real-time listener for user notifications
+  // Simple listener for user notifications
   static subscribeToUserNotifications(
     userId: string,
-    callback: (notifications: DashboardNotification[]) => void,
-    onError?: (error: Error) => void
+    callback: (notifications: DashboardNotification[]) => void
   ): () => void {
-    const notificationsRef = collection(db, 'notifications');
-    const q = query(
-      notificationsRef,
-      where('userId', '==', userId),
-      orderBy('timestamp', 'desc'),
-      limit(20)
-    );
-
-    return onSnapshot(
-      q,
-      (snapshot: QuerySnapshot<DocumentData>) => {
-        const notifications = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as DashboardNotification));
-        callback(notifications);
-      },
-      (error) => {
-        console.error('Error in notifications subscription:', error);
-        if (onError) {
-          onError(new Error('Failed to subscribe to notifications'));
-        }
-      }
-    );
+    // Call callback with demo data
+    setTimeout(() => {
+      this.getUserNotifications(userId).then(callback);
+    }, 100);
+    
+    return () => {};
   }
 
   // Get today's class session
   static async getTodaysClass(): Promise<ClassSession | null> {
-    try {
-      const classesRef = collection(db, 'classes');
-      const today = new Date();
-      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
-      
-      const q = query(
-        classesRef,
-        where('scheduledAt', '>=', Timestamp.fromDate(startOfDay)),
-        where('scheduledAt', '<', Timestamp.fromDate(endOfDay)),
-        orderBy('scheduledAt', 'asc'),
-        limit(1)
-      );
-      
-      const snapshot = await getDocs(q);
-      if (snapshot.empty) {
-        return null;
-      }
-      
-      const doc = snapshot.docs[0];
-      return {
-        id: doc.id,
-        ...doc.data()
-      } as ClassSession;
-    } catch (error) {
-      console.error('Error fetching today\'s class:', error);
-      throw new Error('Failed to fetch today\'s class');
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 250));
+    
+    // Check if the mock class is scheduled for today
+    const today = new Date();
+    const classDate = mockClassSession.scheduledAt;
+    
+    if (
+      classDate.getDate() === today.getDate() &&
+      classDate.getMonth() === today.getMonth() &&
+      classDate.getFullYear() === today.getFullYear()
+    ) {
+      return mockClassSession;
     }
+    
+    return null;
   }
 
-  // Real-time listener for today's class
+  // Simple listener for today's class
   static subscribeToTodaysClass(
-    callback: (classSession: ClassSession | null) => void,
-    onError?: (error: Error) => void
+    callback: (classSession: ClassSession | null) => void
   ): () => void {
-    const classesRef = collection(db, 'classes');
-    const today = new Date();
-    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    // Call callback with demo data
+    setTimeout(() => {
+      this.getTodaysClass().then(callback);
+    }, 100);
     
-    const q = query(
-      classesRef,
-      where('scheduledAt', '>=', Timestamp.fromDate(startOfDay)),
-      where('scheduledAt', '<', Timestamp.fromDate(endOfDay)),
-      orderBy('scheduledAt', 'asc'),
-      limit(1)
-    );
-
-    return onSnapshot(
-      q,
-      (snapshot: QuerySnapshot<DocumentData>) => {
-        if (snapshot.empty) {
-          callback(null);
-          return;
-        }
-        
-        const doc = snapshot.docs[0];
-        const classSession = {
-          id: doc.id,
-          ...doc.data()
-        } as ClassSession;
-        callback(classSession);
-      },
-      (error) => {
-        console.error('Error in today\'s class subscription:', error);
-        if (onError) {
-          onError(new Error('Failed to subscribe to today\'s class'));
-        }
-      }
-    );
+    return () => {};
   }
 }
 

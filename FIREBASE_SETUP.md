@@ -1,112 +1,91 @@
 # Firebase Setup Instructions
 
-## Prerequisites
+## Current Status
+✅ Firebase project created: `parents-madrasa-portal`
+✅ Environment variables configured
+✅ Firebase SDK initialized
 
-1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Enable the following services:
-   - Authentication (Email/Password and Phone providers)
-   - Firestore Database
-   - Storage
-   - Cloud Messaging
+## Required Firebase Console Setup
 
-## Configuration Steps
+### 1. Enable Phone Authentication
+1. Go to [Firebase Console](https://console.firebase.google.com/project/parents-madrasa-portal)
+2. Navigate to **Authentication** → **Sign-in method**
+3. Click on **Phone** provider
+4. Toggle **Enable** to ON
+5. Click **Save**
 
-### 1. Environment Variables
+### 2. Add Test Phone Number
+1. In **Authentication** → **Sign-in method** → **Phone**
+2. Scroll down to "Phone numbers for testing"
+3. Click **Add phone number**
+4. Add:
+   - **Phone number**: `+919876543210`
+   - **SMS code**: `123456`
+5. Click **Add**
 
-1. Copy `.env.example` to `.env`
-2. Fill in your Firebase configuration values from the Firebase Console:
+### 3. Set up Firestore Database
+1. Go to **Firestore Database**
+2. Click **Create database**
+3. Choose **Start in test mode**
+4. Select location: **asia-south1 (Mumbai)**
+5. Click **Done**
 
-```bash
-cp .env.example .env
-```
+### 4. Add Domain to Authorized Domains
+1. In **Authentication** → **Settings** → **Authorized domains**
+2. Make sure these domains are in the list:
+   - `localhost` ✅
+   - `localhost:5173` (Vite dev server)
+   - `127.0.0.1` (if needed)
+   - Check console for "Current domain" and add if different
+3. Add your production domain when deploying
 
-Get your config values from Firebase Console > Project Settings > General > Your apps > Web app
+**Important**: The domain must match exactly what you see in the browser address bar.
 
-### 2. Authentication Setup
+## Testing Steps
 
-1. Go to Firebase Console > Authentication > Sign-in method
-2. Enable **Phone** provider
-3. Configure authorized domains if needed
-4. For testing, you can add test phone numbers in the Phone authentication settings
+### 1. Test Firebase Connection
+1. Go to `/auth` page in your app
+2. Click "Test Firebase Connection" button
+3. Check browser console for connection details
 
-### 3. Firestore Database Setup
+### 2. Test Phone Authentication
+- Use phone number: `9876543210` (without +91)
+- Expected OTP: `123456`
+- The app will format it to `+919876543210`
 
-1. Go to Firebase Console > Firestore Database
-2. Create database in **production mode**
-3. Deploy the security rules:
+### 3. Verify Firebase Console Settings
 
-```bash
-# Install Firebase CLI if not already installed
-npm install -g firebase-tools
+**Double-check these exact settings:**
 
-# Login to Firebase
-firebase login
+#### Phone Authentication
+- Go to Firebase Console → Authentication → Sign-in method
+- Phone provider should be **ENABLED** ✅
 
-# Initialize Firebase in your project
-firebase init firestore
+#### Test Phone Numbers
+- In Phone settings, scroll to "Phone numbers for testing"
+- Should have: `+919876543210` with code `123456` ✅
 
-# Deploy security rules
-firebase deploy --only firestore:rules
-```
+#### Authorized Domains
+- Go to Authentication → Settings → Authorized domains
+- Should include:
+  - `localhost` ✅ (this covers all localhost ports)
+  - Do NOT add `localhost:5173` (Firebase doesn't accept port numbers)
 
-### 4. Storage Setup
-
-1. Go to Firebase Console > Storage
-2. Set up Cloud Storage
-3. Deploy storage rules:
-
-```bash
-firebase deploy --only storage
-```
-
-### 5. Cloud Messaging Setup (for notifications)
-
-1. Go to Firebase Console > Cloud Messaging
-2. Generate a new key pair for web push certificates
-3. Add the public key to your environment variables
-
-## Security Rules
-
-The project includes pre-configured security rules:
-
-- **firestore.rules**: Controls access to Firestore collections
-- **storage.rules**: Controls access to Cloud Storage
-
-### Key Security Features
-
-1. **User Isolation**: Users can only access their own profile data
-2. **Read-Only Content**: Educational content (classes, notes, recordings) is read-only for all users
-3. **Authenticated Access**: All resources require authentication
-4. **Personal Data Access**: Users can read/write their own exam results, attendance, and notifications
-
-## Testing
-
-To test the authentication system:
-
-1. Start the development server: `npm run dev`
-2. Navigate to `/auth` to see the phone authentication form
-3. Enter a Bangladeshi phone number (format: 01XXXXXXXXX)
-4. Receive and enter the OTP code
-5. For new users, complete the name registration
-6. Verify that protected routes redirect to auth when not logged in
-7. Verify that authenticated users can access the dashboard and stay logged in
+#### Firestore Database
+- Should be created in test mode ✅
 
 ## Troubleshooting
 
-### Common Issues
+### If OTP still doesn't work:
 
-1. **Firebase config not found**: Make sure `.env` file exists and contains valid Firebase config
-2. **Phone authentication errors**: Check that Phone provider is enabled in Firebase Console
-3. **reCAPTCHA errors**: Ensure your domain is added to authorized domains in Firebase Console
-4. **OTP not received**: Check phone number format and ensure it's a valid Bangladeshi number
-5. **Firestore permission errors**: Ensure security rules are deployed correctly
+1. **Check browser console** for specific error messages
+2. **Try a different browser** or incognito mode
+3. **Verify the exact test phone number** in Firebase Console
+4. **Check if your IP/location** is blocked by Firebase
+5. **Try using a real phone number** (will use actual SMS)
 
-### Debug Mode
-
-Enable Firebase debug mode by adding to your `.env`:
-
-```
-VITE_FIREBASE_DEBUG=true
-```
-
-This will enable additional logging for troubleshooting.
+### Common Issues:
+- Test phone number format must be exactly `+919876543210`
+- Domain must match exactly (check console for current domain)
+- Firebase project must have billing enabled for production use
+- Some regions may have restrictions on phone authentication

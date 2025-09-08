@@ -4,14 +4,28 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: [
+          'Noto Sans Malayalam',
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
+          'sans-serif',
+        ],
+        malayalam: ['Noto Sans Malayalam', 'sans-serif'],
+        heading: ['Manjari', 'Noto Sans Malayalam', 'sans-serif'],
       },
       fontSize: {
-        // Minimum 16px for accessibility
-        base: ['16px', '24px'],
-        lg: ['18px', '28px'],
-        xl: ['20px', '30px'],
-        '2xl': ['24px', '36px'],
+        // Minimum 16px for accessibility with Malayalam line-height 1.6
+        sm: ['14px', '22px'],
+        base: ['16px', '26px'], // 16px * 1.6 = 25.6px ≈ 26px
+        lg: ['18px', '29px'], // 18px * 1.6 = 28.8px ≈ 29px
+        xl: ['20px', '32px'], // 20px * 1.6 = 32px
+        '2xl': ['24px', '38px'], // 24px * 1.6 = 38.4px ≈ 38px
+        '3xl': ['30px', '48px'], // 30px * 1.6 = 48px
+        // Font size options for accessibility
+        'font-small': ['16px', '26px'],
+        'font-medium': ['18px', '29px'],
+        'font-large': ['20px', '32px'],
       },
       spacing: {
         // 44px minimum touch target size
@@ -86,6 +100,14 @@ export default {
         },
         '.high-contrast': {
           filter: 'contrast(1.2)',
+        },
+        '.font-malayalam': {
+          fontFamily: "'Noto Sans Malayalam', sans-serif",
+          lineHeight: '1.6',
+        },
+        '.font-heading': {
+          fontFamily: "'Manjari', 'Noto Sans Malayalam', sans-serif",
+          fontWeight: '600',
         },
       };
       addUtilities(accessibilityUtilities);
