@@ -435,7 +435,9 @@ export class ExerciseService {
       return userAnswer === question.correctAnswer;
     } else if (question.type === 'text') {
       // Simple text comparison - in real implementation, this would be more sophisticated
-      const correctAnswer = question.correctAnswer.toLowerCase().trim();
+      const correctAnswer = Array.isArray(question.correctAnswer) 
+        ? question.correctAnswer[0]?.toLowerCase().trim() 
+        : question.correctAnswer.toLowerCase().trim();
       const userAnswerStr = Array.isArray(userAnswer) ? userAnswer[0] : userAnswer;
       return userAnswerStr?.toLowerCase().trim() === correctAnswer;
     }

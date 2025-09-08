@@ -1,23 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { FontSizeProvider } from './contexts/FontSizeContext';
-import { AuthPage, Dashboard, LiveClass, Recordings } from './pages';
+import { AuthPage, Dashboard, LiveClass, Recordings, NotesExercises } from './pages';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/layout';
 import './App.css';
 
-const NotesExercises = () => (
-  <Layout 
-    showBackButton={true}
-    title="Notes & Exercises"
-    malayalamTitle="കുറിപ്പുകളും അഭ്യാസങ്ങളും"
-  >
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <p className="text-gray-700">Notes & Exercises - Coming Soon</p>
-      <p className="text-gray-500 text-sm mt-2" lang="ml">കുറിപ്പുകളും അഭ്യാസങ്ങളും - ഉടൻ വരുന്നു</p>
-    </div>
-  </Layout>
-);
+
 
 const ExamsAttendance = () => (
   <Layout 
