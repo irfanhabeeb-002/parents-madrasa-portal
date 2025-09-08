@@ -8,7 +8,7 @@ interface ModalProps {
   title: string;
   malayalamTitle?: string;
   children: ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   ariaDescribedBy?: string;
   showCloseButton?: boolean;
   closeOnOverlayClick?: boolean;
@@ -35,6 +35,7 @@ export const Modal: React.FC<ModalProps> = ({
     md: 'max-w-md',
     lg: 'max-w-lg',
     xl: 'max-w-xl',
+    '2xl': 'max-w-4xl',
   };
 
   // Focus management
