@@ -5,3 +5,7 @@ export * from './exerciseService';
 export * from './attendanceService';
 export * from './storageService';
 export * from './dataManager';
+export * from './dataSync';
+export * from './dataImportExport';
+export * from './dataValidation';
+export * from './searchService';
