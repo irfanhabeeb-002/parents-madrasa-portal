@@ -6,38 +6,39 @@ import { Exercise } from '../types/exercise';
 import { Attendance } from '../types/attendance';
 import { User } from '../types/user';
 
+// Supported data types
+type DataType = 'recordings' | 'notes' | 'exercises' | 'attendance' | 'users' | 'all';
+
+interface ExportData {
+  version: string;
+  exportedAt: Date;
+  dataType: DataType;
+  metadata: {
+    totalRecords: number;
+    collections: string[];
+    appVersion: string;
+  };
+  data: {
+    recordings?: Recording[];
+    notes?: Note[];
+    exercises?: Exercise[];
+    attendance?: Attendance[];
+    users?: User[];
+  };
+}
+
+interface ImportResult {
+  success: boolean;
+  imported: number;
+  skipped: number;
+  errors: string[];
+  collections: string[];
+}
+
 /**
  * Data Import/Export Service for JSON file-based data management
  */
 export class DataImportExportService {
-  // Supported data types
-  type DataType = 'recordings' | 'notes' | 'exercises' | 'attendance' | 'users' | 'all';
-
-  interface ExportData {
-    version: string;
-    exportedAt: Date;
-    dataType: DataType;
-    metadata: {
-      totalRecords: number;
-      collections: string[];
-      appVersion: string;
-    };
-    data: {
-      recordings?: Recording[];
-      notes?: Note[];
-      exercises?: Exercise[];
-      attendance?: Attendance[];
-      users?: User[];
-    };
-  }
-
-  interface ImportResult {
-    success: boolean;
-    imported: number;
-    skipped: number;
-    errors: string[];
-    collections: string[];
-  }
 
   // Export data to JSON
   static async exportData(dataType: DataType = 'all'): Promise<ApiResponse<ExportData>> {

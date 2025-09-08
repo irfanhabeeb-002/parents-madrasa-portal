@@ -5,31 +5,32 @@ import { Exercise } from '../types/exercise';
 import { Attendance } from '../types/attendance';
 import { StorageService } from './storageService';
 
+// Search result interface
+interface SearchResult<T> {
+  items: T[];
+  totalCount: number;
+  searchTime: number;
+  suggestions: string[];
+  facets: SearchFacet[];
+}
+
+interface SearchFacet {
+  field: string;
+  values: { value: string; count: number }[];
+}
+
+interface AdvancedSearchOptions extends SearchOptions {
+  filters?: Record<string, any>;
+  facets?: string[];
+  highlight?: boolean;
+  fuzzy?: boolean;
+  boost?: Record<string, number>; // Field boosting for relevance
+}
+
 /**
  * Advanced Search Service with filtering, sorting, and full-text search capabilities
  */
 export class SearchService {
-  // Search result interface
-  interface SearchResult<T> {
-    items: T[];
-    totalCount: number;
-    searchTime: number;
-    suggestions: string[];
-    facets: SearchFacet[];
-  }
-
-  interface SearchFacet {
-    field: string;
-    values: { value: string; count: number }[];
-  }
-
-  interface AdvancedSearchOptions extends SearchOptions {
-    filters?: Record<string, any>;
-    facets?: string[];
-    highlight?: boolean;
-    fuzzy?: boolean;
-    boost?: Record<string, number>; // Field boosting for relevance
-  }
 
   // Search across all collections
   static async globalSearch(

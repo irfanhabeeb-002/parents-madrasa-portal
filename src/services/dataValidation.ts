@@ -5,29 +5,30 @@ import { Attendance } from '../types/attendance';
 import { User } from '../types/user';
 import { ApiResponse } from '../types/common';
 
+// Validation result interface
+interface ValidationResult {
+  isValid: boolean;
+  errors: ValidationError[];
+  warnings: ValidationWarning[];
+}
+
+interface ValidationError {
+  field: string;
+  message: string;
+  code: string;
+  severity: 'error' | 'warning';
+}
+
+interface ValidationWarning {
+  field: string;
+  message: string;
+  code: string;
+}
+
 /**
  * Data Validation Service for ensuring data integrity
  */
 export class DataValidationService {
-  // Validation result interface
-  interface ValidationResult {
-    isValid: boolean;
-    errors: ValidationError[];
-    warnings: ValidationWarning[];
-  }
-
-  interface ValidationError {
-    field: string;
-    message: string;
-    code: string;
-    severity: 'error' | 'warning';
-  }
-
-  interface ValidationWarning {
-    field: string;
-    message: string;
-    code: string;
-  }
 
   // Common validation rules
   private static readonly VALIDATION_RULES = {

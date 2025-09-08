@@ -1,6 +1,25 @@
 import { ApiResponse } from '../types/common';
 import { StorageService } from './storageService';
 
+// Sync queue item interface
+interface SyncQueueItem {
+  id: string;
+  operation: 'create' | 'update' | 'delete';
+  collection: string;
+  data: any;
+  timestamp: Date;
+  retryCount: number;
+  maxRetries: number;
+}
+
+interface SyncStatus {
+  isOnline: boolean;
+  isSyncing: boolean;
+  lastSyncAt?: Date;
+  pendingOperations: number;
+  failedOperations: number;
+}
+
 /**
  * Data Synchronization Service for offline/online sync and backup
  */
@@ -8,25 +27,6 @@ export class DataSyncService {
   private static readonly SYNC_QUEUE_KEY = 'sync_queue';
   private static readonly SYNC_STATUS_KEY = 'sync_status';
   private static readonly LAST_SYNC_KEY = 'last_sync_timestamp';
-
-  // Sync queue item interface
-  interface SyncQueueItem {
-    id: string;
-    operation: 'create' | 'update' | 'delete';
-    collection: string;
-    data: any;
-    timestamp: Date;
-    retryCount: number;
-    maxRetries: number;
-  }
-
-  interface SyncStatus {
-    isOnline: boolean;
-    isSyncing: boolean;
-    lastSyncAt?: Date;
-    pendingOperations: number;
-    failedOperations: number;
-  }
 
   // Check online status
   static isOnline(): boolean {
