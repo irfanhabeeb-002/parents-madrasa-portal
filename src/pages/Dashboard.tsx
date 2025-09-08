@@ -5,10 +5,10 @@ import { Card } from '../components/ui/Card';
 import { SkeletonLoader } from '../components/ui/SkeletonLoader';
 import { NotificationBanner } from '../components/ui/NotificationBanner';
 import { useDashboard } from '../hooks/useDashboard';
-import { 
-  VideoCameraIcon, 
-  PlayIcon, 
-  DocumentTextIcon, 
+import {
+  VideoCameraIcon,
+  PlayIcon,
+  DocumentTextIcon,
   AcademicCapIcon,
   ChatBubbleLeftRightIcon,
   ExclamationTriangleIcon
@@ -29,7 +29,7 @@ export const Dashboard: React.FC = () => {
   } = useDashboard();
 
   // Get unread notifications for banner display
-  const unreadNotifications = useMemo(() => 
+  const unreadNotifications = useMemo(() =>
     notifications.filter(notification => !notification.read),
     [notifications]
   );
@@ -37,7 +37,20 @@ export const Dashboard: React.FC = () => {
   // Format today's class time
   const todaysClassTime = useMemo(() => {
     if (!todaysClass) return null;
-    return todaysClass.scheduledAt.toLocaleTimeString('en-US', {
+
+    // Handle both Date and Timestamp objects
+    const toDate = (dateValue: any): Date => {
+      if (dateValue instanceof Date) {
+        return dateValue;
+      }
+      // Handle Firestore Timestamp or string
+      if (dateValue && typeof dateValue === 'object' && dateValue.seconds) {
+        return new Date(dateValue.seconds * 1000 + (dateValue.nanoseconds || 0) / 1000000);
+      }
+      return new Date(dateValue);
+    };
+
+    return toDate(todaysClass.scheduledAt).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true
@@ -82,9 +95,25 @@ export const Dashboard: React.FC = () => {
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
   };
 
+  const getCardDescription = (title: string): string => {
+    switch (title) {
+      case "Live Class":
+        return "Join live interactive sessions with your teachers and classmates";
+      case "Recordings":
+        return "Access recorded lessons and review past class sessions";
+      case "Notes/Exercises":
+        return "Study materials, practice exercises, and homework assignments";
+      case "Exams/Attendance":
+        return "View exam schedules, results, and track your attendance";
+      default:
+        return "Access your learning resources";
+    }
+  };
+
   return (
     <Layout>
-      <div className="space-y-6">
+      {/* Mobile Layout */}
+      <div className="md:hidden space-y-6">
         {/* Welcome Section */}
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -150,7 +179,7 @@ export const Dashboard: React.FC = () => {
                 അറിയിപ്പുകൾ
               </span>
             </h2>
-            
+
             {error.announcements && (
               <button
                 onClick={refreshAnnouncements}
@@ -161,7 +190,7 @@ export const Dashboard: React.FC = () => {
               </button>
             )}
           </div>
-          
+
           {loading.announcements ? (
             <SkeletonLoader className="h-8" />
           ) : error.announcements ? (
@@ -199,6 +228,148 @@ export const Dashboard: React.FC = () => {
           title="Ask Teacher"
         >
           <ChatBubbleLeftRightIcon className="w-6 h-6" />
+          <span className="sr-only">Contact teacher via WhatsApp</span>
+        </button>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden md:block space-y-12 desktop-layout">
+        {/* Welcome Section */}
+        <div className="text-left desktop-welcome">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4 font-inter" style={{ fontSize: '22px' }}>
+            Welcome to Your Dashboard
+          </h1>
+          <p className="text-lg text-gray-600 font-medium" lang="ml" style={{ fontSize: '16px' }}>
+            സ്വാഗതം നിങ്ങളുടെ ഡാഷ്‌ബോർഡിലേക്ക്
+          </p>
+        </div>
+
+        {/* Urgent Class Banner */}
+        {loading.todaysClass ? (
+          <SkeletonLoader className="h-24" />
+        ) : error.todaysClass ? (
+          <div className="bg-red-50 border-l-4 border-red-400 p-6 rounded-lg">
+            <div className="flex items-center">
+              <ExclamationTriangleIcon className="w-8 h-8 text-red-400 mr-4" />
+              <div>
+                <h3 className="text-xl font-semibold text-red-800">Unable to load today's class</h3>
+                <p className="text-lg text-red-600 mt-1">{error.todaysClass}</p>
+              </div>
+            </div>
+          </div>
+        ) : todaysClass ? (
+          <div className="bg-green-50 border-l-4 border-green-400 p-6 rounded-lg">
+            <div className="flex items-center">
+              <svg className="w-8 h-8 text-green-400 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <h3 className="text-lg font-bold text-green-800" style={{ fontSize: '18px' }}>Your class starts today at {todaysClassTime}!</h3>
+                <p className="text-base text-green-600 mt-1" style={{ fontSize: '16px' }}>{todaysClass.title}</p>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Dashboard Cards - 2x2 Grid */}
+        <div className="desktop-card-grid">
+          {navigationCards.map((card, index) => (
+            <div
+              key={index}
+              onClick={card.onClick}
+              className="desktop-card"
+              role="button"
+              tabIndex={0}
+              aria-label={card.ariaLabel}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  card.onClick();
+                }
+              }}
+            >
+              {/* Large Icon at Top */}
+              <div className="desktop-card-icon">
+                {React.cloneElement(card.icon as React.ReactElement, {
+                  className: "w-full h-full",
+                  strokeWidth: 1.5
+                })}
+              </div>
+
+              {/* Title */}
+              <h3 className="desktop-card-title font-inter">
+                {card.title}
+              </h3>
+
+              {/* Description */}
+              <p className="desktop-card-description">
+                {getCardDescription(card.title)}
+              </p>
+
+              {/* Malayalam Subtitle */}
+              <p className="desktop-card-subtitle" lang="ml">
+                {card.malayalamSubtitle}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Announcements Section */}
+        <div className="bg-white rounded-lg shadow-md p-8">
+          <h2 className="text-lg font-bold text-gray-900 mb-6 font-inter" style={{ fontSize: '18px' }}>
+            Announcements
+          </h2>
+
+          {loading.announcements ? (
+            <SkeletonLoader className="h-12" />
+          ) : error.announcements ? (
+            <div className="flex items-center text-red-600 text-lg">
+              <ExclamationTriangleIcon className="w-6 h-6 mr-3" />
+              <span>Failed to load announcements</span>
+              <button
+                onClick={refreshAnnouncements}
+                className="ml-4 text-blue-600 hover:text-blue-800 focus:outline-none focus:underline"
+                aria-label="Retry loading announcements"
+              >
+                Retry
+              </button>
+            </div>
+          ) : announcements.length > 0 ? (
+            <div className="space-y-4">
+              {announcements.map((announcement, index) => (
+                <div
+                  key={announcement.id}
+                  className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
+                >
+                  <div className="flex-shrink-0">
+                    <div className="w-3 h-3 bg-primary-600 rounded-full mt-2"></div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-700 leading-relaxed" style={{ fontSize: '14px' }}>
+                      {announcement.message}
+                    </p>
+                    {announcement.malayalamMessage && (
+                      <p className="text-sm text-gray-600 mt-2 leading-relaxed" lang="ml" style={{ fontSize: '14px' }}>
+                        {announcement.malayalamMessage}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500" style={{ fontSize: '14px' }}>No announcements at this time</p>
+          )}
+        </div>
+
+        {/* Desktop WhatsApp Button */}
+        <button
+          onClick={handleWhatsAppClick}
+          className="fixed bottom-8 right-8 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-200 z-50"
+          aria-label="Ask teacher on WhatsApp"
+          title="Ask Teacher"
+        >
+          <ChatBubbleLeftRightIcon className="w-8 h-8" />
           <span className="sr-only">Contact teacher via WhatsApp</span>
         </button>
       </div>

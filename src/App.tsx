@@ -1,23 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { FontSizeProvider } from './contexts/FontSizeContext';
-import { AuthPage, Dashboard } from './pages';
+import { AuthPage, Dashboard, LiveClass } from './pages';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/layout';
 import './App.css';
-
-const LiveClass = () => (
-  <Layout 
-    showBackButton={true}
-    title="Live Class"
-    malayalamTitle="ലൈവ് ക്ലാസ്"
-  >
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <p className="text-gray-700">Live Class - Coming Soon</p>
-      <p className="text-gray-500 text-sm mt-2" lang="ml">ലൈവ് ക്ലാസ് - ഉടൻ വരുന്നു</p>
-    </div>
-  </Layout>
-);
 
 const Recordings = () => (
   <Layout 

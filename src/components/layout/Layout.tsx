@@ -23,7 +23,7 @@ export const Layout: React.FC<LayoutProps> = ({
   onBack,
 }) => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <Header
         showBackButton={showBackButton}
@@ -37,18 +37,28 @@ export const Layout: React.FC<LayoutProps> = ({
       <main 
         className={`
           flex-1 overflow-y-auto
-          ${showBottomNav ? 'pb-20' : 'pb-4'}
+          ${showBottomNav ? 'pb-20 md:pb-4' : 'pb-4'}
         `}
         role="main"
         aria-label="Main content"
       >
-        <div className="container mx-auto px-4 py-4 max-w-md">
+        {/* Mobile Layout */}
+        <div className="md:hidden container mx-auto px-4 py-4 max-w-md">
+          {children}
+        </div>
+        
+        {/* Desktop Layout */}
+        <div className="hidden md:block max-w-6xl mx-auto px-8 py-8">
           {children}
         </div>
       </main>
       
-      {/* Bottom Navigation */}
-      {showBottomNav && <BottomNavigation />}
+      {/* Bottom Navigation - Mobile Only */}
+      {showBottomNav && (
+        <div className="md:hidden">
+          <BottomNavigation />
+        </div>
+      )}
     </div>
   );
 };

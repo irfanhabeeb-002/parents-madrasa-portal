@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { findUserByPhone, type User } from '../data/users';
+import { findUserByPhone, type User as LegacyUser } from '../data/users';
+
+// Simple User interface for authentication
+interface User {
+  uid: string;
+  displayName: string;
+  phone?: string;
+  email?: string;
+}
 
 interface AuthState {
   user: User | null;
@@ -33,7 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (savedUser) {
         const userData = JSON.parse(savedUser);
         setUser(userData);
-        console.log('User loaded from localStorage:', userData.name);
+        console.log('User loaded from localStorage:', userData.displayName || userData.name || 'Unknown user');
       }
     } catch (error) {
       console.error('Error loading user from localStorage:', error);
@@ -57,11 +65,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('User not registered. Contact admin.');
       }
 
+      // Convert legacy user to auth user format
+      const authUser: User = {
+        uid: foundUser.id,
+        displayName: foundUser.name,
+        phone: foundUser.phone
+      };
+
       // Save to localStorage and state
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(foundUser));
-      setUser(foundUser);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(authUser));
+      setUser(authUser);
       
-      console.log('User logged in successfully:', foundUser.name);
+      console.log('User logged in successfully:', authUser.displayName);
     } catch (error: any) {
       setError(error.message);
       throw error;

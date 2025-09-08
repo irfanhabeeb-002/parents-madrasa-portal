@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { 
+import {
   DashboardService,
-  withRetry 
+  withRetry
 } from '../services/dashboardService';
-import type { 
-  Announcement, 
-  DashboardNotification, 
+import type {
+  Announcement,
+  DashboardNotification,
   ClassSession
 } from '../services/dashboardService';
 
@@ -35,7 +35,7 @@ interface DashboardActions {
 
 export const useDashboard = (): DashboardState & DashboardActions => {
   const { user } = useAuth();
-  
+
   const [state, setState] = useState<DashboardState>({
     announcements: [],
     notifications: [],
@@ -83,7 +83,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
   const refreshAnnouncements = useCallback(async () => {
     setLoading('announcements', true);
     setError('announcements', null);
-    
+
     try {
       const announcements = await withRetry(() => DashboardService.getAnnouncements());
       setState(prev => ({
@@ -100,14 +100,14 @@ export const useDashboard = (): DashboardState & DashboardActions => {
 
   // Refresh notifications with retry mechanism
   const refreshNotifications = useCallback(async () => {
-    if (!user?.id) return;
-    
+    if (!user?.uid) return;
+
     setLoading('notifications', true);
     setError('notifications', null);
-    
+
     try {
-      const notifications = await withRetry(() => 
-        DashboardService.getUserNotifications(user.id)
+      const notifications = await withRetry(() =>
+        DashboardService.getUserNotifications(user.uid)
       );
       setState(prev => ({
         ...prev,
@@ -125,9 +125,10 @@ export const useDashboard = (): DashboardState & DashboardActions => {
   const refreshTodaysClass = useCallback(async () => {
     setLoading('todaysClass', true);
     setError('todaysClass', null);
-    
+
     try {
-      const todaysClass = await withRetry(() => DashboardService.getTodaysClass());
+      const todaysClassResponse = await withRetry(() => DashboardService.getTodaysClasses());
+      const todaysClass = todaysClassResponse.success && todaysClassResponse.data.length > 0 ? todaysClassResponse.data[0] : null;
       setState(prev => ({
         ...prev,
         todaysClass,
@@ -159,9 +160,9 @@ export const useDashboard = (): DashboardState & DashboardActions => {
     );
 
     // Subscribe to notifications if user is authenticated
-    if (user?.id) {
+    if (user?.uid) {
       unsubscribeNotifications = DashboardService.subscribeToUserNotifications(
-        user.id,
+        user.uid,
         (notifications) => {
           setState(prev => ({
             ...prev,
@@ -174,7 +175,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
     }
 
     // Subscribe to today's class
-    unsubscribeTodaysClass = DashboardService.subscribeToTodaysClass(
+    unsubscribeTodaysClass = DashboardService.subscribeToTodaysClasses(
       (todaysClass) => {
         setState(prev => ({
           ...prev,
@@ -191,7 +192,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
       if (unsubscribeNotifications) unsubscribeNotifications();
       if (unsubscribeTodaysClass) unsubscribeTodaysClass();
     };
-  }, [user?.id, setLoading, setError]);
+  }, [user?.uid, setLoading, setError]);
 
   return {
     ...state,

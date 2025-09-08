@@ -13,6 +13,8 @@ export default {
         ],
         malayalam: ['Noto Sans Malayalam', 'sans-serif'],
         heading: ['Manjari', 'Noto Sans Malayalam', 'sans-serif'],
+        inter: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        poppins: ['Poppins', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         // Minimum 16px for accessibility with Malayalam line-height 1.6
@@ -58,6 +60,18 @@ export default {
           500: '#f59e0b',
           600: '#d97706',
           700: '#b45309',
+        },
+        // Custom accent colors for 40+ users
+        accent: {
+          green: '#5A8866',
+          'green-light': '#6B9B73',
+          'green-dark': '#4A7356',
+          blue: '#1A3A6B',
+          'blue-light': '#2B4A7B',
+          'blue-dark': '#0F2A5B',
+          gold: '#C49E4B',
+          'gold-light': '#D4AE5B',
+          'gold-dark': '#B48E3B',
         },
       },
       screens: {

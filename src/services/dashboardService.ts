@@ -2,6 +2,7 @@ import { Recording } from '../types/recording';
 import { Note } from '../types/note';
 import { Exercise } from '../types/exercise';
 import { Attendance } from '../types/attendance';
+import { ClassSession } from '../types/class';
 import { ApiResponse, NotificationType, AnnouncementType } from '../types/common';
 import { StorageService } from './storageService';
 
@@ -427,26 +428,9 @@ export class DashboardService {
   // Get today's classes
   static async getTodaysClasses(): Promise<ApiResponse<ClassSession[]>> {
     try {
-      await new Promise(resolve => setTimeout(resolve, 250));
-      
-      const today = new Date();
-      const todaysClasses = mockClassSessions.filter(cls => {
-        const classDate = new Date(cls.scheduledAt);
-        return classDate.getDate() === today.getDate() &&
-               classDate.getMonth() === today.getMonth() &&
-               classDate.getFullYear() === today.getFullYear();
-      });
-
-      // Sort by scheduled time
-      todaysClasses.sort((a, b) => 
-        new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime()
-      );
-
-      return {
-        data: todaysClasses,
-        success: true,
-        timestamp: new Date()
-      };
+      // Use ClassService to get today's classes
+      const { ClassService } = await import('./classService');
+      return await ClassService.getTodaysClasses();
     } catch (error) {
       return {
         data: [],
@@ -575,6 +559,20 @@ export class DashboardService {
     }, 100);
     
     return () => {}; // Unsubscribe function
+  }
+
+  // Subscribe to today's classes updates
+  static subscribeToTodaysClasses(callback: (classes: ClassSession[]) => void): () => void {
+    // For now, just call the callback with initial data
+    // In a real app, this would set up a real-time subscription
+    this.getTodaysClasses().then(response => {
+      if (response.success) {
+        callback(response.data);
+      }
+    });
+
+    // Return unsubscribe function
+    return () => {};
   }
 }
 

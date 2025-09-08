@@ -1,4 +1,4 @@
-import { BaseEntity, Timestamp, QuestionType, ExamStatus } from './common';
+import type { BaseEntity, Timestamp, QuestionType, ExamStatus } from './common';
 
 export interface Exercise extends BaseEntity {
   noteId?: string;

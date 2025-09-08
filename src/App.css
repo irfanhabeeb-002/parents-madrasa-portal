@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
 
 /* Base accessibility styles */
 html {
@@ -6,12 +7,19 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Desktop font sizes for users 40+ */
+@media (min-width: 768px) {
+  html {
+    font-size: 16px; /* Comfortable base font for desktop */
+  }
+}
+
 body {
   @apply bg-white text-gray-900 font-sans leading-relaxed;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: 'Noto Sans Malayalam', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Noto Sans Malayalam', 'Inter', 'Poppins', ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Focus styles for accessibility */
@@ -105,10 +113,26 @@ body {
   min-font-size: 16px;
 }
 
-/* Heading fonts with Manjari */
+/* Inter font utility class */
+.font-inter {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-poppins {
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Heading fonts with Inter for desktop, Manjari for mobile */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Manjari', 'Noto Sans Malayalam', sans-serif;
   font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+  }
 }
 
 /* Font size accessibility classes */
@@ -137,4 +161,212 @@ html.font-large {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Desktop-specific styles for users 40+ */
+@media (min-width: 768px) {
+  /* Comfortable text for better readability */
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  /* Force smaller font sizes on desktop */
+  .hidden.md\\:block h1 {
+    font-size: 20px !important;
+  }
+  
+  .hidden.md\\:block h2 {
+    font-size: 18px !important;
+  }
+  
+  .hidden.md\\:block h3 {
+    font-size: 18px !important;
+  }
+  
+  .hidden.md\\:block p {
+    font-size: 14px !important;
+  }
+  
+  /* Specific overrides for desktop dashboard */
+  .desktop-welcome h1 {
+    font-size: 24px !important;
+  }
+  
+  .desktop-welcome p {
+    font-size: 18px !important;
+  }
+  
+  /* High contrast colors */
+  .text-gray-900 {
+    color: #1a1a1a;
+  }
+  
+  .text-gray-600 {
+    color: #4a4a4a;
+  }
+  
+  /* Generous spacing */
+  .space-y-12 > * + * {
+    margin-top: 3rem;
+  }
+  
+  /* Card hover effects */
+  .card-hover {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  /* Focus styles for desktop */
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 3px solid #3b82f6;
+    outline-offset: 3px;
+  }
+}
+
+/* Accent colors */
+.accent-green {
+  background-color: #5A8866;
+}
+
+.accent-blue {
+  background-color: #1A3A6B;
+}
+
+.accent-gold {
+  background-color: #C49E4B;
+}
+
+/* Text accent colors */
+.text-accent-green {
+  color: #5A8866;
+}
+
+.text-accent-green-dark {
+  color: #4A7356;
+}
+
+.border-accent-green {
+  border-color: #5A8866;
+}
+
+.hover\\:border-accent-green:hover {
+  border-color: #5A8866;
+}
+
+.group:hover .group-hover\\:text-accent-green-dark {
+  color: #4A7356;
+}
+
+/* Desktop navigation styles */
+@media (min-width: 768px) {
+  .desktop-nav-item {
+    min-height: 80px;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .desktop-nav-item:hover {
+    border-color: #5A8866;
+    box-shadow: 0 4px 12px rgba(90, 136, 102, 0.15);
+  }
+  
+  /* Force font size updates - v2 */
+  .desktop-layout * {
+    font-size: inherit !important;
+  }
+  
+  .desktop-layout h1 {
+    font-size: 22px !important;
+    line-height: 1.3 !important;
+  }
+  
+  .desktop-layout h2 {
+    font-size: 18px !important;
+    line-height: 1.3 !important;
+  }
+  
+  .desktop-layout h3 {
+    font-size: 16px !important;
+    line-height: 1.3 !important;
+  }
+  
+  .desktop-layout p {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+  
+  /* Desktop card grid styles */
+  .desktop-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  
+  .desktop-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f3f4f6;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .desktop-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: #5A8866;
+    transform: translateY(-2px);
+  }
+  
+  .desktop-card-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem auto;
+    color: #5A8866;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .desktop-card:hover .desktop-card-icon {
+    color: #4A7356;
+  }
+  
+  .desktop-card-title {
+    font-size: 20px !important;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.75rem;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .desktop-card:hover .desktop-card-title {
+    color: #4A7356;
+  }
+  
+  .desktop-card-description {
+    font-size: 16px !important;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+  
+  .desktop-card-subtitle {
+    font-size: 14px !important;
+    color: #9ca3af;
+    line-height: 1.4;
+  }
 }

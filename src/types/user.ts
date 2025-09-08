@@ -1,4 +1,4 @@
-import { BaseEntity, UserRole, Timestamp } from './common';
+import type { BaseEntity, UserRole, Timestamp } from './common';
 
 export interface User extends BaseEntity {
   uid: string;

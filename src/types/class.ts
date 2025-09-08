@@ -1,4 +1,4 @@
-import { BaseEntity, Timestamp } from './common';
+import type { BaseEntity, Timestamp } from './common';
 
 export interface ClassSession extends BaseEntity {
   title: string;

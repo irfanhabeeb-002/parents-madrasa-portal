@@ -1,3 +1,4 @@
+export * from './classService';
 export * from './dashboardService';
 export * from './recordingService';
 export * from './noteService';
