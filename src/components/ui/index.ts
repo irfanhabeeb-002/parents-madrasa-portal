@@ -5,6 +5,9 @@ export { Modal } from './Modal';
 export { AlertBanner } from './AlertBanner';
 export { NotificationBanner } from './NotificationBanner';
 export { FontSizeToggle } from './FontSizeToggle';
+export { ProgressIndicator } from './ProgressIndicator';
+export { CalendarView } from './CalendarView';
+export { ExamTimer } from './ExamTimer';
 export { 
   SkeletonLoader, 
   SkeletonCard, 
