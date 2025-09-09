@@ -1,11 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { Card } from '../components/ui/Card';
 import { SkeletonLoader } from '../components/ui/SkeletonLoader';
 import { NotificationBanner } from '../components/ui/NotificationBanner';
 import { WhatsAppButton } from '../components/ui/WhatsAppButton';
+import { DailyBanner, AnnouncementsBanner } from '../components/notifications';
 import { useDashboard } from '../hooks/useDashboard';
+import { useNotifications } from '../contexts/NotificationContext';
+import { useNotificationListener, useClassReminderListener } from '../hooks/useNotificationListener';
 import {
   VideoCameraIcon,
   PlayIcon,
@@ -13,12 +16,15 @@ import {
   AcademicCapIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
+import { error } from 'console';
+import { error } from 'console';
+import { error } from 'console';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const {
     announcements,
-    notifications,
+    notifications: dashboardNotifications,
     todaysClass,
     loading,
     error,
@@ -27,6 +33,31 @@ export const Dashboard: React.FC = () => {
     refreshTodaysClass,
     clearError
   } = useDashboard();
+
+  // Notification system
+  const { notifications, unreadCount } = useNotifications();
+  
+  // Set up real-time notification listeners
+  useNotificationListener({ enabled: true });
+  useClassReminderListener({ enabled: true });
+
+  // Get unread notifications for banner display
+  const unreadNotifications = useMemo(() =>
+    notifications.filter(notification => !notification.read),
+    [notifications]);
+
+  // Convert announcements to the format expected by AnnouncementsBanner
+  const announcementBannerData = useMemo(() =>
+    announcements.map(announcement => ({
+      id: announcement.id,
+      message: announcement.message,
+      malayalamMessage: announcement.malayalamMessage,
+      priority: announcement.priority || 'medium' as const,
+      createdAt: announcement.createdAt instanceof Date ? announcement.createdAt : new Date(announcement.createdAt),
+      expiresAt: announcement.expiresAt ? (announcement.expiresAt instanceof Date ? announcement.expiresAt : new Date(announcement.expiresAt)) : undefined
+    })),
+    [announcements]
+  );
 
   // Get unread notifications for banner display
   const unreadNotifications = useMemo(() =>
@@ -119,6 +150,18 @@ export const Dashboard: React.FC = () => {
           </p>
         </div>
 
+        {/* ARIA Live Region for Screen Reader Announcements */}
+        <div 
+          aria-live="polite" 
+          aria-label="Notification updates"
+          className="sr-only"
+          id="notification-live-region"
+        >
+          {unreadNotifications.length > 0 && 
+            `You have ${unreadNotifications.length} new notification${unreadNotifications.length > 1 ? 's' : ''}`
+          }
+        </div>
+
         {/* Today's Class Banner */}
         {loading.todaysClass ? (
           <SkeletonLoader className="h-16" />
@@ -131,21 +174,23 @@ export const Dashboard: React.FC = () => {
             onDismiss={() => clearError('todaysClass')}
           />
         ) : todaysClass ? (
-          <NotificationBanner
-            type="info"
-            title={`Your class today at ${todaysClassTime}`}
-            message={todaysClass.title}
-            malayalamMessage={`ഇന്ന് ${todaysClassTime} ന് നിങ്ങളുടെ ക്ലാസ്`}
+          <DailyBanner
+            classTitle={todaysClass.title}
+            classTime={todaysClassTime || ''}
+            malayalamTitle={todaysClass.malayalamTitle}
+            onJoinClass={() => navigate('/live-class')}
+            isLive={todaysClass.status === 'live'}
           />
         ) : null}
 
         {/* Unread Notifications */}
         {unreadNotifications.length > 0 && (
           <NotificationBanner
-            type="success"
+            type="new_content"
             title={`${unreadNotifications.length} new notification${unreadNotifications.length > 1 ? 's' : ''}`}
             message={unreadNotifications[0].message}
             malayalamMessage={unreadNotifications[0].malayalamMessage}
+            ariaLive="assertive"
           />
         )}
 
@@ -166,46 +211,33 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Announcements Banner */}
-        <div className="bg-white rounded-lg shadow-md p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Announcements
-              <span className="block text-sm text-gray-500 font-normal font-malayalam" lang="ml">
-                അറിയിപ്പുകൾ
-              </span>
-            </h2>
-
-            {error.announcements && (
+        {loading.announcements ? (
+          <SkeletonLoader className="h-16" />
+        ) : error.announcements ? (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center text-red-600 text-sm">
+              <ExclamationTriangleIcon className="w-4 h-4 mr-2" />
+              <span>Failed to load announcements</span>
               <button
                 onClick={refreshAnnouncements}
-                className="text-sm text-blue-600 hover:text-blue-800 focus:outline-none focus:underline"
+                className="ml-4 text-blue-600 hover:text-blue-800 focus:outline-none focus:underline"
                 aria-label="Retry loading announcements"
               >
                 Retry
               </button>
-            )}
-          </div>
-
-          {loading.announcements ? (
-            <SkeletonLoader className="h-8" />
-          ) : error.announcements ? (
-            <div className="flex items-center text-red-600 text-sm">
-              <ExclamationTriangleIcon className="w-4 h-4 mr-2" />
-              <span>Failed to load announcements</span>
             </div>
-          ) : announcements.length > 0 ? (
-            <div className="relative overflow-hidden">
-              <div className="animate-scroll">
-                <div className="flex space-x-8 whitespace-nowrap">
-                  {announcements.map((announcement, index) => (
-                    <span
-                      key={announcement.id}
-                      className="text-gray-700 text-sm inline-block"
-                      role="marquee"
-                      aria-label={`Announcement ${index + 1}: ${announcement.message}`}
-                    >
-                      • {announcement.message}
-                    </span>
+          </div>
+        ) : announcementBannerData.length > 0 ? (
+          <AnnouncementsBanner
+            announcements={announcementBannerData}
+            autoScroll={true}
+            scrollSpeed={100}
+          />
+        ) : (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+            <p className="text-gray-500 text-sm">No announcements at this time</p>
+            <p className="text-gray-400 text-xs mt-1" lang="ml">ഇപ്പോൾ അറിയിപ്പുകളൊന്നുമില്ല</p>
+          </div>
                   ))}
                 </div>
               </div>

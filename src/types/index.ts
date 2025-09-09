@@ -7,3 +7,4 @@ export * from './exercise';
 export * from './attendance';
 export * from './common';
 export * from './firebase';
+export * from './notification';

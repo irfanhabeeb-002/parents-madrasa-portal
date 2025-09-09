@@ -14,3 +14,4 @@ export * from './firebaseService';
 export * from './networkService';
 export * from './initializationService';
 export * from './errorHandlingService';
+export * from './notificationService';

@@ -1,5 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useNotificationBadge } from '../../contexts/NotificationContext';
+import { NotificationBadge } from '../notifications/NotificationBadge';
 
 interface NavItem {
   id: string;
@@ -80,6 +82,10 @@ const navigationItems: NavItem[] = [
 export const BottomNavigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Get notification badges for different sections
+  const classBadge = useNotificationBadge('class_reminder');
+  const notesBadge = useNotificationBadge('new_notes');
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -132,9 +138,30 @@ export const BottomNavigation: React.FC = () => {
                 aria-label={`${item.label} - ${item.malayalamLabel}`}
                 aria-current={active ? 'page' : undefined}
               >
-                {/* Icon */}
-                <div className="mb-1">
+                {/* Icon with Badge */}
+                <div className="mb-1 relative">
                   {active && item.activeIcon ? item.activeIcon : item.icon}
+                  
+                  {/* Notification Badges */}
+                  {item.id === 'classes' && classBadge.visible && (
+                    <NotificationBadge
+                      count={classBadge.count}
+                      visible={classBadge.visible}
+                      size="sm"
+                      color="blue"
+                      ariaLabel={`${classBadge.count} class reminder${classBadge.count > 1 ? 's' : ''}`}
+                    />
+                  )}
+                  
+                  {item.id === 'notes' && notesBadge.visible && (
+                    <NotificationBadge
+                      count={notesBadge.count}
+                      visible={notesBadge.visible}
+                      size="sm"
+                      color="green"
+                      ariaLabel={`${notesBadge.count} new note${notesBadge.count > 1 ? 's' : ''}`}
+                    />
+                  )}
                 </div>
                 
                 {/* Label */}
