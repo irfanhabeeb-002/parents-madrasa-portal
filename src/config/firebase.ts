@@ -5,7 +5,7 @@ import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getMessaging, isSupported } from 'firebase/messaging';
 
 // Firebase configuration from environment variables
-const firebaseConfig = {
+let firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
@@ -15,37 +15,59 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Validate required environment variables
-const requiredEnvVars = [
-  'VITE_FIREBASE_API_KEY',
-  'VITE_FIREBASE_AUTH_DOMAIN',
-  'VITE_FIREBASE_PROJECT_ID',
-  'VITE_FIREBASE_STORAGE_BUCKET',
-  'VITE_FIREBASE_MESSAGING_SENDER_ID',
-  'VITE_FIREBASE_APP_ID',
-];
+// Check if Firebase is properly configured
+export const isFirebaseConfigured = (): boolean => {
+  const requiredEnvVars = [
+    'VITE_FIREBASE_API_KEY',
+    'VITE_FIREBASE_AUTH_DOMAIN',
+    'VITE_FIREBASE_PROJECT_ID',
+    'VITE_FIREBASE_STORAGE_BUCKET',
+    'VITE_FIREBASE_MESSAGING_SENDER_ID',
+    'VITE_FIREBASE_APP_ID',
+  ];
 
-const missingEnvVars = requiredEnvVars.filter(
-  (envVar) => !import.meta.env[envVar]
-);
+  const isPlaceholder = (value: string | undefined): boolean => {
+    return !value || 
+           value === 'your_api_key_here' || 
+           value.includes('your_') || 
+           value === 'your_project.firebaseapp.com' ||
+           value === 'your_project_id' ||
+           value === 'your_project.appspot.com' ||
+           value === 'your_sender_id' ||
+           value === 'your_app_id' ||
+           value === 'your_measurement_id';
+  };
 
-if (missingEnvVars.length > 0) {
-  console.error(
-    'Missing required Firebase environment variables:',
-    missingEnvVars
+  return requiredEnvVars.every(envVar => !isPlaceholder(import.meta.env[envVar]));
+};
+
+// Only initialize Firebase if properly configured
+if (!isFirebaseConfigured()) {
+  console.warn(
+    '🔥 Firebase not configured - authentication will use mock mode for development'
   );
-  throw new Error(
-    `Missing Firebase configuration: ${missingEnvVars.join(', ')}`
+  console.warn(
+    '📝 To use Firebase Authentication, update the .env file with your Firebase configuration'
+  );
+  console.warn(
+    '📖 See FIREBASE_SETUP.md for detailed setup instructions'
   );
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase only if configured
+let app: any = null;
+let auth: any = null;
+let db: any = null;
+let storage: any = null;
 
-// Initialize Firebase services
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+if (isFirebaseConfigured()) {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  storage = getStorage(app);
+}
+
+export { auth, db, storage };
 
 // Initialize Firebase Cloud Messaging (only if supported)
 let messaging: ReturnType<typeof getMessaging> | null = null;
@@ -57,25 +79,31 @@ isSupported().then((supported) => {
 
 export { messaging };
 
-// Connect to emulators in development
-if (import.meta.env.DEV) {
+// Connect to emulators in development (only if Firebase is configured)
+if (import.meta.env.DEV && isFirebaseConfigured() && import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true') {
   // Only connect to emulators if not already connected
   try {
-    connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+    if (auth) {
+      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+    }
   } catch (error) {
     // Emulator already connected or not available
     console.log('Auth emulator connection skipped:', error);
   }
 
   try {
-    connectFirestoreEmulator(db, 'localhost', 8080);
+    if (db) {
+      connectFirestoreEmulator(db, 'localhost', 8080);
+    }
   } catch (error) {
     // Emulator already connected or not available
     console.log('Firestore emulator connection skipped:', error);
   }
 
   try {
-    connectStorageEmulator(storage, 'localhost', 9199);
+    if (storage) {
+      connectStorageEmulator(storage, 'localhost', 9199);
+    }
   } catch (error) {
     // Emulator already connected or not available
     console.log('Storage emulator connection skipped:', error);

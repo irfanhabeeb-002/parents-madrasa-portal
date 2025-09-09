@@ -7,9 +7,7 @@ import { db } from './firebase';
 export async function initializeFirebase(): Promise<void> {
   try {
     // Enable offline persistence for Firestore
-    await enableIndexedDbPersistence(db, {
-      synchronizeTabs: true, // Allow multiple tabs to use the same cache
-    });
+    await enableIndexedDbPersistence(db);
     
     console.log('Firebase initialized with offline persistence');
   } catch (error: any) {

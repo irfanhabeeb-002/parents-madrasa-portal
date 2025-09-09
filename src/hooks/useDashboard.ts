@@ -119,7 +119,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
     } finally {
       setLoading('notifications', false);
     }
-  }, [user?.id, setLoading, setError]);
+  }, [user?.uid, setLoading, setError]);
 
   // Refresh today's class with retry mechanism
   const refreshTodaysClass = useCallback(async () => {
