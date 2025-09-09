@@ -9,11 +9,26 @@ import {
   VerificationMethod
 } from '../types/attendance';
 import { ApiResponse, PaginationOptions, FilterOptions } from '../types/common';
+import { FirebaseAttendance, FIREBASE_COLLECTIONS } from '../types/firebase';
+import { FirebaseService } from './firebaseService';
 import { StorageService } from './storageService';
+import { where, orderBy, limit as firestoreLimit, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
 
-export class AttendanceService {
+export class AttendanceService extends FirebaseService {
+  private static instance: AttendanceService;
   private static readonly STORAGE_KEY = 'attendance';
   private static readonly RECORDS_STORAGE_KEY = 'attendance_records';
+
+  constructor() {
+    super(FIREBASE_COLLECTIONS.ATTENDANCE);
+  }
+
+  static getInstance(): AttendanceService {
+    if (!AttendanceService.instance) {
+      AttendanceService.instance = new AttendanceService();
+    }
+    return AttendanceService.instance;
+  }
 
   // Mock data for development
   private static mockAttendance: Attendance[] = [
@@ -79,6 +94,43 @@ export class AttendanceService {
   // Record attendance
   static async recordAttendance(attendance: Omit<Attendance, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Attendance>> {
     try {
+      const service = AttendanceService.getInstance();
+      
+      // Prepare Firestore data
+      const firestoreAttendance: Omit<FirebaseAttendance, 'id'> = {
+        userId: attendance.userId,
+        classSessionId: attendance.classSessionId,
+        joinedAt: FirestoreTimestamp.fromDate(attendance.joinedAt),
+        leftAt: attendance.leftAt ? FirestoreTimestamp.fromDate(attendance.leftAt) : undefined,
+        duration: attendance.duration,
+        status: attendance.isPresent ? 'present' : 'absent',
+        autoTracked: attendance.attendanceType === 'zoom_integration',
+        createdAt: FirestoreTimestamp.now()
+      };
+
+      // Create in Firestore
+      const attendanceId = await service.create(firestoreAttendance);
+      
+      const newAttendance: Attendance = {
+        ...attendance,
+        id: attendanceId,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Also add to mock data for fallback
+      this.mockAttendance.push(newAttendance);
+      await StorageService.appendToArray(this.STORAGE_KEY, newAttendance);
+
+      return {
+        data: newAttendance,
+        success: true,
+        timestamp: new Date()
+      };
+    } catch (error) {
+      console.error('Error recording attendance:', error);
+      
+      // Fallback to mock data
       const newAttendance: Attendance = {
         ...attendance,
         id: `att-${Date.now()}`,
@@ -92,13 +144,6 @@ export class AttendanceService {
       return {
         data: newAttendance,
         success: true,
-        timestamp: new Date()
-      };
-    } catch (error) {
-      return {
-        data: {} as Attendance,
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to record attendance',
         timestamp: new Date()
       };
     }

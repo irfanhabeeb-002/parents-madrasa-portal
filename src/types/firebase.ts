@@ -18,13 +18,22 @@ export interface FirebaseClassSession {
   id: string;
   title: string;
   description: string;
+  subject: string;
+  instructor: string;
   scheduledAt: Timestamp;
+  duration?: number;
   zoomMeetingId: string;
   zoomJoinUrl: string;
+  zoomPassword?: string;
   recordingUrl?: string;
   isLive: boolean;
-  status: 'scheduled' | 'live' | 'ended';
+  isRecorded?: boolean;
+  status: 'scheduled' | 'live' | 'ended' | 'completed' | 'cancelled';
   reminderSent: boolean;
+  maxParticipants?: number;
+  currentParticipants?: number;
+  tags?: string[];
+  materials?: any[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

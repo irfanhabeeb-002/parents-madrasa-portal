@@ -1,11 +1,26 @@
 import { Note, NoteView, NoteBookmark, NoteDifficulty } from '../types/note';
 import { ApiResponse, PaginationOptions, SearchOptions, FilterOptions } from '../types/common';
+import { FirebaseNote, FIREBASE_COLLECTIONS } from '../types/firebase';
+import { FirebaseService } from './firebaseService';
 import { StorageService } from './storageService';
+import { where, orderBy, limit as firestoreLimit, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
 
-export class NoteService {
+export class NoteService extends FirebaseService {
+  private static instance: NoteService;
   private static readonly STORAGE_KEY = 'notes';
   private static readonly VIEWS_STORAGE_KEY = 'note_views';
   private static readonly BOOKMARKS_STORAGE_KEY = 'note_bookmarks';
+
+  constructor() {
+    super(FIREBASE_COLLECTIONS.NOTES);
+  }
+
+  static getInstance(): NoteService {
+    if (!NoteService.instance) {
+      NoteService.instance = new NoteService();
+    }
+    return NoteService.instance;
+  }
 
   // Mock data for development
   private static mockNotes: Note[] = [
@@ -268,6 +283,85 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
 
   // Get all notes with pagination and filtering
   static async getNotes(
+    options?: PaginationOptions & FilterOptions
+  ): Promise<ApiResponse<Note[]>> {
+    try {
+      const service = NoteService.getInstance();
+      const constraints = [];
+
+      // Build Firestore query constraints
+      if (options?.classSessionId) {
+        constraints.push(where('classSessionId', '==', options.classSessionId));
+      }
+      if (options?.subject) {
+        constraints.push(where('subject', '==', options.subject));
+      }
+      if (options?.difficulty) {
+        constraints.push(where('difficulty', '==', options.difficulty));
+      }
+      if (options?.language) {
+        constraints.push(where('language', 'in', [options.language, 'both']));
+      }
+      if (options?.isPublic !== undefined) {
+        constraints.push(where('isPublic', '==', options.isPublic));
+      }
+
+      // Add ordering
+      const orderField = options?.orderBy || 'createdAt';
+      const orderDirection = options?.orderDirection || 'desc';
+      constraints.push(orderBy(orderField, orderDirection));
+
+      // Add limit
+      if (options?.limit) {
+        constraints.push(firestoreLimit(options.limit));
+      }
+
+      const firestoreNotes = await service.getAll<FirebaseNote>(constraints);
+      
+      // Convert Firestore data to Note format
+      const notes: Note[] = firestoreNotes.map(note => ({
+        ...note,
+        createdAt: note.createdAt.toDate(),
+        updatedAt: note.updatedAt.toDate(),
+        // Add default values for fields that might not exist in Firestore
+        summary: note.summary || '',
+        imageUrls: note.imageUrls || [],
+        author: note.author || 'Unknown',
+        subject: note.subject || 'General',
+        tags: note.tags || [],
+        isPublic: note.isPublic ?? true,
+        downloadCount: note.downloadCount || 0,
+        viewCount: note.viewCount || 0,
+        fileSize: note.fileSize || 0,
+        pageCount: note.pageCount || 1,
+        language: note.language || 'en',
+        difficulty: note.difficulty || 'beginner',
+        attachments: note.attachments || []
+      }));
+
+      // Apply client-side pagination if offset is specified
+      let paginatedNotes = notes;
+      if (options?.offset) {
+        const offset = options.offset;
+        const limit = options.limit || 10;
+        paginatedNotes = notes.slice(offset, offset + limit);
+      }
+
+      return {
+        data: paginatedNotes,
+        success: true,
+        timestamp: new Date()
+      };
+    } catch (error) {
+      console.error('Error fetching notes:', error);
+      
+      // Fallback to mock data
+      return this.getMockNotes(options);
+    }
+  }
+
+  // Fallback method using mock data
+  private static async getMockNotes(
     options?: PaginationOptions & FilterOptions
   ): Promise<ApiResponse<Note[]>> {
     try {

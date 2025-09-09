@@ -1,11 +1,26 @@
 import { Exercise, Question, ExamResult, ExamAttempt, QuestionResult, ExerciseDifficulty } from '../types/exercise';
 import { ApiResponse, PaginationOptions, SearchOptions, FilterOptions, ExamStatus } from '../types/common';
+import { FirebaseExercise, FirebaseExamResult, FIREBASE_COLLECTIONS } from '../types/firebase';
+import { FirebaseService } from './firebaseService';
 import { StorageService } from './storageService';
+import { where, orderBy, limit as firestoreLimit, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
 
-export class ExerciseService {
+export class ExerciseService extends FirebaseService {
+  private static instance: ExerciseService;
   private static readonly STORAGE_KEY = 'exercises';
   private static readonly RESULTS_STORAGE_KEY = 'exam_results';
   private static readonly ATTEMPTS_STORAGE_KEY = 'exam_attempts';
+
+  constructor() {
+    super(FIREBASE_COLLECTIONS.EXERCISES);
+  }
+
+  static getInstance(): ExerciseService {
+    if (!ExerciseService.instance) {
+      ExerciseService.instance = new ExerciseService();
+    }
+    return ExerciseService.instance;
+  }
 
   // Mock data for development
   private static mockExercises: Exercise[] = [

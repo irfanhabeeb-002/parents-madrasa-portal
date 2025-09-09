@@ -6,11 +6,26 @@ import type {
   ClassMaterial 
 } from '../types/class';
 import type { ApiResponse, PaginationOptions, FilterOptions, Timestamp } from '../types/common';
+import { FirebaseClassSession, FIREBASE_COLLECTIONS } from '../types/firebase';
+import { FirebaseService } from './firebaseService';
 import { StorageService } from './storageService';
+import { where, orderBy, limit as firestoreLimit, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
 
-export class ClassService {
+export class ClassService extends FirebaseService {
+  private static instance: ClassService;
   private static readonly STORAGE_KEY = 'classes';
   private static readonly SCHEDULE_STORAGE_KEY = 'class_schedules';
+
+  constructor() {
+    super(FIREBASE_COLLECTIONS.CLASSES);
+  }
+
+  static getInstance(): ClassService {
+    if (!ClassService.instance) {
+      ClassService.instance = new ClassService();
+    }
+    return ClassService.instance;
+  }
 
   // Utility function to handle Date | Timestamp conversion
   private static toDate(dateValue: Date | Timestamp): Date {
@@ -117,6 +132,98 @@ export class ClassService {
     }
   ): Promise<ApiResponse<ClassSession[]>> {
     try {
+      const service = ClassService.getInstance();
+      const constraints = [];
+
+      // Build Firestore query constraints
+      if (options?.status) {
+        constraints.push(where('status', '==', options.status));
+      }
+      if (options?.subject) {
+        constraints.push(where('subject', '==', options.subject));
+      }
+      if (options?.instructor) {
+        constraints.push(where('instructor', '==', options.instructor));
+      }
+      if (options?.isLive !== undefined) {
+        constraints.push(where('isLive', '==', options.isLive));
+      }
+      if (options?.startDate) {
+        constraints.push(where('scheduledAt', '>=', FirestoreTimestamp.fromDate(options.startDate)));
+      }
+      if (options?.endDate) {
+        constraints.push(where('scheduledAt', '<=', FirestoreTimestamp.fromDate(options.endDate)));
+      }
+
+      // Add ordering
+      const orderField = options?.orderBy || 'scheduledAt';
+      const orderDirection = options?.orderDirection || 'asc';
+      constraints.push(orderBy(orderField, orderDirection));
+
+      // Add limit
+      if (options?.limit) {
+        constraints.push(firestoreLimit(options.limit));
+      }
+
+      const firestoreClasses = await service.getAll<FirebaseClassSession>(constraints);
+      
+      // Convert Firestore data to ClassSession format
+      const classes: ClassSession[] = firestoreClasses.map(cls => ({
+        ...cls,
+        scheduledAt: cls.scheduledAt.toDate(),
+        createdAt: cls.createdAt.toDate(),
+        updatedAt: cls.updatedAt.toDate(),
+        duration: cls.duration || 60,
+        maxParticipants: cls.maxParticipants || 50,
+        tags: cls.tags || [],
+        materials: cls.materials || []
+      }));
+
+      // Apply client-side search filter if needed (Firestore doesn't support full-text search)
+      let filteredClasses = classes;
+      if (options?.search) {
+        const searchTerm = options.search.toLowerCase();
+        filteredClasses = classes.filter(cls => 
+          cls.title.toLowerCase().includes(searchTerm) ||
+          cls.description.toLowerCase().includes(searchTerm) ||
+          cls.subject.toLowerCase().includes(searchTerm) ||
+          cls.instructor.toLowerCase().includes(searchTerm) ||
+          cls.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      // Apply client-side pagination if offset is specified
+      if (options?.offset) {
+        const offset = options.offset;
+        const limit = options.limit || 20;
+        filteredClasses = filteredClasses.slice(offset, offset + limit);
+      }
+
+      return {
+        data: filteredClasses,
+        success: true,
+        timestamp: new Date()
+      };
+    } catch (error) {
+      console.error('Error fetching classes:', error);
+      
+      // Fallback to mock data if Firestore fails
+      return this.getMockClasses(options);
+    }
+  }
+
+  // Fallback method using mock data
+  private static async getMockClasses(
+    options?: PaginationOptions & FilterOptions & {
+      status?: ClassStatus;
+      subject?: string;
+      instructor?: string;
+      isLive?: boolean;
+      startDate?: Date;
+      endDate?: Date;
+    }
+  ): Promise<ApiResponse<ClassSession[]>> {
+    try {
       await new Promise(resolve => setTimeout(resolve, 300));
 
       let filteredClasses = [...this.mockClasses];
@@ -202,18 +309,31 @@ export class ClassService {
   // Get a specific class by ID
   static async getClassById(classId: string): Promise<ApiResponse<ClassSession | null>> {
     try {
-      await new Promise(resolve => setTimeout(resolve, 200));
+      const service = ClassService.getInstance();
+      const firestoreClass = await service.getById<FirebaseClassSession>(classId);
 
-      const classSession = this.mockClasses.find(cls => cls.id === classId);
-
-      if (!classSession) {
+      if (!firestoreClass) {
+        // Fallback to mock data
+        const classSession = this.mockClasses.find(cls => cls.id === classId);
         return {
-          data: null,
-          success: false,
-          error: 'Class not found',
+          data: classSession || null,
+          success: !!classSession,
+          error: classSession ? undefined : 'Class not found',
           timestamp: new Date()
         };
       }
+
+      // Convert Firestore data to ClassSession format
+      const classSession: ClassSession = {
+        ...firestoreClass,
+        scheduledAt: firestoreClass.scheduledAt.toDate(),
+        createdAt: firestoreClass.createdAt.toDate(),
+        updatedAt: firestoreClass.updatedAt.toDate(),
+        duration: firestoreClass.duration || 60,
+        maxParticipants: firestoreClass.maxParticipants || 50,
+        tags: firestoreClass.tags || [],
+        materials: firestoreClass.materials || []
+      };
 
       return {
         data: classSession,
@@ -221,10 +341,14 @@ export class ClassService {
         timestamp: new Date()
       };
     } catch (error) {
+      console.error('Error fetching class by ID:', error);
+      
+      // Fallback to mock data
+      const classSession = this.mockClasses.find(cls => cls.id === classId);
       return {
-        data: null,
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch class',
+        data: classSession || null,
+        success: !!classSession,
+        error: classSession ? undefined : 'Failed to fetch class',
         timestamp: new Date()
       };
     }
@@ -259,6 +383,76 @@ export class ClassService {
       limit,
       orderBy: 'scheduledAt',
       orderDirection: 'asc'
+    });
+  }
+
+  // Set up real-time listener for classes
+  static subscribeToClasses(
+    callback: (classes: ClassSession[]) => void,
+    options?: {
+      status?: ClassStatus;
+      isLive?: boolean;
+      startDate?: Date;
+      endDate?: Date;
+    }
+  ): () => void {
+    try {
+      const service = ClassService.getInstance();
+      const constraints = [];
+
+      // Build constraints for real-time listener
+      if (options?.status) {
+        constraints.push(where('status', '==', options.status));
+      }
+      if (options?.isLive !== undefined) {
+        constraints.push(where('isLive', '==', options.isLive));
+      }
+      if (options?.startDate) {
+        constraints.push(where('scheduledAt', '>=', FirestoreTimestamp.fromDate(options.startDate)));
+      }
+      if (options?.endDate) {
+        constraints.push(where('scheduledAt', '<=', FirestoreTimestamp.fromDate(options.endDate)));
+      }
+
+      constraints.push(orderBy('scheduledAt', 'asc'));
+
+      return service.setupListener<FirebaseClassSession>((firestoreClasses) => {
+        const classes: ClassSession[] = firestoreClasses.map(cls => ({
+          ...cls,
+          scheduledAt: cls.scheduledAt.toDate(),
+          createdAt: cls.createdAt.toDate(),
+          updatedAt: cls.updatedAt.toDate(),
+          duration: cls.duration || 60,
+          maxParticipants: cls.maxParticipants || 50,
+          tags: cls.tags || [],
+          materials: cls.materials || []
+        }));
+        callback(classes);
+      }, constraints);
+    } catch (error) {
+      console.error('Error setting up classes listener:', error);
+      // Return empty unsubscribe function
+      return () => {};
+    }
+  }
+
+  // Subscribe to today's classes with real-time updates
+  static subscribeToTodaysClasses(callback: (classes: ClassSession[]) => void): () => void {
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+
+    return this.subscribeToClasses(callback, {
+      startDate: startOfDay,
+      endDate: endOfDay
+    });
+  }
+
+  // Subscribe to live classes with real-time updates
+  static subscribeToLiveClasses(callback: (classes: ClassSession[]) => void): () => void {
+    return this.subscribeToClasses(callback, {
+      isLive: true,
+      status: 'live'
     });
   }
 
@@ -369,6 +563,56 @@ export class ClassService {
   // Update class status (for admin/system use)
   static async updateClassStatus(classId: string, status: ClassStatus): Promise<ApiResponse<ClassSession | null>> {
     try {
+      const service = ClassService.getInstance();
+      
+      // Update in Firestore
+      await service.update<Partial<FirebaseClassSession>>(classId, {
+        status,
+        isLive: status === 'live',
+        updatedAt: FirestoreTimestamp.now()
+      });
+
+      // Get updated class
+      const updatedClass = await service.getById<FirebaseClassSession>(classId);
+      
+      if (!updatedClass) {
+        return {
+          data: null,
+          success: false,
+          error: 'Class not found after update',
+          timestamp: new Date()
+        };
+      }
+
+      // Convert to ClassSession format
+      const classSession: ClassSession = {
+        ...updatedClass,
+        scheduledAt: updatedClass.scheduledAt.toDate(),
+        createdAt: updatedClass.createdAt.toDate(),
+        updatedAt: updatedClass.updatedAt.toDate(),
+        duration: updatedClass.duration || 60,
+        maxParticipants: updatedClass.maxParticipants || 50,
+        tags: updatedClass.tags || [],
+        materials: updatedClass.materials || []
+      };
+
+      // Also update mock data for fallback
+      const classIndex = this.mockClasses.findIndex(cls => cls.id === classId);
+      if (classIndex !== -1) {
+        this.mockClasses[classIndex].status = status;
+        this.mockClasses[classIndex].isLive = status === 'live';
+        this.mockClasses[classIndex].updatedAt = new Date();
+      }
+
+      return {
+        data: classSession,
+        success: true,
+        timestamp: new Date()
+      };
+    } catch (error) {
+      console.error('Error updating class status:', error);
+      
+      // Fallback to mock data update
       const classIndex = this.mockClasses.findIndex(cls => cls.id === classId);
       
       if (classIndex === -1) {
@@ -384,24 +628,9 @@ export class ClassService {
       this.mockClasses[classIndex].isLive = status === 'live';
       this.mockClasses[classIndex].updatedAt = new Date();
 
-      // Update in storage
-      const allClasses = await StorageService.getArray<ClassSession>(this.STORAGE_KEY);
-      const storageIndex = allClasses.findIndex(cls => cls.id === classId);
-      if (storageIndex !== -1) {
-        allClasses[storageIndex] = this.mockClasses[classIndex];
-        await StorageService.setArray(this.STORAGE_KEY, allClasses);
-      }
-
       return {
         data: this.mockClasses[classIndex],
         success: true,
-        timestamp: new Date()
-      };
-    } catch (error) {
-      return {
-        data: null,
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to update class status',
         timestamp: new Date()
       };
     }

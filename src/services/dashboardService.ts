@@ -4,7 +4,18 @@ import { Exercise } from '../types/exercise';
 import { Attendance } from '../types/attendance';
 import { ClassSession } from '../types/class';
 import { ApiResponse, NotificationType, AnnouncementType } from '../types/common';
+import { FirebaseAnnouncement, FirebaseNotification, FIREBASE_COLLECTIONS } from '../types/firebase';
+// Firebase service import - COMMENTED OUT FOR MANUAL LOGIN
+// TODO: Uncomment when ready to enable Firebase
+/*
+import { FirebaseService } from './firebaseService';
+*/
 import { StorageService } from './storageService';
+// Firebase imports - COMMENTED OUT FOR MANUAL LOGIN
+// TODO: Uncomment when ready to enable Firebase
+/*
+import { where, orderBy, limit as firestoreLimit, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
+*/
 
 // Enhanced types for dashboard data
 export interface Announcement {
@@ -244,6 +255,23 @@ const mockClassSessions: ClassSession[] = [
 export class DashboardService {
   private static readonly NOTIFICATIONS_STORAGE_KEY = 'dashboard_notifications';
   private static readonly ANNOUNCEMENTS_STORAGE_KEY = 'dashboard_announcements';
+  private static announcementsService: FirebaseService;
+  private static notificationsService: FirebaseService;
+
+  // Initialize Firebase services
+  private static getAnnouncementsService(): FirebaseService {
+    if (!this.announcementsService) {
+      this.announcementsService = new FirebaseService(FIREBASE_COLLECTIONS.ANNOUNCEMENTS);
+    }
+    return this.announcementsService;
+  }
+
+  private static getNotificationsService(): FirebaseService {
+    if (!this.notificationsService) {
+      this.notificationsService = new FirebaseService(FIREBASE_COLLECTIONS.NOTIFICATIONS);
+    }
+    return this.notificationsService;
+  }
 
   // Get comprehensive dashboard data
   static async getDashboardData(userId: string): Promise<ApiResponse<DashboardData>> {
@@ -312,8 +340,64 @@ export class DashboardService {
     }
   }
 
-  // Get active announcements
+  // Get active announcements - USING MOCK DATA (Firebase disabled)
   static async getAnnouncements(targetAudience?: string): Promise<ApiResponse<Announcement[]>> {
+    // Firebase is disabled, use mock data directly
+    console.log('Using mock announcements (Firebase disabled)');
+    return this.getMockAnnouncements(targetAudience);
+    
+    /* 
+    // FIREBASE VERSION - COMMENTED OUT FOR MANUAL LOGIN
+    // TODO: Uncomment when ready to enable Firebase
+    try {
+      const service = this.getAnnouncementsService();
+      const constraints = [];
+
+      // Build Firestore query constraints
+      constraints.push(where('isActive', '==', true));
+      
+      // Filter by expiration date
+      constraints.push(where('expiresAt', '>', FirestoreTimestamp.now()));
+      
+      // Filter by target audience if specified
+      if (targetAudience) {
+        constraints.push(where('targetAudience', 'in', ['all', targetAudience]));
+      }
+
+      // Order by priority and creation date
+      constraints.push(orderBy('priority', 'desc'));
+      constraints.push(orderBy('createdAt', 'desc'));
+
+      const firestoreAnnouncements = await service.getAll<FirebaseAnnouncement>(constraints);
+      
+      // Convert Firestore data to Announcement format
+      const announcements: Announcement[] = firestoreAnnouncements.map(ann => ({
+        ...ann,
+        createdAt: ann.createdAt.toDate(),
+        expiresAt: ann.expiresAt?.toDate(),
+        type: 'general' as AnnouncementType, // Default type
+        targetAudience: ann.targetAudience || 'all',
+        imageUrl: ann.imageUrl,
+        actionUrl: ann.actionUrl,
+        actionText: ann.actionText
+      }));
+
+      return {
+        data: announcements,
+        success: true,
+        timestamp: new Date()
+      };
+    } catch (error) {
+      console.error('Error fetching announcements:', error);
+      
+      // Fallback to mock data
+      return this.getMockAnnouncements(targetAudience);
+    }
+    */
+  }
+
+  // Fallback method using mock data
+  private static async getMockAnnouncements(targetAudience?: string): Promise<ApiResponse<Announcement[]>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 300));
       
@@ -516,63 +600,186 @@ export class DashboardService {
     }
   }
 
-  // Simple listeners for real-time updates (simulated)
+  // Real-time listeners for live updates - USING MOCK DATA (Firebase disabled)
   static subscribeToAnnouncements(
     callback: (announcements: Announcement[]) => void,
     targetAudience?: string
   ): () => void {
-    setTimeout(() => {
+    // Firebase is disabled, use periodic mock data updates
+    console.log('Using mock announcements subscription (Firebase disabled)');
+    
+    // Initial call
+    this.getAnnouncements(targetAudience).then(response => {
+      if (response.success) {
+        callback(response.data);
+      }
+    });
+    
+    // Periodic updates with mock data
+    const intervalId = setInterval(() => {
       this.getAnnouncements(targetAudience).then(response => {
         if (response.success) {
           callback(response.data);
         }
       });
-    }, 100);
+    }, 30000); // Update every 30 seconds
     
-    return () => {}; // Unsubscribe function
+    return () => clearInterval(intervalId);
+    
+    /* 
+    // FIREBASE VERSION - COMMENTED OUT FOR MANUAL LOGIN
+    // TODO: Uncomment when ready to enable Firebase
+    try {
+      const service = this.getAnnouncementsService();
+      const constraints = [];
+
+      // Build constraints for real-time listener
+      constraints.push(where('isActive', '==', true));
+      constraints.push(where('expiresAt', '>', FirestoreTimestamp.now()));
+      
+      if (targetAudience) {
+        constraints.push(where('targetAudience', 'in', ['all', targetAudience]));
+      }
+
+      constraints.push(orderBy('priority', 'desc'));
+      constraints.push(orderBy('createdAt', 'desc'));
+
+      return service.setupListener<FirebaseAnnouncement>((firestoreAnnouncements) => {
+        const announcements: Announcement[] = firestoreAnnouncements.map(ann => ({
+          ...ann,
+          createdAt: ann.createdAt.toDate(),
+          expiresAt: ann.expiresAt?.toDate(),
+          type: 'general' as AnnouncementType,
+          targetAudience: ann.targetAudience || 'all',
+          imageUrl: ann.imageUrl,
+          actionUrl: ann.actionUrl,
+          actionText: ann.actionText
+        }));
+        callback(announcements);
+      }, constraints);
+    } catch (error) {
+      console.error('Error setting up announcements listener:', error);
+      
+      // Fallback to periodic updates
+      const intervalId = setInterval(() => {
+        this.getAnnouncements(targetAudience).then(response => {
+          if (response.success) {
+            callback(response.data);
+          }
+        });
+      }, 30000); // Update every 30 seconds
+      
+      return () => clearInterval(intervalId);
+    }
+    */
   }
 
   static subscribeToUserNotifications(
     userId: string,
     callback: (notifications: DashboardNotification[]) => void
   ): () => void {
-    setTimeout(() => {
+    // Firebase is disabled, use periodic mock data updates
+    console.log('Using mock notifications subscription (Firebase disabled)');
+    
+    // Initial call
+    this.getUserNotifications(userId).then(response => {
+      if (response.success) {
+        callback(response.data);
+      }
+    });
+    
+    // Periodic updates with mock data
+    const intervalId = setInterval(() => {
       this.getUserNotifications(userId).then(response => {
         if (response.success) {
           callback(response.data);
         }
       });
-    }, 100);
+    }, 10000); // Update every 10 seconds
     
-    return () => {}; // Unsubscribe function
+    return () => clearInterval(intervalId);
+    
+    /* 
+    // FIREBASE VERSION - COMMENTED OUT FOR MANUAL LOGIN
+    // TODO: Uncomment when ready to enable Firebase
+    try {
+      const service = this.getNotificationsService();
+      const constraints = [];
+
+      // Build constraints for real-time listener
+      constraints.push(where('userId', '==', userId));
+      constraints.push(orderBy('createdAt', 'desc'));
+      constraints.push(firestoreLimit(50)); // Limit to recent notifications
+
+      return service.setupListener<FirebaseNotification>((firestoreNotifications) => {
+        const notifications: DashboardNotification[] = firestoreNotifications.map(notif => ({
+          ...notif,
+          timestamp: notif.createdAt.toDate(),
+          createdAt: notif.createdAt.toDate(),
+          priority: 'medium' as 'low' | 'medium' | 'high', // Default priority
+          actionUrl: notif.data?.actionUrl,
+          actionText: notif.data?.actionText,
+          imageUrl: notif.data?.imageUrl
+        }));
+        callback(notifications);
+      }, constraints);
+    } catch (error) {
+      console.error('Error setting up notifications listener:', error);
+      
+      // Fallback to periodic updates
+      const intervalId = setInterval(() => {
+        this.getUserNotifications(userId).then(response => {
+          if (response.success) {
+            callback(response.data);
+          }
+        });
+      }, 10000); // Update every 10 seconds
+      
+      return () => clearInterval(intervalId);
+    }
+    */
   }
 
   static subscribeToTodaysClasses(
     callback: (classes: ClassSession[]) => void
   ): () => void {
-    setTimeout(() => {
-      this.getTodaysClasses().then(response => {
-        if (response.success) {
-          callback(response.data);
-        }
-      });
-    }, 100);
+    // Firebase is disabled, use mock data
+    console.log('Using mock classes subscription (Firebase disabled)');
     
-    return () => {}; // Unsubscribe function
-  }
-
-  // Subscribe to today's classes updates
-  static subscribeToTodaysClasses(callback: (classes: ClassSession[]) => void): () => void {
-    // For now, just call the callback with initial data
-    // In a real app, this would set up a real-time subscription
-    this.getTodaysClasses().then(response => {
-      if (response.success) {
-        callback(response.data);
+    // Initial call with mock data
+    const mockClasses: ClassSession[] = [
+      {
+        id: 'class-today-1',
+        title: 'Arabic Grammar',
+        description: 'Basic Arabic grammar lesson',
+        scheduledAt: new Date(),
+        duration: 60,
+        instructor: 'Ustadh Ahmad',
+        zoomMeetingId: '123-456-789',
+        zoomPassword: 'arabic123',
+        isRecorded: true,
+        maxParticipants: 30,
+        currentParticipants: 15,
+        status: 'scheduled',
+        tags: ['arabic', 'grammar'],
+        materials: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
-    });
-
-    // Return unsubscribe function
+    ];
+    
+    callback(mockClasses);
+    
+    // Return empty cleanup function
     return () => {};
+    
+    /* 
+    // FIREBASE VERSION - COMMENTED OUT FOR MANUAL LOGIN
+    // TODO: Uncomment when ready to enable Firebase
+    // Use ClassService's real-time subscription
+    // import { ClassService } from './classService';
+    // return ClassService.subscribeToTodaysClasses(callback);
+    */
   }
 }
 

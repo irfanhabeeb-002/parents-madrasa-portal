@@ -10,3 +10,7 @@ export * from './dataSync';
 export * from './dataImportExport';
 export * from './dataValidation';
 export * from './searchService';
+export * from './firebaseService';
+export * from './networkService';
+export * from './initializationService';
+export * from './errorHandlingService';

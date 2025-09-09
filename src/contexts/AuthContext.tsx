@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+// Firebase imports - COMMENTED OUT FOR MANUAL LOGIN
+// TODO: Uncomment these imports when ready to enable Firebase Auth
+/*
 import {
   signInWithEmailAndPassword,
   signInWithPhoneNumber,
@@ -13,6 +16,10 @@ import {
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db, isFirebaseConfigured } from '../config/firebase';
 import { FirebaseUser as AppUser, FIREBASE_COLLECTIONS } from '../types/firebase';
+*/
+
+// Import allowed users for manual login
+import allowedUsers from '../data/allowedUsers.json';
 
 // User interface for authentication
 interface User {
@@ -30,13 +37,20 @@ interface AuthState {
 }
 
 interface AuthContextType extends AuthState {
+  // Manual login method - no OTP required
+  loginWithPhone: (phoneNumber: string) => Promise<void>;
+  logout: () => Promise<void>;
+  clearError: () => void;
+  
+  // Firebase methods - COMMENTED OUT FOR MANUAL LOGIN
+  // TODO: Uncomment these when ready to enable Firebase Auth
+  /*
   loginWithPhone: (phoneNumber: string) => Promise<ConfirmationResult>;
   loginWithEmail: (email: string, password: string) => Promise<void>;
   verifyOTP: (confirmationResult: ConfirmationResult, otp: string) => Promise<void>;
   registerWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
-  logout: () => Promise<void>;
-  clearError: () => void;
   setupRecaptcha: (elementId: string) => RecaptchaVerifier;
+  */
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,15 +64,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // MANUAL LOGIN MODE - Firebase is disabled
+  // TODO: When ready to enable Firebase, uncomment the Firebase code below and comment out manual login
+  
+  // Initialize manual authentication
+  useEffect(() => {
+    console.log('Using manual phone-number login (Firebase disabled)');
+    initializeManualAuth();
+  }, []);
+
+  // Initialize manual authentication for development
+  const initializeManualAuth = (): void => {
+    // Check for existing user session on mount
+    const storedUser = localStorage.getItem('manualAuthUser');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        console.log('Restored user session:', userData.displayName);
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        localStorage.removeItem('manualAuthUser');
+      }
+    }
+    setLoading(false);
+  };
+
+  /* 
+  // FIREBASE AUTH CODE - COMMENTED OUT FOR MANUAL LOGIN
+  // TODO: Uncomment this section when ready to enable Firebase Auth
+  
   // Check if Firebase is configured
   const firebaseConfigured = isFirebaseConfigured();
 
   // Listen to Firebase auth state changes (only if Firebase is configured)
   useEffect(() => {
     if (!firebaseConfigured || !auth) {
-      // Use mock authentication for development
-      console.log('Using mock authentication for development');
-      initializeMockAuth();
+      console.log('Firebase not configured, using manual authentication');
+      initializeManualAuth();
       return;
     }
 
@@ -119,7 +162,81 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     return () => unsubscribe();
   }, []);
+  */
 
+  // MANUAL LOGIN METHODS
+  const loginWithPhone = async (phoneNumber: string): Promise<void> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Clean and validate phone number
+      const cleanPhone = phoneNumber.replace(/\s+/g, '').replace(/[^\d]/g, '');
+      
+      // Validate Indian mobile number format
+      if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+        throw new Error('Please enter a valid 10-digit Indian mobile number');
+      }
+
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Find user in allowed users list
+      const foundUser = allowedUsers.find(user => user.phoneNumber === cleanPhone);
+      
+      if (!foundUser) {
+        throw new Error('User not registered. Please contact administrator.');
+      }
+
+      // Create user object
+      const userData: User = {
+        uid: foundUser.uid,
+        displayName: foundUser.displayName,
+        phone: foundUser.phoneNumber,
+        email: foundUser.email,
+        role: foundUser.role as 'parent' | 'student',
+      };
+
+      // Store user in localStorage
+      localStorage.setItem('manualAuthUser', JSON.stringify(userData));
+      setUser(userData);
+      
+      console.log('Manual login successful:', userData.displayName);
+    } catch (error: any) {
+      console.error('Phone login error:', error);
+      setError(error.message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Remove user from localStorage
+      localStorage.removeItem('manualAuthUser');
+      setUser(null);
+      
+      console.log('Manual logout successful');
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      setError('Failed to logout');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* 
+  // FIREBASE AUTH METHODS - COMMENTED OUT FOR MANUAL LOGIN
+  // TODO: Uncomment these methods when ready to enable Firebase Auth
+  
   const setupRecaptcha = (elementId: string): RecaptchaVerifier => {
     // Clear any existing reCAPTCHA
     const existingRecaptcha = document.getElementById(elementId);
@@ -156,11 +273,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('Please enter a valid 10-digit Indian mobile number');
       }
 
-      // Use mock authentication if Firebase is not configured
-      if (!firebaseConfigured || !auth) {
-        return mockPhoneLogin(cleanPhone);
-      }
-
       // Format phone number to international format
       const formattedPhone = `+91${cleanPhone}`;
 
@@ -186,12 +298,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      // Use mock authentication if Firebase is not configured
-      if (!firebaseConfigured || !auth) {
-        await mockOTPVerification(confirmationResult, otp);
-        return;
-      }
-
       await confirmationResult.confirm(otp);
       console.log('Phone number verified successfully');
     } catch (error: any) {
@@ -208,12 +314,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      // Use mock authentication if Firebase is not configured
-      if (!firebaseConfigured || !auth) {
-        await mockEmailLogin(email, password);
-        return;
-      }
-
       await signInWithEmailAndPassword(auth, email, password);
       console.log('Email login successful');
     } catch (error: any) {
@@ -230,12 +330,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      // Use mock authentication if Firebase is not configured
-      if (!firebaseConfigured || !auth) {
-        await mockEmailRegistration(email, password, displayName);
-        return;
-      }
-
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       // Update profile with display name
@@ -256,12 +350,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      // Use mock authentication if Firebase is not configured
-      if (!firebaseConfigured || !auth) {
-        await mockLogout();
-        return;
-      }
-
       await signOut(auth);
       console.log('User logged out');
     } catch (error: any) {
@@ -272,45 +360,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(false);
     }
   };
+  */
 
   const clearError = (): void => {
     setError(null);
-  };
-
-  const cleanupRecaptcha = (): void => {
-    const recaptchaContainer = document.getElementById('recaptcha-container');
-    if (recaptchaContainer) {
-      recaptchaContainer.innerHTML = '';
-    }
-  };
-
-  // Initialize mock authentication for development
-  const initializeMockAuth = (): void => {
-    // Check for existing mock user on mount
-    const storedUser = localStorage.getItem('mockUser');
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-      } catch (error) {
-        console.error('Error parsing stored mock user:', error);
-        localStorage.removeItem('mockUser');
-      }
-    }
-    setLoading(false);
-
-    // Listen for mock auth state changes
-    const handleMockAuthChange = (event: CustomEvent) => {
-      const userData = event.detail;
-      setUser(userData);
-      setLoading(false);
-    };
-
-    window.addEventListener('mockAuthStateChanged', handleMockAuthChange as EventListener);
-    
-    return () => {
-      window.removeEventListener('mockAuthStateChanged', handleMockAuthChange as EventListener);
-    };
   };
 
   const value: AuthContextType = {
@@ -318,12 +371,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loading,
     error,
     loginWithPhone,
-    loginWithEmail,
-    verifyOTP,
-    registerWithEmail,
     logout,
     clearError,
-    setupRecaptcha,
   };
 
   return (
@@ -343,120 +392,9 @@ export const useAuth = (): AuthContextType => {
 
 
 
-// Mock authentication functions for development mode
-const mockUsers = [
-  { uid: '1', displayName: 'Abdul Rahman', phone: '9876543210', email: 'abdul@example.com', role: 'parent' as const },
-  { uid: '2', displayName: 'Fatima', phone: '9123456780', email: 'fatima@example.com', role: 'parent' as const },
-  { uid: '3', displayName: 'Muhammad', phone: '9012345678', email: 'muhammad@example.com', role: 'parent' as const },
-];
-
-const mockPhoneLogin = async (phoneNumber: string): Promise<ConfirmationResult> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  const mockUser = mockUsers.find(user => user.phone === phoneNumber);
-  
-  if (!mockUser) {
-    throw new Error('User not found with this phone number');
-  }
-  
-  // Store phone number for OTP verification
-  localStorage.setItem('mockPhoneNumber', phoneNumber);
-  
-  console.log('Mock OTP sent to:', phoneNumber);
-  
-  // Return a mock confirmation result
-  return {
-    confirm: async (otp: string) => {
-      if (otp === '123456') {
-        // Mock successful verification - this will be handled by mockOTPVerification
-        return Promise.resolve();
-      } else {
-        throw new Error('Invalid OTP');
-      }
-    }
-  } as ConfirmationResult;
-};
-
-const mockOTPVerification = async (confirmationResult: ConfirmationResult, otp: string): Promise<void> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  if (otp !== '123456') {
-    throw new Error('Invalid OTP. Use 123456 for demo');
-  }
-  
-  // Find the user based on the phone number (stored in localStorage during phone login)
-  const phoneNumber = localStorage.getItem('mockPhoneNumber');
-  const mockUser = mockUsers.find(user => user.phone === phoneNumber);
-  
-  if (mockUser) {
-    // Store user in localStorage to simulate authentication
-    localStorage.setItem('mockUser', JSON.stringify(mockUser));
-    // Trigger a custom event to notify the auth context
-    window.dispatchEvent(new CustomEvent('mockAuthStateChanged', { detail: mockUser }));
-  }
-  
-  console.log('Mock OTP verification successful');
-};
-
-const mockEmailLogin = async (email: string, password: string): Promise<void> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  const mockUser = mockUsers.find(user => user.email === email);
-  
-  if (!mockUser || password !== 'password123') {
-    throw new Error('Invalid email or password');
-  }
-  
-  // Store user in localStorage to simulate authentication
-  localStorage.setItem('mockUser', JSON.stringify(mockUser));
-  // Trigger a custom event to notify the auth context
-  window.dispatchEvent(new CustomEvent('mockAuthStateChanged', { detail: mockUser }));
-  
-  console.log('Mock email login successful');
-};
-
-const mockEmailRegistration = async (email: string, password: string, displayName: string): Promise<void> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Check if user already exists
-  const existingUser = mockUsers.find(user => user.email === email);
-  if (existingUser) {
-    throw new Error('User already exists with this email');
-  }
-  
-  // Create new mock user
-  const newUser = {
-    uid: Date.now().toString(),
-    displayName,
-    email,
-    phone: undefined,
-    role: 'parent' as const,
-  };
-  
-  // Store user in localStorage to simulate authentication
-  localStorage.setItem('mockUser', JSON.stringify(newUser));
-  // Trigger a custom event to notify the auth context
-  window.dispatchEvent(new CustomEvent('mockAuthStateChanged', { detail: newUser }));
-  
-  console.log('Mock email registration successful');
-};
-
-const mockLogout = async (): Promise<void> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  // Remove user from localStorage
-  localStorage.removeItem('mockUser');
-  localStorage.removeItem('mockPhoneNumber');
-  // Trigger a custom event to notify the auth context
-  window.dispatchEvent(new CustomEvent('mockAuthStateChanged', { detail: null }));
-  
-  console.log('Mock logout successful');
-};
+/* 
+// FIREBASE ERROR HELPER - COMMENTED OUT FOR MANUAL LOGIN
+// TODO: Uncomment this when ready to enable Firebase Auth
 
 // Helper function to get user-friendly error messages
 function getErrorMessage(errorCode: string): string {
@@ -502,3 +440,4 @@ function getErrorMessage(errorCode: string): string {
       return 'An error occurred. Please try again.';
   }
 }
+*/

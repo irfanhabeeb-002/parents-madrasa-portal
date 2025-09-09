@@ -1,10 +1,25 @@
 import { Recording, RecordingView, VideoQuality, ProcessingStatus } from '../types/recording';
 import { ApiResponse, PaginationOptions, SearchOptions, FilterOptions } from '../types/common';
+import { FirebaseRecording, FIREBASE_COLLECTIONS } from '../types/firebase';
+import { FirebaseService } from './firebaseService';
 import { StorageService } from './storageService';
+import { where, orderBy, limit as firestoreLimit, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
 
-export class RecordingService {
+export class RecordingService extends FirebaseService {
+  private static instance: RecordingService;
   private static readonly STORAGE_KEY = 'recordings';
   private static readonly VIEWS_STORAGE_KEY = 'recording_views';
+
+  constructor() {
+    super(FIREBASE_COLLECTIONS.RECORDINGS);
+  }
+
+  static getInstance(): RecordingService {
+    if (!RecordingService.instance) {
+      RecordingService.instance = new RecordingService();
+    }
+    return RecordingService.instance;
+  }
 
   // Mock data for development
   private static mockRecordings: Recording[] = [
@@ -138,6 +153,78 @@ export class RecordingService {
     options?: PaginationOptions & FilterOptions
   ): Promise<ApiResponse<Recording[]>> {
     try {
+      const service = RecordingService.getInstance();
+      const constraints = [];
+
+      // Build Firestore query constraints
+      if (options?.classSessionId) {
+        constraints.push(where('classSessionId', '==', options.classSessionId));
+      }
+      if (options?.quality) {
+        constraints.push(where('quality', '==', options.quality));
+      }
+      if (options?.isProcessed !== undefined) {
+        constraints.push(where('isProcessed', '==', options.isProcessed));
+      }
+
+      // Add ordering
+      const orderField = options?.orderBy || 'createdAt';
+      const orderDirection = options?.orderDirection || 'desc';
+      constraints.push(orderBy(orderField, orderDirection));
+
+      // Add limit
+      if (options?.limit) {
+        constraints.push(firestoreLimit(options.limit));
+      }
+
+      const firestoreRecordings = await service.getAll<FirebaseRecording>(constraints);
+      
+      // Convert Firestore data to Recording format
+      const recordings: Recording[] = firestoreRecordings.map(rec => ({
+        ...rec,
+        uploadedAt: rec.uploadedAt.toDate(),
+        createdAt: rec.createdAt.toDate(),
+        updatedAt: rec.updatedAt?.toDate() || rec.createdAt.toDate(),
+        // Add default values for fields that might not exist in Firestore
+        fileSize: rec.fileSize || 0,
+        quality: rec.quality || 'hd',
+        format: rec.format || 'mp4',
+        isProcessed: rec.isProcessed ?? true,
+        processingStatus: rec.processingStatus || 'completed',
+        viewCount: rec.viewCount || 0,
+        downloadCount: rec.downloadCount || 0,
+        tags: rec.tags || [],
+        chapters: rec.chapters || [],
+        captions: rec.captions || [],
+        metadata: rec.metadata || {}
+      }));
+
+      // Apply client-side pagination if offset is specified
+      let paginatedRecordings = recordings;
+      if (options?.offset) {
+        const offset = options.offset;
+        const limit = options.limit || 10;
+        paginatedRecordings = recordings.slice(offset, offset + limit);
+      }
+
+      return {
+        data: paginatedRecordings,
+        success: true,
+        timestamp: new Date()
+      };
+    } catch (error) {
+      console.error('Error fetching recordings:', error);
+      
+      // Fallback to mock data
+      return this.getMockRecordings(options);
+    }
+  }
+
+  // Fallback method using mock data
+  private static async getMockRecordings(
+    options?: PaginationOptions & FilterOptions
+  ): Promise<ApiResponse<Recording[]>> {
+    try {
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 300));
 
@@ -190,20 +277,54 @@ export class RecordingService {
   // Get recording by ID
   static async getRecordingById(id: string): Promise<ApiResponse<Recording | null>> {
     try {
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
-      const recording = this.mockRecordings.find(r => r.id === id);
-      
+      const service = RecordingService.getInstance();
+      const firestoreRecording = await service.getById<FirebaseRecording>(id);
+
+      if (!firestoreRecording) {
+        // Fallback to mock data
+        const recording = this.mockRecordings.find(r => r.id === id);
+        return {
+          data: recording || null,
+          success: !!recording,
+          error: recording ? undefined : 'Recording not found',
+          timestamp: new Date()
+        };
+      }
+
+      // Convert Firestore data to Recording format
+      const recording: Recording = {
+        ...firestoreRecording,
+        uploadedAt: firestoreRecording.uploadedAt.toDate(),
+        createdAt: firestoreRecording.createdAt.toDate(),
+        updatedAt: firestoreRecording.updatedAt?.toDate() || firestoreRecording.createdAt.toDate(),
+        // Add default values for fields that might not exist in Firestore
+        fileSize: firestoreRecording.fileSize || 0,
+        quality: firestoreRecording.quality || 'hd',
+        format: firestoreRecording.format || 'mp4',
+        isProcessed: firestoreRecording.isProcessed ?? true,
+        processingStatus: firestoreRecording.processingStatus || 'completed',
+        viewCount: firestoreRecording.viewCount || 0,
+        downloadCount: firestoreRecording.downloadCount || 0,
+        tags: firestoreRecording.tags || [],
+        chapters: firestoreRecording.chapters || [],
+        captions: firestoreRecording.captions || [],
+        metadata: firestoreRecording.metadata || {}
+      };
+
       return {
-        data: recording || null,
+        data: recording,
         success: true,
         timestamp: new Date()
       };
     } catch (error) {
+      console.error('Error fetching recording by ID:', error);
+      
+      // Fallback to mock data
+      const recording = this.mockRecordings.find(r => r.id === id);
       return {
-        data: null,
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch recording',
+        data: recording || null,
+        success: !!recording,
+        error: recording ? undefined : 'Failed to fetch recording',
         timestamp: new Date()
       };
     }
@@ -271,10 +392,25 @@ export class RecordingService {
       // Store view data
       await StorageService.appendToArray(this.VIEWS_STORAGE_KEY, view);
 
-      // Update view count
-      const recordingIndex = this.mockRecordings.findIndex(r => r.id === recordingId);
-      if (recordingIndex !== -1) {
-        this.mockRecordings[recordingIndex].viewCount += 1;
+      // Update view count in Firestore
+      try {
+        const service = RecordingService.getInstance();
+        const recording = await service.getById<FirebaseRecording>(recordingId);
+        
+        if (recording) {
+          await service.update<Partial<FirebaseRecording>>(recordingId, {
+            viewCount: (recording.viewCount || 0) + 1,
+            updatedAt: FirestoreTimestamp.now()
+          });
+        }
+      } catch (firestoreError) {
+        console.warn('Failed to update view count in Firestore, using fallback:', firestoreError);
+        
+        // Fallback to mock data update
+        const recordingIndex = this.mockRecordings.findIndex(r => r.id === recordingId);
+        if (recordingIndex !== -1) {
+          this.mockRecordings[recordingIndex].viewCount += 1;
+        }
       }
 
       return {
@@ -290,6 +426,69 @@ export class RecordingService {
         timestamp: new Date()
       };
     }
+  }
+
+  // Set up real-time listener for recordings
+  static subscribeToRecordings(
+    callback: (recordings: Recording[]) => void,
+    options?: {
+      classSessionId?: string;
+      isProcessed?: boolean;
+      limit?: number;
+    }
+  ): () => void {
+    try {
+      const service = RecordingService.getInstance();
+      const constraints = [];
+
+      // Build constraints for real-time listener
+      if (options?.classSessionId) {
+        constraints.push(where('classSessionId', '==', options.classSessionId));
+      }
+      if (options?.isProcessed !== undefined) {
+        constraints.push(where('isProcessed', '==', options.isProcessed));
+      }
+
+      constraints.push(orderBy('createdAt', 'desc'));
+
+      if (options?.limit) {
+        constraints.push(firestoreLimit(options.limit));
+      }
+
+      return service.setupListener<FirebaseRecording>((firestoreRecordings) => {
+        const recordings: Recording[] = firestoreRecordings.map(rec => ({
+          ...rec,
+          uploadedAt: rec.uploadedAt.toDate(),
+          createdAt: rec.createdAt.toDate(),
+          updatedAt: rec.updatedAt?.toDate() || rec.createdAt.toDate(),
+          // Add default values for fields that might not exist in Firestore
+          fileSize: rec.fileSize || 0,
+          quality: rec.quality || 'hd',
+          format: rec.format || 'mp4',
+          isProcessed: rec.isProcessed ?? true,
+          processingStatus: rec.processingStatus || 'completed',
+          viewCount: rec.viewCount || 0,
+          downloadCount: rec.downloadCount || 0,
+          tags: rec.tags || [],
+          chapters: rec.chapters || [],
+          captions: rec.captions || [],
+          metadata: rec.metadata || {}
+        }));
+        callback(recordings);
+      }, constraints);
+    } catch (error) {
+      console.error('Error setting up recordings listener:', error);
+      // Return empty unsubscribe function
+      return () => {};
+    }
+  }
+
+  // Subscribe to recordings by class with real-time updates
+  static subscribeToRecordingsByClass(
+    classSessionId: string,
+    callback: (recordings: Recording[]) => void
+  ): () => void {
+    return this.subscribeToRecordings(callback, { classSessionId });
   }
 
   // Get user's viewing history

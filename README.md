@@ -121,13 +121,69 @@ This setup addresses the following requirements from the specification:
 - **7.1**: AA contrast compliance and accessibility features
 - **7.4**: PWA capabilities for mobile-first experience
 
+## Authentication System
+
+### Current Status: Manual Phone-Number Login
+
+The application currently uses a **manual phone-number login system** (no OTP, no Firebase) for easier development and testing. Firebase integration is fully prepared but disabled.
+
+#### Demo Users
+
+Use any of these phone numbers to login (no OTP required):
+
+- `9876543210` - Abdul Rahman
+- `9123456789` - Fatima Khatun  
+- `9012345678` - Muhammad Ali
+- `9234567890` - Aisha Begum
+- `9345678901` - Omar Farooq
+- `7025021695` - Irfan Habeeb
+
+#### Switching to Firebase Authentication
+
+When ready to enable Firebase Auth, follow these steps:
+
+1. **Update AuthContext.tsx**:
+   - Uncomment Firebase imports at the top
+   - Comment out manual login methods
+   - Uncomment Firebase auth methods
+   - Update the useEffect to use Firebase auth state
+
+2. **Update SimpleLoginForm.tsx**:
+   - Restore OTP verification flow
+   - Add back email/register options
+   - Update form handling for Firebase methods
+
+3. **Configure Firebase**:
+   - Set up Firebase project
+   - Add environment variables
+   - Configure authentication providers
+
+4. **Test Firebase Integration**:
+   - Verify phone authentication works
+   - Test OTP verification
+   - Ensure user data syncs with Firestore
+
+### Firebase Setup (Ready but Disabled)
+
+All Firebase configuration is complete and ready:
+
+- ✅ Firebase SDK installed and configured
+- ✅ Authentication context prepared
+- ✅ Firestore services implemented
+- ✅ Security rules defined
+- ✅ Environment variables configured
+
+**To enable Firebase**: Simply uncomment the Firebase code sections marked with `TODO: Uncomment when ready to enable Firebase Auth`
+
 ## Next Steps
 
 The project is now ready for implementing the core features:
 
-1. Firebase Authentication
-2. Dashboard components
-3. Live class integration
-4. Recording management
-5. Notes and exercises
-6. Exam system
+1. ✅ Authentication System (Manual login active, Firebase ready)
+2. ✅ Dashboard components
+3. ✅ Live class integration
+4. ✅ Recording management
+5. ✅ Notes and exercises
+6. ✅ Exam system
+7. 🔄 Zoom integration
+8. 🔄 Notification system

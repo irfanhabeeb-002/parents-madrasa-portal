@@ -18,7 +18,7 @@ import {
   enableNetwork,
   disableNetwork,
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { db, isFirebaseConfigured } from '../config/firebase';
 import { FirebaseError } from '../types/firebase';
 
 /**
@@ -33,9 +33,19 @@ export class FirebaseService {
   }
 
   /**
+   * Check if Firebase is configured and available
+   */
+  protected isFirebaseAvailable(): boolean {
+    return isFirebaseConfigured() && db !== null;
+  }
+
+  /**
    * Get collection reference
    */
   protected getCollection(): CollectionReference {
+    if (!this.isFirebaseAvailable()) {
+      throw new Error('Firebase is not configured. Using mock data instead.');
+    }
     return collection(db, this.collectionName);
   }
 
@@ -43,6 +53,9 @@ export class FirebaseService {
    * Get document reference
    */
   protected getDocRef(id: string): DocumentReference {
+    if (!this.isFirebaseAvailable()) {
+      throw new Error('Firebase is not configured. Using mock data instead.');
+    }
     return doc(db, this.collectionName, id);
   }
 
@@ -291,6 +304,34 @@ export class FirebaseService {
       console.log('Firebase online mode enabled');
     } catch (error) {
       console.error('Failed to enable online mode:', error);
+    }
+  }
+
+  /**
+   * Initialize offline persistence for better user experience
+   */
+  static async initializeOfflinePersistence(): Promise<void> {
+    try {
+      // Firestore automatically enables offline persistence by default
+      // This method can be used to configure additional offline settings
+      console.log('Firebase offline persistence initialized');
+    } catch (error) {
+      console.error('Failed to initialize offline persistence:', error);
+    }
+  }
+
+  /**
+   * Check network connectivity and handle offline/online states
+   */
+  static async handleNetworkStateChange(isOnline: boolean): Promise<void> {
+    try {
+      if (isOnline) {
+        await this.enableOnline();
+      } else {
+        await this.enableOffline();
+      }
+    } catch (error) {
+      console.error('Failed to handle network state change:', error);
     }
   }
 

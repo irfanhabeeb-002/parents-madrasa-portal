@@ -69,13 +69,18 @@ if (isFirebaseConfigured()) {
 
 export { auth, db, storage };
 
-// Initialize Firebase Cloud Messaging (only if supported)
+// Initialize Firebase Cloud Messaging (only if supported and Firebase is configured)
 let messaging: ReturnType<typeof getMessaging> | null = null;
-isSupported().then((supported) => {
-  if (supported) {
-    messaging = getMessaging(app);
-  }
-});
+
+if (isFirebaseConfigured() && app) {
+  isSupported().then((supported) => {
+    if (supported) {
+      messaging = getMessaging(app);
+    }
+  }).catch((error) => {
+    console.warn('Firebase Messaging not supported:', error);
+  });
+}
 
 export { messaging };
 
