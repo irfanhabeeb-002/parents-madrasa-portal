@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
+import React from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { FontSizeProvider } from './contexts/FontSizeContext';
 import { AccessibilityProvider } from './contexts/AccessibilityContext';
@@ -11,6 +12,8 @@ import { KeyboardNavigationIndicator, AccessibilitySettings } from './components
 import { useLiveRegion } from './components/accessibility/LiveRegion';
 import { SkeletonLoader } from './components/ui';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { OfflineIndicator, InstallPrompt } from './components/pwa';
+import { offlineQueue } from './services/offlineQueue';
 import './App.css';
 
 // Lazy load page components for code splitting
@@ -73,6 +76,11 @@ const Profile = () => {
 };
 
 function App() {
+  // Initialize offline queue on app start
+  React.useEffect(() => {
+    offlineQueue.initialize();
+  }, []);
+
   return (
     <ErrorBoundary>
       <FontSizeProvider>
@@ -81,6 +89,10 @@ function App() {
             <NotificationProvider>
               <Router>
                 <div className="App min-h-screen bg-gray-50">
+                  {/* PWA Components */}
+                  <OfflineIndicator />
+                  <InstallPrompt />
+                  
                   {/* Keyboard Navigation Indicator */}
                   <KeyboardNavigationIndicator />
                 <Suspense fallback={<PageLoadingFallback />}>

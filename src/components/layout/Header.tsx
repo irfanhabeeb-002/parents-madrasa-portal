@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AccessibleButton } from '../ui/AccessibleButton';
 import { FontSizeToggle } from '../ui/FontSizeToggle';
 import { useAuth } from '../../contexts/AuthContext';
+import { CompactSyncStatus } from '../pwa/SyncStatus';
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -103,8 +104,11 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Right side - Font toggle, User info and logout */}
+          {/* Right side - Sync status, Font toggle, User info and logout */}
           <div className="flex items-center space-x-2">
+            {/* Sync Status */}
+            <CompactSyncStatus />
+            
             {/* Font size toggle button */}
             <AccessibleButton
               variant="secondary"
