@@ -1,6 +1,6 @@
 // Comprehensive notification service for the Parents Madrasa Portal
 import { 
-  Notification, 
+  AppNotification, 
   NotificationType, 
   NotificationPreferences, 
   PushNotificationPayload,
@@ -9,6 +9,7 @@ import {
   NotificationData,
   NOTIFICATION_TRANSLATIONS
 } from '../types/notification';
+import { mobileNotificationManager } from '../utils/mobileNotificationManager';
 
 // Firebase Cloud Messaging imports - COMMENTED OUT FOR MANUAL MODE
 // TODO: Uncomment when Firebase is enabled
@@ -18,7 +19,7 @@ import { app } from '../config/firebase';
 */
 
 class NotificationService {
-  private notifications: Notification[] = [];
+  private notifications: AppNotification[] = [];
   private scheduledNotifications: ScheduledNotification[] = [];
   private preferences: NotificationPreferences = {
     classReminders: true,
@@ -28,7 +29,7 @@ class NotificationService {
     vibration: true,
     sound: true
   };
-  private listeners: Array<(notifications: Notification[]) => void> = [];
+  private listeners: Array<(notifications: AppNotification[]) => void> = [];
   private permissionListeners: Array<(permission: NotificationPermissionState) => void> = [];
 
   constructor() {
@@ -122,7 +123,7 @@ class NotificationService {
 
   // Handle foreground FCM messages
   private handleForegroundMessage(payload: any): void {
-    const notification: Notification = {
+    const notification: AppNotification = {
       id: Date.now().toString(),
       type: payload.data?.type || 'general',
       title: payload.notification?.title || 'Notification',
@@ -136,7 +137,7 @@ class NotificationService {
     };
 
     this.addNotification(notification);
-    this.showBrowserNotification(notification);
+    this.sendPushNotification(notification);
   }
 
   // Schedule class reminder notification (15 minutes before)
@@ -148,7 +149,7 @@ class NotificationService {
 
     if (reminderTime <= now) return; // Don't schedule past reminders
 
-    const notification: Notification = {
+    const notification: AppNotification = {
       id: `class_reminder_${classId}`,
       type: 'class_reminder',
       title: NOTIFICATION_TRANSLATIONS.class_reminder.title,
@@ -187,7 +188,7 @@ class NotificationService {
   notifyNewRecording(recordingId: string, recordingTitle: string): void {
     if (!this.preferences.newContent) return;
 
-    const notification: Notification = {
+    const notification: AppNotification = {
       id: `new_recording_${recordingId}`,
       type: 'new_recording',
       title: NOTIFICATION_TRANSLATIONS.new_recording.title,
@@ -212,7 +213,7 @@ class NotificationService {
   notifyNewNotes(noteId: string, noteTitle: string): void {
     if (!this.preferences.newContent) return;
 
-    const notification: Notification = {
+    const notification: AppNotification = {
       id: `new_notes_${noteId}`,
       type: 'new_notes',
       title: NOTIFICATION_TRANSLATIONS.new_notes.title,
@@ -237,7 +238,7 @@ class NotificationService {
   notifyExamReminder(examId: string, examTitle: string, examDate: Date): void {
     if (!this.preferences.examReminders) return;
 
-    const notification: Notification = {
+    const notification: AppNotification = {
       id: `exam_reminder_${examId}`,
       type: 'exam_reminder',
       title: NOTIFICATION_TRANSLATIONS.exam_reminder.title,
@@ -262,7 +263,7 @@ class NotificationService {
   notifyAnnouncement(title: string, message: string, malayalamTitle?: string, malayalamMessage?: string): void {
     if (!this.preferences.announcements) return;
 
-    const notification: Notification = {
+    const notification: AppNotification = {
       id: `announcement_${Date.now()}`,
       type: 'announcement',
       title: title || NOTIFICATION_TRANSLATIONS.announcement.title,
@@ -278,16 +279,54 @@ class NotificationService {
     this.addNotification(notification);
   }
 
-  // Send push notification using browser API
-  private async sendPushNotification(notification: Notification): Promise<void> {
+  // Send push notification using mobile-optimized approach
+  private async sendPushNotification(notification: AppNotification): Promise<void> {
     const permissionState = this.getPermissionState();
     
     if (!permissionState.granted) {
       console.warn('Cannot send push notification: permission not granted');
+      // Still show in-app notification for mobile users
+      await mobileNotificationManager.sendMobileNotification(
+        notification.title,
+        notification.message,
+        {
+          malayalamTitle: notification.malayalamTitle,
+          malayalamMessage: notification.malayalamMessage,
+          priority: notification.priority,
+          vibrate: this.preferences.vibration,
+          sound: this.preferences.sound,
+          persistent: notification.priority === 'high'
+        }
+      );
       return;
     }
 
     try {
+      // Check if mobile device and use appropriate method
+      const mobileInfo = mobileNotificationManager.getMobileInfo();
+      
+      if (mobileInfo.isIOS || mobileInfo.isAndroid) {
+        // Use mobile-optimized notification
+        const success = await mobileNotificationManager.sendMobileNotification(
+          notification.title,
+          notification.message,
+          {
+            malayalamTitle: notification.malayalamTitle,
+            malayalamMessage: notification.malayalamMessage,
+            priority: notification.priority,
+            vibrate: this.preferences.vibration,
+            sound: this.preferences.sound,
+            persistent: notification.priority === 'high'
+          }
+        );
+        
+        if (success) {
+          console.log('✅ Mobile notification sent successfully');
+          return;
+        }
+      }
+
+      // Fallback to standard browser notification
       const payload: PushNotificationPayload = {
         title: notification.title,
         body: notification.message,
@@ -326,16 +365,28 @@ class NotificationService {
 
     } catch (error) {
       console.error('Error sending push notification:', error);
+      // Fallback to in-app notification
+      await mobileNotificationManager.sendMobileNotification(
+        notification.title,
+        notification.message,
+        {
+          malayalamTitle: notification.malayalamTitle,
+          malayalamMessage: notification.malayalamMessage,
+          priority: notification.priority,
+          vibrate: this.preferences.vibration,
+          sound: this.preferences.sound
+        }
+      );
     }
   }
 
   // Show browser notification for foreground messages
-  private showBrowserNotification(notification: Notification): void {
+  private showBrowserNotification(notification: AppNotification): void {
     this.sendPushNotification(notification);
   }
 
   // Handle notification click - deep linking
-  private handleNotificationClick(notification: Notification): void {
+  private handleNotificationClick(notification: AppNotification): void {
     // Focus the window if it's not already focused
     if (window.focus) {
       window.focus();
@@ -351,7 +402,7 @@ class NotificationService {
   }
 
   // Add notification to local storage and notify listeners
-  private addNotification(notification: Notification): void {
+  private addNotification(notification: AppNotification): void {
     this.notifications.unshift(notification);
     
     // Keep only last 50 notifications
@@ -364,7 +415,7 @@ class NotificationService {
   }
 
   // Get all notifications
-  getNotifications(): Notification[] {
+  getNotifications(): AppNotification[] {
     return [...this.notifications];
   }
 
@@ -416,7 +467,7 @@ class NotificationService {
   }
 
   // Subscribe to notification updates
-  subscribe(listener: (notifications: Notification[]) => void): () => void {
+  subscribe(listener: (notifications: AppNotification[]) => void): () => void {
     this.listeners.push(listener);
     
     // Return unsubscribe function

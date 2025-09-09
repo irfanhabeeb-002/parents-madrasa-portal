@@ -87,6 +87,41 @@ export const BottomNavigation: React.FC = () => {
   const classBadge = useNotificationBadge('class_reminder');
   const notesBadge = useNotificationBadge('new_notes');
 
+  // Handle keyboard navigation
+  const handleKeyDown = (event: React.KeyboardEvent, path: string, label: string, index: number) => {
+    switch (event.key) {
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        handleNavigation(path, label);
+        break;
+      case 'ArrowLeft':
+        event.preventDefault();
+        focusNavigationItem(index - 1);
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        focusNavigationItem(index + 1);
+        break;
+      case 'Home':
+        event.preventDefault();
+        focusNavigationItem(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        focusNavigationItem(navigationItems.length - 1);
+        break;
+    }
+  };
+
+  const focusNavigationItem = (index: number) => {
+    const adjustedIndex = ((index % navigationItems.length) + navigationItems.length) % navigationItems.length;
+    const button = document.querySelector(`[data-nav-index="${adjustedIndex}"]`) as HTMLButtonElement;
+    if (button) {
+      button.focus();
+    }
+  };
+
   const isActive = (path: string) => {
     if (path === '/') {
       return location.pathname === '/';
@@ -119,17 +154,20 @@ export const BottomNavigation: React.FC = () => {
     >
       <div className="container mx-auto px-4 max-w-md">
         <div className="flex justify-around items-center py-2">
-          {navigationItems.map((item) => {
+          {navigationItems.map((item, index) => {
             const active = isActive(item.path);
             
             return (
               <button
                 key={item.id}
+                data-nav-index={index}
                 onClick={() => handleNavigation(item.path, item.label)}
+                onKeyDown={(e) => handleKeyDown(e, item.path, item.label, index)}
                 className={`
                   touch-target flex flex-col items-center justify-center
                   px-2 py-2 rounded-lg transition-colors duration-200
-                  focus-visible min-w-[60px]
+                  focus-enhanced keyboard-focus-button min-w-[60px]
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                   ${active 
                     ? 'text-primary-600 bg-primary-50' 
                     : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'

@@ -1,6 +1,6 @@
 // Notification list component for displaying all notifications
 import React from 'react';
-import { Notification } from '../../types/notification';
+import { AppNotification } from '../../types/notification';
 import { AccessibleButton } from '../ui/AccessibleButton';
 import { 
   ClockIcon, 
@@ -12,7 +12,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 interface NotificationListProps {
-  notifications: Notification[];
+  notifications: AppNotification[];
   onMarkAsRead: (notificationId: string) => void;
   onRemove: (notificationId: string) => void;
   onMarkAllAsRead: () => void;

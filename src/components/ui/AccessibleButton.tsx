@@ -27,7 +27,8 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
   ) => {
     const baseClasses = [
       'touch-target',
-      'focus-visible',
+      'focus-enhanced',
+      'keyboard-focus-button',
       'inline-flex',
       'items-center',
       'justify-center',
@@ -40,6 +41,11 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
       'active:scale-95',
       'transform',
       'transition-transform',
+      // Enhanced accessibility
+      'focus:outline-none',
+      'focus:ring-2',
+      'focus:ring-offset-2',
+      'focus:ring-blue-500',
     ];
 
     const variantClasses = {
@@ -68,8 +74,10 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
         ref={ref}
         className={combinedClasses}
         disabled={disabled || loading}
-        aria-label={ariaLabel}
+        aria-label={ariaLabel || (typeof children === 'string' ? children : undefined)}
         aria-busy={loading}
+        aria-describedby={malayalamLabel ? `${props.id || 'button'}-malayalam` : undefined}
+        role="button"
         {...props}
       >
         {loading && (
@@ -98,7 +106,11 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
         <div className="flex flex-col items-center">
           <span>{children}</span>
           {malayalamLabel && (
-            <span className="text-xs opacity-80 mt-1" lang="bn">
+            <span 
+              id={`${props.id || 'button'}-malayalam`}
+              className="text-xs opacity-80 mt-1" 
+              lang="ml"
+            >
               {malayalamLabel}
             </span>
           )}

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { AccessibleButton } from './AccessibleButton';
+import { FocusTrap } from '../accessibility/FocusTrap';
 
 interface ModalProps {
   isOpen: boolean;
@@ -38,26 +39,11 @@ export const Modal: React.FC<ModalProps> = ({
     '2xl': 'max-w-4xl',
   };
 
-  // Focus management
+  // Body scroll management
   useEffect(() => {
     if (isOpen) {
-      // Store the previously focused element
-      previousActiveElement.current = document.activeElement as HTMLElement;
-      
-      // Focus the modal
-      setTimeout(() => {
-        modalRef.current?.focus();
-      }, 100);
-      
-      // Prevent body scroll
       document.body.style.overflow = 'hidden';
     } else {
-      // Restore focus to previously focused element
-      if (previousActiveElement.current) {
-        previousActiveElement.current.focus();
-      }
-      
-      // Restore body scroll
       document.body.style.overflow = 'unset';
     }
 
@@ -66,37 +52,13 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [isOpen]);
 
-  // Keyboard event handling
+  // Keyboard event handling for Escape key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!isOpen) return;
 
       if (event.key === 'Escape' && closeOnEscape) {
         onClose();
-      }
-
-      // Trap focus within modal
-      if (event.key === 'Tab') {
-        const focusableElements = modalRef.current?.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        
-        if (focusableElements && focusableElements.length > 0) {
-          const firstElement = focusableElements[0] as HTMLElement;
-          const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-          if (event.shiftKey) {
-            if (document.activeElement === firstElement) {
-              event.preventDefault();
-              lastElement.focus();
-            }
-          } else {
-            if (document.activeElement === lastElement) {
-              event.preventDefault();
-              firstElement.focus();
-            }
-          }
-        }
       }
     };
 
@@ -128,14 +90,15 @@ export const Modal: React.FC<ModalProps> = ({
       />
       
       {/* Modal Content */}
-      <div
-        ref={modalRef}
-        className={`
-          relative bg-white rounded-lg shadow-xl w-full ${sizeClasses[size]}
-          max-h-[90vh] overflow-y-auto focus:outline-none
-        `}
-        tabIndex={-1}
-      >
+      <FocusTrap isActive={isOpen} initialFocus="button, [href], input, select, textarea">
+        <div
+          ref={modalRef}
+          className={`
+            relative bg-white rounded-lg shadow-xl w-full ${sizeClasses[size]}
+            max-h-[90vh] overflow-y-auto focus:outline-none
+          `}
+          tabIndex={-1}
+        >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div>
@@ -179,7 +142,8 @@ export const Modal: React.FC<ModalProps> = ({
         <div className="p-4" id={ariaDescribedBy}>
           {children}
         </div>
-      </div>
+        </div>
+      </FocusTrap>
     </div>
   );
 };

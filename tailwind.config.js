@@ -97,8 +97,16 @@ export default {
         },
         '.focus-visible': {
           '&:focus-visible': {
-            outline: '2px solid #3b82f6',
+            outline: '3px solid #3b82f6',
             outlineOffset: '2px',
+            borderRadius: '4px',
+          },
+        },
+        '.focus-enhanced': {
+          '&:focus-visible': {
+            outline: '3px solid #3b82f6',
+            outlineOffset: '3px',
+            boxShadow: '0 0 0 6px rgba(59, 130, 246, 0.2)',
           },
         },
         '.sr-only': {
@@ -112,8 +120,26 @@ export default {
           whiteSpace: 'nowrap',
           border: '0',
         },
+        '.not-sr-only': {
+          position: 'static',
+          width: 'auto',
+          height: 'auto',
+          padding: 'inherit',
+          margin: 'inherit',
+          overflow: 'visible',
+          clip: 'auto',
+          whiteSpace: 'normal',
+        },
         '.high-contrast': {
-          filter: 'contrast(1.2)',
+          filter: 'contrast(1.5) brightness(1.1)',
+        },
+        '.reduce-motion': {
+          '& *': {
+            animationDuration: '0.01ms !important',
+            animationIterationCount: '1 !important',
+            transitionDuration: '0.01ms !important',
+            scrollBehavior: 'auto !important',
+          },
         },
         '.font-malayalam': {
           fontFamily: "'Noto Sans Malayalam', sans-serif",
@@ -122,6 +148,39 @@ export default {
         '.font-heading': {
           fontFamily: "'Manjari', 'Noto Sans Malayalam', sans-serif",
           fontWeight: '600',
+        },
+        '.skip-link': {
+          position: 'absolute',
+          top: '-40px',
+          left: '6px',
+          background: '#3b82f6',
+          color: 'white',
+          padding: '8px 16px',
+          textDecoration: 'none',
+          borderRadius: '4px',
+          fontWeight: '600',
+          zIndex: '1000',
+          transition: 'top 0.3s',
+          '&:focus': {
+            top: '6px',
+          },
+        },
+        '.keyboard-focus': {
+          '&:focus': {
+            outline: '2px solid transparent',
+            boxShadow: '0 0 0 2px #3b82f6',
+          },
+        },
+        '.keyboard-focus-button': {
+          '&:focus': {
+            boxShadow: '0 0 0 3px #3b82f6',
+          },
+        },
+        '.keyboard-focus-input': {
+          '&:focus': {
+            boxShadow: '0 0 0 2px #3b82f6',
+            borderColor: '#3b82f6',
+          },
         },
       };
       addUtilities(accessibilityUtilities);

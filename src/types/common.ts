@@ -41,7 +41,7 @@ export interface CacheOptions {
   forceRefresh?: boolean;
 }
 
-export type NotificationType = 'class_reminder' | 'new_recording' | 'new_notes' | 'exam_reminder' | 'general';
+
 export type AnnouncementType = 'general' | 'class' | 'exam' | 'holiday';
 export type UserRole = 'student' | 'parent' | 'admin';
 export type QuestionType = 'mcq' | 'text' | 'boolean';

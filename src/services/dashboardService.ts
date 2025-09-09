@@ -3,7 +3,8 @@ import { Note } from '../types/note';
 import { Exercise } from '../types/exercise';
 import { Attendance } from '../types/attendance';
 import { ClassSession } from '../types/class';
-import { ApiResponse, NotificationType, AnnouncementType } from '../types/common';
+import { ApiResponse, AnnouncementType } from '../types/common';
+import { NotificationType } from '../types/notification';
 import { FirebaseAnnouncement, FirebaseNotification, FIREBASE_COLLECTIONS } from '../types/firebase';
 // Firebase service import - COMMENTED OUT FOR MANUAL LOGIN
 // TODO: Uncomment when ready to enable Firebase

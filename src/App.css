@@ -22,10 +22,18 @@ body {
   font-family: 'Noto Sans Malayalam', 'Inter', 'Poppins', ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Focus styles for accessibility */
+/* Enhanced Focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 3px solid #3b82f6;
   outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Keyboard navigation active state */
+.keyboard-navigation-active *:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.2);
 }
 
 /* High contrast mode support */
@@ -35,13 +43,122 @@ body {
   }
 }
 
+/* Manual high contrast mode */
+.high-contrast {
+  filter: contrast(1.5) brightness(1.1);
+}
+
+.high-contrast * {
+  border-color: currentColor !important;
+}
+
+.high-contrast .text-gray-600 {
+  color: #000000 !important;
+}
+
+.high-contrast .text-gray-500 {
+  color: #333333 !important;
+}
+
+.high-contrast .bg-gray-50 {
+  background-color: #ffffff !important;
+}
+
+.high-contrast .bg-gray-100 {
+  background-color: #f0f0f0 !important;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
+}
+
+/* Manual reduced motion */
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Screen reader optimizations */
+.screen-reader-optimized {
+  /* Ensure better screen reader experience */
+}
+
+.screen-reader-optimized .sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Skip links styling */
+.skip-links a {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #3b82f6;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  z-index: 1000;
+  transition: top 0.3s;
+}
+
+.skip-links a:focus {
+  top: 6px;
+}
+
+/* Focus trap container */
+.focus-trap-container {
+  position: relative;
+}
+
+/* Thumb zone optimization */
+.thumb-zone-optimized {
+  /* Ensure primary actions are in thumb-friendly areas */
+  padding-bottom: 72px; /* Space for thumb reach */
+}
+
+.thumb-zone-optimized .primary-action {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  min-height: 56px;
+  min-width: 56px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced keyboard navigation indicators */
+.keyboard-navigation *:focus {
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+.keyboard-navigation button:focus,
+.keyboard-navigation [role="button"]:focus {
+  box-shadow: 0 0 0 3px #3b82f6;
+}
+
+.keyboard-navigation input:focus,
+.keyboard-navigation textarea:focus,
+.keyboard-navigation select:focus {
+  box-shadow: 0 0 0 2px #3b82f6;
+  border-color: #3b82f6;
 }
 
 /* Mobile-first responsive design */

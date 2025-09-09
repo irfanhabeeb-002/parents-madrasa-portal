@@ -16,9 +16,6 @@ import {
   AcademicCapIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
-import { error } from 'console';
-import { error } from 'console';
-import { error } from 'console';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -57,12 +54,6 @@ export const Dashboard: React.FC = () => {
       expiresAt: announcement.expiresAt ? (announcement.expiresAt instanceof Date ? announcement.expiresAt : new Date(announcement.expiresAt)) : undefined
     })),
     [announcements]
-  );
-
-  // Get unread notifications for banner display
-  const unreadNotifications = useMemo(() =>
-    notifications.filter(notification => !notification.read),
-    [notifications]
   );
 
   // Format today's class time
@@ -177,7 +168,7 @@ export const Dashboard: React.FC = () => {
           <DailyBanner
             classTitle={todaysClass.title}
             classTime={todaysClassTime || ''}
-            malayalamTitle={todaysClass.malayalamTitle}
+            malayalamTitle={todaysClass.title}
             onJoinClass={() => navigate('/live-class')}
             isLive={todaysClass.status === 'live'}
           />
@@ -186,11 +177,11 @@ export const Dashboard: React.FC = () => {
         {/* Unread Notifications */}
         {unreadNotifications.length > 0 && (
           <NotificationBanner
-            type="new_content"
+            type="info"
             title={`${unreadNotifications.length} new notification${unreadNotifications.length > 1 ? 's' : ''}`}
             message={unreadNotifications[0].message}
             malayalamMessage={unreadNotifications[0].malayalamMessage}
-            ariaLive="assertive"
+
           />
         )}
 
@@ -238,14 +229,7 @@ export const Dashboard: React.FC = () => {
             <p className="text-gray-500 text-sm">No announcements at this time</p>
             <p className="text-gray-400 text-xs mt-1" lang="ml">ഇപ്പോൾ അറിയിപ്പുകളൊന്നുമില്ല</p>
           </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <p className="text-gray-500 text-sm">No announcements at this time</p>
-          )}
-        </div>
+        )}
 
         {/* Floating WhatsApp Button */}
         <WhatsAppButton
@@ -318,7 +302,7 @@ export const Dashboard: React.FC = () => {
                 {React.cloneElement(card.icon as React.ReactElement, {
                   className: "w-full h-full",
                   strokeWidth: 1.5
-                })}
+                } as any)}
               </div>
 
               {/* Title */}

@@ -18,5 +18,6 @@ export {
   SkeletonImage,
   DashboardSkeleton 
 } from './SkeletonLoader';
+export { LazyImage, useImagePreloader, supportsWebP, generateWebPSource } from './LazyImage';
 
 // Re-export types (interfaces are exported automatically with the components)

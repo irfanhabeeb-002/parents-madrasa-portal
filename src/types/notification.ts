@@ -1,6 +1,6 @@
 // Notification types and interfaces for the Parents Madrasa Portal
 
-export interface Notification {
+export interface AppNotification {
   id: string;
   type: NotificationType;
   title: string;
@@ -64,7 +64,7 @@ export interface NotificationPermissionState {
 
 export interface ScheduledNotification {
   id: string;
-  notification: Notification;
+  notification: AppNotification;
   scheduledTime: Date;
   timeoutId?: number;
 }
@@ -76,7 +76,7 @@ export interface NotificationBadge {
 }
 
 export interface NotificationState {
-  notifications: Notification[];
+  notifications: AppNotification[];
   unreadCount: number;
   badges: Record<string, NotificationBadge>;
   preferences: NotificationPreferences;

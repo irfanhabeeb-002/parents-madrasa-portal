@@ -2,6 +2,7 @@ import React from 'react';
 import type { ReactNode } from 'react';
 import { Header } from './Header';
 import { BottomNavigation } from './BottomNavigation';
+import { SkipLinks } from '../accessibility/SkipLinks';
 
 interface LayoutProps {
   children: ReactNode;
@@ -24,6 +25,9 @@ export const Layout: React.FC<LayoutProps> = ({
 }) => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      {/* Skip Links for keyboard navigation */}
+      <SkipLinks />
+      
       {/* Header */}
       <Header
         showBackButton={showBackButton}
@@ -35,6 +39,7 @@ export const Layout: React.FC<LayoutProps> = ({
       
       {/* Main Content Area */}
       <main 
+        id="main-content"
         className={`
           flex-1 overflow-y-auto
           ${showBottomNav ? 'pb-20 md:pb-4' : 'pb-4'}
@@ -55,10 +60,15 @@ export const Layout: React.FC<LayoutProps> = ({
       
       {/* Bottom Navigation - Mobile Only */}
       {showBottomNav && (
-        <div className="md:hidden">
+        <nav id="navigation" className="md:hidden" aria-label="Main navigation">
           <BottomNavigation />
-        </div>
+        </nav>
       )}
+      
+      {/* Footer for skip links */}
+      <footer id="footer" className="sr-only" aria-label="Footer">
+        <span>End of page content</span>
+      </footer>
     </div>
   );
 };

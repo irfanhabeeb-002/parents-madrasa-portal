@@ -1,4 +1,5 @@
 import type { BaseEntity, UserRole, Timestamp } from './common';
+import type { NotificationPreferences } from './notification';
 
 export interface User extends BaseEntity {
   uid: string;
@@ -19,15 +20,7 @@ export interface UserPreferences {
   theme: 'light' | 'dark' | 'auto';
 }
 
-export interface NotificationPreferences {
-  classReminders: boolean;
-  newRecordings: boolean;
-  newNotes: boolean;
-  examReminders: boolean;
-  announcements: boolean;
-  pushNotifications: boolean;
-  emailNotifications: boolean;
-}
+
 
 export interface AuthState {
   user: User | null;

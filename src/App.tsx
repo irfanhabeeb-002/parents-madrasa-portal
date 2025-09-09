@@ -1,15 +1,44 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { FontSizeProvider } from './contexts/FontSizeContext';
+import { AccessibilityProvider } from './contexts/AccessibilityContext';
 import { NotificationProvider, useNotifications } from './contexts/NotificationContext';
-import { AuthPage, Dashboard, LiveClass, Recordings, NotesExercises, ExamsAttendance } from './pages';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/layout';
 import { NotificationPreferences } from './components/notifications';
+import { KeyboardNavigationIndicator, AccessibilitySettings } from './components/accessibility';
+import { useLiveRegion } from './components/accessibility/LiveRegion';
+import { SkeletonLoader } from './components/ui';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import './App.css';
+
+// Lazy load page components for code splitting
+const AuthPage = lazy(() => import('./pages/AuthPage').then(module => ({ default: module.AuthPage })));
+const Dashboard = lazy(() => import('./pages/Dashboard').then(module => ({ default: module.Dashboard })));
+const LiveClass = lazy(() => import('./pages/LiveClass').then(module => ({ default: module.LiveClass })));
+const Recordings = lazy(() => import('./pages/Recordings').then(module => ({ default: module.Recordings })));
+const NotesExercises = lazy(() => import('./pages/NotesExercises').then(module => ({ default: module.NotesExercises })));
+const ExamsAttendance = lazy(() => import('./pages/ExamsAttendance').then(module => ({ default: module.ExamsAttendance })));
+
+// Loading fallback component
+const PageLoadingFallback = () => (
+  <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="text-center space-y-4">
+      <SkeletonLoader className="w-64 h-8 mx-auto" />
+      <SkeletonLoader className="w-48 h-6 mx-auto" />
+      <SkeletonLoader className="w-32 h-4 mx-auto" />
+      <div className="text-sm text-gray-500 mt-4" role="status" aria-live="polite">
+        Loading page...
+        <span className="block text-xs mt-1" lang="ml">പേജ് ലോഡ് ചെയ്യുന്നു...</span>
+      </div>
+    </div>
+  </div>
+);
 
 const Profile = () => {
   const { preferences, permission, updatePreferences, requestPermission } = useNotifications();
+  const { announce, LiveRegionComponent } = useLiveRegion();
   
   return (
     <Layout 
@@ -34,83 +63,95 @@ const Profile = () => {
             onRequestPermission={requestPermission}
           />
         </div>
+        
+        <AccessibilitySettings />
       </div>
+      
+      {LiveRegionComponent}
     </Layout>
   );
 };
 
 function App() {
   return (
-    <FontSizeProvider>
-      <AuthProvider>
-        <NotificationProvider>
-          <Router>
-            <div className="App min-h-screen bg-gray-50">
-              <Routes>
-            <Route
-              path="/auth"
-              element={
-                <ProtectedRoute requireAuth={false}>
-                  <Layout showBottomNav={false} showLogout={false}>
-                    <AuthPage />
-                  </Layout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/live-class"
-              element={
-                <ProtectedRoute>
-                  <LiveClass />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/recordings"
-              element={
-                <ProtectedRoute>
-                  <Recordings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/notes-exercises"
-              element={
-                <ProtectedRoute>
-                  <NotesExercises />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/exams-attendance"
-              element={
-                <ProtectedRoute>
-                  <ExamsAttendance />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-              </Routes>
-            </div>
-          </Router>
-        </NotificationProvider>
-      </AuthProvider>
-    </FontSizeProvider>
+    <ErrorBoundary>
+      <FontSizeProvider>
+        <AccessibilityProvider>
+          <AuthProvider>
+            <NotificationProvider>
+              <Router>
+                <div className="App min-h-screen bg-gray-50">
+                  {/* Keyboard Navigation Indicator */}
+                  <KeyboardNavigationIndicator />
+                <Suspense fallback={<PageLoadingFallback />}>
+                  <Routes>
+                  <Route
+                    path="/auth"
+                    element={
+                      <ProtectedRoute requireAuth={false}>
+                        <Layout showBottomNav={false} showLogout={false}>
+                          <AuthPage />
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/live-class"
+                    element={
+                      <ProtectedRoute>
+                        <LiveClass />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/recordings"
+                    element={
+                      <ProtectedRoute>
+                        <Recordings />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/notes-exercises"
+                    element={
+                      <ProtectedRoute>
+                        <NotesExercises />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/exams-attendance"
+                    element={
+                      <ProtectedRoute>
+                        <ExamsAttendance />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  </Routes>
+                </Suspense>
+                </div>
+              </Router>
+            </NotificationProvider>
+          </AuthProvider>
+        </AccessibilityProvider>
+      </FontSizeProvider>
+    </ErrorBoundary>
   );
 }
 

@@ -1,7 +1,7 @@
 // Notification context for managing notification state across the app
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { 
-  Notification, 
+  AppNotification, 
   NotificationPreferences, 
   NotificationPermissionState,
   NotificationBadge
@@ -9,7 +9,7 @@ import {
 import { notificationService } from '../services/notificationService';
 
 interface NotificationContextType {
-  notifications: Notification[];
+  notifications: AppNotification[];
   unreadCount: number;
   badges: Record<string, NotificationBadge>;
   preferences: NotificationPreferences;
@@ -38,7 +38,7 @@ interface NotificationProviderProps {
 }
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     classReminders: true,
     newContent: true,
