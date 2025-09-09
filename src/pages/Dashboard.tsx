@@ -4,13 +4,13 @@ import { Layout } from '../components/layout/Layout';
 import { Card } from '../components/ui/Card';
 import { SkeletonLoader } from '../components/ui/SkeletonLoader';
 import { NotificationBanner } from '../components/ui/NotificationBanner';
+import { WhatsAppButton } from '../components/ui/WhatsAppButton';
 import { useDashboard } from '../hooks/useDashboard';
 import {
   VideoCameraIcon,
   PlayIcon,
   DocumentTextIcon,
   AcademicCapIcon,
-  ChatBubbleLeftRightIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 
@@ -88,12 +88,7 @@ export const Dashboard: React.FC = () => {
     }
   ];
 
-  const handleWhatsAppClick = () => {
-    // WhatsApp link - replace with actual teacher's number (Indian format)
-    const phoneNumber = "+919876543210"; // This should come from config
-    const message = encodeURIComponent("Assalamu Alaikum, I need help with my studies.");
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-  };
+
 
   const getCardDescription = (title: string): string => {
     switch (title) {
@@ -221,15 +216,13 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Floating WhatsApp Button */}
-        <button
-          onClick={handleWhatsAppClick}
-          className="fixed bottom-24 right-4 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-200 z-50 touch-target focus-visible"
-          aria-label="Ask teacher on WhatsApp"
-          title="Ask Teacher"
-        >
-          <ChatBubbleLeftRightIcon className="w-6 h-6" />
-          <span className="sr-only">Contact teacher via WhatsApp</span>
-        </button>
+        <WhatsAppButton
+          teacherNumber="+918078769771"
+          message="السلام عليكم"
+          position="bottom-right"
+          showLabel={true}
+          malayalamLabel="അധ്യാপകനെ ചോദിക്കുക"
+        />
       </div>
 
       {/* Desktop Layout */}
@@ -363,15 +356,13 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Desktop WhatsApp Button */}
-        <button
-          onClick={handleWhatsAppClick}
-          className="fixed bottom-8 right-8 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-200 z-50"
-          aria-label="Ask teacher on WhatsApp"
-          title="Ask Teacher"
-        >
-          <ChatBubbleLeftRightIcon className="w-8 h-8" />
-          <span className="sr-only">Contact teacher via WhatsApp</span>
-        </button>
+        <WhatsAppButton
+          teacherNumber="+918078769771"
+          message="السلام عليكم"
+          position="bottom-right"
+          showLabel={true}
+          malayalamLabel="അധ്യാപകനെ ചോദിക്കുക"
+        />
       </div>
     </Layout>
   );

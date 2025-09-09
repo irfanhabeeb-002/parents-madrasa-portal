@@ -8,6 +8,8 @@ export { FontSizeToggle } from './FontSizeToggle';
 export { ProgressIndicator } from './ProgressIndicator';
 export { CalendarView } from './CalendarView';
 export { ExamTimer } from './ExamTimer';
+export { WhatsAppButton } from './WhatsAppButton';
+export { WhatsAppButtonDemo } from './WhatsAppButtonDemo';
 export { 
   SkeletonLoader, 
   SkeletonCard, 
