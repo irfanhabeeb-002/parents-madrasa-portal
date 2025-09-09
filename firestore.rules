@@ -1,61 +1,61 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can only read and write their own user document
+    // Users can only access their own data
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // All other collections are read-only for authenticated users
-    // Content management will be handled by admin interface
+    // Class sessions are read-only for authenticated users
     match /classes/{classId} {
       allow read: if request.auth != null;
       allow write: if false; // Only admin can write
     }
     
+    // Recordings are read-only for authenticated users
     match /recordings/{recordingId} {
       allow read: if request.auth != null;
       allow write: if false; // Only admin can write
     }
     
+    // Notes are read-only for authenticated users
     match /notes/{noteId} {
       allow read: if request.auth != null;
       allow write: if false; // Only admin can write
     }
     
+    // Students can read exercises and write their own results
     match /exercises/{exerciseId} {
       allow read: if request.auth != null;
       allow write: if false; // Only admin can write
     }
     
+    match /examResults/{resultId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+    }
+    
+    // Students can write their own attendance
+    match /attendance/{attendanceId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+    }
+    
+    // Announcements are read-only for students
     match /announcements/{announcementId} {
       allow read: if request.auth != null;
       allow write: if false; // Only admin can write
     }
     
-    // User-specific data - users can read and write their own records
-    match /examResults/{resultId} {
-      allow read, write: if request.auth != null && 
-        request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && 
-        request.auth.uid == request.resource.data.userId;
+    // User preferences can be read and written by the user
+    match /userPreferences/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    match /attendance/{attendanceId} {
-      allow read, write: if request.auth != null && 
-        request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && 
-        request.auth.uid == request.resource.data.userId;
-    }
-    
+    // Notifications can be read and written by the user
     match /notifications/{notificationId} {
-      allow read: if request.auth != null && 
+      allow read, write: if request.auth != null && 
         request.auth.uid == resource.data.userId;
-      allow update: if request.auth != null && 
-        request.auth.uid == resource.data.userId &&
-        // Only allow updating the 'read' field
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
-      allow create: if false; // Only system can create notifications
     }
   }
 }
