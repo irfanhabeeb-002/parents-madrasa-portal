@@ -97,7 +97,7 @@ jobs:
         args: deploy --prod --dir=dist --site=${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      if: ${{ secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_PRODUCTION_SITE_ID != '' }}
+      continue-on-error: true
 
   # Cleanup
   cleanup:
