@@ -36,11 +36,11 @@ export interface RecordingCaption {
 }
 
 export interface RecordingMetadata {
-  resolution: string; // e.g., "1920x1080"
-  bitrate: number; // in kbps
-  fps: number;
-  codec: string;
-  uploadedBy: string;
+  resolution?: string; // e.g., "1920x1080"
+  bitrate?: number; // in kbps
+  fps?: number;
+  codec?: string;
+  uploadedBy?: string;
   originalFileName?: string;
   zoomRecordingId?: string;
 }

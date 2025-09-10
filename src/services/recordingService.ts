@@ -3,6 +3,7 @@ import { ApiResponse, PaginationOptions, SearchOptions, FilterOptions } from '..
 import { FirebaseRecording, FIREBASE_COLLECTIONS } from '../types/firebase';
 import { FirebaseService } from './firebaseService';
 import { StorageService } from './storageService';
+import { zoomRecordingService } from './zoomRecordingService';
 import { where, orderBy, limit as firestoreLimit, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
 
 export class RecordingService extends FirebaseService {
@@ -148,68 +149,138 @@ export class RecordingService extends FirebaseService {
     }
   ];
 
-  // Get all recordings with pagination and filtering
+  // Get all recordings with pagination and filtering (includes Zoom recordings)
   static async getRecordings(
-    options?: PaginationOptions & FilterOptions
+    options?: PaginationOptions & FilterOptions & {
+      includeZoom?: boolean;
+      zoomOnly?: boolean;
+    }
   ): Promise<ApiResponse<Recording[]>> {
     try {
-      const service = RecordingService.getInstance();
-      const constraints = [];
+      let allRecordings: Recording[] = [];
 
-      // Build Firestore query constraints
+      // Get Zoom recordings if requested (default: true)
+      if (options?.includeZoom !== false) {
+        try {
+          const zoomResponse = await zoomRecordingService.getZoomRecordings({
+            autoSync: true,
+            meetingId: options?.classSessionId,
+            orderBy: options?.orderBy,
+            orderDirection: options?.orderDirection,
+            limit: options?.zoomOnly ? options.limit : undefined
+          });
+
+          if (zoomResponse.success) {
+            allRecordings = [...zoomResponse.data];
+          }
+        } catch (zoomError) {
+          console.warn('Failed to fetch Zoom recordings, continuing with local recordings:', zoomError);
+        }
+      }
+
+      // Get local/Firebase recordings if not Zoom-only
+      if (!options?.zoomOnly) {
+        try {
+          const service = RecordingService.getInstance();
+          const constraints = [];
+
+          // Build Firestore query constraints
+          if (options?.classSessionId) {
+            constraints.push(where('classSessionId', '==', options.classSessionId));
+          }
+          if (options?.quality) {
+            constraints.push(where('quality', '==', options.quality));
+          }
+          if (options?.isProcessed !== undefined) {
+            constraints.push(where('isProcessed', '==', options.isProcessed));
+          }
+
+          // Add ordering
+          const orderField = options?.orderBy || 'createdAt';
+          const orderDirection = options?.orderDirection || 'desc';
+          constraints.push(orderBy(orderField, orderDirection));
+
+          // Add limit
+          if (options?.limit) {
+            constraints.push(firestoreLimit(options.limit));
+          }
+
+          const firestoreRecordings = await service.getAll<FirebaseRecording>(constraints);
+          
+          // Convert Firestore data to Recording format
+          const localRecordings: Recording[] = firestoreRecordings.map(rec => ({
+            ...rec,
+            uploadedAt: rec.uploadedAt.toDate(),
+            createdAt: rec.createdAt.toDate(),
+            updatedAt: rec.updatedAt?.toDate() || rec.createdAt.toDate(),
+            // Add default values for fields that might not exist in Firestore
+            fileSize: rec.fileSize || 0,
+            quality: rec.quality || 'hd',
+            format: rec.format || 'mp4',
+            isProcessed: rec.isProcessed ?? true,
+            processingStatus: rec.processingStatus || 'completed',
+            viewCount: rec.viewCount || 0,
+            downloadCount: rec.downloadCount || 0,
+            tags: rec.tags || [],
+            chapters: rec.chapters || [],
+            captions: rec.captions || [],
+            metadata: rec.metadata || {}
+          }));
+
+          // Merge with Zoom recordings (avoid duplicates)
+          const existingIds = new Set(allRecordings.map(r => r.id));
+          const newLocalRecordings = localRecordings.filter(r => !existingIds.has(r.id));
+          allRecordings = [...allRecordings, ...newLocalRecordings];
+        } catch (firestoreError) {
+          console.warn('Failed to fetch local recordings, using Zoom recordings only:', firestoreError);
+          
+          // If both Zoom and local fail, fallback to mock data
+          if (allRecordings.length === 0) {
+            return this.getMockRecordings(options);
+          }
+        }
+      }
+
+      // Apply additional filtering
+      let filteredRecordings = allRecordings;
+
       if (options?.classSessionId) {
-        constraints.push(where('classSessionId', '==', options.classSessionId));
+        filteredRecordings = filteredRecordings.filter(r => r.classSessionId === options.classSessionId);
       }
       if (options?.quality) {
-        constraints.push(where('quality', '==', options.quality));
+        filteredRecordings = filteredRecordings.filter(r => r.quality === options.quality);
       }
       if (options?.isProcessed !== undefined) {
-        constraints.push(where('isProcessed', '==', options.isProcessed));
+        filteredRecordings = filteredRecordings.filter(r => r.isProcessed === options.isProcessed);
       }
 
-      // Add ordering
-      const orderField = options?.orderBy || 'createdAt';
-      const orderDirection = options?.orderDirection || 'desc';
-      constraints.push(orderBy(orderField, orderDirection));
-
-      // Add limit
-      if (options?.limit) {
-        constraints.push(firestoreLimit(options.limit));
+      // Apply sorting if not already sorted
+      if (options?.orderBy && !options?.zoomOnly) {
+        filteredRecordings.sort((a, b) => {
+          const aValue = a[options.orderBy as keyof Recording];
+          const bValue = b[options.orderBy as keyof Recording];
+          const direction = options.orderDirection === 'desc' ? -1 : 1;
+          
+          if (aValue < bValue) return -1 * direction;
+          if (aValue > bValue) return 1 * direction;
+          return 0;
+        });
       }
-
-      const firestoreRecordings = await service.getAll<FirebaseRecording>(constraints);
-      
-      // Convert Firestore data to Recording format
-      const recordings: Recording[] = firestoreRecordings.map(rec => ({
-        ...rec,
-        uploadedAt: rec.uploadedAt.toDate(),
-        createdAt: rec.createdAt.toDate(),
-        updatedAt: rec.updatedAt?.toDate() || rec.createdAt.toDate(),
-        // Add default values for fields that might not exist in Firestore
-        fileSize: rec.fileSize || 0,
-        quality: rec.quality || 'hd',
-        format: rec.format || 'mp4',
-        isProcessed: rec.isProcessed ?? true,
-        processingStatus: rec.processingStatus || 'completed',
-        viewCount: rec.viewCount || 0,
-        downloadCount: rec.downloadCount || 0,
-        tags: rec.tags || [],
-        chapters: rec.chapters || [],
-        captions: rec.captions || [],
-        metadata: rec.metadata || {}
-      }));
 
       // Apply client-side pagination if offset is specified
-      let paginatedRecordings = recordings;
+      let paginatedRecordings = filteredRecordings;
       if (options?.offset) {
         const offset = options.offset;
         const limit = options.limit || 10;
-        paginatedRecordings = recordings.slice(offset, offset + limit);
+        paginatedRecordings = filteredRecordings.slice(offset, offset + limit);
+      } else if (options?.limit && !options?.zoomOnly) {
+        paginatedRecordings = filteredRecordings.slice(0, options.limit);
       }
 
       return {
         data: paginatedRecordings,
         success: true,
+
         timestamp: new Date()
       };
     } catch (error) {
@@ -330,40 +401,99 @@ export class RecordingService extends FirebaseService {
     }
   }
 
-  // Search recordings
+  // Search recordings (includes Zoom recordings)
   static async searchRecordings(
     searchOptions: SearchOptions,
-    paginationOptions?: PaginationOptions
+    paginationOptions?: PaginationOptions & {
+      includeZoom?: boolean;
+      zoomOnly?: boolean;
+    }
   ): Promise<ApiResponse<Recording[]>> {
     try {
-      await new Promise(resolve => setTimeout(resolve, 250));
+      let allRecordings: Recording[] = [];
 
-      const { query, fields = ['title', 'description', 'tags'], caseSensitive = false } = searchOptions;
-      const searchTerm = caseSensitive ? query : query.toLowerCase();
+      // Search Zoom recordings if requested (default: true)
+      if (paginationOptions?.includeZoom !== false) {
+        try {
+          const zoomResponse = await zoomRecordingService.searchZoomRecordings(
+            searchOptions,
+            paginationOptions
+          );
 
-      let filteredRecordings = this.mockRecordings.filter(recording => {
-        return fields.some(field => {
-          const fieldValue = recording[field as keyof Recording];
-          if (Array.isArray(fieldValue)) {
-            return fieldValue.some(item => 
-              caseSensitive ? item.includes(searchTerm) : item.toLowerCase().includes(searchTerm)
-            );
+          if (zoomResponse.success) {
+            allRecordings = [...zoomResponse.data];
           }
-          if (typeof fieldValue === 'string') {
-            return caseSensitive ? fieldValue.includes(searchTerm) : fieldValue.toLowerCase().includes(searchTerm);
-          }
-          return false;
+        } catch (zoomError) {
+          console.warn('Failed to search Zoom recordings, continuing with local search:', zoomError);
+        }
+      }
+
+      // Search local recordings if not Zoom-only
+      if (!paginationOptions?.zoomOnly) {
+        const { query, fields = ['title', 'description', 'tags'], caseSensitive = false } = searchOptions;
+        const searchTerm = caseSensitive ? query : query.toLowerCase();
+
+        // Get all local recordings first
+        const localRecordingsResponse = await this.getRecordings({
+          includeZoom: false, // Only local recordings
+          limit: 100 // Get more for better search results
         });
-      });
+
+        if (localRecordingsResponse.success) {
+          const filteredLocalRecordings = localRecordingsResponse.data.filter(recording => {
+            return fields.some(field => {
+              const fieldValue = recording[field as keyof Recording];
+              if (Array.isArray(fieldValue)) {
+                return fieldValue.some(item => 
+                  caseSensitive ? item.includes(searchTerm) : item.toLowerCase().includes(searchTerm)
+                );
+              }
+              if (typeof fieldValue === 'string') {
+                return caseSensitive ? fieldValue.includes(searchTerm) : fieldValue.toLowerCase().includes(searchTerm);
+              }
+              return false;
+            });
+          });
+
+          // Merge with Zoom results (avoid duplicates)
+          const existingIds = new Set(allRecordings.map(r => r.id));
+          const newLocalRecordings = filteredLocalRecordings.filter(r => !existingIds.has(r.id));
+          allRecordings = [...allRecordings, ...newLocalRecordings];
+        }
+      }
+
+      // If no results from either source, fallback to mock search
+      if (allRecordings.length === 0 && !paginationOptions?.zoomOnly) {
+        const { query, fields = ['title', 'description', 'tags'], caseSensitive = false } = searchOptions;
+        const searchTerm = caseSensitive ? query : query.toLowerCase();
+
+        const filteredMockRecordings = this.mockRecordings.filter(recording => {
+          return fields.some(field => {
+            const fieldValue = recording[field as keyof Recording];
+            if (Array.isArray(fieldValue)) {
+              return fieldValue.some(item => 
+                caseSensitive ? item.includes(searchTerm) : item.toLowerCase().includes(searchTerm)
+              );
+            }
+            if (typeof fieldValue === 'string') {
+              return caseSensitive ? fieldValue.includes(searchTerm) : fieldValue.toLowerCase().includes(searchTerm);
+            }
+            return false;
+          });
+        });
+
+        allRecordings = filteredMockRecordings;
+      }
 
       // Apply pagination
       const offset = paginationOptions?.offset || 0;
       const limit = paginationOptions?.limit || 10;
-      filteredRecordings = filteredRecordings.slice(offset, offset + limit);
+      const paginatedRecordings = allRecordings.slice(offset, offset + limit);
 
       return {
-        data: filteredRecordings,
+        data: paginatedRecordings,
         success: true,
+
         timestamp: new Date()
       };
     } catch (error) {
@@ -554,7 +684,26 @@ export class RecordingService extends FirebaseService {
   // Get popular recordings
   static async getPopularRecordings(limit: number = 5): Promise<ApiResponse<Recording[]>> {
     try {
-      const sortedRecordings = [...this.mockRecordings]
+      // Get all recordings including Zoom
+      const allRecordingsResponse = await this.getRecordings({
+        includeZoom: true,
+        limit: 50 // Get more to find popular ones
+      });
+
+      if (!allRecordingsResponse.success) {
+        // Fallback to mock data
+        const sortedRecordings = [...this.mockRecordings]
+          .sort((a, b) => b.viewCount - a.viewCount)
+          .slice(0, limit);
+
+        return {
+          data: sortedRecordings,
+          success: true,
+          timestamp: new Date()
+        };
+      }
+
+      const sortedRecordings = allRecordingsResponse.data
         .sort((a, b) => b.viewCount - a.viewCount)
         .slice(0, limit);
 
@@ -568,6 +717,167 @@ export class RecordingService extends FirebaseService {
         data: [],
         success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch popular recordings',
+        timestamp: new Date()
+      };
+    }
+  }
+
+  // Zoom-specific methods
+
+  /**
+   * Sync Zoom cloud recordings
+   */
+  static async syncZoomRecordings(options?: {
+    from?: Date;
+    to?: Date;
+    forceSync?: boolean;
+  }): Promise<ApiResponse<Recording[]>> {
+    try {
+      return await zoomRecordingService.syncZoomRecordings(options);
+    } catch (error) {
+      return {
+        data: [],
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to sync Zoom recordings',
+        timestamp: new Date()
+      };
+    }
+  }
+
+  /**
+   * Get only Zoom recordings
+   */
+  static async getZoomRecordings(options?: PaginationOptions & {
+    meetingId?: string;
+  }): Promise<ApiResponse<Recording[]>> {
+    return this.getRecordings({
+      ...options,
+      zoomOnly: true,
+      includeZoom: true
+    });
+  }
+
+  /**
+   * Upload manual recording as fallback
+   */
+  static async uploadManualRecording(
+    file: File,
+    metadata: {
+      title: string;
+      description?: string;
+      classSessionId: string;
+      tags?: string[];
+    }
+  ): Promise<ApiResponse<Recording>> {
+    try {
+      return await zoomRecordingService.uploadManualRecording(file, metadata);
+    } catch (error) {
+      return {
+        data: null as any,
+        success: false,
+        error: error instanceof Error ? error.message : 'Upload failed',
+        timestamp: new Date()
+      };
+    }
+  }
+
+  /**
+   * Get Zoom recording by Zoom recording ID
+   */
+  static async getZoomRecordingById(zoomRecordingId: string): Promise<ApiResponse<Recording | null>> {
+    try {
+      return await zoomRecordingService.getZoomRecordingById(zoomRecordingId);
+    } catch (error) {
+      return {
+        data: null,
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to get Zoom recording',
+        timestamp: new Date()
+      };
+    }
+  }
+
+  /**
+   * Clear Zoom recordings cache
+   */
+  static clearZoomCache(): void {
+    zoomRecordingService.clearCache();
+  }
+
+  /**
+   * Get Zoom sync status
+   */
+  static getZoomSyncStatus(): {
+    lastSync: Date | null;
+    recordingCount: number;
+    cacheSize: number;
+  } {
+    return zoomRecordingService.getSyncStatus();
+  }
+
+  /**
+   * Search recordings with metadata management
+   */
+  static async searchRecordingsWithMetadata(
+    query: string,
+    options?: {
+      includeZoom?: boolean;
+      tags?: string[];
+      quality?: VideoQuality;
+      dateRange?: { from: Date; to: Date };
+    }
+  ): Promise<ApiResponse<Recording[]>> {
+    try {
+      const searchOptions: SearchOptions = {
+        query,
+        fields: ['title', 'description', 'tags'],
+        caseSensitive: false
+      };
+
+      const paginationOptions = {
+        includeZoom: options?.includeZoom !== false,
+        limit: 50
+      };
+
+      const searchResponse = await this.searchRecordings(searchOptions, paginationOptions);
+
+      if (!searchResponse.success) {
+        return searchResponse;
+      }
+
+      let filteredRecordings = searchResponse.data;
+
+      // Apply additional filters
+      if (options?.tags && options.tags.length > 0) {
+        filteredRecordings = filteredRecordings.filter(recording =>
+          options.tags!.some(tag => recording.tags.includes(tag))
+        );
+      }
+
+      if (options?.quality) {
+        filteredRecordings = filteredRecordings.filter(recording =>
+          recording.quality === options.quality
+        );
+      }
+
+      if (options?.dateRange) {
+        filteredRecordings = filteredRecordings.filter(recording => {
+          const recordingDate = new Date(recording.createdAt);
+          return recordingDate >= options.dateRange!.from && recordingDate <= options.dateRange!.to;
+        });
+      }
+
+      return {
+        data: filteredRecordings,
+        success: true,
+
+        timestamp: new Date()
+      };
+    } catch (error) {
+      return {
+        data: [],
+        success: false,
+        error: error instanceof Error ? error.message : 'Advanced search failed',
         timestamp: new Date()
       };
     }

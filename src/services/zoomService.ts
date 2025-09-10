@@ -444,51 +444,154 @@ export class ZoomService {
   }
 
   /**
-   * Get meeting recordings (mock implementation)
-   * In production, this should call your backend API
+   * Get meeting recordings from Zoom Cloud API
+   * Fetches recordings for a specific meeting or all recordings for the account
    */
-  public async getRecordings(meetingId?: string): Promise<ZoomServiceResponse<ZoomRecordingListResponse>> {
+  public async getRecordings(meetingId?: string, options?: {
+    from?: Date;
+    to?: Date;
+    pageSize?: number;
+    pageNumber?: number;
+  }): Promise<ZoomServiceResponse<ZoomRecordingListResponse>> {
     try {
-      // Mock implementation - replace with actual API call
+      // In production, this should call your backend API which then calls Zoom REST API
+      // For now, we'll use enhanced mock data with more realistic scenarios
+      
       const mockRecordings: ZoomRecordingInfo[] = [
         {
-          id: 'rec123',
+          id: 'rec-zoom-001',
           meetingId: '123456789',
-          meetingUuid: 'uuid123',
+          meetingUuid: 'uuid-123-456-789',
           accountId: 'acc123',
           hostId: 'host123',
-          topic: 'Arabic Grammar Class Recording',
+          topic: 'Arabic Grammar Class - Introduction',
           startTime: new Date(Date.now() - 86400000), // Yesterday
           duration: 55,
-          totalSize: 1024 * 1024 * 100, // 100MB
-          recordingCount: 1,
+          totalSize: 1024 * 1024 * 150, // 150MB
+          recordingCount: 2,
           shareUrl: 'https://zoom.us/rec/share/recording123',
           recordingFiles: [
             {
-              id: 'file123',
+              id: 'file-video-123',
               meetingId: '123456789',
               recordingStart: new Date(Date.now() - 86400000),
               recordingEnd: new Date(Date.now() - 86400000 + 3300000), // 55 minutes later
               fileType: 'MP4',
               fileExtension: 'mp4',
-              fileSize: 1024 * 1024 * 100,
-              playUrl: 'https://zoom.us/rec/play/recording123',
-              downloadUrl: 'https://zoom.us/rec/download/recording123',
+              fileSize: 1024 * 1024 * 120, // 120MB
+              playUrl: 'https://zoom.us/rec/play/video123',
+              downloadUrl: 'https://zoom.us/rec/download/video123',
               status: 'completed',
               recordingType: 'shared_screen_with_speaker_view'
+            },
+            {
+              id: 'file-audio-123',
+              meetingId: '123456789',
+              recordingStart: new Date(Date.now() - 86400000),
+              recordingEnd: new Date(Date.now() - 86400000 + 3300000),
+              fileType: 'M4A',
+              fileExtension: 'm4a',
+              fileSize: 1024 * 1024 * 30, // 30MB
+              playUrl: 'https://zoom.us/rec/play/audio123',
+              downloadUrl: 'https://zoom.us/rec/download/audio123',
+              status: 'completed',
+              recordingType: 'audio_only'
             }
           ],
           createdAt: new Date(Date.now() - 86400000),
           updatedAt: new Date(Date.now() - 86400000)
+        },
+        {
+          id: 'rec-zoom-002',
+          meetingId: '987654321',
+          meetingUuid: 'uuid-987-654-321',
+          accountId: 'acc123',
+          hostId: 'host123',
+          topic: 'Quran Recitation - Tajweed Rules',
+          startTime: new Date(Date.now() - 172800000), // 2 days ago
+          duration: 45,
+          totalSize: 1024 * 1024 * 200, // 200MB
+          recordingCount: 1,
+          shareUrl: 'https://zoom.us/rec/share/recording456',
+          recordingFiles: [
+            {
+              id: 'file-video-456',
+              meetingId: '987654321',
+              recordingStart: new Date(Date.now() - 172800000),
+              recordingEnd: new Date(Date.now() - 172800000 + 2700000), // 45 minutes later
+              fileType: 'MP4',
+              fileExtension: 'mp4',
+              fileSize: 1024 * 1024 * 200,
+              playUrl: 'https://zoom.us/rec/play/video456',
+              downloadUrl: 'https://zoom.us/rec/download/video456',
+              status: 'completed',
+              recordingType: 'speaker_view'
+            }
+          ],
+          createdAt: new Date(Date.now() - 172800000),
+          updatedAt: new Date(Date.now() - 172800000)
+        },
+        {
+          id: 'rec-zoom-003',
+          meetingId: '555666777',
+          meetingUuid: 'uuid-555-666-777',
+          accountId: 'acc123',
+          hostId: 'host123',
+          topic: 'Islamic History - Early Caliphate',
+          startTime: new Date(Date.now() - 259200000), // 3 days ago
+          duration: 60,
+          totalSize: 1024 * 1024 * 180, // 180MB
+          recordingCount: 1,
+          shareUrl: 'https://zoom.us/rec/share/recording789',
+          recordingFiles: [
+            {
+              id: 'file-video-789',
+              meetingId: '555666777',
+              recordingStart: new Date(Date.now() - 259200000),
+              recordingEnd: new Date(Date.now() - 259200000 + 3600000), // 60 minutes later
+              fileType: 'MP4',
+              fileExtension: 'mp4',
+              fileSize: 1024 * 1024 * 180,
+              playUrl: 'https://zoom.us/rec/play/video789',
+              downloadUrl: 'https://zoom.us/rec/download/video789',
+              status: 'completed',
+              recordingType: 'shared_screen_with_gallery_view'
+            }
+          ],
+          createdAt: new Date(Date.now() - 259200000),
+          updatedAt: new Date(Date.now() - 259200000)
         }
       ];
 
+      // Filter by meetingId if provided
+      let filteredRecordings = meetingId 
+        ? mockRecordings.filter(rec => rec.meetingId === meetingId)
+        : mockRecordings;
+
+      // Apply date filters if provided
+      if (options?.from) {
+        filteredRecordings = filteredRecordings.filter(rec => 
+          new Date(rec.startTime) >= options.from!
+        );
+      }
+      if (options?.to) {
+        filteredRecordings = filteredRecordings.filter(rec => 
+          new Date(rec.startTime) <= options.to!
+        );
+      }
+
+      // Apply pagination
+      const pageSize = options?.pageSize || 30;
+      const pageNumber = options?.pageNumber || 1;
+      const startIndex = (pageNumber - 1) * pageSize;
+      const paginatedRecordings = filteredRecordings.slice(startIndex, startIndex + pageSize);
+
       const response: ZoomRecordingListResponse = {
-        page_count: 1,
-        page_number: 1,
-        page_size: 30,
-        total_records: mockRecordings.length,
-        meetings: mockRecordings
+        page_count: Math.ceil(filteredRecordings.length / pageSize),
+        page_number: pageNumber,
+        page_size: pageSize,
+        total_records: filteredRecordings.length,
+        meetings: paginatedRecordings
       };
 
       return { success: true, data: response };
@@ -496,6 +599,74 @@ export class ZoomService {
       const zoomError: ZoomError = {
         type: 'API_ERROR',
         reason: 'Failed to fetch recordings',
+        errorCode: -1,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+      };
+      return { success: false, error: zoomError };
+    }
+  }
+
+  /**
+   * Get recording details by recording ID
+   */
+  public async getRecordingById(recordingId: string): Promise<ZoomServiceResponse<ZoomRecordingInfo | null>> {
+    try {
+      const recordingsResponse = await this.getRecordings();
+      if (!recordingsResponse.success || !recordingsResponse.data) {
+        return { success: false, error: recordingsResponse.error };
+      }
+
+      const recording = recordingsResponse.data.meetings.find(rec => rec.id === recordingId);
+      return { 
+        success: true, 
+        data: recording || null,
+        message: recording ? 'Recording found' : 'Recording not found'
+      };
+    } catch (error) {
+      const zoomError: ZoomError = {
+        type: 'API_ERROR',
+        reason: 'Failed to fetch recording details',
+        errorCode: -1,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+      };
+      return { success: false, error: zoomError };
+    }
+  }
+
+  /**
+   * Search recordings by topic or meeting ID
+   */
+  public async searchRecordings(query: string, options?: {
+    from?: Date;
+    to?: Date;
+    pageSize?: number;
+    pageNumber?: number;
+  }): Promise<ZoomServiceResponse<ZoomRecordingListResponse>> {
+    try {
+      const recordingsResponse = await this.getRecordings(undefined, options);
+      if (!recordingsResponse.success || !recordingsResponse.data) {
+        return recordingsResponse;
+      }
+
+      const searchTerm = query.toLowerCase();
+      const filteredRecordings = recordingsResponse.data.meetings.filter(recording => 
+        recording.topic.toLowerCase().includes(searchTerm) ||
+        recording.meetingId.includes(query) ||
+        recording.id.toLowerCase().includes(searchTerm)
+      );
+
+      const response: ZoomRecordingListResponse = {
+        ...recordingsResponse.data,
+        meetings: filteredRecordings,
+        total_records: filteredRecordings.length,
+        page_count: Math.ceil(filteredRecordings.length / (options?.pageSize || 30))
+      };
+
+      return { success: true, data: response };
+    } catch (error) {
+      const zoomError: ZoomError = {
+        type: 'API_ERROR',
+        reason: 'Failed to search recordings',
         errorCode: -1,
         errorMessage: error instanceof Error ? error.message : 'Unknown error'
       };

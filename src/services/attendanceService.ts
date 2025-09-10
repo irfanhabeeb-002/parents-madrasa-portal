@@ -8,7 +8,7 @@ import {
   AttendanceStatus,
   VerificationMethod
 } from '../types/attendance';
-import { ApiResponse, PaginationOptions, FilterOptions } from '../types/common';
+import { ApiResponse, PaginationOptions, FilterOptions, Timestamp } from '../types/common';
 import { FirebaseAttendance, FIREBASE_COLLECTIONS } from '../types/firebase';
 import { FirebaseService } from './firebaseService';
 import { StorageService } from './storageService';
@@ -28,6 +28,18 @@ export class AttendanceService extends FirebaseService {
       AttendanceService.instance = new AttendanceService();
     }
     return AttendanceService.instance;
+  }
+
+  // Utility function to handle Date | Timestamp conversion
+  private static toDate(dateValue: Date | Timestamp): Date {
+    if (dateValue instanceof Date) {
+      return dateValue;
+    }
+    // Handle Firestore Timestamp
+    if (dateValue && typeof dateValue === 'object' && 'seconds' in dateValue) {
+      return new Date(dateValue.seconds * 1000 + (dateValue.nanoseconds || 0) / 1000000);
+    }
+    return new Date(dateValue);
   }
 
   // Mock data for development
@@ -100,8 +112,8 @@ export class AttendanceService extends FirebaseService {
       const firestoreAttendance: Omit<FirebaseAttendance, 'id'> = {
         userId: attendance.userId,
         classSessionId: attendance.classSessionId,
-        joinedAt: FirestoreTimestamp.fromDate(attendance.joinedAt),
-        leftAt: attendance.leftAt ? FirestoreTimestamp.fromDate(attendance.leftAt) : undefined,
+        joinedAt: FirestoreTimestamp.fromDate(this.toDate(attendance.joinedAt)),
+        leftAt: attendance.leftAt ? FirestoreTimestamp.fromDate(this.toDate(attendance.leftAt)) : undefined,
         duration: attendance.duration,
         status: attendance.isPresent ? 'present' : 'absent',
         autoTracked: attendance.attendanceType === 'zoom_integration',
@@ -171,12 +183,12 @@ export class AttendanceService extends FirebaseService {
       }
       if (options?.startDate) {
         userAttendance = userAttendance.filter(att => 
-          new Date(att.joinedAt) >= new Date(options.startDate!)
+          this.toDate(att.joinedAt) >= new Date(options.startDate!)
         );
       }
       if (options?.endDate) {
         userAttendance = userAttendance.filter(att => 
-          new Date(att.joinedAt) <= new Date(options.endDate!)
+          this.toDate(att.joinedAt) <= new Date(options.endDate!)
         );
       }
 
@@ -193,7 +205,7 @@ export class AttendanceService extends FirebaseService {
         });
       } else {
         // Default sort by joinedAt descending
-        userAttendance.sort((a, b) => new Date(b.joinedAt).getTime() - new Date(a.joinedAt).getTime());
+        userAttendance.sort((a, b) => this.toDate(b.joinedAt).getTime() - this.toDate(a.joinedAt).getTime());
       }
 
       // Apply pagination
@@ -229,15 +241,15 @@ export class AttendanceService extends FirebaseService {
       // Calculate consecutive days present
       const sortedAttendance = userAttendance
         .filter(att => att.isPresent)
-        .sort((a, b) => new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime());
+        .sort((a, b) => this.toDate(a.joinedAt).getTime() - this.toDate(b.joinedAt).getTime());
 
       let consecutiveDaysPresent = 0;
       let longestStreak = 0;
       let currentStreak = 0;
 
       for (let i = 0; i < sortedAttendance.length; i++) {
-        const currentDate = new Date(sortedAttendance[i].joinedAt);
-        const prevDate = i > 0 ? new Date(sortedAttendance[i - 1].joinedAt) : null;
+        const currentDate = this.toDate(sortedAttendance[i].joinedAt);
+        const prevDate = i > 0 ? this.toDate(sortedAttendance[i - 1].joinedAt) : null;
 
         if (prevDate) {
           const daysDiff = Math.floor((currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -301,7 +313,7 @@ export class AttendanceService extends FirebaseService {
     const monthlyData: Record<string, { total: number; attended: number }> = {};
 
     attendance.forEach(att => {
-      const date = new Date(att.joinedAt);
+      const date = this.toDate(att.joinedAt);
       const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
       
       if (!monthlyData[monthKey]) {
@@ -343,7 +355,7 @@ export class AttendanceService extends FirebaseService {
       await new Promise(resolve => setTimeout(resolve, 250));
 
       const userAttendance = this.mockAttendance.filter(att => {
-        const attDate = new Date(att.joinedAt);
+        const attDate = this.toDate(att.joinedAt);
         return att.userId === userId && 
                attDate.getMonth() === month - 1 && // Convert to 0-based month
                attDate.getFullYear() === year;
@@ -355,7 +367,7 @@ export class AttendanceService extends FirebaseService {
 
       // Create daily attendance details
       const attendanceDetails: DailyAttendance[] = userAttendance.map(att => {
-        const date = new Date(att.joinedAt);
+        const date = this.toDate(att.joinedAt);
         return {
           date: date.toISOString().split('T')[0], // YYYY-MM-DD format
           classSessionId: att.classSessionId,
@@ -501,7 +513,7 @@ export class AttendanceService extends FirebaseService {
   ): Promise<ApiResponse<{ totalClasses: number; attendedClasses: number; attendancePercentage: number }>> {
     try {
       const userAttendance = this.mockAttendance.filter(att => {
-        const attDate = new Date(att.joinedAt);
+        const attDate = this.toDate(att.joinedAt);
         return att.userId === userId && 
                attDate >= startDate && 
                attDate <= endDate;

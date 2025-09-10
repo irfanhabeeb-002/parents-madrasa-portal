@@ -42,11 +42,24 @@ export interface FirebaseRecording {
   id: string;
   classSessionId: string;
   title: string;
+  description?: string;
   thumbnailUrl: string;
   videoUrl: string;
-  duration: number;
+  duration: number; // in seconds
+  fileSize?: number; // in bytes
+  quality?: 'low' | 'medium' | 'high' | 'hd';
+  format?: 'mp4' | 'webm' | 'mov';
+  isProcessed?: boolean;
+  processingStatus?: 'pending' | 'processing' | 'completed' | 'failed';
+  viewCount?: number;
+  downloadCount?: number;
+  tags?: string[];
+  chapters?: any[];
+  captions?: any[];
+  metadata?: Record<string, any>;
   uploadedAt: Timestamp;
   createdAt: Timestamp;
+  updatedAt?: Timestamp;
 }
 
 export interface FirebaseNote {
