@@ -61,7 +61,7 @@ export const Card: React.FC<CardProps> = ({
   const CardContent = () => (
     <div className="p-4 sm:p-5 lg:p-6">
       {icon && (
-        <div className="flex justify-center mb-3 sm:mb-4">
+        <div className="flex justify-center mb-3 sm:mb-4 lg:mb-5">
           <div className="flex items-center justify-center text-primary-600">
             {icon}
           </div>
@@ -69,25 +69,25 @@ export const Card: React.FC<CardProps> = ({
       )}
       
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-1 sm:mb-2">
+        <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2 lg:mb-3">
           {title}
         </h3>
         
         {subtitle && (
-          <p className="text-sm text-gray-600 mb-1 sm:mb-2">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-1 sm:mb-2">
             {subtitle}
           </p>
         )}
         
         {malayalamSubtitle && (
-          <p className="text-sm text-gray-500" lang="bn">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-500" lang="ml">
             {malayalamSubtitle}
           </p>
         )}
       </div>
       
       {children && (
-        <div className="mt-4 sm:mt-5">
+        <div className="mt-4 sm:mt-5 lg:mt-6">
           {children}
         </div>
       )}

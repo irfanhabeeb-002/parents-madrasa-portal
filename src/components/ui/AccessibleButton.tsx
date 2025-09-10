@@ -58,9 +58,9 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
     };
 
     const sizeClasses = {
-      sm: 'px-3 py-2 text-sm min-h-[44px]',
-      md: 'px-4 py-3 text-base min-h-[44px]',
-      lg: 'px-6 py-4 text-lg min-h-[44px]',
+      sm: 'px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base min-h-[44px]',
+      md: 'px-4 py-3 sm:px-5 sm:py-3.5 lg:px-6 lg:py-4 text-base sm:text-lg min-h-[44px]',
+      lg: 'px-6 py-4 sm:px-7 sm:py-5 lg:px-8 lg:py-6 text-lg sm:text-xl lg:text-2xl min-h-[44px]',
     };
 
     const combinedClasses = [
