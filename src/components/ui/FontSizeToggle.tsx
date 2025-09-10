@@ -35,9 +35,9 @@ export const FontSizeToggle: React.FC<FontSizeToggleProps> = ({
   ];
 
   return (
-    <div className={`flex items-center space-x-2 ${className}`} role="group" aria-label="Font size options">
+    <div className={`flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-2 ${className}`} role="group" aria-label="Font size options">
       {showLabels && (
-        <span className="text-sm font-medium text-gray-700 mr-2">
+        <span className="text-xs sm:text-sm font-medium text-gray-700 text-center sm:text-left sm:mr-2">
           Font Size:
           <span className="block text-xs text-gray-500 font-normal" lang="ml">
             ഫോണ്ട് വലുപ്പം:
@@ -53,7 +53,7 @@ export const FontSizeToggle: React.FC<FontSizeToggleProps> = ({
             size="sm"
             onClick={() => setFontSize(option.value)}
             className={`
-              !min-w-[48px] !min-h-[40px] relative
+              !min-w-[48px] !min-h-[44px] relative px-3 sm:px-4
               ${fontSize === option.value ? 'bg-primary-600 text-white' : 'bg-transparent text-gray-600 hover:bg-gray-200'}
               ${index === 0 ? 'rounded-l-md' : ''}
               ${index === fontSizeOptions.length - 1 ? 'rounded-r-md' : ''}

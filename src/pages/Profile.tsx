@@ -35,55 +35,63 @@ export const Profile: React.FC = () => {
         subtitle="Your account details"
         malayalamSubtitle="നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ"
         icon={
-          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center">
-            <span className="text-xl sm:text-2xl font-bold text-blue-700">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+            <span className="text-lg sm:text-xl font-bold text-blue-700">
               {user.displayName?.charAt(0).toUpperCase() || 'U'}
             </span>
           </div>
         }
         onClick={() => {}}
         ariaLabel="User information section"
-        className="!cursor-default mx-2 sm:mx-0"
+        className="!cursor-default"
       >
-        <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+        <div className="mt-3 sm:mt-4 space-y-4 sm:space-y-5">
           {/* Name */}
-          <div className="flex flex-col space-y-1 sm:space-y-2">
-            <label className="text-xs sm:text-sm font-medium text-gray-700">Name</label>
-            <p className="text-sm sm:text-base text-gray-900 bg-gray-50 p-2 sm:p-3 rounded-lg break-words">
-              {user.displayName || 'Not provided'}
-            </p>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1" lang="ml">പേര്</p>
+          <div className="flex flex-col space-y-2 sm:space-y-3">
+            <label className="text-sm sm:text-base font-medium text-gray-700 px-1">Name</label>
+            <div className="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+              <p className="text-sm sm:text-base text-gray-900 break-words word-wrap leading-relaxed">
+                {user.displayName || 'Not provided'}
+              </p>
+            </div>
+            <p className="text-xs sm:text-sm text-gray-600 px-1 mt-1 sm:mt-2" lang="ml">പേര്</p>
           </div>
 
           {/* Phone Number */}
           {user.phone && (
-            <div className="flex flex-col space-y-1 sm:space-y-2">
-              <label className="text-xs sm:text-sm font-medium text-gray-700">Phone Number</label>
-              <p className="text-sm sm:text-base text-gray-900 bg-gray-50 p-2 sm:p-3 rounded-lg break-words">
-                {user.phone}
-              </p>
-              <p className="text-xs sm:text-sm text-gray-600 mt-1" lang="ml">ഫോൺ നമ്പർ</p>
+            <div className="flex flex-col space-y-2 sm:space-y-3">
+              <label className="text-sm sm:text-base font-medium text-gray-700 px-1">Phone Number</label>
+              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+                <p className="text-sm sm:text-base text-gray-900 break-words word-wrap leading-relaxed">
+                  {user.phone}
+                </p>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-600 px-1 mt-1 sm:mt-2" lang="ml">ഫോൺ നമ്പർ</p>
             </div>
           )}
 
           {/* Email */}
           {user.email && (
-            <div className="flex flex-col space-y-1 sm:space-y-2">
-              <label className="text-xs sm:text-sm font-medium text-gray-700">Email</label>
-              <p className="text-sm sm:text-base text-gray-900 bg-gray-50 p-2 sm:p-3 rounded-lg break-words overflow-hidden">
-                {user.email}
-              </p>
-              <p className="text-xs sm:text-sm text-gray-600 mt-1" lang="ml">ഇമെയിൽ</p>
+            <div className="flex flex-col space-y-2 sm:space-y-3">
+              <label className="text-sm sm:text-base font-medium text-gray-700 px-1">Email</label>
+              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+                <p className="text-sm sm:text-base text-gray-900 break-words word-wrap leading-relaxed overflow-wrap-anywhere">
+                  {user.email}
+                </p>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-600 px-1 mt-1 sm:mt-2" lang="ml">ഇമെയിൽ</p>
             </div>
           )}
 
           {/* User ID */}
-          <div className="flex flex-col space-y-1 sm:space-y-2">
-            <label className="text-xs sm:text-sm font-medium text-gray-700">User ID</label>
-            <p className="text-xs sm:text-sm text-gray-600 bg-gray-50 p-2 sm:p-3 rounded-lg font-mono break-all overflow-hidden">
-              {user.uid}
-            </p>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1" lang="ml">ഉപയോക്തൃ ഐഡി</p>
+          <div className="flex flex-col space-y-2 sm:space-y-3">
+            <label className="text-sm sm:text-base font-medium text-gray-700 px-1">User ID</label>
+            <div className="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+              <p className="text-xs sm:text-sm text-gray-600 font-mono break-all word-wrap leading-relaxed overflow-wrap-anywhere">
+                {user.uid}
+              </p>
+            </div>
+            <p className="text-xs sm:text-sm text-gray-600 px-1 mt-1 sm:mt-2" lang="ml">ഉപയോക്തൃ ഐഡി</p>
           </div>
         </div>
       </Card>
@@ -103,44 +111,65 @@ export const Profile: React.FC = () => {
         ariaLabel="Settings section"
         className="!cursor-default"
       >
-        <div className="mt-4 space-y-4">
+        <div className="mt-3 sm:mt-4 space-y-4 sm:space-y-6 px-1 sm:px-0">
           {/* Font Size Setting */}
-          <div className="space-y-3">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-medium text-gray-900">Font Size</h3>
-                <p className="text-sm text-gray-600" lang="ml">ഫോണ്ട് വലുപ്പം</p>
+                <h3 className="text-sm sm:text-base font-medium text-gray-900">Font Size</h3>
+                <p className="text-xs sm:text-sm text-gray-600" lang="ml">ഫോണ്ട് വലുപ്പം</p>
               </div>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <FontSizeToggle showLabels={true} />
+            <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+              <FontSizeToggle showLabels={true} className="justify-center sm:justify-start" />
             </div>
           </div>
 
           {/* Notification Preferences */}
-          <div className="space-y-3">
+          <div className="space-y-3 sm:space-y-4">
             <div>
-              <h3 className="text-base font-medium text-gray-900">Notifications</h3>
-              <p className="text-sm text-gray-600" lang="ml">അറിയിപ്പുകൾ</p>
+              <h3 className="text-sm sm:text-base font-medium text-gray-900">Notifications</h3>
+              <p className="text-xs sm:text-sm text-gray-600" lang="ml">അറിയിപ്പുകൾ</p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">Class Reminders</span>
-                <div className="w-12 h-6 bg-blue-600 rounded-full relative">
-                  <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5"></div>
-                </div>
+            <div className="bg-gray-50 p-3 sm:p-4 rounded-lg space-y-4 sm:space-y-3">
+              <div className="flex items-center justify-between py-1">
+                <span className="text-sm sm:text-base text-gray-700 pr-3">Class Reminders</span>
+                <button 
+                  className="w-12 h-6 bg-blue-600 rounded-full relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[48px] min-h-[44px] flex items-center justify-center"
+                  aria-label="Toggle class reminders"
+                  role="switch"
+                  aria-checked="true"
+                >
+                  <div className="w-12 h-6 bg-blue-600 rounded-full relative">
+                    <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 transition-transform"></div>
+                  </div>
+                </button>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">New Content Alerts</span>
-                <div className="w-12 h-6 bg-blue-600 rounded-full relative">
-                  <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5"></div>
-                </div>
+              <div className="flex items-center justify-between py-1">
+                <span className="text-sm sm:text-base text-gray-700 pr-3">New Content Alerts</span>
+                <button 
+                  className="w-12 h-6 bg-blue-600 rounded-full relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[48px] min-h-[44px] flex items-center justify-center"
+                  aria-label="Toggle new content alerts"
+                  role="switch"
+                  aria-checked="true"
+                >
+                  <div className="w-12 h-6 bg-blue-600 rounded-full relative">
+                    <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 transition-transform"></div>
+                  </div>
+                </button>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">Exam Reminders</span>
-                <div className="w-12 h-6 bg-blue-600 rounded-full relative">
-                  <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5"></div>
-                </div>
+              <div className="flex items-center justify-between py-1">
+                <span className="text-sm sm:text-base text-gray-700 pr-3">Exam Reminders</span>
+                <button 
+                  className="w-12 h-6 bg-blue-600 rounded-full relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[48px] min-h-[44px] flex items-center justify-center"
+                  aria-label="Toggle exam reminders"
+                  role="switch"
+                  aria-checked="true"
+                >
+                  <div className="w-12 h-6 bg-blue-600 rounded-full relative">
+                    <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 transition-transform"></div>
+                  </div>
+                </button>
               </div>
             </div>
           </div>
