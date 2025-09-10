@@ -190,24 +190,24 @@ export const Profile: React.FC = () => {
         ariaLabel="Account actions section"
         className="!cursor-default"
       >
-        <div className="mt-4 space-y-4">
+        <div className="mt-3 sm:mt-4 space-y-4 sm:space-y-6 px-1 sm:px-0">
           {/* Logout Button */}
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-start space-x-3">
-              <svg className="w-6 h-6 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
+            <div className="flex items-start space-x-2 sm:space-x-3">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              <div className="flex-1">
-                <h3 className="text-base font-medium text-red-900 mb-1">Logout</h3>
-                <p className="text-sm text-red-700 mb-1" lang="ml">പുറത്തുകടക്കുക</p>
-                <p className="text-sm text-red-600 mb-4">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm sm:text-base font-medium text-red-900 mb-1">Logout</h3>
+                <p className="text-xs sm:text-sm text-red-700 mb-1" lang="ml">പുറത്തുകടക്കുക</p>
+                <p className="text-xs sm:text-sm text-red-600 mb-3 sm:mb-4 leading-relaxed">
                   Sign out of your account and return to the login page.
                 </p>
                 <AccessibleButton
                   variant="danger"
                   onClick={handleLogout}
                   ariaLabel="Logout from application"
-                  className="!min-h-[48px] w-full"
+                  className="!min-h-[48px] w-full px-4 py-3 sm:px-6 sm:py-3"
                   style={{ 
                     backgroundColor: '#dc2626', 
                     color: 'white',
@@ -215,10 +215,10 @@ export const Profile: React.FC = () => {
                   }}
                 >
                   <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
-                    <span>Logout</span>
+                    <span className="text-sm sm:text-base font-medium">Logout</span>
                   </div>
                 </AccessibleButton>
               </div>
