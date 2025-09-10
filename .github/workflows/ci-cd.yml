@@ -1,0 +1,271 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop, staging ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18'
+  NPM_VERSION: '9'
+
+jobs:
+  # Code Quality and Testing
+  quality-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: 'parents-madrasa-portal/package-lock.json'
+        
+    - name: Install dependencies
+      working-directory: ./parents-madrasa-portal
+      run: npm ci
+      
+    - name: Type checking
+      working-directory: ./parents-madrasa-portal
+      run: npm run typecheck
+      
+    - name: Lint code
+      working-directory: ./parents-madrasa-portal
+      run: npm run lint
+      
+    - name: Format check
+      working-directory: ./parents-madrasa-portal
+      run: npm run format:check
+      
+    - name: Run tests
+      working-directory: ./parents-madrasa-portal
+      run: npm run test:coverage
+      
+    - name: Run accessibility tests
+      working-directory: ./parents-madrasa-portal
+      run: npm run test:accessibility
+      
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./parents-madrasa-portal/coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+
+  # Security Audit
+  security-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: 'parents-madrasa-portal/package-lock.json'
+        
+    - name: Install dependencies
+      working-directory: ./parents-madrasa-portal
+      run: npm ci
+      
+    - name: Run security audit
+      working-directory: ./parents-madrasa-portal
+      run: npm audit --audit-level=moderate
+      
+    - name: Check for known vulnerabilities
+      working-directory: ./parents-madrasa-portal
+      run: npx audit-ci --moderate
+
+  # Build and Performance Testing
+  build-test:
+    runs-on: ubuntu-latest
+    needs: [quality-check, security-audit]
+    
+    strategy:
+      matrix:
+        environment: [development, staging, production]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: 'parents-madrasa-portal/package-lock.json'
+        
+    - name: Install dependencies
+      working-directory: ./parents-madrasa-portal
+      run: npm ci
+      
+    - name: Build for ${{ matrix.environment }}
+      working-directory: ./parents-madrasa-portal
+      run: |
+        if [ "${{ matrix.environment }}" = "production" ]; then
+          cp .env.production .env.local
+        elif [ "${{ matrix.environment }}" = "staging" ]; then
+          cp .env.staging .env.local
+        fi
+        npm run build
+      env:
+        NODE_ENV: ${{ matrix.environment }}
+        
+    - name: Analyze bundle size
+      working-directory: ./parents-madrasa-portal
+      run: npm run build:analyze
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-${{ matrix.environment }}
+        path: parents-madrasa-portal/dist/
+        retention-days: 7
+
+  # Lighthouse Performance Testing
+  lighthouse:
+    runs-on: ubuntu-latest
+    needs: build-test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: 'parents-madrasa-portal/package-lock.json'
+        
+    - name: Install dependencies
+      working-directory: ./parents-madrasa-portal
+      run: npm ci
+      
+    - name: Build application
+      working-directory: ./parents-madrasa-portal
+      run: npm run build
+      
+    - name: Serve application
+      working-directory: ./parents-madrasa-portal
+      run: |
+        npm install -g serve
+        serve -s dist -l 3000 &
+        sleep 5
+        
+    - name: Run Lighthouse CI
+      working-directory: ./parents-madrasa-portal
+      run: |
+        npm install -g @lhci/cli
+        lhci autorun
+      env:
+        LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  # Deploy to Staging
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: [build-test, lighthouse]
+    if: github.ref == 'refs/heads/staging'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-staging
+        path: parents-madrasa-portal/dist/
+        
+    - name: Deploy to Netlify (Staging)
+      uses: netlify/actions/cli@master
+      with:
+        args: deploy --dir=parents-madrasa-portal/dist --site=${{ secrets.NETLIFY_STAGING_SITE_ID }}
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        
+    - name: Run E2E tests against staging
+      working-directory: ./parents-madrasa-portal
+      run: |
+        npm install -g playwright
+        npx playwright install
+        npm run test:e2e:staging
+      env:
+        STAGING_URL: ${{ secrets.STAGING_URL }}
+
+  # Deploy to Production
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [build-test, lighthouse]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-production
+        path: parents-madrasa-portal/dist/
+        
+    - name: Deploy to Netlify (Production)
+      uses: netlify/actions/cli@master
+      with:
+        args: deploy --prod --dir=parents-madrasa-portal/dist --site=${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        
+    - name: Run smoke tests against production
+      working-directory: ./parents-madrasa-portal
+      run: |
+        npm install -g playwright
+        npx playwright install
+        npm run test:smoke:production
+      env:
+        PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+        
+    - name: Notify deployment success
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        text: 'Production deployment successful! 🚀'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: success()
+        
+    - name: Notify deployment failure
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: 'Production deployment failed! ❌'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: failure()
+
+  # Cleanup
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+    
+    steps:
+    - name: Delete build artifacts
+      uses: geekyeggo/delete-artifact@v2
+      with:
+        name: |
+          build-development
+          build-staging
+          build-production

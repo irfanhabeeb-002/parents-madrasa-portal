@@ -18,12 +18,19 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage --run",
-    "test:accessibility": "vitest --run --reporter=verbose --grep=\"accessibility\""
+    "test:accessibility": "vitest --run --reporter=verbose --grep=\"accessibility\"",
+    "deploy:staging": "node scripts/deploy.js staging",
+    "deploy:production": "node scripts/deploy.js production",
+    "deploy:development": "node scripts/deploy.js development",
+    "lighthouse": "lhci autorun",
+    "security:audit": "npm audit --audit-level=moderate",
+    "security:check": "npx audit-ci --moderate"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@zoom/meetingsdk": "^4.0.5",
     "firebase": "^12.2.1",
+    "gtag": "^1.0.1",
     "isbot": "^5.1.27",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

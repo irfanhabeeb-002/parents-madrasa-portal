@@ -1,0 +1,62 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
+
+# Redirect rules for SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security headers (backup for platforms that don't support _headers)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://firebase.googleapis.com https://www.gstatic.com https://zoom.us https://source.zoom.us https://fcm.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://firebasestorage.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://firebase.googleapis.com https://firestore.googleapis.com https://api.zoom.us https://zoom.us https://fcm.googleapis.com https://www.google-analytics.com https://analytics.google.com wss://zoom.us; media-src 'self' blob: https://firebasestorage.googleapis.com https://zoom.us; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests;"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    X-Content-Type-Options = "nosniff"
+
+# Environment-specific builds
+[context.production.environment]
+  NODE_ENV = "production"
+  VITE_APP_ENV = "production"
+
+[context.deploy-preview.environment]
+  NODE_ENV = "staging"
+  VITE_APP_ENV = "staging"
+
+[context.branch-deploy.environment]
+  NODE_ENV = "development"
+  VITE_APP_ENV = "development"

@@ -1,0 +1,57 @@
+# Security Headers for Production Deployment
+/*
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://firebase.googleapis.com https://www.gstatic.com https://zoom.us https://source.zoom.us https://fcm.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://firebasestorage.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://firebase.googleapis.com https://firestore.googleapis.com https://api.zoom.us https://zoom.us https://fcm.googleapis.com https://www.google-analytics.com https://analytics.google.com wss://zoom.us; media-src 'self' blob: https://firebasestorage.googleapis.com https://zoom.us; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests;
+  
+  # Security Headers
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
+  
+  # HSTS (HTTP Strict Transport Security)
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  
+  # Cache Control for Security
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+# Static Assets - Long-term caching with security
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# JavaScript and CSS - Medium-term caching
+/js/*
+  Cache-Control: public, max-age=604800
+  X-Content-Type-Options: nosniff
+
+/css/*
+  Cache-Control: public, max-age=604800
+  X-Content-Type-Options: nosniff
+
+# Images - Long-term caching
+/images/*
+  Cache-Control: public, max-age=2592000
+  X-Content-Type-Options: nosniff
+
+# Fonts - Long-term caching
+/fonts/*
+  Cache-Control: public, max-age=31536000
+  X-Content-Type-Options: nosniff
+
+# PWA Files - Short-term caching for updates
+/manifest.json
+  Cache-Control: public, max-age=86400
+  X-Content-Type-Options: nosniff
+
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Content-Type-Options: nosniff
+
+# API Routes - No caching for dynamic content
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Content-Type-Options: nosniff
