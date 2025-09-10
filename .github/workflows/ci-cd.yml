@@ -51,6 +51,7 @@ jobs:
         name: build-artifacts
         path: dist/
         retention-days: 7
+        if-no-files-found: error
 
   # Security Audit (Non-blocking)
   security-audit:
