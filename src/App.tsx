@@ -23,6 +23,7 @@ const LiveClass = lazy(() => import('./pages/LiveClass').then(module => ({ defau
 const Recordings = lazy(() => import('./pages/Recordings').then(module => ({ default: module.Recordings })));
 const NotesExercises = lazy(() => import('./pages/NotesExercises').then(module => ({ default: module.NotesExercises })));
 const ExamsAttendance = lazy(() => import('./pages/ExamsAttendance').then(module => ({ default: module.ExamsAttendance })));
+const Profile = lazy(() => import('./pages/Profile').then(module => ({ default: module.Profile })));
 
 // Loading fallback component
 const PageLoadingFallback = () => (
@@ -39,41 +40,7 @@ const PageLoadingFallback = () => (
   </div>
 );
 
-const Profile = () => {
-  const { preferences, permission, updatePreferences, requestPermission } = useNotifications();
-  const { announce, LiveRegionComponent } = useLiveRegion();
-  
-  return (
-    <Layout 
-      showBackButton={true}
-      title="Profile"
-      malayalamTitle="പ്രൊഫൈൽ"
-    >
-      <div className="space-y-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">User Profile</h2>
-          <p className="text-gray-700">Profile settings - Coming Soon</p>
-          <p className="text-gray-500 text-sm mt-2" lang="ml">പ്രൊഫൈൽ ക്രമീകരണങ്ങൾ - ഉടൻ വരുന്നു</p>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Notification Settings</h2>
-          <p className="text-gray-500 text-sm mb-4" lang="ml">അറിയിപ്പ് ക്രമീകരണങ്ങൾ</p>
-          <NotificationPreferences
-            preferences={preferences}
-            onUpdatePreferences={updatePreferences}
-            permissionGranted={permission.granted}
-            onRequestPermission={requestPermission}
-          />
-        </div>
-        
-        <AccessibilitySettings />
-      </div>
-      
-      {LiveRegionComponent}
-    </Layout>
-  );
-};
+
 
 function App() {
   // Initialize offline queue on app start
@@ -151,7 +118,13 @@ function App() {
                     path="/profile"
                     element={
                       <ProtectedRoute>
-                        <Profile />
+                        <Layout 
+                          showBackButton={true}
+                          title="Profile"
+                          malayalamTitle="പ്രൊഫൈൽ"
+                        >
+                          <Profile />
+                        </Layout>
                       </ProtectedRoute>
                     }
                   />

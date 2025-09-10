@@ -18,11 +18,10 @@ export const Header: React.FC<HeaderProps> = ({
   title,
   malayalamTitle,
   onBack,
-  showLogout = true,
+  showLogout = false, // Changed default to false since logout will be in Profile
 }) => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
-  const [showMenu, setShowMenu] = useState(false);
+  const { user } = useAuth();
   const [showFontToggle, setShowFontToggle] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -123,25 +122,12 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Right side - Sync status, Font toggle, User info and logout */}
+          {/* Right side - Sync status and font toggle */}
           <div className="flex items-center space-x-2">
             {/* Sync Status */}
             <CompactSyncStatus />
             
-            {/* Font size toggle button */}
-            <AccessibleButton
-              variant="secondary"
-              size="sm"
-              onClick={() => setShowFontToggle(!showFontToggle)}
-              ariaLabel="Toggle font size options"
-              className="!min-h-[36px] !min-w-[36px] !p-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </AccessibleButton>
-
-            {showLogout && user && (
+            {user && (
               <>
                 {/* User avatar/initial */}
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -150,20 +136,17 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                 </div>
                 
-                {/* Logout button */}
+                {/* Font size toggle button */}
                 <AccessibleButton
-                  variant="danger"
+                  variant="secondary"
                   size="sm"
-                  onClick={logout}
-                  ariaLabel="Logout from application"
-                  className="!min-h-[36px] text-xs"
-                  style={{ 
-                    backgroundColor: '#dc2626', 
-                    color: 'white',
-                    border: '2px solid #dc2626'
-                  }}
+                  onClick={() => setShowFontToggle(!showFontToggle)}
+                  ariaLabel="Toggle font size options"
+                  className="!min-h-[44px] !min-w-[44px] !p-2"
                 >
-                  Logout
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+                  </svg>
                 </AccessibleButton>
               </>
             )}
@@ -245,9 +228,12 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Right side - User info and menu */}
+          {/* Right side - User info and font menu */}
           <div className="flex items-center space-x-4">
-            {showLogout && user && (
+            {/* Sync Status - Desktop */}
+            <CompactSyncStatus />
+            
+            {user && (
               <>
                 {/* User avatar/initial */}
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -256,16 +242,16 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                 </div>
                 
-                {/* Menu button */}
+                {/* Font size menu button */}
                 <AccessibleButton
                   variant="secondary"
                   size="lg"
                   onClick={() => setShowFontToggle(!showFontToggle)}
-                  ariaLabel="Open menu"
+                  ariaLabel="Open font size menu"
                   className="!min-h-[48px] !min-w-[48px] !p-3"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
                   </svg>
                 </AccessibleButton>
               </>
@@ -273,25 +259,12 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Desktop Menu Dropdown */}
+        {/* Desktop Font Size Dropdown */}
         {showFontToggle && (
           <div ref={menuRef} className="mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200 max-w-md ml-auto">
-            <div className="space-y-4">
+            <div className="space-y-2">
+              <h3 className="font-medium text-gray-900 mb-3">Font Size Settings</h3>
               <FontSizeToggle showLabels={true} />
-              <hr className="border-gray-300" />
-              <AccessibleButton
-                variant="danger"
-                onClick={logout}
-                ariaLabel="Logout from application"
-                className="w-full"
-                style={{ 
-                  backgroundColor: '#dc2626', 
-                  color: 'white',
-                  border: '2px solid #dc2626'
-                }}
-              >
-                Logout
-              </AccessibleButton>
             </div>
           </div>
         )}

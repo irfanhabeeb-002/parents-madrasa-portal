@@ -4,3 +4,4 @@ export { LiveClass } from './LiveClass';
 export { Recordings } from './Recordings';
 export { NotesExercises } from './NotesExercises';
 export { ExamsAttendance } from './ExamsAttendance';
+export { Profile } from './Profile';
