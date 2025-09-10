@@ -35,55 +35,55 @@ export const Profile: React.FC = () => {
         subtitle="Your account details"
         malayalamSubtitle="നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ"
         icon={
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-            <span className="text-2xl font-bold text-blue-700">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center">
+            <span className="text-xl sm:text-2xl font-bold text-blue-700">
               {user.displayName?.charAt(0).toUpperCase() || 'U'}
             </span>
           </div>
         }
         onClick={() => {}}
         ariaLabel="User information section"
-        className="!cursor-default"
+        className="!cursor-default mx-2 sm:mx-0"
       >
-        <div className="mt-4 space-y-4">
+        <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
           {/* Name */}
-          <div className="flex flex-col space-y-1">
-            <label className="text-sm font-medium text-gray-700">Name</label>
-            <p className="text-base text-gray-900 bg-gray-50 p-3 rounded-lg">
+          <div className="flex flex-col space-y-1 sm:space-y-2">
+            <label className="text-xs sm:text-sm font-medium text-gray-700">Name</label>
+            <p className="text-sm sm:text-base text-gray-900 bg-gray-50 p-2 sm:p-3 rounded-lg break-words">
               {user.displayName || 'Not provided'}
             </p>
-            <p className="text-sm text-gray-600" lang="ml">പേര്</p>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1" lang="ml">പേര്</p>
           </div>
 
           {/* Phone Number */}
           {user.phone && (
-            <div className="flex flex-col space-y-1">
-              <label className="text-sm font-medium text-gray-700">Phone Number</label>
-              <p className="text-base text-gray-900 bg-gray-50 p-3 rounded-lg">
+            <div className="flex flex-col space-y-1 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Phone Number</label>
+              <p className="text-sm sm:text-base text-gray-900 bg-gray-50 p-2 sm:p-3 rounded-lg break-words">
                 {user.phone}
               </p>
-              <p className="text-sm text-gray-600" lang="ml">ഫോൺ നമ്പർ</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1" lang="ml">ഫോൺ നമ്പർ</p>
             </div>
           )}
 
           {/* Email */}
           {user.email && (
-            <div className="flex flex-col space-y-1">
-              <label className="text-sm font-medium text-gray-700">Email</label>
-              <p className="text-base text-gray-900 bg-gray-50 p-3 rounded-lg">
+            <div className="flex flex-col space-y-1 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Email</label>
+              <p className="text-sm sm:text-base text-gray-900 bg-gray-50 p-2 sm:p-3 rounded-lg break-words overflow-hidden">
                 {user.email}
               </p>
-              <p className="text-sm text-gray-600" lang="ml">ഇമെയിൽ</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1" lang="ml">ഇമെയിൽ</p>
             </div>
           )}
 
           {/* User ID */}
-          <div className="flex flex-col space-y-1">
-            <label className="text-sm font-medium text-gray-700">User ID</label>
-            <p className="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg font-mono">
+          <div className="flex flex-col space-y-1 sm:space-y-2">
+            <label className="text-xs sm:text-sm font-medium text-gray-700">User ID</label>
+            <p className="text-xs sm:text-sm text-gray-600 bg-gray-50 p-2 sm:p-3 rounded-lg font-mono break-all overflow-hidden">
               {user.uid}
             </p>
-            <p className="text-sm text-gray-600" lang="ml">ഉപയോക്തൃ ഐഡി</p>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1" lang="ml">ഉപയോക്തൃ ഐഡി</p>
           </div>
         </div>
       </Card>

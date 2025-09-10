@@ -59,7 +59,7 @@ export const Card: React.FC<CardProps> = ({
   ].join(' ');
 
   const CardContent = () => (
-    <div className="p-4">
+    <div className="p-3 sm:p-4">
       {icon && (
         <div className="flex justify-center mb-3">
           <div className="w-12 h-12 flex items-center justify-center text-primary-600">
