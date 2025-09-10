@@ -1,275 +1,358 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Layout } from '../components/layout';
-import { Card, AlertBanner, SkeletonLoader, AccessibleButton } from '../components/ui';
-import zoomService from '../services/zoomService.js';
-import { useAuth } from '../contexts/AuthContext';
-
-interface Recording {
-  id: string;
-  meetingId: string;
-  topic: string;
-  startTime: Date;
-  duration: number;
-  recordingFiles: RecordingFile[];
-  shareUrl: string;
-}
-
-interface RecordingFile {
-  id: string;
-  fileType: string;
-  fileSize: number;
-  playUrl: string;
-  downloadUrl: string;
-}
+import { SkeletonLoader, AlertBanner } from '../components/ui';
+import { RecordingService } from '../services/recordingService';
+import { Recording, VideoQuality } from '../types/recording';
+import { ApiResponse } from '../types/common';
+import { VideoPlayer } from '../components/recordings/VideoPlayer';
+import { RecordingCard } from '../components/recordings/RecordingCard';
+import { SearchAndFilter } from '../components/recordings/SearchAndFilter';
+import { 
+  PlayIcon, 
+  ExclamationTriangleIcon
+} from '@heroicons/react/24/outline';
 
 interface RecordingsState {
   recordings: Recording[];
   loading: boolean;
   error: string | null;
-  zoomEnabled: boolean;
+  searchQuery: string;
+  selectedQuality: VideoQuality | 'all';
+  selectedSource: 'all' | 'zoom';
+  selectedRecording: Recording | null;
+  showPlayer: boolean;
+  syncing: boolean;
+  syncStatus: {
+    lastSync: Date | null;
+    recordingCount: number;
+  };
 }
 
 export const Recordings: React.FC = () => {
-  const { user } = useAuth();
   const [state, setState] = useState<RecordingsState>({
     recordings: [],
     loading: true,
     error: null,
-    zoomEnabled: zoomService.isZoomEnabled(),
+    searchQuery: '',
+    selectedQuality: 'all',
+    selectedSource: 'all',
+    selectedRecording: null,
+    showPlayer: false,
+    syncing: false,
+    syncStatus: {
+      lastSync: null,
+      recordingCount: 0
+    }
   });
 
+  // Load recordings on component mount
   useEffect(() => {
     loadRecordings();
+    loadSyncStatus();
   }, []);
 
-  const loadRecordings = async () => {
+  const loadRecordings = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
-
+    
     try {
-      if (!state.zoomEnabled) {
-        setState(prev => ({
-          ...prev,
-          recordings: [],
-          loading: false,
-        }));
-        return;
-      }
-
-      const result = await zoomService.fetchRecordings({
-        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
-        to: new Date(),
-        pageSize: 20
+      const response: ApiResponse<Recording[]> = await RecordingService.getRecordings({
+        orderBy: 'createdAt',
+        orderDirection: 'desc',
+        limit: 50,
+        includeZoom: true, // Include Zoom recordings by default
+        zoomOnly: state.selectedSource === 'zoom'
       });
 
-      if (result.status === 'success') {
+      if (response.success) {
         setState(prev => ({
           ...prev,
-          recordings: result.data.recordings || [],
-          loading: false,
-        }));
-      } else if (result.status === 'disabled') {
-        setState(prev => ({
-          ...prev,
-          recordings: [],
-          loading: false,
+          recordings: response.data,
+          loading: false
         }));
       } else {
-        throw new Error(result.message || 'Failed to load recordings');
+        setState(prev => ({
+          ...prev,
+          error: response.error || 'Failed to load recordings',
+          loading: false
+        }));
       }
     } catch (error) {
       setState(prev => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Failed to load recordings',
-        loading: false,
+        error: 'Network error occurred while loading recordings',
+        loading: false
       }));
     }
-  };
+  }, [state.selectedSource]);
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  const loadSyncStatus = useCallback(() => {
+    const syncStatus = RecordingService.getZoomSyncStatus();
+    setState(prev => ({
+      ...prev,
+      syncStatus
+    }));
+  }, []);
 
-  const formatFileSize = (bytes: number) => {
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    if (bytes === 0) return '0 Bytes';
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
-  };
+  const handleSearch = useCallback(async (query: string) => {
+    setState(prev => ({ ...prev, searchQuery: query, loading: true }));
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
-  };
-
-  const handlePlayRecording = (recording: Recording) => {
-    if (recording.recordingFiles.length > 0) {
-      window.open(recording.recordingFiles[0].playUrl, '_blank');
+    if (!query.trim()) {
+      loadRecordings();
+      return;
     }
-  };
 
-  const handleDownloadRecording = (recording: Recording) => {
-    if (recording.recordingFiles.length > 0) {
-      window.open(recording.recordingFiles[0].downloadUrl, '_blank');
+    try {
+      const response = await RecordingService.searchRecordings({
+        query: query.trim(),
+        fields: ['title', 'description', 'tags'],
+        caseSensitive: false
+      });
+
+      if (response.success) {
+        setState(prev => ({
+          ...prev,
+          recordings: response.data,
+          loading: false
+        }));
+      } else {
+        setState(prev => ({
+          ...prev,
+          error: response.error || 'Search failed',
+          loading: false
+        }));
+      }
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        error: 'Search error occurred',
+        loading: false
+      }));
     }
-  };
+  }, [loadRecordings]);
 
-  if (state.loading) {
-    return (
-      <Layout 
-        showBackButton={true}
-        title="Class Recordings"
-        malayalamTitle="ക്ലാസ് റെക്കോർഡിംഗുകൾ"
-      >
-        <div className="space-y-6">
-          <SkeletonLoader variant="card" className="h-32" />
-          <SkeletonLoader variant="card" className="h-32" />
-          <SkeletonLoader variant="card" className="h-32" />
-        </div>
-      </Layout>
-    );
-  }
+  const handleQualityFilter = useCallback((quality: VideoQuality | 'all') => {
+    setState(prev => ({ ...prev, selectedQuality: quality }));
+  }, []);
+
+  const handleSourceFilter = useCallback((source: 'all' | 'zoom') => {
+    setState(prev => ({ ...prev, selectedSource: source }));
+    // Reload recordings when source changes
+    setTimeout(() => loadRecordings(), 100);
+  }, [loadRecordings]);
+
+  const handleSyncZoom = useCallback(async () => {
+    setState(prev => ({ ...prev, syncing: true, error: null }));
+    
+    try {
+      const response = await RecordingService.syncZoomRecordings({ forceSync: true });
+      
+      if (response.success) {
+        // Reload recordings after sync
+        await loadRecordings();
+        loadSyncStatus();
+        
+        setState(prev => ({
+          ...prev,
+          syncing: false
+        }));
+      } else {
+        setState(prev => ({
+          ...prev,
+          syncing: false,
+          error: response.error || 'Failed to sync Zoom recordings'
+        }));
+      }
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        syncing: false,
+        error: 'Failed to sync Zoom recordings'
+      }));
+    }
+  }, [loadRecordings, loadSyncStatus]);
+
+  const handlePlayRecording = useCallback((recording: Recording) => {
+    setState(prev => ({
+      ...prev,
+      selectedRecording: recording,
+      showPlayer: true
+    }));
+  }, []);
+
+  const handleClosePlayer = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      selectedRecording: null,
+      showPlayer: false
+    }));
+  }, []);
+
+  const handleRetry = useCallback(() => {
+    loadRecordings();
+  }, [loadRecordings]);
+
+
+
+  // Filter recordings based on selected quality
+  const filteredRecordings = state.recordings.filter(recording => {
+    if (state.selectedQuality === 'all') return true;
+    return recording.quality === state.selectedQuality;
+  });
 
   return (
     <Layout 
       showBackButton={true}
-      title="Class Recordings"
-      malayalamTitle="ക്ലാസ് റെക്കോർഡിംഗുകൾ"
+      title="Recordings"
+      malayalamTitle="റെക്കോർഡിംഗുകൾ"
     >
       <div className="space-y-6">
+        {/* Page Header */}
+        <div className="mb-4">
+          <h1 className="text-xl font-semibold text-gray-900">
+            Recordings
+            <span className="block text-sm text-gray-500 font-normal" lang="ml">
+              റെക്കോർഡിംഗുകൾ
+            </span>
+          </h1>
+          <p className="text-sm text-gray-600 mt-1">
+            View and access class recordings from Zoom sessions
+            <span className="block text-xs text-gray-500" lang="ml">
+              സൂം സെഷനുകളിൽ നിന്നുള്ള ക്ലാസ് റെക്കോർഡിംഗുകൾ കാണുക
+            </span>
+          </p>
+        </div>
+
+        {/* Search and Filter Section */}
+        <SearchAndFilter
+          searchQuery={state.searchQuery}
+          selectedQuality={state.selectedQuality}
+          selectedSource={state.selectedSource}
+          onSearch={handleSearch}
+          onQualityFilter={handleQualityFilter}
+          onSourceFilter={handleSourceFilter}
+          onSyncZoom={handleSyncZoom}
+          disabled={state.loading}
+          showZoomFeatures={true}
+          syncStatus={{
+            ...state.syncStatus,
+            syncing: state.syncing
+          }}
+        />
+
+        {/* Error Banner */}
         {state.error && (
           <AlertBanner
             type="error"
             message={state.error}
-            malayalamMessage="റെക്കോർഡിംഗുകൾ ലോഡ് ചെയ്യുന്നതിൽ പിശക്"
+            malayalamMessage="ഒരു പിശക് സംഭവിച്ചു"
             onDismiss={() => setState(prev => ({ ...prev, error: null }))}
           />
         )}
 
-        {/* Zoom Disabled Banner */}
-        {!state.zoomEnabled && (
-          <AlertBanner
-            type="info"
-            message="Zoom recordings are not available at the moment."
-            malayalamMessage="സൂം റെക്കോർഡിംഗുകൾ ഇപ്പോൾ ലഭ്യമല്ല."
-            className="mb-6"
-          />
+        {/* Loading State */}
+        {state.loading && (
+          <div className="space-y-4">
+            {Array.from({ length: 3 }, (_, index) => (
+              <div key={index} className="bg-white rounded-lg border border-gray-200 p-4">
+                <div className="flex space-x-4">
+                  <SkeletonLoader variant="image" width="120px" height="80px" />
+                  <div className="flex-1 space-y-2">
+                    <SkeletonLoader variant="text" width="70%" />
+                    <SkeletonLoader variant="text" width="50%" />
+                    <SkeletonLoader variant="text" width="30%" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Class Recordings</h1>
-            <p className="text-gray-600 mt-1" lang="ml">ക്ലാസ് റെക്കോർഡിംഗുകൾ</p>
+        {/* Empty State */}
+        {!state.loading && filteredRecordings.length === 0 && !state.error && (
+          <div className="text-center py-12">
+            <PlayIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {state.searchQuery ? 'No recordings found' : 'No recordings available'}
+            </h3>
+            <p className="text-gray-500 mb-2">
+              {state.searchQuery 
+                ? `No recordings match "${state.searchQuery}"`
+                : 'No recordings available yet. Recordings from Zoom classes will appear here automatically.'
+              }
+            </p>
+            <p className="text-gray-400 text-sm" lang="ml">
+              {state.searchQuery 
+                ? 'തിരയൽ ഫലങ്ങൾ കണ്ടെത്തിയില്ല'
+                : 'സൂം ക്ലാസുകളിൽ നിന്നുള്ള റെക്കോർഡിംഗുകൾ സ്വയമേവ ഇവിടെ ദൃശ്യമാകും'
+              }
+            </p>
+            {state.searchQuery && (
+              <button
+                onClick={() => handleSearch('')}
+                className="mt-4 text-primary-600 hover:text-primary-700 font-medium"
+              >
+                Clear search
+              </button>
+            )}
           </div>
-          <AccessibleButton
-            variant="secondary"
-            onClick={loadRecordings}
-            disabled={state.loading || !state.zoomEnabled}
-            ariaLabel="Refresh recordings"
-          >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Refresh
-            <span className="ml-1 text-xs" lang="ml">പുതുക്കുക</span>
-          </AccessibleButton>
-        </div>
+        )}
 
         {/* Recordings List */}
-        {state.zoomEnabled ? (
-          state.recordings.length === 0 ? (
-            <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-              <div className="text-gray-500">
-                <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <p className="text-lg font-medium text-gray-900 mb-1">No recordings available</p>
-                <p className="text-sm text-gray-500" lang="ml">റെക്കോർഡിംഗുകൾ ലഭ്യമല്ല</p>
+        {!state.loading && filteredRecordings.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {state.searchQuery ? 'Search Results' : 'Available Recordings'}
+                <span className="block text-sm text-gray-500 font-normal" lang="ml">
+                  {state.searchQuery ? 'തിരയൽ ഫലങ്ങൾ' : 'ലഭ്യമായ റെക്കോർഡിംഗുകൾ'}
+                </span>
+              </h2>
+              <div className="text-right">
+                <span className="text-sm text-gray-500">
+                  {filteredRecordings.length} recording{filteredRecordings.length !== 1 ? 's' : ''}
+                </span>
+                {state.selectedSource !== 'all' && (
+                  <div className="text-xs text-gray-400">
+                    {state.selectedSource === 'zoom' ? 'From Zoom Cloud' : 'Manual Uploads'}
+                  </div>
+                )}
               </div>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {state.recordings.map((recording) => (
-                <Card key={recording.id} className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {recording.topic}
-                      </h3>
-                      <div className="space-y-1 text-sm text-gray-600">
-                        <p>
-                          <span className="font-medium">Date:</span> {formatDate(recording.startTime)}
-                        </p>
-                        <p>
-                          <span className="font-medium">Duration:</span> {formatDuration(recording.duration)}
-                        </p>
-                        <p>
-                          <span className="font-medium">Meeting ID:</span> {recording.meetingId}
-                        </p>
-                        {recording.recordingFiles.length > 0 && (
-                          <p>
-                            <span className="font-medium">File Size:</span> {formatFileSize(recording.recordingFiles[0].fileSize)}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-2 ml-4">
-                      <AccessibleButton
-                        variant="primary"
-                        size="sm"
-                        onClick={() => handlePlayRecording(recording)}
-                        disabled={recording.recordingFiles.length === 0}
-                        ariaLabel={`Play recording: ${recording.topic}`}
-                      >
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                        </svg>
-                        Play
-                        <span className="ml-1 text-xs" lang="ml">പ്ലേ</span>
-                      </AccessibleButton>
-                      <AccessibleButton
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleDownloadRecording(recording)}
-                        disabled={recording.recordingFiles.length === 0}
-                        ariaLabel={`Download recording: ${recording.topic}`}
-                      >
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Download
-                        <span className="ml-1 text-xs" lang="ml">ഡൗൺലോഡ്</span>
-                      </AccessibleButton>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )
-        ) : (
-          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-            <div className="text-gray-500">
-              <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18 21l-3-3m-12.728-12.728L3 3l3 3" />
-              </svg>
-              <p className="text-lg font-medium text-gray-900 mb-1">Zoom Integration Disabled</p>
-              <p className="text-sm text-gray-500 mb-4">
-                Zoom recordings are not available at the moment.
-              </p>
-              <p className="text-sm text-gray-500" lang="ml">
-                സൂം റെക്കോർഡിംഗുകൾ ഇപ്പോൾ ലഭ്യമല്ല.
-              </p>
-            </div>
+            
+            {filteredRecordings.map((recording) => (
+              <RecordingCard
+                key={recording.id}
+                recording={recording}
+                onPlay={() => handlePlayRecording(recording)}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Retry Button for Errors */}
+        {state.error && !state.loading && (
+          <div className="text-center">
+            <button
+              onClick={handleRetry}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            >
+              <ExclamationTriangleIcon className="w-4 h-4 mr-2" />
+              Try Again
+            </button>
           </div>
         )}
       </div>
+
+      {/* Video Player Modal */}
+      {state.showPlayer && state.selectedRecording && (
+        <VideoPlayer
+          recording={state.selectedRecording}
+          isOpen={state.showPlayer}
+          onClose={handleClosePlayer}
+        />
+      )}
+
+
     </Layout>
   );
 };

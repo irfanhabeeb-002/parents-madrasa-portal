@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Layout } from '../components/layout';
-import { Card, AlertBanner, SkeletonLoader, AccessibleButton } from '../components/ui';
+import { AlertBanner, SkeletonLoader, AccessibleButton } from '../components/ui';
 import { ClassService, AttendanceService } from '../services';
-import zoomService from '../services/zoomService.js';
+import { zoomService } from '../services/zoomService';
 import type { ClassSession } from '../types/class';
 import { useAuth } from '../contexts/AuthContext';
-import { ZoomMeeting } from 'src/components/zoom';
-import { MEETING_STATUS_MESSAGES } from 'src/config/zoom';
 
 interface LiveClassState {
   todaysClasses: ClassSession[];
@@ -30,121 +28,13 @@ export const LiveClass: React.FC = () => {
     error: null,
     joiningClass: null,
     joinError: null,
-    zoomEnabled: zoomService.isZoomEnabled(),
+    zoomEnabled: true, // Always enabled with TypeScript service
     zoomInitialized: false,
   });
 
-  // Initialize Zoom service if enabled
-  useEffect(() => {
-    const initZoom = async () => {
-      if (state.zoomEnabled) {
-        try {
-          const result = await zoomService.initializeZoomSDK();
-          if (result.status === 'success') {
-            setState(prev => ({ ...prev, zoomInitialized: true }));
-          } else if (result.status === 'error') {
-            setState(prev => ({ 
-              ...prev, 
-              joinError: result.message || 'Failed to initialize Zoom'
-            }));
-          }
-        } catch (error) {
-          console.error('Failed to initialize Zoom:', error);
-          setState(prev => ({ 
-            ...prev, 
-            joinError: 'Failed to initialize Zoom integration'
-          }));
-        }
-      }
-    };
-    initZoom();
-  }, [state.zoomEnabled]);
-
-  // Monitor meeting status changes
-  useEffect(() => {
-    if (state.activeZoomMeeting) {
-      const interval = setInterval(async () => {
-        try {
-          // Check if meeting is still active
-          const classResponse = await ClassService.getClassById(state.activeZoomMeeting!.id);
-          if (classResponse.success && classResponse.data) {
-            const updatedClass = classResponse.data;
-            
-            // Update class status if it has changed
-            if (updatedClass.status !== state.activeZoomMeeting!.status) {
-              setState(prev => ({
-                ...prev,
-                activeZoomMeeting: updatedClass,
-                liveClasses: prev.liveClasses.map(cls => 
-                  cls.id === updatedClass.id ? updatedClass : cls
-                ),
-                todaysClasses: prev.todaysClasses.map(cls => 
-                  cls.id === updatedClass.id ? updatedClass : cls
-                )
-              }));
-
-              // If meeting ended, clear active meeting
-              if (updatedClass.status === 'completed') {
-                // Handle meeting end inline to avoid dependency issues
-                const tracking = state.attendanceTracking[updatedClass.id];
-                
-                if (tracking && tracking.isTracking && user) {
-                  const leaveTime = new Date();
-                  const duration = Math.floor((leaveTime.getTime() - tracking.joinTime.getTime()) / 1000);
-
-                  try {
-                    // Update attendance with leave time and duration
-                    await AttendanceService.recordAttendance({
-                      userId: user.uid,
-                      classSessionId: updatedClass.id,
-                      joinedAt: tracking.joinTime,
-                      leftAt: leaveTime,
-                      duration,
-                      isPresent: true,
-                      attendanceType: 'zoom_integration',
-                      verificationMethod: 'zoom_join'
-                    });
-
-                    // Track with Zoom service as well
-                    await zoomService.trackAttendance(updatedClass.zoomMeetingId, user.uid, 'leave');
-                    
-                    console.log(`Attendance recorded: ${Math.floor(duration / 60)} minutes for class:`, updatedClass.title);
-                    
-                  } catch (error) {
-                    console.error('Failed to record attendance end:', error);
-                    setState(prev => ({
-                      ...prev,
-                      joinError: 'Failed to save attendance record. Please contact your teacher.'
-                    }));
-                  }
-                }
-
-                setState(prev => ({
-                  ...prev,
-                  activeZoomMeeting: null,
-                  attendanceTracking: {
-                    ...prev.attendanceTracking,
-                    [updatedClass.id]: {
-                      ...prev.attendanceTracking[updatedClass.id],
-                      isTracking: false
-                    }
-                  }
-                }));
-              }
-            }
-          }
-        } catch (error) {
-          console.error('Error checking meeting status:', error);
-        }
-      }, 30000); // Check every 30 seconds
-
-      return () => clearInterval(interval);
-    }
-  }, [state.activeZoomMeeting, state.attendanceTracking, user]);
-
   useEffect(() => {
     loadClassData();
-    
+
     // Set up real-time listeners for class updates
     const unsubscribeLive = ClassService.subscribeToLiveClasses((liveClasses) => {
       setState(prev => ({ ...prev, liveClasses }));
@@ -160,6 +50,70 @@ export const LiveClass: React.FC = () => {
       unsubscribeToday();
     };
   }, []);
+
+  // Initialize Zoom service if enabled
+  useEffect(() => {
+    const initZoom = async () => {
+      if (state.zoomEnabled) {
+        try {
+          if (!zoomService.isSDKInitialized()) {
+            const result = await zoomService.initialize({
+              debug: false,
+              leaveOnPageUnload: true,
+              showMeetingHeader: false,
+              disableInvite: true,
+              disableCallOut: true,
+              disableRecord: true,
+              disableJoinAudio: false,
+              audioPanelAlwaysOpen: false,
+              showPureSharingContent: false,
+              isSupportAV: true,
+              isSupportChat: true,
+              isSupportQA: false,
+              isSupportCC: false,
+              screenShare: false,
+              rwcBackup: '',
+              videoDrag: false,
+              sharingMode: 'both',
+              videoHeader: false,
+              isShowJoiningErrorDialog: true,
+              disablePreview: false,
+              disableSetting: true,
+              disableShareAudioVideo: true,
+              meetingInfo: ['topic', 'host', 'mn', 'pwd', 'telPwd', 'invite', 'participant', 'dc', 'enctype'],
+              disableReport: true,
+              meetingInfoDescription: '',
+              disableVoIP: false,
+              disablePhoneAudio: false,
+            });
+
+            if (result.success) {
+              // Set auth config for signature generation
+              zoomService.setAuthConfig({
+                apiKey: import.meta.env.VITE_ZOOM_API_KEY || 'demo-key',
+                apiSecret: import.meta.env.VITE_ZOOM_API_SECRET || 'demo-secret'
+              });
+              setState(prev => ({ ...prev, zoomInitialized: true }));
+            } else {
+              setState(prev => ({
+                ...prev,
+                joinError: result.error?.errorMessage || 'Failed to initialize Zoom'
+              }));
+            }
+          } else {
+            setState(prev => ({ ...prev, zoomInitialized: true }));
+          }
+        } catch (error) {
+          console.error('Failed to initialize Zoom:', error);
+          setState(prev => ({
+            ...prev,
+            joinError: 'Failed to initialize Zoom integration'
+          }));
+        }
+      }
+    };
+    initZoom();
+  }, [state.zoomEnabled]);
 
   const loadClassData = async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
@@ -209,10 +163,10 @@ export const LiveClass: React.FC = () => {
 
     if (!user) return;
 
-    setState(prev => ({ 
-      ...prev, 
-      joiningClass: classSession.id, 
-      joinError: null 
+    setState(prev => ({
+      ...prev,
+      joiningClass: classSession.id,
+      joinError: null
     }));
 
     try {
@@ -228,27 +182,29 @@ export const LiveClass: React.FC = () => {
         verificationMethod: 'zoom_join'
       });
 
+      // Generate signature for meeting
+      const signature = zoomService.generateSignature(classSession.zoomMeetingId, 0); // 0 = attendee role
+
       // Join meeting via Zoom service
       const joinResult = await zoomService.joinMeeting({
         meetingNumber: classSession.zoomMeetingId,
         password: classSession.zoomPassword,
         userName: user.displayName || user.email || 'Student',
-        userEmail: user.email
+        userEmail: user.email,
+        signature: signature,
+        apiKey: import.meta.env.VITE_ZOOM_API_KEY || 'demo-key',
+        role: 0, // attendee
+        leaveUrl: window.location.origin + '/live-class'
       });
 
-      if (joinResult.status === 'success') {
+      if (joinResult.success) {
         // Track attendance with Zoom service
         await zoomService.trackAttendance(classSession.zoomMeetingId, user.uid, 'join');
         console.log('Successfully joined Zoom meeting:', classSession.title);
-      } else if (joinResult.status === 'disabled') {
-        setState(prev => ({
-          ...prev,
-          joinError: joinResult.message
-        }));
       } else {
-        throw new Error(joinResult.message || 'Failed to join meeting');
+        throw new Error(joinResult.error?.errorMessage || 'Failed to join meeting');
       }
-      
+
     } catch (error) {
       setState(prev => ({
         ...prev,
@@ -262,33 +218,59 @@ export const LiveClass: React.FC = () => {
   const handleJoinClass = async (classSession: ClassSession) => {
     if (!user) return;
 
-    setState(prev => ({ 
-      ...prev, 
-      joiningClass: classSession.id, 
-      joinError: null 
-    }));
+    // Check if user can join
+    const canJoinResponse = await ClassService.canJoinClass(classSession.id, user.uid);
 
-    try {
-      // Check if user can join
-      const canJoinResponse = await ClassService.canJoinClass(classSession.id, user.uid);
-      
-      if (!canJoinResponse.success || !canJoinResponse.data.canJoin) {
-        throw new Error(canJoinResponse.data.reason || 'Cannot join class at this time');
-      }
-
-      // Set active meeting for Zoom integration
-      setState(prev => ({ 
-        ...prev, 
-        activeZoomMeeting: classSession,
-        joiningClass: null
-      }));
-      
-    } catch (error) {
+    if (!canJoinResponse.success || !canJoinResponse.data.canJoin) {
       setState(prev => ({
         ...prev,
-        joinError: error instanceof Error ? error.message : 'Failed to join class',
-        joiningClass: null
+        joinError: canJoinResponse.data.reason || 'Cannot join class at this time'
       }));
+      return;
+    }
+
+    // If Zoom is enabled, use Zoom integration
+    if (state.zoomEnabled) {
+      await handleJoinZoomMeeting(classSession);
+    } else {
+      // Fallback: open meeting URL in new tab
+      setState(prev => ({
+        ...prev,
+        joiningClass: classSession.id,
+        joinError: null
+      }));
+
+      try {
+        const joinResponse = await ClassService.joinClass(classSession.id, user.uid);
+
+        if (joinResponse.success) {
+          // Record attendance for non-Zoom join
+          await AttendanceService.recordAttendance({
+            userId: user.uid,
+            classSessionId: classSession.id,
+            joinedAt: new Date(),
+            duration: 0,
+            isPresent: true,
+            attendanceType: 'manual',
+            verificationMethod: 'manual_checkin'
+          });
+
+          // Open meeting URL in new window
+          window.open(joinResponse.data.joinUrl, '_blank');
+        } else {
+          setState(prev => ({
+            ...prev,
+            joinError: joinResponse.error || 'Failed to join class'
+          }));
+        }
+      } catch (error) {
+        setState(prev => ({
+          ...prev,
+          joinError: error instanceof Error ? error.message : 'Failed to join class'
+        }));
+      } finally {
+        setState(prev => ({ ...prev, joiningClass: null }));
+      }
     }
   };
 
@@ -320,25 +302,18 @@ export const LiveClass: React.FC = () => {
   };
 
   const getStatusBadge = (classSession: ClassSession) => {
-    const isActiveZoomMeeting = state.activeZoomMeeting?.id === classSession.id;
-    const isConnectedToZoom = isActiveZoomMeeting && state.meetingStatus === 'connected';
-    
     const statusConfig = {
-      live: { 
-        color: isConnectedToZoom ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 
-        text: isConnectedToZoom ? 'CONNECTED' : 'LIVE', 
-        malayalam: isConnectedToZoom ? 'കണക്റ്റ് ചെയ്തു' : 'ലൈവ്',
-        icon: isConnectedToZoom ? (
-          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-          </svg>
-        ) : (
+      live: {
+        color: 'bg-red-100 text-red-800',
+        text: 'LIVE',
+        malayalam: 'ലൈവ്',
+        icon: (
           <div className="w-2 h-2 bg-current rounded-full mr-2 animate-pulse"></div>
         )
       },
-      scheduled: { 
-        color: 'bg-blue-100 text-blue-800', 
-        text: 'Scheduled', 
+      scheduled: {
+        color: 'bg-blue-100 text-blue-800',
+        text: 'Scheduled',
         malayalam: 'ഷെഡ്യൂൾ ചെയ്തു',
         icon: (
           <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -346,9 +321,9 @@ export const LiveClass: React.FC = () => {
           </svg>
         )
       },
-      completed: { 
-        color: 'bg-gray-100 text-gray-800', 
-        text: 'Completed', 
+      completed: {
+        color: 'bg-gray-100 text-gray-800',
+        text: 'Completed',
         malayalam: 'പൂർത്തിയായി',
         icon: (
           <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -356,9 +331,9 @@ export const LiveClass: React.FC = () => {
           </svg>
         )
       },
-      cancelled: { 
-        color: 'bg-red-100 text-red-800', 
-        text: 'Cancelled', 
+      cancelled: {
+        color: 'bg-red-100 text-red-800',
+        text: 'Cancelled',
         malayalam: 'റദ്ദാക്കി',
         icon: (
           <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -380,7 +355,7 @@ export const LiveClass: React.FC = () => {
 
   if (state.loading) {
     return (
-      <Layout 
+      <Layout
         showBackButton={true}
         title="Live Class"
         malayalamTitle="ലൈവ് ക്ലാസ്"
@@ -395,7 +370,7 @@ export const LiveClass: React.FC = () => {
   }
 
   return (
-    <Layout 
+    <Layout
       showBackButton={true}
       title="Live Class"
       malayalamTitle="ലൈവ് ക്ലാസ്"
@@ -421,71 +396,13 @@ export const LiveClass: React.FC = () => {
           />
         )}
 
-        {/* Meeting Status Banner */}
-        {state.meetingStatus && (
+        {/* Zoom Status Banner */}
+        {!state.zoomEnabled && (
           <AlertBanner
-            type={state.meetingStatus === 'connected' ? 'success' : 
-                  state.meetingStatus === 'failed' ? 'error' : 'info'}
-            message={getMeetingStatusMessage(state.meetingStatus)}
-            malayalamMessage={MEETING_STATUS_MESSAGES[state.meetingStatus]?.ml}
-            className="mb-4"
+            type="info"
+            message="Zoom integration will be available soon. Please check back later."
+            malayalamMessage="സൂം ഇന്റഗ്രേഷൻ ഉടൻ ലഭ്യമാകും. ദയവായി പിന്നീട് വീണ്ടും പരിശോധിക്കുക."
           />
-        )}
-
-        {/* Active Zoom Meeting */}
-        {state.activeZoomMeeting && (
-          <section className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Active Meeting
-                <span className="ml-2 text-sm text-gray-500" lang="ml">സജീവ മീറ്റിംഗ്</span>
-              </h2>
-              
-              {/* Attendance Tracking Indicator */}
-              {state.attendanceTracking[state.activeZoomMeeting.id]?.isTracking && (
-                <div className="flex items-center text-green-600 text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                  <span>Attendance Tracking</span>
-                  <span className="ml-1 text-xs" lang="ml">ഹാജർ രേഖപ്പെടുത്തുന്നു</span>
-                </div>
-              )}
-            </div>
-            
-            <ZoomMeeting
-              classSession={state.activeZoomMeeting}
-              userName={user?.displayName || user?.email || 'Student'}
-              userEmail={user?.email}
-              onMeetingStart={() => {
-                if (state.activeZoomMeeting) {
-                  handleMeetingStart(state.activeZoomMeeting);
-                }
-              }}
-              onMeetingEnd={() => {
-                if (state.activeZoomMeeting) {
-                  handleMeetingEnd(state.activeZoomMeeting);
-                }
-              }}
-              onAttendanceTracked={(duration) => {
-                console.log(`Attendance tracked for ${duration} seconds`);
-              }}
-              className="mb-6"
-            />
-            
-            {/* Meeting Duration Display */}
-            {state.attendanceTracking[state.activeZoomMeeting.id]?.isTracking && (
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center text-blue-800">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="text-sm font-medium">
-                    Meeting in progress - Attendance being tracked
-                    <span className="block text-xs" lang="ml">മീറ്റിംഗ് പുരോഗതിയിൽ - ഹാജർ രേഖപ്പെടുത്തുന്നു</span>
-                  </span>
-                </div>
-              </div>
-            )}
-          </section>
         )}
 
         {/* Live Classes Section */}
@@ -523,26 +440,14 @@ export const LiveClass: React.FC = () => {
                       variant="primary"
                       size="sm"
                       onClick={() => handleJoinClass(classSession)}
-                      disabled={state.joiningClass === classSession.id || state.activeZoomMeeting?.id === classSession.id}
+                      disabled={state.joiningClass === classSession.id}
                       ariaLabel={`Join live class: ${classSession.title}`}
-                      className={`ml-4 ${
-                        state.activeZoomMeeting?.id === classSession.id 
-                          ? 'bg-green-600 hover:bg-green-700' 
-                          : 'bg-red-600 hover:bg-red-700'
-                      }`}
+                      className="bg-red-600 hover:bg-red-700 ml-4"
                     >
                       {state.joiningClass === classSession.id ? (
                         <>
                           <SkeletonLoader variant="custom" className="w-4 h-4 mr-2" />
                           Joining...
-                        </>
-                      ) : state.activeZoomMeeting?.id === classSession.id ? (
-                        <>
-                          <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                          Active
-                          <span className="ml-1 text-xs" lang="ml">സജീവം</span>
                         </>
                       ) : (
                         <>
@@ -564,7 +469,7 @@ export const LiveClass: React.FC = () => {
             Today's Classes
             <span className="ml-2 text-sm text-gray-500" lang="ml">ഇന്നത്തെ ക്ലാസുകൾ</span>
           </h2>
-          
+
           {state.todaysClasses.length === 0 ? (
             <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
               <div className="text-gray-500">
@@ -599,29 +504,17 @@ export const LiveClass: React.FC = () => {
                     </div>
                     {(classSession.status === 'scheduled' || classSession.status === 'live') && (
                       <AccessibleButton
-                        variant={state.activeZoomMeeting?.id === classSession.id ? "primary" : "secondary"}
+                        variant="secondary"
                         size="sm"
                         onClick={() => handleJoinClass(classSession)}
-                        disabled={state.joiningClass === classSession.id || state.activeZoomMeeting?.id === classSession.id}
+                        disabled={state.joiningClass === classSession.id}
                         ariaLabel={`Join class: ${classSession.title}`}
-                        className={`ml-4 ${
-                          state.activeZoomMeeting?.id === classSession.id 
-                            ? 'bg-green-600 hover:bg-green-700 text-white' 
-                            : ''
-                        }`}
+                        className="ml-4"
                       >
                         {state.joiningClass === classSession.id ? (
                           <>
                             <SkeletonLoader variant="custom" className="w-4 h-4 mr-2" />
                             Joining...
-                          </>
-                        ) : state.activeZoomMeeting?.id === classSession.id ? (
-                          <>
-                            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                            Active
-                            <span className="ml-1 text-xs" lang="ml">സജീവം</span>
                           </>
                         ) : (
                           <>

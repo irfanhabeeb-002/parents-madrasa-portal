@@ -757,29 +757,7 @@ export class RecordingService extends FirebaseService {
     });
   }
 
-  /**
-   * Upload manual recording as fallback
-   */
-  static async uploadManualRecording(
-    file: File,
-    metadata: {
-      title: string;
-      description?: string;
-      classSessionId: string;
-      tags?: string[];
-    }
-  ): Promise<ApiResponse<Recording>> {
-    try {
-      return await zoomRecordingService.uploadManualRecording(file, metadata);
-    } catch (error) {
-      return {
-        data: null as any,
-        success: false,
-        error: error instanceof Error ? error.message : 'Upload failed',
-        timestamp: new Date()
-      };
-    }
-  }
+
 
   /**
    * Get Zoom recording by Zoom recording ID

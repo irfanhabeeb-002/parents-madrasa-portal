@@ -14,9 +14,9 @@ interface SearchAndFilterProps {
   selectedQuality: VideoQuality | 'all';
   onSearch: (query: string) => void;
   onQualityFilter: (quality: VideoQuality | 'all') => void;
-  onSourceFilter?: (source: 'all' | 'zoom' | 'local') => void;
+  onSourceFilter?: (source: 'all' | 'zoom') => void;
   onSyncZoom?: () => void;
-  selectedSource?: 'all' | 'zoom' | 'local';
+  selectedSource?: 'all' | 'zoom';
   disabled?: boolean;
   showZoomFeatures?: boolean;
   syncStatus?: {
@@ -88,9 +88,8 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   ];
 
   const sourceOptions = [
-    { value: 'all' as const, label: 'All Sources', malayalamLabel: 'എല്ലാ ഉറവിടങ്ങളും', icon: null },
-    { value: 'zoom' as const, label: 'Zoom Cloud', malayalamLabel: 'സൂം ക്ലൗഡ്', icon: CloudIcon },
-    { value: 'local' as const, label: 'Manual Upload', malayalamLabel: 'മാനുവൽ അപ്‌ലോഡ്', icon: ComputerDesktopIcon }
+    { value: 'all' as const, label: 'All Recordings', malayalamLabel: 'എല്ലാ റെക്കോർഡിംഗുകളും', icon: null },
+    { value: 'zoom' as const, label: 'Zoom Cloud', malayalamLabel: 'സൂം ക്ലൗഡ്', icon: CloudIcon }
   ];
 
   const activeFiltersCount = (selectedQuality !== 'all' ? 1 : 0) + (selectedSource !== 'all' ? 1 : 0);

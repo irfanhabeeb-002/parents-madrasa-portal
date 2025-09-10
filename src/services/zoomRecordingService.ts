@@ -244,95 +244,7 @@ export class ZoomRecordingService extends FirebaseService {
     }
   }
 
-  /**
-   * Upload manual recording to Firebase Storage as fallback
-   */
-  public async uploadManualRecording(
-    file: File,
-    metadata: {
-      title: string;
-      description?: string;
-      classSessionId: string;
-      tags?: string[];
-    }
-  ): Promise<ApiResponse<Recording>> {
-    try {
-      // Validate file
-      if (!this.isValidVideoFile(file)) {
-        return {
-          data: null as any,
-          success: false,
-          error: 'Invalid file type. Please upload MP4, WebM, or MOV files.',
-          timestamp: new Date()
-        };
-      }
 
-      // Create recording object
-      const recording: Recording = {
-        id: `manual-${Date.now()}`,
-        classSessionId: metadata.classSessionId,
-        title: metadata.title,
-        description: metadata.description || '',
-        thumbnailUrl: '', // Will be generated after upload
-        videoUrl: '', // Will be set after upload
-        duration: 0, // Will be extracted from video
-        fileSize: file.size,
-        quality: this.determineVideoQuality(file.size),
-        format: this.getVideoFormat(file.name),
-        isProcessed: false,
-        processingStatus: 'pending',
-        viewCount: 0,
-        downloadCount: 0,
-        tags: metadata.tags || [],
-        chapters: [],
-        captions: [],
-        metadata: {
-          resolution: 'unknown',
-          bitrate: 0,
-          fps: 0,
-          codec: 'unknown',
-          uploadedBy: 'manual',
-          originalFileName: file.name
-        },
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-
-      // In a real implementation, you would:
-      // 1. Upload file to Firebase Storage
-      // 2. Generate thumbnail
-      // 3. Extract video metadata
-      // 4. Save recording to Firestore
-      // 5. Update processing status
-
-      // For now, simulate the upload process
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Update recording with simulated upload results
-      recording.videoUrl = `/uploads/manual/${recording.id}.${recording.format}`;
-      recording.thumbnailUrl = `/uploads/thumbnails/${recording.id}.jpg`;
-      recording.isProcessed = true;
-      recording.processingStatus = 'completed';
-
-      // Cache the manual recording
-      const cachedRecordings = StorageService.getArray<Recording>(`${ZoomRecordingService.SYNC_CACHE_KEY}_data`);
-      cachedRecordings.unshift(recording); // Add to beginning
-      StorageService.set(`${ZoomRecordingService.SYNC_CACHE_KEY}_data`, cachedRecordings);
-
-      return {
-        data: recording,
-        success: true,
-        timestamp: new Date()
-      };
-    } catch (error) {
-      return {
-        data: null as any,
-        success: false,
-        error: error instanceof Error ? error.message : 'Upload failed',
-        timestamp: new Date()
-      };
-    }
-  }
 
   /**
    * Convert Zoom recording to application Recording format
@@ -431,34 +343,12 @@ export class ZoomRecordingService extends FirebaseService {
   }
 
   /**
-   * Determine video quality based on file size
-   */
-  private determineVideoQuality(sizeBytes: number): VideoQuality {
-    const sizeMB = sizeBytes / (1024 * 1024);
-    
-    if (sizeMB > 500) return 'hd';
-    if (sizeMB > 200) return 'high';
-    if (sizeMB > 100) return 'medium';
-    return 'low';
-  }
-
-  /**
    * Get video format from file
    */
   private getFormatFromFile(file?: ZoomRecordingFile): 'mp4' | 'webm' | 'mov' {
     if (!file) return 'mp4';
     
     const extension = file.fileExtension.toLowerCase();
-    if (extension === 'webm') return 'webm';
-    if (extension === 'mov') return 'mov';
-    return 'mp4';
-  }
-
-  /**
-   * Get video format from filename
-   */
-  private getVideoFormat(filename: string): 'mp4' | 'webm' | 'mov' {
-    const extension = filename.split('.').pop()?.toLowerCase();
     if (extension === 'webm') return 'webm';
     if (extension === 'mov') return 'mov';
     return 'mp4';
@@ -502,16 +392,7 @@ export class ZoomRecordingService extends FirebaseService {
     return tags;
   }
 
-  /**
-   * Validate if file is a supported video format
-   */
-  private isValidVideoFile(file: File): boolean {
-    const validTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
-    const validExtensions = ['.mp4', '.webm', '.mov'];
-    
-    return validTypes.includes(file.type) || 
-           validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
-  }
+
 
   /**
    * Clear cached recordings (force refresh)
