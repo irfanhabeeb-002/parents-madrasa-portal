@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import type { ButtonHTMLAttributes } from 'react';
 
 interface AccessibleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'success' | 'error' | 'warning';
+  variant?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   children: React.ReactNode;
@@ -49,11 +49,12 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
     ];
 
     const variantClasses = {
-      primary: 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800',
-      secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400',
-      success: 'bg-success-600 text-white hover:bg-success-700 active:bg-success-800',
-      error: 'bg-error-600 text-white hover:bg-error-700 active:bg-error-800',
-      warning: 'bg-warning-600 text-white hover:bg-warning-700 active:bg-warning-800',
+      primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 border border-blue-600 hover:border-blue-700',
+      secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400 border border-gray-300',
+      success: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 border border-green-600 hover:border-green-700',
+      error: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 border border-red-600 hover:border-red-700',
+      warning: 'bg-yellow-600 text-white hover:bg-yellow-700 active:bg-yellow-800 border border-yellow-600 hover:border-yellow-700',
+      danger: 'bg-red-700 text-white hover:bg-red-800 active:bg-red-900 border border-red-700 hover:border-red-800 shadow-lg',
     };
 
     const sizeClasses = {

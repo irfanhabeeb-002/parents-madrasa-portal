@@ -13,10 +13,11 @@ export { WhatsAppButtonDemo } from './WhatsAppButtonDemo';
 export { 
   SkeletonLoader, 
   SkeletonCard, 
-  SkeletonButton, 
   SkeletonText, 
+  SkeletonCircle,
   SkeletonImage,
-  DashboardSkeleton 
+  SkeletonButton,
+  DashboardSkeleton
 } from './SkeletonLoader';
 export { LazyImage, useImagePreloader, supportsWebP, generateWebPSource } from './LazyImage';
 

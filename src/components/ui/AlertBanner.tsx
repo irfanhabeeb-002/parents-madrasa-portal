@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { AccessibleButton } from './AccessibleButton';
 
 interface AlertBannerProps {
-  type: 'success' | 'error' | 'warning' | 'info' | 'loading' | 'class_reminder' | 'new_content';
+  type: 'success' | 'error' | 'warning' | 'info';
   message: string;
   malayalamMessage?: string;
   onDismiss?: () => void;
   autoHide?: boolean;
   duration?: number;
-  className?: string;
-  showIcon?: boolean;
-  ariaLive?: 'polite' | 'assertive';
 }
 
 export const AlertBanner: React.FC<AlertBannerProps> = ({
@@ -19,10 +15,7 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
   malayalamMessage,
   onDismiss,
   autoHide = false,
-  duration = 5000,
-  className = '',
-  showIcon = true,
-  ariaLive = 'polite',
+  duration = 5000
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -30,143 +23,89 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
     if (autoHide && duration > 0) {
       const timer = setTimeout(() => {
         setIsVisible(false);
-        setTimeout(() => {
-          onDismiss?.();
-        }, 300); // Wait for fade out animation
+        onDismiss?.();
       }, duration);
 
       return () => clearTimeout(timer);
     }
   }, [autoHide, duration, onDismiss]);
 
-  const handleDismiss = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onDismiss?.();
-    }, 300);
-  };
-
-  const typeConfig = {
-    success: {
-      bgColor: 'bg-success-50',
-      borderColor: 'border-success-200',
-      textColor: 'text-success-800',
-      iconColor: 'text-success-600',
-      icon: '✅',
-      ariaLabel: 'Success',
-    },
-    error: {
-      bgColor: 'bg-error-50',
-      borderColor: 'border-error-200',
-      textColor: 'text-error-800',
-      iconColor: 'text-error-600',
-      icon: '❌',
-      ariaLabel: 'Error',
-    },
-    warning: {
-      bgColor: 'bg-warning-50',
-      borderColor: 'border-warning-200',
-      textColor: 'text-warning-800',
-      iconColor: 'text-warning-600',
-      icon: '⚠️',
-      ariaLabel: 'Warning',
-    },
-    info: {
-      bgColor: 'bg-primary-50',
-      borderColor: 'border-primary-200',
-      textColor: 'text-primary-800',
-      iconColor: 'text-primary-600',
-      icon: 'ℹ️',
-      ariaLabel: 'Information',
-    },
-    loading: {
-      bgColor: 'bg-gray-50',
-      borderColor: 'border-gray-200',
-      textColor: 'text-gray-800',
-      iconColor: 'text-gray-600',
-      icon: '⏳',
-      ariaLabel: 'Loading',
-    },
-    class_reminder: {
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      textColor: 'text-blue-800',
-      iconColor: 'text-blue-600',
-      icon: '🔔',
-      ariaLabel: 'Class Reminder',
-    },
-    new_content: {
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-      textColor: 'text-green-800',
-      iconColor: 'text-green-600',
-      icon: '📚',
-      ariaLabel: 'New Content',
-    },
-  };
-
-  const config = typeConfig[type];
-
   if (!isVisible) return null;
+
+  const getTypeStyles = () => {
+    switch (type) {
+      case 'success':
+        return {
+          container: 'bg-green-50 border-green-200 text-green-800',
+          icon: '✓',
+          iconColor: 'text-green-600'
+        };
+      case 'error':
+        return {
+          container: 'bg-red-50 border-red-200 text-red-800',
+          icon: '✗',
+          iconColor: 'text-red-600'
+        };
+      case 'warning':
+        return {
+          container: 'bg-yellow-50 border-yellow-200 text-yellow-800',
+          icon: '⚠',
+          iconColor: 'text-yellow-600'
+        };
+      case 'info':
+        return {
+          container: 'bg-blue-50 border-blue-200 text-blue-800',
+          icon: 'ℹ',
+          iconColor: 'text-blue-600'
+        };
+      default:
+        return {
+          container: 'bg-gray-50 border-gray-200 text-gray-800',
+          icon: 'ℹ',
+          iconColor: 'text-gray-600'
+        };
+    }
+  };
+
+  const styles = getTypeStyles();
 
   return (
     <div
-      className={`
-        ${config.bgColor} ${config.borderColor} ${config.textColor}
-        border rounded-lg p-4 transition-all duration-300 ease-in-out
-        ${isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-2'}
-        ${className}
-      `}
+      className={`border rounded-lg p-4 ${styles.container}`}
       role="alert"
-      aria-live={ariaLive}
-      aria-label={config.ariaLabel}
+      aria-live="polite"
     >
-      <div className="flex items-start">
-        {showIcon && (
-          <div className={`${config.iconColor} flex-shrink-0 mr-3 mt-0.5 text-lg`}>
-            {config.icon}
-          </div>
-        )}
+      <div className="flex items-start space-x-3">
+        <div className={`flex-shrink-0 ${styles.iconColor} text-lg`}>
+          {styles.icon}
+        </div>
         
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium">
-            {message}
-          </p>
+        <div className="flex-1">
+          <p className="font-medium">{message}</p>
           {malayalamMessage && (
-            <p className="text-sm mt-1 opacity-90" lang="bn">
+            <p className="text-sm mt-1 opacity-90" lang="ml">
               {malayalamMessage}
             </p>
           )}
         </div>
-        
+
         {onDismiss && (
-          <div className="ml-3 flex-shrink-0">
-            <AccessibleButton
-              variant="secondary"
-              size="sm"
-              onClick={handleDismiss}
-              ariaLabel="Dismiss alert"
-              className={`
-                !min-h-[32px] !min-w-[32px] !p-1 
-                ${config.bgColor} hover:bg-opacity-80 border-0
-              `}
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </AccessibleButton>
-          </div>
+          <button
+            onClick={() => {
+              setIsVisible(false);
+              onDismiss();
+            }}
+            className={`flex-shrink-0 ${styles.iconColor} hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-current rounded`}
+            aria-label="Dismiss alert"
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
         )}
       </div>
     </div>

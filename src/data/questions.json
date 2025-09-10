@@ -1,0 +1,334 @@
+    {
+        "questions": [
+            {
+                "id": "kt_001",
+                "subject": "Kithabu Thawheed",
+                "question": "What is the meaning of 'La ilaha illa Allah'?",
+                "questionMalayalam": "'ലാ ഇലാഹ ഇല്ലല്ലാഹു' എന്നതിന്റെ അർത്ഥം എന്താണ്?",
+                "options": [
+                    {
+                        "id": "a",
+                        "text": "There is no god but Allah",
+                        "textMalayalam": "അല്ലാഹുവല്ലാതെ ആരാധ്യനില്ല"
+                    },
+                    {
+                        "id": "b",
+                        "text": "Allah is the greatest",
+                        "textMalayalam": "അല്ലാഹു അക്ബർ"
+                    },
+                    {
+                        "id": "c",
+                        "text": "Praise be to Allah",
+                        "textMalayalam": "അൽഹംദുലില്ലാഹ്"
+                    },
+                    {
+                        "id": "d",
+                        "text": "In the name of Allah",
+                        "textMalayalam": "ബിസ്മില്ലാഹ്"
+                    }
+                ],
+                "answer": "a",
+                "explanation": "La ilaha illa Allah means 'There is no god but Allah' - it is the fundamental declaration of Islamic monotheism.",
+                "explanationMalayalam": "'ലാ ഇലാഹ ഇല്ലല്ലാഹു' എന്നാൽ 'അല്ലാഹുവല്ലാതെ ആരാധ്യനില്ല' എന്നർത്ഥം - ഇത് ഇസ്ലാമിക ഏകദൈവവിശ്വാസത്തിന്റെ അടിസ്ഥാന പ്രഖ്യാപനമാണ്.",
+                "difficulty": "easy",
+                "points": 10
+            },
+            {
+                "id": "kt_002",
+                "subject": "Kithabu Thawheed",
+                "question": "How many types of Tawheed are there according to Islamic scholars?",
+                "questionMalayalam": "ഇസ്ലാമിക പണ്ഡിതന്മാർ പ്രകാരം എത്ര തരം തൗഹീദ് ഉണ്ട്?",
+                "options": [
+                    {
+                        "id": "a",
+                        "text": "Two types",
+                        "textMalayalam": "രണ്ട് തരം"
+                    },
+                    {
+                        "id": "b",
+                        "text": "Three types",
+                        "textMalayalam": "മൂന്ന് തരം"
+                    },
+                    {
+                        "id": "c",
+                        "text": "Four types",
+                        "textMalayalam": "നാല് തരം"
+                    },
+                    {
+                        "id": "d",
+                        "text": "Five types",
+                        "textMalayalam": "അഞ്ച് തരം"
+                    }
+                ],
+                "answer": "b",
+                "explanation": "There are three types of Tawheed: Tawheed ar-Rububiyyah (Lordship), Tawheed al-Uluhiyyah (Worship), and Tawheed al-Asma wa's-Sifat (Names and Attributes).",
+                "explanationMalayalam": "മൂന്ന് തരം തൗഹീദ് ഉണ്ട്: തൗഹീദുർ റുബൂബിയ്യ (പരമാധികാരം), തൗഹീദുൽ ഉലൂഹിയ്യ (ആരാധന), തൗഹീദുൽ അസ്മാ വസ്സിഫാത് (നാമങ്ങളും ഗുണങ്ങളും).",
+                "difficulty": "medium",
+                "points": 15
+            },
+            {
+                "id": "ss_001",
+                "subject": "Swiffathul Swalathu Nabi",
+                "question": "How many Rak'ahs are there in Fajr prayer?",
+                "questionMalayalam": "ഫജർ നമസ്കാരത്തിൽ എത്ര റക്അത്ത് ഉണ്ട്?",
+                "options": [
+                    {
+                        "id": "a",
+                        "text": "2 Rak'ahs",
+                        "textMalayalam": "2 റക്അത്ത്"
+                    },
+                    {
+                        "id": "b",
+                        "text": "3 Rak'ahs",
+                        "textMalayalam": "3 റക്അത്ത്"
+                    },
+                    {
+                        "id": "c",
+                        "text": "4 Rak'ahs",
+                        "textMalayalam": "4 റക്അത്ത്"
+                    },
+                    {
+                        "id": "d",
+                        "text": "5 Rak'ahs",
+                        "textMalayalam": "5 റക്അത്ത്"
+                    }
+                ],
+                "answer": "a",
+                "explanation": "Fajr prayer consists of 2 Rak'ahs as established by the Prophet Muhammad (PBUH).",
+                "explanationMalayalam": "നബി മുഹമ്മദ് (സ) സ്ഥാപിച്ചതുപോലെ ഫജർ നമസ്കാരത്തിൽ 2 റക്അത്ത് ഉണ്ട്.",
+                "difficulty": "easy",
+                "points": 10
+            },
+            {
+                "id": "ss_002",
+                "subject": "Swiffathul Swalathu Nabi",
+                "question": "What is the first pillar of prayer?",
+                "questionMalayalam": "നമസ്കാരത്തിന്റെ ആദ്യ സ്തംഭം എന്താണ്?",
+                "options": [
+                    {
+                        "id": "a",
+                        "text": "Takbeer al-Ihram",
+                        "textMalayalam": "തക്ബീറുൽ ഇഹ്റാം"
+                    },
+                    {
+                        "id": "b",
+                        "text": "Recitation of Fatiha",
+                        "textMalayalam": "ഫാതിഹ പാരായണം"
+                    },
+                    {
+                        "id": "c",
+                        "text": "Ruku",
+                        "textMalayalam": "റുകൂ"
+                    },
+                    {
+                        "id": "d",
+                        "text": "Sujood",
+                        "textMalayalam": "സുജൂദ്"
+                    }
+                ],
+                "answer": "a",
+                "explanation": "Takbeer al-Ihram (the opening Allahu Akbar) is the first pillar of prayer that begins the prayer.",
+                "explanationMalayalam": "തക്ബീറുൽ ഇഹ്റാം (ആരംഭിക്കുന്ന അല്ലാഹു അക്ബർ) നമസ്കാരത്തിന്റെ ആദ്യ സ്തംഭമാണ്.",
+                "difficulty": "medium",
+                "points": 15
+            },
+            {
+                "id": "tj_001",
+                "subject": "Tajweed",
+                "question": "What does 'Tajweed' literally mean?",
+                "questionMalayalam": "'തജ്വീദ്' എന്നതിന്റെ അക്ഷരാർത്ഥം എന്താണ്?",
+                "options": [
+                    {
+                        "id": "a",
+                        "text": "To beautify or improve",
+                        "textMalayalam": "സുന്ദരമാക്കുക അല്ലെങ്കിൽ മെച്ചപ്പെടുത്തുക"
+                    },
+                    {
+                        "id": "b",
+                        "text": "To recite loudly",
+                        "textMalayalam": "ഉച്ചത്തിൽ പാരായണം ചെയ്യുക"
+                    },
+                    {
+                        "id": "c",
+                        "text": "To memorize",
+                        "textMalayalam": "മനഃപാഠമാക്കുക"
+                    },
+                    {
+                        "id": "d",
+                        "text": "To understand",
+                        "textMalayalam": "മനസ്സിലാക്കുക"
+                    }
+                ],
+                "answer": "a",
+                "explanation": "Tajweed comes from the Arabic root j-w-d meaning 'to make better' or 'to beautify'.",
+                "explanationMalayalam": "തജ്വീദ് എന്നത് അറബി മൂലപദമായ ജ-വ-ദിൽ നിന്നാണ് വന്നത്, അതിന്റെ അർത്ഥം 'മെച്ചപ്പെടുത്തുക' അല്ലെങ്കിൽ 'സുന്ദരമാക്കുക' എന്നാണ്.",
+                "difficulty": "easy",
+                "points": 10
+            },
+            {
+                "id": "tj_002",
+                "subject": "Tajweed",
+                "question": "How many points of articulation (Makharij) are there for Arabic letters?",
+                "questionMalayalam": "അറബി അക്ഷരങ്ങൾക്ക് എത്ര ഉച്ചാരണ സ്ഥാനങ്ങൾ (മഖാരിജ്) ഉണ്ട്?",
+                "options": [
+                    {
+                        "id": "a",
+                        "text": "14",
+                        "textMalayalam": "14"
+                    },
+                    {
+                        "id": "b",
+                        "text": "17",
+                        "textMalayalam": "17"
+                    },
+                    {
+                        "id": "c",
+                        "text": "19",
+                        "textMalayalam": "19"
+                    },
+                    {
+                        "id": "d",
+                        "text": "21",
+                        "textMalayalam": "21"
+                    }
+                ],
+                "answer": "b",
+                "explanation": "There are 17 points of articulation (Makharij) for the 28 Arabic letters according to most Tajweed scholars.",
+                "explanationMalayalam": "മിക്ക തജ്വീദ് പണ്ഡിതന്മാരുടെയും അഭിപ്രായത്തിൽ 28 അറബി അക്ഷരങ്ങൾക്ക് 17 ഉച്ചാരണ സ്ഥാനങ്ങൾ (മഖാരിജ്) ഉണ്ട്.",
+                "difficulty": "hard",
+                "points": 20
+            },
+            {
+                "id": "hf_001",
+                "subject": "Hifz",
+                "question": "How many verses (Ayahs) are there in Surah Al-Fatiha?",
+                "questionMalayalam": "സൂറത്തുൽ ഫാതിഹയിൽ എത്ര ആയത്തുകൾ ഉണ്ട്?",
+                "options": [
+                    {
+                        "id": "a",
+                        "text": "6 verses",
+                        "textMalayalam": "6 ആയത്തുകൾ"
+                    },
+                    {
+                        "id": "b",
+                        "text": "7 verses",
+                        "textMalayalam": "7 ആയത്തുകൾ"
+                    },
+                    {
+                        "id": "c",
+                        "text": "8 verses",
+                        "textMalayalam": "8 ആയത്തുകൾ"
+                    },
+                    {
+                        "id": "d",
+                        "text": "9 verses",
+                        "textMalayalam": "9 ആയത്തുകൾ"
+                    }
+                ],
+                "answer": "b",
+                "explanation": "Surah Al-Fatiha has 7 verses and is also known as 'As-Sab'ul Mathani' (The Seven Oft-Repeated).",
+                "explanationMalayalam": "സൂറത്തുൽ ഫാതിഹയിൽ 7 ആയത്തുകൾ ഉണ്ട്, ഇത് 'അസ്സബ്ഉൽ മഥാനി' (ഏഴ് തവണ ആവർത്തിക്കപ്പെടുന്നത്) എന്നും അറിയപ്പെടുന്നു.",
+                "difficulty": "easy",
+                "points": 10
+            },
+            {
+                "id": "hf_002",
+                "subject": "Hifz",
+                "question": "Which Surah is known as the 'Heart of the Quran'?",
+                "questionMalayalam": "ഏത് സൂറയാണ് 'ഖുർആനിന്റെ ഹൃദയം' എന്നറിയപ്പെടുന്നത്?",
+                "options": [
+                    {
+                        "id": "a",
+                        "text": "Surah Al-Baqarah",
+                        "textMalayalam": "സൂറത്തുൽ ബഖറ"
+                    },
+                    {
+                        "id": "b",
+                        "text": "Surah Yasin",
+                        "textMalayalam": "സൂറത് യാസീൻ"
+                    },
+                    {
+                        "id": "c",
+                        "text": "Surah Al-Mulk",
+                        "textMalayalam": "സൂറത്തുൽ മുൽക്"
+                    },
+                    {
+                        "id": "d",
+                        "text": "Surah Ar-Rahman",
+                        "textMalayalam": "സൂറത്തുർ റഹ്മാൻ"
+                    }
+                ],
+                "answer": "b",
+                "explanation": "Surah Yasin is known as the 'Heart of the Quran' according to a hadith of Prophet Muhammad (PBUH).",
+                "explanationMalayalam": "നബി മുഹമ്മദിന്റെ (സ) ഹദീസ് അനുസരിച്ച് സൂറത് യാസീൻ 'ഖുർആനിന്റെ ഹൃദയം' എന്നറിയപ്പെടുന്നു.",
+                "difficulty": "medium",
+                "points": 15
+            },
+            {
+                "id": "tf_001",
+                "subject": "Tafseer",
+                "question": "What does the word 'Quran' literally mean?",
+                "questionMalayalam": "'ഖുർആൻ' എന്ന വാക്കിന്റെ അക്ഷരാർത്ഥം എന്താണ്?",
+                "options": [
+                    {
+                        "id": "a",
+                        "text": "The Book",
+                        "textMalayalam": "പുസ്തകം"
+                    },
+                    {
+                        "id": "b",
+                        "text": "The Recitation",
+                        "textMalayalam": "പാരായണം"
+                    },
+                    {
+                        "id": "c",
+                        "text": "The Guidance",
+                        "textMalayalam": "മാർഗദർശനം"
+                    },
+                    {
+                        "id": "d",
+                        "text": "The Light",
+                        "textMalayalam": "പ്രകാശം"
+                    }
+                ],
+                "answer": "b",
+                "explanation": "The word 'Quran' comes from the Arabic root q-r-a meaning 'to read' or 'to recite'.",
+                "explanationMalayalam": "'ഖുർആൻ' എന്ന വാക്ക് അറബി മൂലപദമായ ഖ-റ-അ യിൽ നിന്നാണ് വന്നത്, അതിന്റെ അർത്ഥം 'വായിക്കുക' അല്ലെങ്കിൽ 'പാരായണം ചെയ്യുക' എന്നാണ്.",
+                "difficulty": "medium",
+                "points": 15
+            },
+            {
+                "id": "tf_002",
+                "subject": "Tafseer",
+                "question": "In which cave did Prophet Muhammad (PBUH) receive the first revelation?",
+                "questionMalayalam": "ഏത് ഗുഹയിലാണ് നബി മുഹമ്മദ് (സ) ആദ്യ വെളിപാട് ലഭിച്ചത്?",
+                "options": [
+                    {
+                        "id": "a",
+                        "text": "Cave of Thawr",
+                        "textMalayalam": "തൗർ ഗുഹ"
+                    },
+                    {
+                        "id": "b",
+                        "text": "Cave of Hira",
+                        "textMalayalam": "ഹിറാ ഗുഹ"
+                    },
+                    {
+                        "id": "c",
+                        "text": "Cave of Uhud",
+                        "textMalayalam": "ഉഹുദ് ഗുഹ"
+                    },
+                    {
+                        "id": "d",
+                        "text": "Cave of Quba",
+                        "textMalayalam": "ഖുബാ ഗുഹ"
+                    }
+                ],
+                "answer": "b",
+                "explanation": "Prophet Muhammad (PBUH) received the first revelation in the Cave of Hira on Mount Jabal an-Nour.",
+                "explanationMalayalam": "നബി മുഹമ്മദ് (സ) ജബൽ അൻ-നൂർ പർവതത്തിലെ ഹിറാ ഗുഹയിൽ വച്ചാണ് ആദ്യ വെളിപാട് ലഭിച്ചത്.",
+                "difficulty": "easy",
+                "points": 10
+            }
+        ]
+    }

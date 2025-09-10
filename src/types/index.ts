@@ -8,3 +8,4 @@ export * from './attendance';
 export * from './common';
 export * from './firebase';
 export * from './notification';
+export * from './zoom';

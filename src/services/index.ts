@@ -15,3 +15,4 @@ export * from './networkService';
 export * from './initializationService';
 export * from './errorHandlingService';
 export * from './notificationService';
+export * from './zoomService';

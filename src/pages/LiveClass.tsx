@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Layout } from '../components/layout';
 import { Card, AlertBanner, SkeletonLoader, AccessibleButton } from '../components/ui';
+import { ZoomMeeting } from '../components/zoom/ZoomMeeting';
 import { ClassService, AttendanceService } from '../services';
+import { useZoom } from '../hooks/useZoom';
+import { zoomService } from '../services/zoomService';
+import { getZoomAuthConfig, ZOOM_ERROR_MESSAGES, MEETING_STATUS_MESSAGES } from '../config/zoom';
 import type { ClassSession } from '../types/class';
+import type { ZoomError, ZoomMeetingSDKStatus } from '../types/zoom';
 import { useAuth } from '../contexts/AuthContext';
 
 interface LiveClassState {
@@ -13,6 +18,14 @@ interface LiveClassState {
   error: string | null;
   joiningClass: string | null;
   joinError: string | null;
+  activeZoomMeeting: ClassSession | null;
+  meetingStatus: ZoomMeetingSDKStatus | null;
+  attendanceTracking: {
+    [classId: string]: {
+      joinTime: Date;
+      isTracking: boolean;
+    };
+  };
 }
 
 export const LiveClass: React.FC = () => {
@@ -25,7 +38,23 @@ export const LiveClass: React.FC = () => {
     error: null,
     joiningClass: null,
     joinError: null,
+    activeZoomMeeting: null,
+    meetingStatus: null,
+    attendanceTracking: {},
   });
+
+  // Initialize Zoom service with authentication
+  useEffect(() => {
+    const initZoom = async () => {
+      try {
+        const authConfig = getZoomAuthConfig();
+        zoomService.setAuthConfig(authConfig);
+      } catch (error) {
+        console.error('Failed to initialize Zoom auth:', error);
+      }
+    };
+    initZoom();
+  }, []);
 
   useEffect(() => {
     loadClassData();

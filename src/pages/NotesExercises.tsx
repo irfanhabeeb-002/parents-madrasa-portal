@@ -9,10 +9,10 @@ import { NoteService } from '../services/noteService';
 import { ExerciseService } from '../services/exerciseService';
 import { useAuth } from '../contexts/AuthContext';
 import type { Note } from '../types/note';
-import type { Exercise, ExamAttempt } from '../types/exercise';
+import type { Exercise } from '../types/exercise';
 import { PDFViewer } from '../components/notes/PDFViewer';
-import { ExerciseComponent } from '../components/exercises/ExerciseComponent';
-import { ProgressTracker } from '../components/exercises/ProgressTracker';
+import { EnhancedExerciseComponent } from '../components/exercises/EnhancedExerciseComponent';
+import { SubjectSelector } from '../components/exercises/SubjectSelector';
 
 interface NotesExercisesState {
   notes: Note[];
@@ -20,10 +20,11 @@ interface NotesExercisesState {
   loading: boolean;
   error: string | null;
   selectedNote: Note | null;
-  selectedExercise: Exercise | null;
-  currentAttempt: ExamAttempt | null;
   showPDFViewer: boolean;
+  showSubjectSelector: boolean;
   showExercise: boolean;
+  selectedSubject: string;
+  questionCount: number;
   searchQuery: string;
   filterSubject: string;
   filterDifficulty: string;
@@ -37,10 +38,11 @@ export const NotesExercises: React.FC = () => {
     loading: true,
     error: null,
     selectedNote: null,
-    selectedExercise: null,
-    currentAttempt: null,
     showPDFViewer: false,
+    showSubjectSelector: false,
     showExercise: false,
+    selectedSubject: '',
+    questionCount: 5,
     searchQuery: '',
     filterSubject: '',
     filterDifficulty: '',
@@ -96,46 +98,30 @@ export const NotesExercises: React.FC = () => {
     }
   };
 
-  const handleExerciseClick = async (exercise: Exercise) => {
-    console.log('Exercise clicked:', exercise.title, 'User:', user);
-    
-    // Create a mock attempt for now to bypass authentication issues
-    const mockAttempt = {
-      id: `attempt-${Date.now()}`,
-      userId: user?.uid || 'mock-user',
-      exerciseId: exercise.id,
-      startedAt: new Date(),
-      status: 'in_progress' as const,
-      currentQuestionIndex: 0,
-      answers: {},
-      timeRemaining: 20, // 20 seconds
-      isSubmitted: false,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    
+  const handleStartExercise = () => {
     setState(prev => ({
       ...prev,
-      selectedExercise: exercise,
-      currentAttempt: mockAttempt,
-      showExercise: true,
-      loading: false,
-      error: null
+      showSubjectSelector: true
+    }));
+  };
+
+  const handleSubjectSelect = (subject: string, questionCount: number) => {
+    setState(prev => ({
+      ...prev,
+      selectedSubject: subject,
+      questionCount,
+      showSubjectSelector: false,
+      showExercise: true
     }));
   };
 
   const handleExerciseComplete = (result: any) => {
+    console.log('Exercise completed with result:', result);
     setState(prev => ({
       ...prev,
       showExercise: false,
-      selectedExercise: null,
-      currentAttempt: null
-    }));
-    
-    // Show success message
-    setState(prev => ({
-      ...prev,
-      error: null
+      selectedSubject: '',
+      questionCount: 5
     }));
   };
 
@@ -151,8 +137,9 @@ export const NotesExercises: React.FC = () => {
     setState(prev => ({
       ...prev,
       showExercise: false,
-      selectedExercise: null,
-      currentAttempt: null
+      showSubjectSelector: false,
+      selectedSubject: '',
+      questionCount: 5
     }));
   };
 
@@ -331,7 +318,7 @@ export const NotesExercises: React.FC = () => {
           )}
         </div>
 
-        {/* Exercises Section */}
+        {/* Practice Exercises Section */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Practice Exercises
@@ -340,41 +327,46 @@ export const NotesExercises: React.FC = () => {
             </span>
           </h2>
           
-          {filteredExercises.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No exercises found matching your criteria</p>
-              <p className="text-sm text-gray-400 mt-1" lang="ml">
-                നിങ്ങളുടെ മാനദണ്ഡങ്ങൾക്ക് അനുയോജ്യമായ അഭ്യാസങ്ങൾ കണ്ടെത്തിയില്ല
-              </p>
+          <div className="text-center py-8">
+            <div className="text-6xl mb-4">🧠</div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Test Your Knowledge
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Practice with randomized questions from Islamic subjects
+              <span className="block text-sm mt-1" lang="ml">
+                ഇസ്ലാമിക വിഷയങ്ങളിൽ നിന്നുള്ള ക്രമരഹിത ചോദ്യങ്ങൾ ഉപയോഗിച്ച് അഭ്യസിക്കുക
+              </span>
+            </p>
+            
+            <div className="bg-blue-50 rounded-lg p-4 mb-6 text-left">
+              <h4 className="font-semibold text-blue-900 mb-2">Features:</h4>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• 10-second timer per question</li>
+                <li>• Randomized questions and options</li>
+                <li>• Instant feedback and explanations</li>
+                <li>• Progress tracking and scoring</li>
+                <li>• Malayalam language support</li>
+              </ul>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredExercises.map(exercise => (
-                <Card
-                  key={exercise.id}
-                  title={exercise.title}
-                  subtitle={exercise.description}
-                  onClick={() => handleExerciseClick(exercise)}
-                  variant="interactive"
-                  ariaLabel={`Start exercise: ${exercise.title}`}
-                  icon={
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                    </svg>
-                  }
-                >
-                  <div className="flex justify-between items-center text-xs text-gray-500 mt-2">
-                    <span>{exercise.difficulty}</span>
-                    <span>{exercise.questions.length} questions</span>
-                  </div>
-                  <div className="flex justify-between items-center text-xs text-gray-500 mt-1">
-                    <span>{exercise.estimatedDuration} min</span>
-                    <span>{exercise.passingScore}% to pass</span>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
+
+            <AccessibleButton
+              variant="primary"
+              size="lg"
+              onClick={handleStartExercise}
+              ariaLabel="Start practice exercise"
+              style={{ 
+                backgroundColor: '#2563eb', 
+                color: 'white',
+                border: '2px solid #2563eb'
+              }}
+            >
+              Start Practice Exercise
+              <span className="block text-sm mt-1" lang="ml">
+                അഭ്യാസ വ്യായാമം ആരംഭിക്കുക
+              </span>
+            </AccessibleButton>
+          </div>
         </div>
 
         {/* PDF Viewer Modal */}
@@ -393,18 +385,35 @@ export const NotesExercises: React.FC = () => {
           </Modal>
         )}
 
+        {/* Subject Selector Modal */}
+        {state.showSubjectSelector && (
+          <Modal
+            isOpen={state.showSubjectSelector}
+            onClose={closeExercise}
+            title="Practice Exercises"
+            malayalamTitle="അഭ്യാസ വ്യായാമങ്ങൾ"
+            size="2xl"
+          >
+            <SubjectSelector
+              onSubjectSelect={handleSubjectSelect}
+              onClose={closeExercise}
+            />
+          </Modal>
+        )}
+
         {/* Exercise Modal */}
-        {state.showExercise && state.selectedExercise && state.currentAttempt && (
+        {state.showExercise && (
           <Modal
             isOpen={state.showExercise}
             onClose={closeExercise}
-            title={state.selectedExercise.title}
+            title={`${state.selectedSubject || 'Mixed'} Exercise`}
+            malayalamTitle={`${state.selectedSubject || 'മിശ്രിത'} അഭ്യാസം`}
             size="2xl"
             closeOnOverlayClick={false}
           >
-            <ExerciseComponent
-              exercise={state.selectedExercise}
-              attempt={state.currentAttempt}
+            <EnhancedExerciseComponent
+              subject={state.selectedSubject}
+              numberOfQuestions={state.questionCount}
               onComplete={handleExerciseComplete}
               onClose={closeExercise}
             />

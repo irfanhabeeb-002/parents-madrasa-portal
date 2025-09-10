@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AccessibleButton } from '../ui/AccessibleButton';
 import { FontSizeToggle } from '../ui/FontSizeToggle';
@@ -22,7 +22,9 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [showMenu, setShowMenu] = useState(false);
   const [showFontToggle, setShowFontToggle] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleBack = () => {
     if (onBack) {
@@ -31,6 +33,23 @@ export const Header: React.FC<HeaderProps> = ({
       navigate(-1);
     }
   };
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowFontToggle(false);
+      }
+    };
+
+    if (showFontToggle) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showFontToggle]);
 
   return (
     <header 
@@ -66,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </svg>
               </AccessibleButton>
             ) : (
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <svg
                   className="w-5 h-5 text-white"
                   fill="currentColor"
@@ -125,19 +144,24 @@ export const Header: React.FC<HeaderProps> = ({
             {showLogout && user && (
               <>
                 {/* User avatar/initial */}
-                <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-primary-700">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-blue-700">
                     {user.displayName?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 </div>
                 
                 {/* Logout button */}
                 <AccessibleButton
-                  variant="error"
+                  variant="danger"
                   size="sm"
                   onClick={logout}
                   ariaLabel="Logout from application"
                   className="!min-h-[36px] text-xs"
+                  style={{ 
+                    backgroundColor: '#dc2626', 
+                    color: 'white',
+                    border: '2px solid #dc2626'
+                  }}
                 >
                   Logout
                 </AccessibleButton>
@@ -148,7 +172,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Font Size Toggle Dropdown */}
         {showFontToggle && (
-          <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <div ref={menuRef} className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
             <FontSizeToggle showLabels={true} />
           </div>
         )}
@@ -183,7 +207,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </svg>
               </AccessibleButton>
             ) : (
-              <div className="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
                 <svg
                   className="w-7 h-7 text-white"
                   fill="currentColor"
@@ -226,8 +250,8 @@ export const Header: React.FC<HeaderProps> = ({
             {showLogout && user && (
               <>
                 {/* User avatar/initial */}
-                <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                  <span className="text-lg font-medium text-primary-700">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-lg font-medium text-blue-700">
                     {user.displayName?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 </div>
@@ -251,15 +275,20 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Desktop Menu Dropdown */}
         {showFontToggle && (
-          <div className="mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200 max-w-md ml-auto">
+          <div ref={menuRef} className="mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200 max-w-md ml-auto">
             <div className="space-y-4">
               <FontSizeToggle showLabels={true} />
               <hr className="border-gray-300" />
               <AccessibleButton
-                variant="error"
+                variant="danger"
                 onClick={logout}
                 ariaLabel="Logout from application"
                 className="w-full"
+                style={{ 
+                  backgroundColor: '#dc2626', 
+                  color: 'white',
+                  border: '2px solid #dc2626'
+                }}
               >
                 Logout
               </AccessibleButton>

@@ -1,154 +1,150 @@
 import React from 'react';
 
 interface SkeletonLoaderProps {
-  variant?: 'text' | 'card' | 'avatar' | 'button' | 'image' | 'custom';
-  width?: string | number;
-  height?: string | number;
+  variant?: 'text' | 'card' | 'circle' | 'rectangle' | 'image' | 'custom';
+  lines?: number;
   className?: string;
-  lines?: number; // For text variant
-  animate?: boolean;
-  ariaLabel?: string;
+  width?: string;
+  height?: string;
 }
 
 export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   variant = 'text',
-  width,
-  height,
-  className = '',
   lines = 1,
-  animate = true,
-  ariaLabel = 'Loading content',
+  className = '',
+  width,
+  height
 }) => {
-  const baseClasses = [
-    'bg-gray-200',
-    'rounded',
-    animate ? 'animate-pulse' : '',
-  ].filter(Boolean).join(' ');
-
-  const getVariantClasses = () => {
-    switch (variant) {
-      case 'text':
-        return 'h-4';
-      case 'card':
-        return 'h-32 w-full';
-      case 'avatar':
-        return 'h-12 w-12 rounded-full';
-      case 'button':
-        return 'h-11 w-24 rounded-lg';
-      case 'image':
-        return 'h-48 w-full';
-      case 'custom':
-        return '';
-      default:
-        return 'h-4';
-    }
-  };
-
-  const variantClasses = getVariantClasses();
+  const baseClasses = 'animate-pulse bg-gray-200 rounded';
   
-  const combinedClasses = [
-    baseClasses,
-    variantClasses,
-    className,
-  ].join(' ');
-
-  const style: React.CSSProperties = {};
-  if (width) style.width = typeof width === 'number' ? `${width}px` : width;
-  if (height) style.height = typeof height === 'number' ? `${height}px` : height;
-
-  // For text variant with multiple lines
-  if (variant === 'text' && lines > 1) {
+  if (variant === 'text') {
     return (
-      <div className="space-y-2" role="status" aria-label={ariaLabel}>
+      <div className={`space-y-2 ${className}`}>
         {Array.from({ length: lines }, (_, index) => (
           <div
             key={index}
-            className={combinedClasses}
+            className={`${baseClasses} h-4`}
             style={{
-              ...style,
-              // Make last line slightly shorter for more realistic appearance
-              width: index === lines - 1 ? '75%' : style.width || '100%',
+              width: width || (index === lines - 1 ? '75%' : '100%')
             }}
           />
         ))}
-        <span className="sr-only">{ariaLabel}</span>
       </div>
     );
   }
 
+  if (variant === 'circle') {
+    return (
+      <div
+        className={`${baseClasses} rounded-full ${className}`}
+        style={{
+          width: width || '40px',
+          height: height || width || '40px'
+        }}
+      />
+    );
+  }
+
+  if (variant === 'card') {
+    return (
+      <div className={`${baseClasses} ${className}`}>
+        <div className="p-4 space-y-3">
+          <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+          <div className="space-y-2">
+            <div className="h-3 bg-gray-300 rounded"></div>
+            <div className="h-3 bg-gray-300 rounded w-5/6"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === 'image') {
+    return (
+      <div
+        className={`${baseClasses} ${className}`}
+        style={{
+          width: width || '100px',
+          height: height || '100px'
+        }}
+      />
+    );
+  }
+
+  if (variant === 'custom') {
+    return (
+      <div
+        className={`${baseClasses} ${className}`}
+        style={{
+          width: width,
+          height: height
+        }}
+      />
+    );
+  }
+
+  // Rectangle variant (default)
   return (
     <div
-      className={combinedClasses}
-      style={style}
-      role="status"
-      aria-label={ariaLabel}
-    >
-      <span className="sr-only">{ariaLabel}</span>
-    </div>
+      className={`${baseClasses} ${className}`}
+      style={{
+        width: width || '100%',
+        height: height || '20px'
+      }}
+    />
   );
 };
 
-// Predefined skeleton components for common use cases
+// Additional skeleton components for convenience
 export const SkeletonCard: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`bg-white rounded-lg border border-gray-200 p-4 ${className}`}>
-    <div className="flex items-center space-x-4 mb-4">
-      <SkeletonLoader variant="avatar" />
-      <div className="flex-1">
-        <SkeletonLoader variant="text" className="mb-2" />
-        <SkeletonLoader variant="text" width="60%" />
-      </div>
-    </div>
-    <SkeletonLoader variant="text" lines={3} />
-  </div>
+  <SkeletonLoader variant="card" className={className} />
 );
 
-export const SkeletonButton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <SkeletonLoader variant="button" className={className} />
-);
-
-export const SkeletonText: React.FC<{ 
-  lines?: number; 
-  className?: string;
-}> = ({ lines = 1, className = '' }) => (
+export const SkeletonText: React.FC<{ lines?: number; className?: string }> = ({ 
+  lines = 1, 
+  className = '' 
+}) => (
   <SkeletonLoader variant="text" lines={lines} className={className} />
 );
 
-export const SkeletonImage: React.FC<{ 
-  width?: string | number;
-  height?: string | number;
-  className?: string;
-}> = ({ width, height, className = '' }) => (
-  <SkeletonLoader 
-    variant="image" 
-    width={width} 
-    height={height} 
-    className={className} 
-  />
+export const SkeletonCircle: React.FC<{ size?: string; className?: string }> = ({ 
+  size = '40px', 
+  className = '' 
+}) => (
+  <SkeletonLoader variant="circle" width={size} height={size} className={className} />
 );
 
-// Dashboard skeleton for the main page
+export const SkeletonImage: React.FC<{ width?: string; height?: string; className?: string }> = ({ 
+  width = '100px', 
+  height = '100px', 
+  className = '' 
+}) => (
+  <SkeletonLoader variant="image" width={width} height={height} className={className} />
+);
+
+export const SkeletonButton: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <SkeletonLoader variant="rectangle" width="120px" height="44px" className={`rounded-lg ${className}`} />
+);
+
 export const DashboardSkeleton: React.FC = () => (
   <div className="space-y-6">
     {/* Header skeleton */}
-    <div className="flex justify-between items-center">
-      <div>
-        <SkeletonLoader variant="text" width="200px" className="h-6 mb-2" />
-        <SkeletonLoader variant="text" width="150px" className="h-4" />
-      </div>
-      <SkeletonLoader variant="button" />
+    <div className="space-y-2">
+      <SkeletonLoader variant="text" lines={1} width="200px" />
+      <SkeletonLoader variant="text" lines={1} width="150px" />
     </div>
     
     {/* Cards grid skeleton */}
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {Array.from({ length: 4 }, (_, index) => (
         <SkeletonCard key={index} />
       ))}
     </div>
     
-    {/* Announcements skeleton */}
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
-      <SkeletonLoader variant="text" width="120px" className="h-5 mb-3" />
-      <SkeletonLoader variant="text" lines={2} />
+    {/* Content skeleton */}
+    <div className="space-y-4">
+      <SkeletonLoader variant="text" lines={3} />
+      <SkeletonLoader variant="rectangle" height="200px" />
     </div>
   </div>
 );
