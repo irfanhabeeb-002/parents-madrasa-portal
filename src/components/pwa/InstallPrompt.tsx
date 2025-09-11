@@ -231,10 +231,17 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
       {showInstallBanner && !bannerDismissed && (
         <div 
           ref={bannerRef}
-          className={`fixed bottom-22 left-4 right-4 z-60 max-w-md mx-auto md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 ${className} ${prefersReducedMotion ? '' : 'transition-all duration-300 ease-in-out'}`}
+          className={`fixed bottom-22 left-4 right-4 z-60 max-w-md mx-auto md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 ${className} ${
+            prefersReducedMotion 
+              ? '' 
+              : 'transition-all duration-300 ease-in-out animate-slide-up-fade-in'
+          }`}
           style={{ 
             paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-            bottom: 'calc(88px + env(safe-area-inset-bottom, 0px))'
+            bottom: 'calc(88px + env(safe-area-inset-bottom, 0px))',
+            ...(prefersReducedMotion ? {} : {
+              animation: 'slideUpFadeIn 0.3s ease-out forwards'
+            })
           }}
           role="banner"
           aria-live="polite"
@@ -271,7 +278,11 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
               </div>
               <button
                 onClick={handleDismissBanner}
-                className={`p-1 ml-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white ${isHighContrast ? 'text-white hover:text-gray-300 hover:bg-gray-800' : theme === 'dark' ? 'text-primary-200 hover:text-white hover:bg-primary-500' : 'text-primary-200 hover:text-white hover:bg-primary-600'} ${prefersReducedMotion ? '' : 'transition-colors duration-200'}`}
+                className={`p-1 ml-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white ${isHighContrast ? 'text-white hover:text-gray-300 hover:bg-gray-800' : theme === 'dark' ? 'text-primary-200 hover:text-white hover:bg-primary-500' : 'text-primary-200 hover:text-white hover:bg-primary-600'} ${
+                  prefersReducedMotion 
+                    ? '' 
+                    : 'transition-all duration-200 ease-in-out hover:scale-105 active:scale-95'
+                }`}
                 aria-label="Dismiss install banner. You can install the app later from your browser menu."
                 title="Close install banner"
               >
@@ -291,7 +302,11 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
                 variant="secondary"
                 size="sm"
                 onClick={handleShowModal}
-                className={`${buttonStyles.secondary} min-h-[44px] flex-1 sm:flex-initial`}
+                className={`${buttonStyles.secondary} min-h-[44px] flex-1 sm:flex-initial ${
+                  prefersReducedMotion 
+                    ? '' 
+                    : 'transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 hover:shadow-md'
+                }`}
                 ariaLabel="Learn more about installing the app. Opens detailed information modal."
               >
                 <span className="text-sm md:text-base">Learn More</span>
@@ -300,7 +315,11 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
                 variant="primary"
                 size="sm"
                 onClick={handleInstallClick}
-                className={`${buttonStyles.primary} min-h-[44px] flex-1 sm:flex-initial`}
+                className={`${buttonStyles.primary} min-h-[44px] flex-1 sm:flex-initial ${
+                  prefersReducedMotion 
+                    ? '' 
+                    : 'transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 hover:shadow-lg'
+                }`}
                 ariaLabel="Install Madrasa Portal app now. This will add the app to your device."
               >
                 <span className="text-sm md:text-base">Install</span>
@@ -326,7 +345,11 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
           {/* Enhanced Header with Gradient Icon */}
           <div className="text-center">
             <div 
-              className="mx-auto flex items-center justify-center h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 shadow-lg mb-6"
+              className={`mx-auto flex items-center justify-center h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 shadow-lg mb-6 ${
+                prefersReducedMotion 
+                  ? '' 
+                  : 'transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-xl'
+              }`}
               role="img"
               aria-label="Mobile app icon"
             >
@@ -477,7 +500,11 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
                 setShowInstallModal(false);
                 announceToScreenReader('Install modal closed');
               }}
-              className={`flex-1 min-h-[48px] px-6 py-3 text-base font-medium rounded-lg border-2 border-gray-300 hover:border-gray-400 ${prefersReducedMotion ? '' : 'transition-colors duration-200'}`}
+              className={`flex-1 min-h-[48px] px-6 py-3 text-base font-medium rounded-lg border-2 border-gray-300 hover:border-gray-400 ${
+                prefersReducedMotion 
+                  ? '' 
+                  : 'transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 hover:shadow-md'
+              }`}
               ariaLabel="Close modal and maybe install later"
             >
               <div className="text-center">
@@ -494,7 +521,11 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
             <AccessibleButton
               variant="primary"
               onClick={handleInstallClick}
-              className={`flex-1 min-h-[48px] px-6 py-3 text-base font-medium rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-lg hover:shadow-xl ${prefersReducedMotion ? '' : 'transition-all duration-200'}`}
+              className={`flex-1 min-h-[48px] px-6 py-3 text-base font-medium rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-lg hover:shadow-xl ${
+                prefersReducedMotion 
+                  ? '' 
+                  : 'transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 transform'
+              }`}
               ariaLabel="Install Madrasa Portal app now on your device"
             >
               <div className="text-center">
