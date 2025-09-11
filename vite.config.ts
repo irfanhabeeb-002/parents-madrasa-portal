@@ -13,6 +13,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      manifestFilename: 'manifest.json',
       manifest: {
         name: 'Parents Madrasa Portal',
         short_name: 'Madrasa Portal',
@@ -61,9 +62,7 @@ export default defineConfig({
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
               },
-              cacheKeyWillBeUsed: async ({ request }) => {
-                return `${request.url}?v=1`;
-              },
+
             },
           },
           // Google Fonts CSS - Stale While Revalidate
@@ -88,14 +87,7 @@ export default defineConfig({
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
               },
-              plugins: [
-                {
-                  cacheKeyWillBeUsed: async ({ request }) => {
-                    // Add version parameter for cache busting
-                    return `${request.url}?sw-cache=1`;
-                  },
-                },
-              ],
+
             },
           },
           // Firebase API calls - Network First with fallback
@@ -149,23 +141,7 @@ export default defineConfig({
             },
           },
         ],
-        // Background sync for offline form submissions
-        backgroundSync: {
-          options: [
-            {
-              name: 'attendance-queue',
-              options: {
-                maxRetentionTime: 24 * 60, // 24 hours in minutes
-              },
-            },
-            {
-              name: 'exam-results-queue',
-              options: {
-                maxRetentionTime: 24 * 60, // 24 hours in minutes
-              },
-            },
-          ],
-        },
+
       },
     }),
   ],
