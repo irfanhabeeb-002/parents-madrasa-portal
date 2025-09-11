@@ -2,6 +2,10 @@
   "name": "parents-madrasa-portal",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.17.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
