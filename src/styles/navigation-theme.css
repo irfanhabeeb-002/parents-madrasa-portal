@@ -1,0 +1,216 @@
+/* Enhanced Navigation Theme Styles for Better Accessibility */
+
+:root {
+  /* Light theme colors with WCAG AA compliance */
+  --nav-bg-light: rgba(255, 255, 255, 0.95);
+  --nav-border-light: rgb(229, 231, 235);
+  --nav-text-inactive-light: rgb(107, 114, 128);
+  --nav-text-active-light: rgb(255, 255, 255);
+  --nav-indicator-light: linear-gradient(to top, rgb(37, 99, 235), rgb(59, 130, 246));
+  --nav-hover-light: rgba(243, 244, 246, 0.8);
+  --nav-shadow-light: rgba(0, 0, 0, 0.1);
+  
+  /* Dark theme colors with WCAG AA compliance */
+  --nav-bg-dark: rgba(17, 24, 39, 0.95);
+  --nav-border-dark: rgb(55, 65, 81);
+  --nav-text-inactive-dark: rgb(156, 163, 175);
+  --nav-text-active-dark: rgb(255, 255, 255);
+  --nav-indicator-dark: linear-gradient(to top, rgb(59, 130, 246), rgb(96, 165, 250));
+  --nav-hover-dark: rgba(55, 65, 81, 0.5);
+  --nav-shadow-dark: rgba(0, 0, 0, 0.3);
+  
+  /* High contrast theme colors */
+  --nav-bg-hc-light: rgb(255, 255, 255);
+  --nav-border-hc-light: rgb(0, 0, 0);
+  --nav-text-inactive-hc-light: rgb(0, 0, 0);
+  --nav-text-active-hc-light: rgb(255, 255, 255);
+  --nav-indicator-hc-light: rgb(0, 0, 0);
+  --nav-hover-hc-light: rgb(229, 231, 235);
+  
+  --nav-bg-hc-dark: rgb(0, 0, 0);
+  --nav-border-hc-dark: rgb(255, 255, 255);
+  --nav-text-inactive-hc-dark: rgb(255, 255, 255);
+  --nav-text-active-hc-dark: rgb(0, 0, 0);
+  --nav-indicator-hc-dark: rgb(255, 255, 255);
+  --nav-hover-hc-dark: rgb(55, 65, 81);
+  
+  /* Focus ring colors for better visibility */
+  --nav-focus-light: rgb(59, 130, 246);
+  --nav-focus-dark: rgb(96, 165, 250);
+  --nav-focus-hc: currentColor;
+  
+  /* Animation durations */
+  --nav-transition-normal: 200ms;
+  --nav-transition-slow: 300ms;
+  --nav-transition-none: 0ms;
+  
+  /* Touch target sizes for accessibility */
+  --nav-touch-target-min: 48px;
+  --nav-touch-target-comfortable: 60px;
+  --nav-icon-size: 24px;
+  --nav-icon-size-active: 26px;
+}
+
+/* Enhanced focus styles for better accessibility */
+.nav-button-enhanced:focus-visible {
+  outline: 3px solid var(--nav-focus-light);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.1);
+}
+
+.dark .nav-button-enhanced:focus-visible {
+  outline-color: var(--nav-focus-dark);
+  box-shadow: 0 0 0 6px rgba(96, 165, 250, 0.1);
+}
+
+.high-contrast .nav-button-enhanced:focus-visible {
+  outline: 3px solid var(--nav-focus-hc);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+/* Improved hover states for older users */
+.nav-button-enhanced:hover:not(.active) {
+  transform: translateY(-1px);
+  transition: transform var(--nav-transition-normal) ease-out;
+}
+
+.motion-reduce .nav-button-enhanced:hover:not(.active) {
+  transform: none;
+}
+
+/* Enhanced active state indicator */
+.nav-indicator-enhanced {
+  background: var(--nav-indicator-light);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+}
+
+.dark .nav-indicator-enhanced {
+  background: var(--nav-indicator-dark);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.high-contrast .nav-indicator-enhanced {
+  background: var(--nav-indicator-hc-light);
+  box-shadow: none;
+  border: 2px solid currentColor;
+}
+
+.high-contrast.dark .nav-indicator-enhanced {
+  background: var(--nav-indicator-hc-dark);
+}
+
+/* Typography enhancements for readability */
+.nav-label-enhanced {
+  font-family: 'Inter', 'Noto Sans Malayalam', system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  line-height: 1.2;
+}
+
+.nav-label-enhanced.active {
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.high-contrast .nav-label-enhanced {
+  font-weight: 700;
+}
+
+/* Icon enhancements */
+.nav-icon-enhanced {
+  width: var(--nav-icon-size);
+  height: var(--nav-icon-size);
+  transition: transform var(--nav-transition-normal) ease-out;
+}
+
+.nav-icon-enhanced.active {
+  width: var(--nav-icon-size-active);
+  height: var(--nav-icon-size-active);
+  transform: scale(1.05);
+}
+
+.motion-reduce .nav-icon-enhanced {
+  transition: none;
+  transform: none;
+}
+
+.motion-reduce .nav-icon-enhanced.active {
+  transform: none;
+}
+
+/* Container enhancements */
+.nav-container-enhanced {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--nav-border-light);
+  background: var(--nav-bg-light);
+  box-shadow: 0 -4px 20px var(--nav-shadow-light);
+}
+
+.dark .nav-container-enhanced {
+  border-top-color: var(--nav-border-dark);
+  background: var(--nav-bg-dark);
+  box-shadow: 0 -4px 20px var(--nav-shadow-dark);
+}
+
+.high-contrast .nav-container-enhanced {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: var(--nav-bg-hc-light);
+  border-top: 2px solid var(--nav-border-hc-light);
+  box-shadow: none;
+}
+
+.high-contrast.dark .nav-container-enhanced {
+  background: var(--nav-bg-hc-dark);
+  border-top-color: var(--nav-border-hc-dark);
+}
+
+/* Responsive enhancements */
+@media (max-width: 768px) {
+  :root {
+    --nav-touch-target-min: 52px;
+    --nav-touch-target-comfortable: 64px;
+    --nav-icon-size: 26px;
+    --nav-icon-size-active: 28px;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --nav-transition-normal: var(--nav-transition-none);
+    --nav-transition-slow: var(--nav-transition-none);
+  }
+  
+  .nav-button-enhanced,
+  .nav-icon-enhanced,
+  .nav-indicator-enhanced {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* High contrast mode enhancements */
+@media (prefers-contrast: high) {
+  .nav-container-enhanced {
+    border-top-width: 3px;
+  }
+  
+  .nav-button-enhanced {
+    border: 2px solid transparent;
+  }
+  
+  .nav-button-enhanced.active {
+    border-color: currentColor;
+  }
+}
+
+/* Print styles */
+@media print {
+  .nav-container-enhanced {
+    display: none;
+  }
+}

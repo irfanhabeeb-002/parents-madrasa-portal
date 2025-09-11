@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useNotificationBadge } from '../../contexts/NotificationContext';
 import { NotificationBadge } from '../notifications/NotificationBadge';
+import { useTheme } from '../../contexts/ThemeContext';
+import '../../styles/navigation-theme.css';
 
 interface NavItem {
   id: string;
@@ -83,9 +85,25 @@ const navigationItems: NavItem[] = [
 export const BottomNavigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme, isHighContrast, prefersReducedMotion } = useTheme();
   
   // Get notification badges for different sections
   const classBadge = useNotificationBadge('class_reminder');
+
+  // Active tab state for smooth indicator animation
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
+
+  // Update active tab index when location changes
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const index = navigationItems.findIndex(item => {
+      if (item.path === '/') {
+        return currentPath === '/';
+      }
+      return currentPath.startsWith(item.path);
+    });
+    setActiveTabIndex(index >= 0 ? index : 0);
+  }, [location.pathname]);
 
   // Handle keyboard navigation
   const handleKeyDown = (event: React.KeyboardEvent, path: string, label: string, index: number) => {
@@ -148,68 +166,110 @@ export const BottomNavigation: React.FC = () => {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 shadow-lg
-                 dark:bg-gray-900 dark:border-gray-700
-                 high-contrast:bg-white high-contrast:border-black high-contrast:border-t-2"
+      className="nav-container-enhanced fixed bottom-0 left-0 right-0 z-50"
       role="navigation"
       aria-label="Main navigation"
     >
       <div className="container mx-auto px-2 max-w-md sm:px-4">
-        <div className="flex justify-around items-center py-1 sm:py-2">
-          {navigationItems.map((item, index) => {
-            const active = isActive(item.path);
-            
-            return (
-              <button
-                key={item.id}
-                data-nav-index={index}
-                onClick={() => handleNavigation(item.path, item.label)}
-                onKeyDown={(e) => handleKeyDown(e, item.path, item.label, index)}
-                className={`
-                  flex flex-col items-center justify-center
-                  px-3 py-3 rounded-lg transition-colors duration-200
-                  min-w-[44px] min-h-[56px] touch-manipulation
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                  focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
-                  motion-reduce:transition-none
-                  high-contrast:border high-contrast:border-current
-                  ${active 
-                    ? 'text-blue-600 bg-blue-50 high-contrast:bg-blue-900 high-contrast:text-white' 
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 high-contrast:text-black high-contrast:hover:bg-gray-200'
-                  }
-                  sm:min-w-[60px] sm:min-h-[60px] sm:px-4 sm:py-4
-                `}
-                aria-label={`Navigate to ${item.label} page`}
-                aria-current={active ? 'page' : undefined}
-                type="button"
-              >
-                {/* Icon with Badge */}
-                <div className="mb-1 relative">
-                  {active && item.activeIcon ? item.activeIcon : item.icon}
+        <div className="relative">
+          {/* Enhanced Sliding Indicator with smooth animations */}
+          <div 
+            className="nav-indicator-enhanced absolute top-1 left-0 w-1/4 h-14 sm:h-16 transition-all ease-out duration-300"
+            style={{ 
+              transform: `translateX(${activeTabIndex * 100}%)`,
+              marginLeft: '0.125rem',
+              marginRight: '0.125rem',
+              width: 'calc(25% - 0.25rem)'
+            }}
+            aria-hidden="true"
+          />
+          
+          {/* Navigation Items */}
+          <div className="flex justify-around items-center py-1 sm:py-2 relative z-10">
+            {navigationItems.map((item, index) => {
+              const active = isActive(item.path);
+              
+              return (
+                <button
+                  key={item.id}
+                  data-nav-index={index}
+                  onClick={() => handleNavigation(item.path, item.label)}
+                  onKeyDown={(e) => handleKeyDown(e, item.path, item.label, index)}
+                  className={`
+                    nav-button-enhanced flex flex-col items-center justify-center relative
+                    px-3 py-3 rounded-xl group touch-manipulation
+                    min-w-[48px] min-h-[56px] sm:min-w-[60px] sm:min-h-[64px] 
+                    focus:outline-none
+                    ${active 
+                      ? 'text-white font-semibold active' 
+                      : `font-medium ${theme === 'dark' 
+                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50' 
+                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100/80'
+                        }`
+                    }
+                    ${isHighContrast 
+                      ? 'border-2 border-transparent ' + 
+                        (active 
+                          ? (theme === 'dark' ? 'text-black' : 'text-white')
+                          : (theme === 'dark' ? 'text-white hover:bg-gray-700' : 'text-black hover:bg-gray-200')
+                        )
+                      : ''
+                    }
+                    sm:px-4 sm:py-4
+                  `}
+                  aria-label={`Navigate to ${item.label} page`}
+                  aria-current={active ? 'page' : undefined}
+                  type="button"
+                >
+                  {/* Icon with enhanced animations and badge */}
+                  <div className="mb-1 relative">
+                    <div className={`nav-icon-enhanced ${active ? 'active' : ''}`}>
+                      {active && item.activeIcon ? item.activeIcon : item.icon}
+                    </div>
+                    
+                    {/* Notification Badges */}
+                    {item.id === 'live-class' && classBadge.visible && (
+                      <NotificationBadge
+                        count={classBadge.count}
+                        visible={classBadge.visible}
+                        size="sm"
+                        color="blue"
+                        ariaLabel={`${classBadge.count} class reminder${classBadge.count > 1 ? 's' : ''}`}
+                      />
+                    )}
+                  </div>
                   
-                  {/* Notification Badges */}
-                  {item.id === 'live-class' && classBadge.visible && (
-                    <NotificationBadge
-                      count={classBadge.count}
-                      visible={classBadge.visible}
-                      size="sm"
-                      color="blue"
-                      ariaLabel={`${classBadge.count} class reminder${classBadge.count > 1 ? 's' : ''}`}
-                    />
+                  {/* Enhanced Label with better typography for 40+ users */}
+                  <div className="text-center">
+                    <span className={`
+                      nav-label-enhanced block leading-tight
+                      text-xs sm:text-sm
+                      ${active ? 'active' : ''}
+                    `}>
+                      {item.label}
+                    </span>
+                  </div>
+
+                  {/* Subtle hover effect for non-active items - optimized for older users */}
+                  {!active && !isHighContrast && (
+                    <div className={`
+                      absolute inset-0 rounded-xl opacity-0 transition-opacity duration-200 ease-out
+                      group-hover:opacity-100
+                      ${theme === 'dark' 
+                        ? 'bg-gradient-to-t from-gray-700/30 to-transparent' 
+                        : 'bg-gradient-to-t from-gray-200/40 to-transparent'
+                      }
+                    `} />
                   )}
-                </div>
-                
-                {/* Label */}
-                <div className="text-center">
-                  <span className="text-xs font-semibold block leading-tight sm:text-sm">
-                    {item.label}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
+
+      {/* Enhanced bottom padding for better thumb reach */}
+      <div className="h-2 sm:h-3" aria-hidden="true" />
     </nav>
   );
 };

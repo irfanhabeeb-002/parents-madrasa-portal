@@ -3,27 +3,30 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { BottomNavigation } from '../BottomNavigation';
 import { NotificationProvider } from '../../../contexts/NotificationContext';
+import { ThemeProvider } from '../../../contexts/ThemeContext';
 
-// Mock the notification context
-const MockNotificationProvider = ({ children }: { children: React.ReactNode }) => (
-  <NotificationProvider>
-    {children}
-  </NotificationProvider>
+// Mock the providers
+const MockProviders = ({ children }: { children: React.ReactNode }) => (
+  <BrowserRouter>
+    <ThemeProvider>
+      <NotificationProvider>
+        {children}
+      </NotificationProvider>
+    </ThemeProvider>
+  </BrowserRouter>
 );
 
-const renderWithRouter = (component: React.ReactElement) => {
+const renderWithProviders = (component: React.ReactElement) => {
   return render(
-    <BrowserRouter>
-      <MockNotificationProvider>
-        {component}
-      </MockNotificationProvider>
-    </BrowserRouter>
+    <MockProviders>
+      {component}
+    </MockProviders>
   );
 };
 
 describe('BottomNavigation', () => {
   test('renders all four navigation items', () => {
-    renderWithRouter(<BottomNavigation />);
+    renderWithProviders(<BottomNavigation />);
     
     expect(screen.getByLabelText(/navigate to home page/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/navigate to live class page/i)).toBeInTheDocument();
@@ -32,7 +35,7 @@ describe('BottomNavigation', () => {
   });
 
   test('has proper accessibility attributes', () => {
-    renderWithRouter(<BottomNavigation />);
+    renderWithProviders(<BottomNavigation />);
     
     const nav = screen.getByRole('navigation');
     expect(nav).toHaveAttribute('aria-label', 'Main navigation');
@@ -47,7 +50,7 @@ describe('BottomNavigation', () => {
   });
 
   test('supports keyboard navigation', () => {
-    renderWithRouter(<BottomNavigation />);
+    renderWithProviders(<BottomNavigation />);
     
     const homeButton = screen.getByLabelText(/navigate to home page/i);
     const liveClassButton = screen.getByLabelText(/navigate to live class page/i);
@@ -61,13 +64,12 @@ describe('BottomNavigation', () => {
   });
 
   test('has minimum touch target sizes', () => {
-    renderWithRouter(<BottomNavigation />);
+    renderWithProviders(<BottomNavigation />);
     
     const buttons = screen.getAllByRole('button');
     buttons.forEach(button => {
-      const styles = window.getComputedStyle(button);
-      // Check for minimum 44px touch targets (converted to rem: 44px = 2.75rem)
-      expect(button).toHaveClass('min-w-[44px]');
+      // Check for minimum 44px touch targets
+      expect(button).toHaveClass('min-w-[48px]');
       expect(button).toHaveClass('min-h-[56px]');
     });
   });
@@ -79,14 +81,14 @@ describe('BottomNavigation', () => {
       writable: true
     });
     
-    renderWithRouter(<BottomNavigation />);
+    renderWithProviders(<BottomNavigation />);
     
     const homeButton = screen.getByLabelText(/navigate to home page/i);
     expect(homeButton).toHaveAttribute('aria-current', 'page');
   });
 
   test('handles Enter and Space key activation', () => {
-    renderWithRouter(<BottomNavigation />);
+    renderWithProviders(<BottomNavigation />);
     
     const homeButton = screen.getByLabelText(/navigate to home page/i);
     
