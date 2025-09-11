@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AccessibleButton } from '../ui/AccessibleButton';
 import { Modal } from '../ui/Modal';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -16,6 +17,7 @@ interface InstallPromptProps {
 }
 
 export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) => {
+  const { theme, isHighContrast } = useTheme();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -112,27 +114,89 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
   // Check if banner was dismissed this session
   const bannerDismissed = sessionStorage.getItem('installBannerDismissed') === 'true';
 
+  // Get theme-aware banner styles
+  const getBannerStyles = () => {
+    if (isHighContrast) {
+      return {
+        background: 'bg-black',
+        text: 'text-white',
+        border: 'border-white border-2',
+        shadow: 'shadow-2xl'
+      };
+    }
+    
+    if (theme === 'dark') {
+      return {
+        background: 'bg-primary-600',
+        text: 'text-white',
+        border: 'border-primary-700',
+        shadow: 'shadow-2xl'
+      };
+    }
+    
+    // Light mode (default)
+    return {
+      background: 'bg-primary-700',
+      text: 'text-white',
+      border: 'border-primary-800',
+      shadow: 'shadow-2xl'
+    };
+  };
+
+  const bannerStyles = getBannerStyles();
+
+  // Get theme-aware button styles
+  const getButtonStyles = () => {
+    if (isHighContrast) {
+      return {
+        secondary: 'bg-white text-black hover:bg-gray-200 border-2 border-black',
+        primary: 'bg-black text-white hover:bg-gray-800 border-2 border-white'
+      };
+    }
+    
+    if (theme === 'dark') {
+      return {
+        secondary: 'bg-white text-primary-600 hover:bg-primary-50',
+        primary: 'bg-primary-600 hover:bg-primary-700'
+      };
+    }
+    
+    // Light mode (default)
+    return {
+      secondary: 'bg-white text-primary-600 hover:bg-primary-50',
+      primary: 'bg-primary-700 hover:bg-primary-800'
+    };
+  };
+
+  const buttonStyles = getButtonStyles();
+
   return (
     <>
       {/* Install Banner */}
       {showInstallBanner && !bannerDismissed && (
-        <div className={`fixed bottom-20 left-4 right-4 z-40 ${className}`}>
-          <div className="bg-primary-600 text-white p-4 rounded-lg shadow-lg">
+        <div 
+          className={`fixed bottom-22 left-4 right-4 z-60 sm:left-6 sm:right-6 md:left-8 md:right-8 lg:max-w-md lg:left-1/2 lg:right-auto lg:transform lg:-translate-x-1/2 ${className}`}
+          style={{ 
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+            bottom: 'calc(88px + env(safe-area-inset-bottom, 0px))'
+          }}
+        >
+          <div className={`${bannerStyles.background} ${bannerStyles.text} p-4 sm:p-5 rounded-lg ${bannerStyles.shadow} border ${bannerStyles.border}`}>
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h3 className="font-semibold text-sm mb-1">
+                <h3 className="font-semibold text-sm sm:text-base mb-1 sm:mb-2">
                   Install Madrasa Portal
                 </h3>
-                <p className="text-xs text-primary-100 mb-2">
+                <p className={`text-xs sm:text-sm mb-2 ${isHighContrast ? 'text-white' : theme === 'dark' ? 'text-primary-100' : 'text-primary-100'}`}>
                   Get quick access and work offline
                 </p>
-                <p className="text-xs text-primary-200" lang="ml">
+                <p className={`text-xs sm:text-sm ${isHighContrast ? 'text-white' : theme === 'dark' ? 'text-primary-200' : 'text-primary-200'}`} lang="ml">
                   വേഗത്തിലുള്ള ആക്സസും ഓഫ്‌ലൈൻ പ്രവർത്തനവും നേടുക
                 </p>
               </div>
               <button
                 onClick={handleDismissBanner}
-                className="text-primary-200 hover:text-white p-1 ml-2"
+                className={`p-1 ml-2 ${isHighContrast ? 'text-white hover:text-gray-300' : theme === 'dark' ? 'text-primary-200 hover:text-white' : 'text-primary-200 hover:text-white'}`}
                 aria-label="Dismiss install banner"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,12 +204,12 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
                 </svg>
               </button>
             </div>
-            <div className="flex space-x-2 mt-3">
+            <div className="flex space-x-2 sm:space-x-3 mt-3 sm:mt-4">
               <AccessibleButton
                 variant="secondary"
                 size="sm"
                 onClick={handleShowModal}
-                className="bg-white text-primary-600 hover:bg-primary-50"
+                className={buttonStyles.secondary}
               >
                 Learn More
               </AccessibleButton>
@@ -153,7 +217,7 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
                 variant="primary"
                 size="sm"
                 onClick={handleInstallClick}
-                className="bg-primary-700 hover:bg-primary-800"
+                className={buttonStyles.primary}
               >
                 Install
               </AccessibleButton>
