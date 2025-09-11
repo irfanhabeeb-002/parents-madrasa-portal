@@ -92,6 +92,9 @@ export const BottomNavigation: React.FC = () => {
 
   // Active tab state for smooth indicator animation
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+  
+  // Track if user is navigating with keyboard for enhanced focus management
+  const [isKeyboardUser, setIsKeyboardUser] = useState(false);
 
   // Update active tab index when location changes
   useEffect(() => {
@@ -105,7 +108,21 @@ export const BottomNavigation: React.FC = () => {
     setActiveTabIndex(index >= 0 ? index : 0);
   }, [location.pathname]);
 
-  // Handle keyboard navigation
+  // Detect keyboard usage for enhanced focus management
+  useEffect(() => {
+    const handleKeyDown = () => setIsKeyboardUser(true);
+    const handleMouseDown = () => setIsKeyboardUser(false);
+    
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleMouseDown);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, []);
+
+  // Enhanced keyboard navigation with comprehensive support
   const handleKeyDown = (event: React.KeyboardEvent, path: string, label: string, index: number) => {
     switch (event.key) {
       case 'Enter':
@@ -114,10 +131,12 @@ export const BottomNavigation: React.FC = () => {
         handleNavigation(path, label);
         break;
       case 'ArrowLeft':
+      case 'ArrowUp':
         event.preventDefault();
         focusNavigationItem(index - 1);
         break;
       case 'ArrowRight':
+      case 'ArrowDown':
         event.preventDefault();
         focusNavigationItem(index + 1);
         break;
@@ -129,6 +148,11 @@ export const BottomNavigation: React.FC = () => {
         event.preventDefault();
         focusNavigationItem(navigationItems.length - 1);
         break;
+      case 'Escape':
+        event.preventDefault();
+        // Remove focus from navigation to allow other keyboard interactions
+        (event.target as HTMLElement).blur();
+        break;
     }
   };
 
@@ -137,7 +161,27 @@ export const BottomNavigation: React.FC = () => {
     const button = document.querySelector(`[data-nav-index="${adjustedIndex}"]`) as HTMLButtonElement;
     if (button) {
       button.focus();
+      
+      // Announce the focused item to screen readers
+      const item = navigationItems[adjustedIndex];
+      announceToScreenReader(`${item.label} navigation button focused`);
     }
+  };
+
+  // Enhanced screen reader announcements
+  const announceToScreenReader = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', priority);
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'sr-only absolute -left-10000 w-1 h-1 overflow-hidden';
+    announcement.textContent = message;
+    document.body.appendChild(announcement);
+    
+    setTimeout(() => {
+      if (document.body.contains(announcement)) {
+        document.body.removeChild(announcement);
+      }
+    }, 1000);
   };
 
   const isActive = (path: string) => {
@@ -150,31 +194,35 @@ export const BottomNavigation: React.FC = () => {
   const handleNavigation = (path: string, label: string) => {
     navigate(path);
     
-    // Announce navigation to screen readers
-    const announcement = `Navigated to ${label}`;
-    const ariaLiveRegion = document.createElement('div');
-    ariaLiveRegion.setAttribute('aria-live', 'polite');
-    ariaLiveRegion.setAttribute('aria-atomic', 'true');
-    ariaLiveRegion.className = 'sr-only';
-    ariaLiveRegion.textContent = announcement;
-    document.body.appendChild(ariaLiveRegion);
+    // Enhanced navigation announcement with more context
+    const currentItem = navigationItems.find(item => item.path === path);
+    const hasNotifications = path === '/live-class' && classBadge.visible;
     
-    setTimeout(() => {
-      document.body.removeChild(ariaLiveRegion);
-    }, 1000);
+    let announcement = `Navigated to ${label} page`;
+    if (hasNotifications) {
+      announcement += `. ${classBadge.count} class reminder${classBadge.count > 1 ? 's' : ''} available`;
+    }
+    
+    announceToScreenReader(announcement, 'assertive');
   };
 
   return (
     <nav 
       className="nav-container-enhanced fixed bottom-0 left-0 right-0 z-50"
       role="navigation"
-      aria-label="Main navigation"
+      aria-label="Main navigation menu with 4 sections: Home, Live Class, Profile, and Settings"
     >
       <div className="container mx-auto px-2 max-w-md sm:px-4">
         <div className="relative">
-          {/* Enhanced Sliding Indicator with smooth animations */}
+          {/* Enhanced Sliding Indicator with accessibility considerations */}
           <div 
-            className="nav-indicator-enhanced absolute top-1 left-0 w-1/4 h-14 sm:h-16 transition-all ease-out duration-300"
+            className={`
+              nav-indicator-enhanced absolute top-1 left-0 w-1/4 h-14 sm:h-16 
+              ${prefersReducedMotion 
+                ? 'transition-none' 
+                : 'transition-all ease-out duration-300'
+              }
+            `}
             style={{ 
               transform: `translateX(${activeTabIndex * 100}%)`,
               marginLeft: '0.125rem',
@@ -182,12 +230,23 @@ export const BottomNavigation: React.FC = () => {
               width: 'calc(25% - 0.25rem)'
             }}
             aria-hidden="true"
+            role="presentation"
           />
           
-          {/* Navigation Items */}
-          <div className="flex justify-around items-center py-1 sm:py-2 relative z-10">
+          {/* Navigation Items with enhanced accessibility */}
+          <div 
+            className="flex justify-around items-center py-1 sm:py-2 relative z-10"
+            role="tablist"
+            aria-orientation="horizontal"
+          >
             {navigationItems.map((item, index) => {
               const active = isActive(item.path);
+              const hasNotifications = item.id === 'live-class' && classBadge.visible;
+              
+              // Enhanced ARIA label with context
+              const ariaLabel = `${item.label} navigation${active ? ', currently selected' : ''}${
+                hasNotifications ? `, ${classBadge.count} notification${classBadge.count > 1 ? 's' : ''}` : ''
+              }`;
               
               return (
                 <button
@@ -200,6 +259,7 @@ export const BottomNavigation: React.FC = () => {
                     px-3 py-3 rounded-xl group touch-manipulation
                     min-w-[48px] min-h-[56px] sm:min-w-[60px] sm:min-h-[64px] 
                     focus:outline-none
+                    ${isKeyboardUser ? 'focus-visible:ring-4 focus-visible:ring-offset-2' : ''}
                     ${active 
                       ? 'text-white font-semibold active' 
                       : `font-medium ${theme === 'dark' 
@@ -210,56 +270,101 @@ export const BottomNavigation: React.FC = () => {
                     ${isHighContrast 
                       ? 'border-2 border-transparent ' + 
                         (active 
-                          ? (theme === 'dark' ? 'text-black' : 'text-white')
-                          : (theme === 'dark' ? 'text-white hover:bg-gray-700' : 'text-black hover:bg-gray-200')
+                          ? (theme === 'dark' ? 'text-black border-white' : 'text-white border-black')
+                          : (theme === 'dark' ? 'text-white hover:bg-gray-700 border-gray-400' : 'text-black hover:bg-gray-200 border-gray-600')
                         )
                       : ''
                     }
                     sm:px-4 sm:py-4
+                    transition-colors duration-200 ease-out
+                    ${prefersReducedMotion ? 'transition-none' : ''}
                   `}
-                  aria-label={`Navigate to ${item.label} page`}
+                  aria-label={ariaLabel}
                   aria-current={active ? 'page' : undefined}
+                  aria-describedby={hasNotifications ? `${item.id}-notifications` : undefined}
+                  role="tab"
+                  tabIndex={active ? 0 : -1}
                   type="button"
                 >
                   {/* Icon with enhanced animations and badge */}
-                  <div className="mb-1 relative">
-                    <div className={`nav-icon-enhanced ${active ? 'active' : ''}`}>
+                  <div className="mb-1 relative" role="presentation">
+                    <div 
+                      className={`
+                        nav-icon-enhanced 
+                        ${active ? 'active' : ''} 
+                        ${prefersReducedMotion ? 'motion-reduce' : ''}
+                      `}
+                      aria-hidden="true"
+                    >
                       {active && item.activeIcon ? item.activeIcon : item.icon}
                     </div>
                     
-                    {/* Notification Badges */}
+                    {/* Enhanced Notification Badges with accessibility */}
                     {item.id === 'live-class' && classBadge.visible && (
-                      <NotificationBadge
-                        count={classBadge.count}
-                        visible={classBadge.visible}
-                        size="sm"
-                        color="blue"
-                        ariaLabel={`${classBadge.count} class reminder${classBadge.count > 1 ? 's' : ''}`}
-                      />
+                      <>
+                        <NotificationBadge
+                          count={classBadge.count}
+                          visible={classBadge.visible}
+                          size="sm"
+                          color="blue"
+                          ariaLabel={`${classBadge.count} class reminder${classBadge.count > 1 ? 's' : ''}`}
+                        />
+                        {/* Hidden description for screen readers */}
+                        <span 
+                          id={`${item.id}-notifications`}
+                          className="sr-only"
+                        >
+                          {classBadge.count} class reminder{classBadge.count > 1 ? 's' : ''} available
+                        </span>
+                      </>
                     )}
                   </div>
                   
-                  {/* Enhanced Label with better typography for 40+ users */}
-                  <div className="text-center">
-                    <span className={`
-                      nav-label-enhanced block leading-tight
-                      text-xs sm:text-sm
-                      ${active ? 'active' : ''}
-                    `}>
+                  {/* Enhanced Label with better typography and accessibility */}
+                  <div className="text-center" role="presentation">
+                    <span 
+                      className={`
+                        nav-label-enhanced block leading-tight
+                        text-xs sm:text-sm
+                        ${active ? 'active' : ''}
+                        ${isHighContrast ? 'font-bold' : ''}
+                      `}
+                      aria-hidden="true"
+                    >
                       {item.label}
                     </span>
                   </div>
 
-                  {/* Subtle hover effect for non-active items - optimized for older users */}
+                  {/* Enhanced hover effect with accessibility considerations */}
                   {!active && !isHighContrast && (
-                    <div className={`
-                      absolute inset-0 rounded-xl opacity-0 transition-opacity duration-200 ease-out
-                      group-hover:opacity-100
-                      ${theme === 'dark' 
-                        ? 'bg-gradient-to-t from-gray-700/30 to-transparent' 
-                        : 'bg-gradient-to-t from-gray-200/40 to-transparent'
-                      }
-                    `} />
+                    <div 
+                      className={`
+                        absolute inset-0 rounded-xl opacity-0 
+                        ${prefersReducedMotion 
+                          ? 'transition-none' 
+                          : 'transition-opacity duration-200 ease-out'
+                        }
+                        group-hover:opacity-100
+                        ${theme === 'dark' 
+                          ? 'bg-gradient-to-t from-gray-700/30 to-transparent' 
+                          : 'bg-gradient-to-t from-gray-200/40 to-transparent'
+                        }
+                      `}
+                      aria-hidden="true"
+                      role="presentation"
+                    />
+                  )}
+
+                  {/* High contrast mode focus indicator */}
+                  {isHighContrast && (
+                    <div 
+                      className={`
+                        absolute inset-0 rounded-xl border-2 border-transparent
+                        ${active ? 'border-current' : ''}
+                      `}
+                      aria-hidden="true"
+                      role="presentation"
+                    />
                   )}
                 </button>
               );
@@ -268,8 +373,22 @@ export const BottomNavigation: React.FC = () => {
         </div>
       </div>
 
-      {/* Enhanced bottom padding for better thumb reach */}
-      <div className="h-2 sm:h-3" aria-hidden="true" />
+      {/* Enhanced bottom padding for better thumb reach and safe area */}
+      <div 
+        className="h-2 sm:h-3 pb-safe" 
+        aria-hidden="true" 
+        role="presentation"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      />
+      
+      {/* Skip link for keyboard users */}
+      <a 
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:p-2 focus:bg-blue-600 focus:text-white focus:rounded"
+        onFocus={() => setIsKeyboardUser(true)}
+      >
+        Skip to main content
+      </a>
     </nav>
   );
 };

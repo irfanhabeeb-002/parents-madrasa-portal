@@ -4,6 +4,7 @@ import React from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { FontSizeProvider } from './contexts/FontSizeContext';
 import { AccessibilityProvider } from './contexts/AccessibilityContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider, useNotifications } from './contexts/NotificationContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/layout';
@@ -53,8 +54,9 @@ function App() {
     <ErrorBoundary>
       <FontSizeProvider>
         <AccessibilityProvider>
-          <AuthProvider>
-            <NotificationProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <NotificationProvider>
               <Router>
                 <div className="App min-h-screen bg-gray-50">
                   {/* PWA Components */}
@@ -141,8 +143,9 @@ function App() {
                 </Suspense>
                 </div>
               </Router>
-            </NotificationProvider>
-          </AuthProvider>
+              </NotificationProvider>
+            </AuthProvider>
+          </ThemeProvider>
         </AccessibilityProvider>
       </FontSizeProvider>
     </ErrorBoundary>
