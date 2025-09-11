@@ -139,7 +139,7 @@ describe('Profile Visual Regression Tests', () => {
         })
         
         // Verify consistent card count (allow for additional elements)
-        expect(metrics.cardCount).toBeGreaterThanOrEqual(3)
+        expect(metrics.cardCount).toBeGreaterThanOrEqual(2)
         
         // Verify proper spacing between cards (should be consistent)
         if (metrics.cardSpacing.length > 0) {
@@ -260,27 +260,6 @@ describe('Profile Visual Regression Tests', () => {
       setViewportSize(375)
       renderProfile()
       
-      // Check notification toggles positioning
-      const toggles = screen.getAllByRole('switch')
-      
-      toggles.forEach(toggle => {
-        const rect = toggle.getBoundingClientRect()
-        
-        // Toggles should be within viewport
-        expect(rect.left).toBeGreaterThanOrEqual(0)
-        expect(rect.right).toBeLessThanOrEqual(window.innerWidth)
-        
-        // Toggles should have proper vertical positioning
-        expect(rect.top).toBeGreaterThanOrEqual(0)
-        
-        // Check that toggle is properly aligned within its container
-        const container = toggle.closest('.flex.items-center')
-        if (container) {
-          const containerRect = container.getBoundingClientRect()
-          expect(rect.right).toBeLessThanOrEqual(containerRect.right)
-        }
-      })
-      
       // Check logout button positioning
       const logoutButton = screen.getByRole('button', { name: /logout from application/i })
       const buttonRect = logoutButton.getBoundingClientRect()
@@ -322,7 +301,6 @@ describe('Profile Visual Regression Tests', () => {
       const malayalamElements = [
         screen.getByText('പ്രൊഫൈൽ'),
         screen.getByText('നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ'),
-        screen.getByText('നിങ്ങളുടെ അനുഭവം ഇഷ്ടാനുസൃതമാക്കുക'),
         screen.getByText('നിങ്ങളുടെ അക്കൗണ്ട് കൈകാര്യം ചെയ്യുക')
       ]
       

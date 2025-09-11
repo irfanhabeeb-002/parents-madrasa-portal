@@ -75,7 +75,6 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
       
       // Verify card titles
       expect(screen.getByText('User Information')).toBeInTheDocument()
-      expect(screen.getByText('Settings')).toBeInTheDocument()
       expect(screen.getByText('Account Actions')).toBeInTheDocument()
     })
 
@@ -94,21 +93,7 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
       expect(screen.getByText('test-user-123')).toBeInTheDocument()
     })
 
-    it('should display settings section on mobile', () => {
-      setViewportSize(375)
-      renderProfile()
-      
-      // Check settings section
-      expect(screen.getByText('Font Size')).toBeInTheDocument()
-      expect(screen.getByText('ഫോണ്ട് വലുപ്പം')).toBeInTheDocument()
-      expect(screen.getByText('Notifications')).toBeInTheDocument()
-      expect(screen.getByText('അറിയിപ്പുകൾ')).toBeInTheDocument()
-      
-      // Check notification toggles
-      expect(screen.getByText('Class Reminders')).toBeInTheDocument()
-      expect(screen.getByText('New Content Alerts')).toBeInTheDocument()
-      expect(screen.getByText('Exam Reminders')).toBeInTheDocument()
-    })
+
 
     it('should display account actions section on mobile', () => {
       setViewportSize(375)
@@ -156,12 +141,6 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
       // Check logout button has proper mobile sizing
       const logoutButton = screen.getByRole('button', { name: /logout from application/i })
       expect(logoutButton).toHaveClass('!min-h-[48px]')
-      
-      // Check notification toggles have proper sizing
-      const toggles = screen.getAllByRole('switch')
-      toggles.forEach(toggle => {
-        expect(toggle).toHaveClass('min-h-[44px]')
-      })
     })
   })
 
@@ -178,8 +157,6 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
         screen.getByText('ഫോൺ നമ്പർ'),
         screen.getByText('ഇമെയിൽ'),
         screen.getByText('ഉപയോക്തൃ ഐഡി'),
-        screen.getByText('ഫോണ്ട് വലുപ്പം'),
-        screen.getByText('അറിയിപ്പുകൾ'),
         screen.getByText('പുറത്തുകടക്കുക')
       ]
       
@@ -225,12 +202,10 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
         
         // Check that main cards are present
         const cardTitles = screen.getAllByRole('heading', { level: 3 })
-        expect(cardTitles.length).toBeGreaterThanOrEqual(3)
+        expect(cardTitles.length).toBeGreaterThanOrEqual(2)
         
         // Check that interactive elements are present
         expect(screen.getByRole('button', { name: /logout from application/i })).toBeInTheDocument()
-        const toggles = screen.getAllByRole('switch')
-        expect(toggles.length).toBeGreaterThan(0)
       })
     })
   })
@@ -324,7 +299,6 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
       
       // Each card should have its content
       expect(screen.getByText('User Information')).toBeInTheDocument()
-      expect(screen.getByText('Settings')).toBeInTheDocument()
       expect(screen.getByText('Account Actions')).toBeInTheDocument()
     })
   })

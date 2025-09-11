@@ -1,7 +1,6 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { AccessibleButton } from '../components/ui/AccessibleButton';
-import { FontSizeToggle } from '../components/ui/FontSizeToggle';
 import { Card } from '../components/ui/Card';
 
 export const Profile: React.FC = () => {
@@ -92,86 +91,6 @@ export const Profile: React.FC = () => {
               </p>
             </div>
             <p className="text-xs sm:text-sm lg:text-base text-gray-600 px-1 mt-1 sm:mt-2" lang="ml">ഉപയോക്തൃ ഐഡി</p>
-          </div>
-        </div>
-      </Card>
-
-      {/* Settings Card */}
-      <Card
-        title="Settings"
-        subtitle="Customize your experience"
-        malayalamSubtitle="നിങ്ങളുടെ അനുഭവം ഇഷ്ടാനുസൃതമാക്കുക"
-        icon={
-          <svg className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        }
-        onClick={() => {}}
-        ariaLabel="Settings section"
-        className="!cursor-default mx-0 sm:mx-0"
-      >
-        <div className="mt-3 sm:mt-4 lg:mt-6 space-y-4 sm:space-y-6 lg:space-y-8 px-1 sm:px-0">
-          {/* Font Size Setting */}
-          <div className="space-y-3 sm:space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm sm:text-base lg:text-lg font-medium text-gray-900">Font Size</h3>
-                <p className="text-xs sm:text-sm lg:text-base text-gray-600" lang="ml">ഫോണ്ട് വലുപ്പം</p>
-              </div>
-            </div>
-            <div className="bg-gray-50 p-3 sm:p-4 lg:p-5 rounded-lg min-h-[60px] flex items-center">
-              <FontSizeToggle showLabels={true} className="justify-center sm:justify-start w-full" />
-            </div>
-          </div>
-
-          {/* Notification Preferences */}
-          <div className="space-y-3 sm:space-y-4">
-            <div>
-              <h3 className="text-sm sm:text-base lg:text-lg font-medium text-gray-900">Notifications</h3>
-              <p className="text-xs sm:text-sm lg:text-base text-gray-600" lang="ml">അറിയിപ്പുകൾ</p>
-            </div>
-            <div className="bg-gray-50 p-3 sm:p-4 lg:p-5 rounded-lg space-y-4 sm:space-y-3">
-              <div className="flex items-center justify-between py-2 sm:py-1 min-h-[44px]">
-                <span className="text-sm sm:text-base lg:text-lg text-gray-700 pr-3 flex-1">Class Reminders</span>
-                <button 
-                  className="w-12 h-6 bg-blue-600 rounded-full relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[48px] min-h-[44px] flex items-center justify-center flex-shrink-0"
-                  aria-label="Toggle class reminders"
-                  role="switch"
-                  aria-checked="true"
-                >
-                  <div className="w-12 h-6 bg-blue-600 rounded-full relative">
-                    <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 transition-transform"></div>
-                  </div>
-                </button>
-              </div>
-              <div className="flex items-center justify-between py-2 sm:py-1 min-h-[44px]">
-                <span className="text-sm sm:text-base lg:text-lg text-gray-700 pr-3 flex-1">New Content Alerts</span>
-                <button 
-                  className="w-12 h-6 bg-blue-600 rounded-full relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[48px] min-h-[44px] flex items-center justify-center flex-shrink-0"
-                  aria-label="Toggle new content alerts"
-                  role="switch"
-                  aria-checked="true"
-                >
-                  <div className="w-12 h-6 bg-blue-600 rounded-full relative">
-                    <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 transition-transform"></div>
-                  </div>
-                </button>
-              </div>
-              <div className="flex items-center justify-between py-2 sm:py-1 min-h-[44px]">
-                <span className="text-sm sm:text-base lg:text-lg text-gray-700 pr-3 flex-1">Exam Reminders</span>
-                <button 
-                  className="w-12 h-6 bg-blue-600 rounded-full relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[48px] min-h-[44px] flex items-center justify-center flex-shrink-0"
-                  aria-label="Toggle exam reminders"
-                  role="switch"
-                  aria-checked="true"
-                >
-                  <div className="w-12 h-6 bg-blue-600 rounded-full relative">
-                    <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 transition-transform"></div>
-                  </div>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </Card>
