@@ -8,10 +8,11 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "build:analyze": "tsc && vite build --mode analyze",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "build:with-types": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write .",
