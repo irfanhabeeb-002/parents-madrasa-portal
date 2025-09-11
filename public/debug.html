@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deployment Debug Test</title>
+</head>
+<body>
+    <h1>Deployment Debug Test</h1>
+    <div id="results"></div>
+    
+    <script type="module" src="/test.js"></script>
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(test, status, details) {
+            const div = document.createElement('div');
+            div.innerHTML = `<strong>${test}:</strong> ${status} - ${details}`;
+            div.style.color = status === 'PASS' ? 'green' : 'red';
+            results.appendChild(div);
+        }
+        
+        console.log('Debug page loaded');
+        
+        // Test manifest.json
+        fetch('/manifest.json')
+            .then(response => {
+                const contentType = response.headers.get('content-type');
+                console.log('Manifest response:', response.status, contentType);
+                addResult('Manifest JSON', response.ok ? 'PASS' : 'FAIL', 
+                    `Status: ${response.status}, Content-Type: ${contentType}`);
+                return response.text();
+            })
+            .then(text => {
+                console.log('Manifest content:', text);
+                addResult('Manifest Content', text ? 'PASS' : 'FAIL', 
+                    `Length: ${text.length} characters`);
+            })
+            .catch(err => {
+                console.error('Manifest error:', err);
+                addResult('Manifest JSON', 'FAIL', err.message);
+            });
+            
+        // Test JavaScript file
+        fetch('/test.js')
+            .then(response => {
+                const contentType = response.headers.get('content-type');
+                console.log('JS file response:', response.status, contentType);
+                addResult('JavaScript File', response.ok ? 'PASS' : 'FAIL', 
+                    `Status: ${response.status}, Content-Type: ${contentType}`);
+            })
+            .catch(err => {
+                console.error('JS file error:', err);
+                addResult('JavaScript File', 'FAIL', err.message);
+            });
+    </script>
+</body>
+</html>
