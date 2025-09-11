@@ -19,61 +19,29 @@ const navigationItems: NavItem[] = [
     malayalamLabel: 'ഹോം',
     path: '/',
     icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
       </svg>
     ),
     activeIcon: (
-      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
       </svg>
     ),
   },
   {
-    id: 'classes',
-    label: 'Classes',
-    malayalamLabel: 'ക്ലാസുകൾ',
+    id: 'live-class',
+    label: 'Live Class',
+    malayalamLabel: 'ലൈവ് ക്ലാസ്',
     path: '/live-class',
     icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
       </svg>
     ),
     activeIcon: (
-      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
         <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-      </svg>
-    ),
-  },
-  {
-    id: 'recordings',
-    label: 'Recordings',
-    malayalamLabel: 'റെക്കോർഡിംഗുകൾ',
-    path: '/recordings',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-      </svg>
-    ),
-    activeIcon: (
-      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-      </svg>
-    ),
-  },
-  {
-    id: 'notes',
-    label: 'Notes',
-    malayalamLabel: 'കുറിപ്പുകൾ',
-    path: '/notes-exercises',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
-    activeIcon: (
-      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
       </svg>
     ),
   },
@@ -83,13 +51,30 @@ const navigationItems: NavItem[] = [
     malayalamLabel: 'പ്രൊഫൈൽ',
     path: '/profile',
     icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
     ),
     activeIcon: (
-      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+      </svg>
+    ),
+  },
+  {
+    id: 'settings',
+    label: 'Settings',
+    malayalamLabel: 'ക്രമീകരണങ്ങൾ',
+    path: '/settings',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+    activeIcon: (
+      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+        <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
       </svg>
     ),
   },
@@ -101,7 +86,6 @@ export const BottomNavigation: React.FC = () => {
   
   // Get notification badges for different sections
   const classBadge = useNotificationBadge('class_reminder');
-  const notesBadge = useNotificationBadge('new_notes');
 
   // Handle keyboard navigation
   const handleKeyDown = (event: React.KeyboardEvent, path: string, label: string, index: number) => {
@@ -164,12 +148,14 @@ export const BottomNavigation: React.FC = () => {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50"
+      className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 shadow-lg
+                 dark:bg-gray-900 dark:border-gray-700
+                 high-contrast:bg-white high-contrast:border-black high-contrast:border-t-2"
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="container mx-auto px-4 max-w-md">
-        <div className="flex justify-around items-center py-2">
+      <div className="container mx-auto px-2 max-w-md sm:px-4">
+        <div className="flex justify-around items-center py-1 sm:py-2">
           {navigationItems.map((item, index) => {
             const active = isActive(item.path);
             
@@ -180,24 +166,29 @@ export const BottomNavigation: React.FC = () => {
                 onClick={() => handleNavigation(item.path, item.label)}
                 onKeyDown={(e) => handleKeyDown(e, item.path, item.label, index)}
                 className={`
-                  touch-target flex flex-col items-center justify-center
-                  px-2 py-2 rounded-lg transition-colors duration-200
-                  focus-enhanced keyboard-focus-button min-w-[60px]
+                  flex flex-col items-center justify-center
+                  px-3 py-3 rounded-lg transition-colors duration-200
+                  min-w-[44px] min-h-[56px] touch-manipulation
                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                  focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+                  motion-reduce:transition-none
+                  high-contrast:border high-contrast:border-current
                   ${active 
-                    ? 'text-primary-600 bg-primary-50' 
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    ? 'text-blue-600 bg-blue-50 high-contrast:bg-blue-900 high-contrast:text-white' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 high-contrast:text-black high-contrast:hover:bg-gray-200'
                   }
+                  sm:min-w-[60px] sm:min-h-[60px] sm:px-4 sm:py-4
                 `}
-                aria-label={`${item.label} - ${item.malayalamLabel}`}
+                aria-label={`Navigate to ${item.label} page`}
                 aria-current={active ? 'page' : undefined}
+                type="button"
               >
                 {/* Icon with Badge */}
                 <div className="mb-1 relative">
                   {active && item.activeIcon ? item.activeIcon : item.icon}
                   
                   {/* Notification Badges */}
-                  {item.id === 'classes' && classBadge.visible && (
+                  {item.id === 'live-class' && classBadge.visible && (
                     <NotificationBadge
                       count={classBadge.count}
                       visible={classBadge.visible}
@@ -206,25 +197,12 @@ export const BottomNavigation: React.FC = () => {
                       ariaLabel={`${classBadge.count} class reminder${classBadge.count > 1 ? 's' : ''}`}
                     />
                   )}
-                  
-                  {item.id === 'notes' && notesBadge.visible && (
-                    <NotificationBadge
-                      count={notesBadge.count}
-                      visible={notesBadge.visible}
-                      size="sm"
-                      color="green"
-                      ariaLabel={`${notesBadge.count} new note${notesBadge.count > 1 ? 's' : ''}`}
-                    />
-                  )}
                 </div>
                 
                 {/* Label */}
                 <div className="text-center">
-                  <span className="text-xs font-medium block leading-tight">
+                  <span className="text-xs font-semibold block leading-tight sm:text-sm">
                     {item.label}
-                  </span>
-                  <span className="text-xs opacity-75 block leading-tight" lang="ml">
-                    {item.malayalamLabel}
                   </span>
                 </div>
               </button>

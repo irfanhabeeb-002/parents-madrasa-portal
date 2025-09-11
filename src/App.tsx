@@ -24,6 +24,7 @@ const Recordings = lazy(() => import('./pages/Recordings').then(module => ({ def
 const NotesExercises = lazy(() => import('./pages/NotesExercises').then(module => ({ default: module.NotesExercises })));
 const ExamsAttendance = lazy(() => import('./pages/ExamsAttendance').then(module => ({ default: module.ExamsAttendance })));
 const Profile = lazy(() => import('./pages/Profile').then(module => ({ default: module.Profile })));
+const Settings = lazy(() => import('./pages/Settings'));
 
 // Loading fallback component
 const PageLoadingFallback = () => (
@@ -125,6 +126,14 @@ function App() {
                         >
                           <Profile />
                         </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/settings"
+                    element={
+                      <ProtectedRoute>
+                        <Settings />
                       </ProtectedRoute>
                     }
                   />
