@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layout } from '../components/layout';
+import { FontSizeToggle } from '../components/ui/FontSizeToggle';
 
 const Settings = () => {
   return (
@@ -44,9 +45,14 @@ const Settings = () => {
             <div className="border-b border-gray-200 pb-4">
               <h2 className="text-lg font-semibold text-gray-800 mb-3">Accessibility</h2>
               <div className="space-y-3">
+                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                  <div className="font-medium text-gray-900 mb-3">Font Size</div>
+                  <div className="text-sm text-gray-500 mb-4">Adjust the font size for better readability</div>
+                  <FontSizeToggle showLabels={true} />
+                </div>
                 <button className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="font-medium text-gray-900">Display Settings</div>
-                  <div className="text-sm text-gray-500">Font size, contrast, and theme</div>
+                  <div className="text-sm text-gray-500">Contrast and theme preferences</div>
                 </button>
                 <button className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="font-medium text-gray-900">Language</div>

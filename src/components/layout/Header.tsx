@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AccessibleButton } from '../ui/AccessibleButton';
-import { FontSizeToggle } from '../ui/FontSizeToggle';
 import { useAuth } from '../../contexts/AuthContext';
 import { CompactSyncStatus } from '../pwa/SyncStatus';
 
 interface HeaderProps {
   showBackButton?: boolean;
   title?: string;
-  malayalamTitle?: string;
   onBack?: () => void;
   showLogout?: boolean;
 }
@@ -16,14 +14,11 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   showBackButton = false,
   title,
-  malayalamTitle,
   onBack,
   showLogout = false, // Changed default to false since logout will be in Profile
 }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [showFontToggle, setShowFontToggle] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleBack = () => {
     if (onBack) {
@@ -32,23 +27,6 @@ export const Header: React.FC<HeaderProps> = ({
       navigate(-1);
     }
   };
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowFontToggle(false);
-      }
-    };
-
-    if (showFontToggle) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showFontToggle]);
 
   return (
     <header 
@@ -98,27 +76,9 @@ export const Header: React.FC<HeaderProps> = ({
             
             {/* Title */}
             <div>
-              {title ? (
-                <>
-                  <h1 className="text-lg font-semibold text-gray-900">
-                    {title}
-                  </h1>
-                  {malayalamTitle && (
-                    <p className="text-sm text-gray-600" lang="ml">
-                      {malayalamTitle}
-                    </p>
-                  )}
-                </>
-              ) : (
-                <>
-                  <h1 className="text-lg font-semibold text-gray-900">
-                    Parents Madrasa Portal
-                  </h1>
-                  <p className="text-sm text-gray-600" lang="ml">
-                    രക്ഷാകർത്താക്കളുടെ മദ്രസ പോർട്ടൽ
-                  </p>
-                </>
-              )}
+              <h1 className="text-lg font-semibold text-gray-900">
+                {title || "Parents Madrasa Portal"}
+              </h1>
             </div>
           </div>
 
@@ -136,29 +96,22 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                 </div>
                 
-                {/* Font size toggle button */}
-                <AccessibleButton
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setShowFontToggle(!showFontToggle)}
-                  ariaLabel="Toggle font size options"
-                  className="!min-h-[44px] !min-w-[44px] !p-2"
+                {/* Disabled hamburger menu button */}
+                <button
+                  disabled
+                  aria-label="Menu (disabled)"
+                  className="!min-h-[44px] !min-w-[44px] !p-2 rounded-md border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
                   </svg>
-                </AccessibleButton>
+                </button>
               </>
             )}
           </div>
         </div>
 
-        {/* Font Size Toggle Dropdown */}
-        {showFontToggle && (
-          <div ref={menuRef} className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-            <FontSizeToggle showLabels={true} />
-          </div>
-        )}
+
       </div>
 
       {/* Desktop Header */}
@@ -204,27 +157,9 @@ export const Header: React.FC<HeaderProps> = ({
             
             {/* Title */}
             <div>
-              {title ? (
-                <>
-                  <h1 className="text-xl font-bold text-gray-900 font-inter" style={{ fontSize: '20px' }}>
-                    {title}
-                  </h1>
-                  {malayalamTitle && (
-                    <p className="text-base text-gray-600 mt-1" lang="ml" style={{ fontSize: '16px' }}>
-                      {malayalamTitle}
-                    </p>
-                  )}
-                </>
-              ) : (
-                <>
-                  <h1 className="text-xl font-bold text-gray-900 font-inter" style={{ fontSize: '20px' }}>
-                    Parents Madrasa Portal
-                  </h1>
-                  <p className="text-base text-gray-600 mt-1" lang="ml" style={{ fontSize: '16px' }}>
-                    രക്ഷാകർത്താക്കളുടെ മദ്രസ പോർട്ടൽ
-                  </p>
-                </>
-              )}
+              <h1 className="text-xl font-bold text-gray-900 font-inter" style={{ fontSize: '20px' }}>
+                {title || "Parents Madrasa Portal"}
+              </h1>
             </div>
           </div>
 
@@ -242,32 +177,22 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                 </div>
                 
-                {/* Font size menu button */}
-                <AccessibleButton
-                  variant="secondary"
-                  size="lg"
-                  onClick={() => setShowFontToggle(!showFontToggle)}
-                  ariaLabel="Open font size menu"
-                  className="!min-h-[48px] !min-w-[48px] !p-3"
+                {/* Disabled hamburger menu button */}
+                <button
+                  disabled
+                  aria-label="Menu (disabled)"
+                  className="!min-h-[48px] !min-w-[48px] !p-3 rounded-md border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
                   </svg>
-                </AccessibleButton>
+                </button>
               </>
             )}
           </div>
         </div>
 
-        {/* Desktop Font Size Dropdown */}
-        {showFontToggle && (
-          <div ref={menuRef} className="mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200 max-w-md ml-auto">
-            <div className="space-y-2">
-              <h3 className="font-medium text-gray-900 mb-3">Font Size Settings</h3>
-              <FontSizeToggle showLabels={true} />
-            </div>
-          </div>
-        )}
+
       </div>
     </header>
   );

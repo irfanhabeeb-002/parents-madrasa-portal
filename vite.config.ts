@@ -12,7 +12,7 @@ export default defineConfig({
     tsconfigPaths(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg', 'pwa-192x192.jpg', 'pwa-512x512.jpg'],
       manifestFilename: 'manifest.json',
       manifest: {
         name: 'Parents Madrasa Portal',
@@ -26,19 +26,19 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'pwa-192x192.jpg',
             sizes: '192x192',
-            type: 'image/png',
+            type: 'image/jpeg',
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'pwa-512x512.jpg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/jpeg',
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'pwa-512x512.jpg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/jpeg',
             purpose: 'any maskable',
           },
         ],
