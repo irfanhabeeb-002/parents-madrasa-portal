@@ -1,6 +1,7 @@
 // Scrolling announcements banner for dashboard bottom section
 import React, { useEffect, useState } from 'react';
 import { SpeakerWaveIcon } from '@heroicons/react/24/outline';
+import { truncateAnnouncement } from '../../utils/textUtils';
 
 interface Announcement {
   id: string;
@@ -38,7 +39,7 @@ export const AnnouncementsBanner: React.FC<AnnouncementsBannerProps> = ({
     if (!autoScroll || activeAnnouncements.length <= 1) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => 
+      setCurrentIndex((prevIndex) =>
         (prevIndex + 1) % activeAnnouncements.length
       );
     }, 5000); // Change announcement every 5 seconds
@@ -88,12 +89,12 @@ export const AnnouncementsBanner: React.FC<AnnouncementsBannerProps> = ({
     >
       <div className="flex items-start space-x-3">
         <div className="flex-shrink-0 mt-0.5">
-          <SpeakerWaveIcon 
+          <SpeakerWaveIcon
             className={`w-5 h-5 ${priorityIcons[currentAnnouncement.priority]}`}
             aria-hidden="true"
           />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
             <h4 className="text-sm font-medium">
@@ -103,26 +104,26 @@ export const AnnouncementsBanner: React.FC<AnnouncementsBannerProps> = ({
               {currentAnnouncement.createdAt.toLocaleDateString()}
             </span>
           </div>
-          
-          <div 
+
+          <div
             className={`
               transition-all duration-300 ease-in-out
               ${isScrolling ? 'opacity-75 transform translate-x-1' : 'opacity-100 transform translate-x-0'}
             `}
           >
             <p className="text-sm leading-relaxed">
-              {currentAnnouncement.message}
+              {truncateAnnouncement(currentAnnouncement.message, 'mobile')}
             </p>
-            
+
             {currentAnnouncement.malayalamMessage && (
               <p className="text-sm leading-relaxed mt-1 opacity-90" lang="ml">
-                {currentAnnouncement.malayalamMessage}
+                {truncateAnnouncement(currentAnnouncement.malayalamMessage, 'mobile')}
               </p>
             )}
           </div>
         </div>
       </div>
-      
+
       {/* Pagination dots */}
       {activeAnnouncements.length > 1 && (
         <div className="flex justify-center mt-3 space-x-1">
@@ -132,8 +133,8 @@ export const AnnouncementsBanner: React.FC<AnnouncementsBannerProps> = ({
               onClick={() => setCurrentIndex(index)}
               className={`
                 w-2 h-2 rounded-full transition-all duration-200
-                ${index === currentIndex 
-                  ? 'bg-current opacity-100 scale-110' 
+                ${index === currentIndex
+                  ? 'bg-current opacity-100 scale-110'
                   : 'bg-current opacity-40 hover:opacity-60'
                 }
               `}
@@ -142,7 +143,7 @@ export const AnnouncementsBanner: React.FC<AnnouncementsBannerProps> = ({
           ))}
         </div>
       )}
-      
+
       {/* Priority indicator */}
       {currentAnnouncement.priority === 'high' && (
         <div className="absolute top-2 right-2">

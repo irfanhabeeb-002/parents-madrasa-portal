@@ -8,7 +8,6 @@ import '../../styles/navigation-theme.css';
 interface NavItem {
   id: string;
   label: string;
-  malayalamLabel: string;
   path: string;
   icon: React.ReactNode;
   activeIcon?: React.ReactNode;
@@ -18,7 +17,6 @@ const navigationItems: NavItem[] = [
   {
     id: 'home',
     label: 'Home',
-    malayalamLabel: 'ഹോം',
     path: '/',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -34,7 +32,6 @@ const navigationItems: NavItem[] = [
   {
     id: 'live-class',
     label: 'Live Class',
-    malayalamLabel: 'ലൈവ് ക്ലാസ്',
     path: '/live-class',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -50,7 +47,6 @@ const navigationItems: NavItem[] = [
   {
     id: 'profile',
     label: 'Profile',
-    malayalamLabel: 'പ്രൊഫൈൽ',
     path: '/profile',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -66,7 +62,6 @@ const navigationItems: NavItem[] = [
   {
     id: 'settings',
     label: 'Settings',
-    malayalamLabel: 'ക്രമീകരണങ്ങൾ',
     path: '/settings',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -243,7 +238,7 @@ export const BottomNavigation: React.FC = () => {
               const active = isActive(item.path);
               const hasNotifications = item.id === 'live-class' && classBadge.visible;
               
-              // Enhanced ARIA label with context
+              // Enhanced ARIA label with context - English only
               const ariaLabel = `${item.label} navigation${active ? ', currently selected' : ''}${
                 hasNotifications ? `, ${classBadge.count} notification${classBadge.count > 1 ? 's' : ''}` : ''
               }`;

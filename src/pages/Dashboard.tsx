@@ -10,6 +10,7 @@ import { useDashboard } from '../hooks/useDashboard';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useNotificationListener, useClassReminderListener } from '../hooks/useNotificationListener';
 import { useAuth } from '../contexts/AuthContext';
+import { truncateAnnouncement } from '../utils/textUtils';
 import {
   VideoCameraIcon,
   PlayIcon,
@@ -312,11 +313,11 @@ export const Dashboard: React.FC = () => {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-700 leading-relaxed" style={{ fontSize: '14px' }}>
-                      {announcement.message}
+                      {truncateAnnouncement(announcement.message, 'desktop')}
                     </p>
                     {announcement.malayalamMessage && (
                       <p className="text-sm text-gray-600 mt-2 leading-relaxed" lang="ml" style={{ fontSize: '14px' }}>
-                        {announcement.malayalamMessage}
+                        {truncateAnnouncement(announcement.malayalamMessage, 'desktop')}
                       </p>
                     )}
                   </div>
