@@ -82,28 +82,24 @@ export const Dashboard: React.FC = () => {
   const navigationCards = [
     {
       title: "Live Class",
-      malayalamSubtitle: "ലൈവ് ക്ലാസ്",
       icon: <VideoCameraIcon className="w-8 h-8" />,
       onClick: () => navigate('/live-class'),
       ariaLabel: "Join live class session"
     },
     {
       title: "Recordings",
-      malayalamSubtitle: "റെക്കോർഡിംഗുകൾ",
       icon: <PlayIcon className="w-8 h-8" />,
       onClick: () => navigate('/recordings'),
       ariaLabel: "View recorded class sessions"
     },
     {
       title: "Notes/Exercises",
-      malayalamSubtitle: "കുറിപ്പുകളും അഭ്യാസങ്ങളും",
       icon: <DocumentTextIcon className="w-8 h-8" />,
       onClick: () => navigate('/notes-exercises'),
       ariaLabel: "Access lesson notes and practice exercises"
     },
     {
       title: "Exams/Attendance",
-      malayalamSubtitle: "പരീക്ഷകളും ഹാജരും",
       icon: <AcademicCapIcon className="w-8 h-8" />,
       onClick: () => navigate('/exams-attendance'),
       ariaLabel: "View exams and attendance records"
@@ -136,9 +132,6 @@ export const Dashboard: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Welcome to Your Dashboard
           </h1>
-          <p className="text-gray-600 font-malayalam" lang="ml">
-            നിങ്ങളുടെ ഡാഷ്‌ബോർഡിലേക്ക് സ്വാഗതം
-          </p>
         </div>
 
         {/* ARIA Live Region for Screen Reader Announcements */}
@@ -191,7 +184,6 @@ export const Dashboard: React.FC = () => {
             <Card
               key={index}
               title={card.title}
-              malayalamSubtitle={card.malayalamSubtitle}
               icon={card.icon}
               onClick={card.onClick}
               ariaLabel={card.ariaLabel}
@@ -227,7 +219,6 @@ export const Dashboard: React.FC = () => {
         ) : (
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
             <p className="text-gray-500 text-sm">No announcements at this time</p>
-            <p className="text-gray-400 text-xs mt-1" lang="ml">ഇപ്പോൾ അറിയിപ്പുകളൊന്നുമില്ല</p>
           </div>
         )}
 
@@ -248,9 +239,6 @@ export const Dashboard: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-4 font-inter" style={{ fontSize: '22px' }}>
             Welcome to Your Dashboard
           </h1>
-          <p className="text-lg text-gray-600 font-medium" lang="ml" style={{ fontSize: '16px' }}>
-            സ്വാഗതം നിങ്ങളുടെ ഡാഷ്‌ബോർഡിലേക്ക്
-          </p>
         </div>
 
         {/* Urgent Class Banner */}
@@ -313,11 +301,6 @@ export const Dashboard: React.FC = () => {
               {/* Description */}
               <p className="desktop-card-description">
                 {getCardDescription(card.title)}
-              </p>
-
-              {/* Malayalam Subtitle */}
-              <p className="desktop-card-subtitle" lang="ml">
-                {card.malayalamSubtitle}
               </p>
             </div>
           ))}
