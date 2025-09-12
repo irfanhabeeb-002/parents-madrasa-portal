@@ -306,7 +306,6 @@ export const LiveClass: React.FC = () => {
       live: {
         color: 'bg-red-100 text-red-800',
         text: 'LIVE',
-        malayalam: 'ലൈവ്',
         icon: (
           <div className="w-2 h-2 bg-current rounded-full mr-2 animate-pulse"></div>
         )
@@ -314,7 +313,6 @@ export const LiveClass: React.FC = () => {
       scheduled: {
         color: 'bg-blue-100 text-blue-800',
         text: 'Scheduled',
-        malayalam: 'ഷെഡ്യൂൾ ചെയ്തു',
         icon: (
           <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

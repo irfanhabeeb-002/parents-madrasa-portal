@@ -1,6 +1,7 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
 import { Profile } from '../Profile'
 import { FontSizeProvider } from '../../contexts/FontSizeContext'
 
@@ -25,9 +26,11 @@ vi.mock('../../contexts/AuthContext', () => ({
 // Helper to render Profile with required providers
 const renderProfile = () => {
   return render(
-    <FontSizeProvider>
-      <Profile />
-    </FontSizeProvider>
+    <BrowserRouter>
+      <FontSizeProvider>
+        <Profile />
+      </FontSizeProvider>
+    </BrowserRouter>
   )
 }
 
@@ -169,17 +172,16 @@ describe('Profile Visual Regression Tests', () => {
         
         const title = screen.getAllByRole('heading', { name: /profile/i })[0]
         const label = screen.getAllByText('Name')[0]
-        const malayalamLabel = screen.getAllByText('പേര്')[0]
+        // Note: Malayalam UI labels removed - Malayalam should only be in educational content
         
         const titleStyles = window.getComputedStyle(title)
         const labelStyles = window.getComputedStyle(label)
-        const malayalamStyles = window.getComputedStyle(malayalamLabel)
         
         typographyMetrics.push({
           size: width,
           titleSize: parseInt(titleStyles.fontSize) || 16, // Default fallback
           labelSize: parseInt(labelStyles.fontSize) || 14, // Default fallback
-          malayalamSize: parseInt(malayalamStyles.fontSize) || 12 // Default fallback
+          malayalamSize: 0 // No Malayalam UI text
         })
       })
       
@@ -194,8 +196,7 @@ describe('Profile Visual Regression Tests', () => {
         // Labels should scale up or stay the same
         expect(current.labelSize).toBeGreaterThanOrEqual(previous.labelSize)
         
-        // Malayalam text should scale up or stay the same
-        expect(current.malayalamSize).toBeGreaterThanOrEqual(previous.malayalamSize)
+        // Note: Malayalam UI text removed - Malayalam should only be in educational content
       }
     })
   })
@@ -293,18 +294,18 @@ describe('Profile Visual Regression Tests', () => {
       expect(userIdRect.right).toBeLessThanOrEqual(window.innerWidth)
     })
 
-    it('should handle Malayalam text overflow properly', () => {
+    it('should handle text overflow properly with English UI text', () => {
       setViewportSize(320)
       renderProfile()
       
-      // Find all Malayalam text elements
-      const malayalamElements = [
-        screen.getByText('പ്രൊഫൈൽ'),
-        screen.getByText('നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ'),
-        screen.getByText('നിങ്ങളുടെ അക്കൗണ്ട് കൈകാര്യം ചെയ്യുക')
+      // Find all English UI text elements (Malayalam UI text removed - Malayalam should only be in educational content)
+      const englishUIElements = [
+        screen.getByText('Profile'),
+        screen.getByText('User Information'),
+        screen.getByText('Account Actions')
       ]
       
-      malayalamElements.forEach(element => {
+      englishUIElements.forEach(element => {
         const rect = element.getBoundingClientRect()
         expect(rect.right).toBeLessThanOrEqual(window.innerWidth)
       })
@@ -350,8 +351,8 @@ describe('Profile Visual Regression Tests', () => {
       const textElements = [
         { element: screen.getByRole('heading', { name: /profile/i }), expectedClass: 'text-gray-900' },
         { element: screen.getByText('Name'), expectedClass: 'text-gray-700' },
-        { element: screen.getByText('Test User'), expectedClass: 'text-gray-900' },
-        { element: screen.getByText('പേര്'), expectedClass: 'text-gray-600' }
+        { element: screen.getByText('Test User'), expectedClass: 'text-gray-900' }
+        // Note: Malayalam UI text removed - Malayalam should only be in educational content
       ]
       
       textElements.forEach(({ element, expectedClass }) => {
@@ -382,18 +383,22 @@ describe('Profile Visual Regression Tests', () => {
       // Test transition from mobile to tablet
       setViewportSize(375)
       rerender(
-        <FontSizeProvider>
-          <Profile />
-        </FontSizeProvider>
+        <BrowserRouter>
+          <FontSizeProvider>
+            <Profile />
+          </FontSizeProvider>
+        </BrowserRouter>
       )
       
       const mobileMetrics = captureLayoutMetrics(container)
       
       setViewportSize(768)
       rerender(
-        <FontSizeProvider>
-          <Profile />
-        </FontSizeProvider>
+        <BrowserRouter>
+          <FontSizeProvider>
+            <Profile />
+          </FontSizeProvider>
+        </BrowserRouter>
       )
       
       const tabletMetrics = captureLayoutMetrics(container)

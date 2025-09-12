@@ -128,7 +128,7 @@ describe('User Workflows Integration Tests', () => {
       
       // User sees login form
       expect(screen.getByText('Login')).toBeInTheDocument()
-      expect(screen.getByText('ലോഗിൻ')).toBeInTheDocument() // Malayalam
+      // Note: Malayalam UI text removed - Malayalam should only be in educational content
       expect(screen.getByText('Demo Users:')).toBeInTheDocument()
       
       // User enters phone number
@@ -196,12 +196,11 @@ describe('User Workflows Integration Tests', () => {
       expect(screen.getByText('Notes/Exercises')).toBeInTheDocument()
       expect(screen.getByText('Exams/Attendance')).toBeInTheDocument()
       
-      // Check Malayalam subtitles
-      expect(screen.getByText('ലൈവ് ക്ലാസ്')).toBeInTheDocument()
-      expect(screen.getByText('റെക്കോർഡിംഗുകൾ')).toBeInTheDocument()
+      // Note: Malayalam UI subtitles removed - Malayalam should only be in educational content
       
       // Check announcements
       expect(screen.getByText('Welcome Message')).toBeInTheDocument()
+      // Note: Malayalam content in announcements is educational content, so it's preserved
       expect(screen.getByText('പോർട്ടലിലേക്ക് സ്വാഗതം')).toBeInTheDocument()
     })
 

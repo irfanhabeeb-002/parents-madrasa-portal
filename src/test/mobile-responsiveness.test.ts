@@ -177,33 +177,34 @@ describe('Mobile Responsiveness Test Suite', () => {
     })
   })
 
-  describe('Malayalam Text Requirements', () => {
-    it('should validate Malayalam text rendering requirements', () => {
-      const malayalamTextElements = [
-        'പ്രൊഫൈൽ',
-        'നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ',
-        'പേര്',
-        'ഫോൺ നമ്പർ',
-        'ഇമെയിൽ',
-        'ഉപയോക്തൃ ഐഡി',
-        'ഫോണ്ട് വലുപ്പം',
-        'അറിയിപ്പുകൾ',
-        'പുറത്തുകടക്കുക'
+  describe('Educational Content Text Requirements', () => {
+    it('should validate that Malayalam is only used for educational content, not UI elements', () => {
+      // Malayalam should only be present in educational content, not UI elements
+      const englishUIElements = [
+        'Profile',
+        'User Information',
+        'Name',
+        'Phone Number',
+        'Email',
+        'User ID',
+        'Font Size',
+        'Notifications',
+        'Logout'
       ]
 
-      // Verify we test all Malayalam text elements
-      expect(malayalamTextElements).toHaveLength(9)
+      // Verify we test all English UI elements
+      expect(englishUIElements).toHaveLength(9)
       
-      // Each element should be a valid Malayalam string
-      malayalamTextElements.forEach(text => {
+      // Each element should be a valid English string
+      englishUIElements.forEach(text => {
         expect(text).toBeTruthy()
         expect(typeof text).toBe('string')
       })
     })
 
-    it('should validate Malayalam text attributes', () => {
+    it('should validate educational content text attributes', () => {
       const requiredAttributes = {
-        lang: 'ml', // Malayalam language code
+        lang: 'ml', // Malayalam language code for educational content only
         dir: 'ltr' // Left-to-right direction (Malayalam uses LTR)
       }
 

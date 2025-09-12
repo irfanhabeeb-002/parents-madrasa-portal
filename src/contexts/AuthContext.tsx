@@ -41,7 +41,7 @@ interface AuthContextType extends AuthState {
   loginWithPhone: (phoneNumber: string) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
-  
+
   // Firebase methods - COMMENTED OUT FOR MANUAL LOGIN
   // TODO: Uncomment these when ready to enable Firebase Auth
   /*
@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // MANUAL LOGIN MODE - Firebase is disabled
   // TODO: When ready to enable Firebase, uncomment the Firebase code below and comment out manual login
-  
+
   // Initialize manual authentication
   useEffect(() => {
     console.log('Using manual phone-number login (Firebase disabled)');
@@ -172,7 +172,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Clean and validate phone number
       const cleanPhone = phoneNumber.replace(/\s+/g, '').replace(/[^\d]/g, '');
-      
+
       // Validate Indian mobile number format
       if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
         throw new Error('Please enter a valid 10-digit Indian mobile number');
@@ -183,7 +183,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Find user in allowed users list
       const foundUser = allowedUsers.find(user => user.phoneNumber === cleanPhone);
-      
+
       if (!foundUser) {
         throw new Error('User not registered. Please contact administrator.');
       }
@@ -200,7 +200,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Store user in localStorage
       localStorage.setItem('manualAuthUser', JSON.stringify(userData));
       setUser(userData);
-      
+
       console.log('Manual login successful:', userData.displayName);
     } catch (error: any) {
       console.error('Phone login error:', error);
@@ -211,23 +211,186 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = async (): Promise<void> => {
+  const logout = async (retryCount: number = 0): Promise<void> => {
+    const maxRetries = 3;
     setLoading(true);
     setError(null);
 
     try {
-      // Simulate network delay
+      console.log(`Starting logout process... (attempt ${retryCount + 1}/${maxRetries + 1})`);
+
+      // Simulate network delay for realistic UX
       await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Remove user from localStorage
-      localStorage.removeItem('manualAuthUser');
+
+      // Enhanced session cleanup: Complete removal of all user data
+      try {
+        // Primary cleanup: Remove main auth user data
+        localStorage.removeItem('manualAuthUser');
+        
+        // Comprehensive cleanup: Remove all potential auth-related data
+        const authRelatedKeys = [
+          'manualAuthUser',
+          'authUser', 
+          'user',
+          'userSession',
+          'sessionData',
+          'authToken',
+          'accessToken',
+          'refreshToken',
+          'loginTime',
+          'lastActivity',
+          'userPreferences',
+          'authState'
+        ];
+        
+        // Remove known auth keys
+        authRelatedKeys.forEach(key => {
+          try {
+            localStorage.removeItem(key);
+            sessionStorage.removeItem(key);
+          } catch (e) {
+            console.warn(`Failed to remove ${key}:`, e);
+          }
+        });
+        
+        // Scan and remove any keys that might contain user data
+        const allLocalStorageKeys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key) allLocalStorageKeys.push(key);
+        }
+        
+        allLocalStorageKeys.forEach(key => {
+          if (key.toLowerCase().includes('auth') || 
+              key.toLowerCase().includes('user') || 
+              key.toLowerCase().includes('session') ||
+              key.toLowerCase().includes('login') ||
+              key.toLowerCase().includes('token')) {
+            try {
+              localStorage.removeItem(key);
+              console.log(`Removed potential auth key: ${key}`);
+            } catch (e) {
+              console.warn(`Failed to remove potential auth key ${key}:`, e);
+            }
+          }
+        });
+        
+        // Also clean sessionStorage
+        const allSessionStorageKeys = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i);
+          if (key) allSessionStorageKeys.push(key);
+        }
+        
+        allSessionStorageKeys.forEach(key => {
+          if (key.toLowerCase().includes('auth') || 
+              key.toLowerCase().includes('user') || 
+              key.toLowerCase().includes('session') ||
+              key.toLowerCase().includes('login') ||
+              key.toLowerCase().includes('token')) {
+            try {
+              sessionStorage.removeItem(key);
+              console.log(`Removed potential session auth key: ${key}`);
+            } catch (e) {
+              console.warn(`Failed to remove potential session auth key ${key}:`, e);
+            }
+          }
+        });
+        
+        console.log('Comprehensive localStorage and sessionStorage cleanup successful');
+      } catch (storageError) {
+        console.warn('Storage cleanup failed, attempting fallback:', storageError);
+        
+        // Fallback cleanup mechanisms
+        try {
+          // Nuclear option: clear all localStorage and sessionStorage
+          // This ensures complete cleanup but may affect other app data
+          console.warn('Attempting nuclear cleanup of all storage');
+          localStorage.clear();
+          sessionStorage.clear();
+          console.log('Nuclear storage cleanup completed');
+        } catch (fallbackError) {
+          console.error('All cleanup methods failed:', fallbackError);
+          // Continue with logout even if storage cleanup fails
+        }
+      }
+
+      // Ensure AuthContext state is properly reset to null
+      // This is critical for security and proper state management
       setUser(null);
+      setError(null);
       
-      console.log('Manual logout successful');
+      // Force a state update to ensure components re-render
+      // This helps prevent any cached user state from persisting
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Verify user state is actually null
+      if (user !== null) {
+        console.warn('User state not properly cleared, forcing null');
+        setUser(null);
+      }
+
+      console.log('Manual logout successful - complete session cleanup performed');
     } catch (error: any) {
-      console.error('Logout error:', error);
-      setError('Failed to logout');
-      throw error;
+      console.error(`Logout error (attempt ${retryCount + 1}):`, error);
+      
+      // Implement retry logic for failed logout attempts
+      if (retryCount < maxRetries) {
+        console.log(`Retrying logout... (${retryCount + 1}/${maxRetries})`);
+        // Exponential backoff: wait longer between retries
+        const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        
+        try {
+          return await logout(retryCount + 1);
+        } catch (retryError) {
+          // If retry also fails, continue to error handling below
+          console.error('Retry failed:', retryError);
+        }
+      }
+      
+      // Create user-friendly error messages with actionable guidance
+      let userFriendlyMessage = 'Failed to logout completely.';
+      let actionableGuidance = 'Please try again or refresh the page.';
+      
+      if (error.message?.includes('localStorage') || error.message?.includes('storage')) {
+        userFriendlyMessage = 'Unable to clear session data from your browser.';
+        actionableGuidance = 'Try refreshing the page or clearing your browser cache, then attempt logout again.';
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        userFriendlyMessage = 'Network error during logout.';
+        actionableGuidance = 'Check your internet connection and try again.';
+      } else if (retryCount >= maxRetries) {
+        userFriendlyMessage = 'Logout failed after multiple attempts.';
+        actionableGuidance = 'Please refresh the page or close your browser to ensure you are logged out securely.';
+      }
+      
+      const enhancedError = new Error(`${userFriendlyMessage} ${actionableGuidance}`);
+      enhancedError.name = 'LogoutError';
+      (enhancedError as any).originalError = error;
+      (enhancedError as any).retryCount = retryCount;
+      (enhancedError as any).actionableGuidance = actionableGuidance;
+      
+      setError(enhancedError.message);
+      
+      // Force cleanup even if logout failed - critical for security
+      try {
+        setUser(null);
+        setError(null);
+        
+        // Emergency cleanup: try to clear storage even on error
+        try {
+          localStorage.removeItem('manualAuthUser');
+          sessionStorage.removeItem('manualAuthUser');
+        } catch (emergencyCleanupError) {
+          console.error('Emergency cleanup failed:', emergencyCleanupError);
+        }
+        
+        console.log('Forced user state cleanup completed');
+      } catch (cleanupError) {
+        console.error('Failed to cleanup user state:', cleanupError);
+      }
+      
+      throw enhancedError;
     } finally {
       setLoading(false);
     }

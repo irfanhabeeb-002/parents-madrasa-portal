@@ -223,7 +223,6 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
                   <div className="inline-flex items-center px-3 py-1 bg-red-600 text-white rounded-full text-sm font-medium mb-4">
                     <div className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></div>
                     LIVE
-                    <span className="ml-2 text-xs" lang="ml">തത്സമയം</span>
                   </div>
                 )}
                 
@@ -233,7 +232,6 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     SCHEDULED
-                    <span className="ml-2 text-xs" lang="ml">ഷെഡ്യൂൾ ചെയ്തത്</span>
                   </div>
                 )}
 
@@ -243,7 +241,6 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     COMPLETED
-                    <span className="ml-2 text-xs" lang="ml">പൂർത്തിയായി</span>
                   </div>
                 )}
               </div>
@@ -270,15 +267,11 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
                         Join Meeting
                       </div>
                     )}
-                    <span className="block text-sm mt-1" lang="ml">
-                      മീറ്റിംഗിൽ ചേരുക
-                    </span>
                   </AccessibleButton>
 
                   {!isInitialized && (
                     <p className="text-gray-400 text-sm">
                       Initializing Zoom...
-                      <span className="block text-xs" lang="ml">സൂം ആരംഭിക്കുന്നു...</span>
                     </p>
                   )}
                 </div>
@@ -287,9 +280,6 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
               {classSession.status === 'completed' && (
                 <p className="text-gray-400">
                   This class has ended. Check recordings for playback.
-                  <span className="block text-sm mt-1" lang="ml">
-                    ഈ ക്ലാസ് അവസാനിച്ചു. പ്ലേബാക്കിനായി റെക്കോർഡിംഗുകൾ പരിശോധിക്കുക.
-                  </span>
                 </p>
               )}
             </div>

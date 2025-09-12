@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout';
 import {
     AccessibleButton,
@@ -25,10 +26,11 @@ interface ExamFormData {
 
 export const ExamsAttendance: React.FC = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [viewMode, setViewMode] = useState<ViewMode>('overview');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string; malayalamMessage?: string } | null>(null);
+    const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
     // Exam state
     const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -111,21 +113,18 @@ export const ExamsAttendance: React.FC = () => {
                 setViewMode('exam-taking');
                 setAlert({
                     type: 'success',
-                    message: 'Exam started successfully',
-                    malayalamMessage: 'പരീക്ഷ വിജയകരമായി ആരംഭിച്ചു'
+                    message: 'Exam started successfully'
                 });
             } else {
                 setAlert({
                     type: 'error',
-                    message: attemptResponse.error || 'Failed to start exam',
-                    malayalamMessage: 'പരീക്ഷ ആരംഭിക്കാൻ കഴിഞ്ഞില്ല'
+                    message: attemptResponse.error || 'Failed to start exam'
                 });
             }
         } catch (err) {
             setAlert({
                 type: 'error',
-                message: 'Failed to start exam',
-                malayalamMessage: 'പരീക്ഷ ആരംഭിക്കാൻ കഴിഞ്ഞില്ല'
+                message: 'Failed to start exam'
             });
         } finally {
             setLoading(false);
@@ -184,8 +183,7 @@ export const ExamsAttendance: React.FC = () => {
             if (resultResponse.success) {
                 setAlert({
                     type: 'success',
-                    message: `Exam submitted! Score: ${resultResponse.data.score}%`,
-                    malayalamMessage: `പരീക്ഷ സമർപ്പിച്ചു! സ്കോർ: ${resultResponse.data.score}%`
+                    message: `Exam submitted! Score: ${resultResponse.data.score}%`
                 });
 
                 // Refresh user results
@@ -201,15 +199,13 @@ export const ExamsAttendance: React.FC = () => {
             } else {
                 setAlert({
                     type: 'error',
-                    message: resultResponse.error || 'Failed to submit exam',
-                    malayalamMessage: 'പരീക്ഷ സമർപ്പിക്കാൻ കഴിഞ്ഞില്ല'
+                    message: resultResponse.error || 'Failed to submit exam'
                 });
             }
         } catch (err) {
             setAlert({
                 type: 'error',
-                message: 'Failed to submit exam',
-                malayalamMessage: 'പരീക്ഷ സമർപ്പിക്കാൻ കഴിഞ്ഞില്ല'
+                message: 'Failed to submit exam'
             });
         } finally {
             setLoading(false);
@@ -219,8 +215,7 @@ export const ExamsAttendance: React.FC = () => {
     const handleTimeUp = () => {
         setAlert({
             type: 'error',
-            message: 'Time is up! Submitting exam automatically.',
-            malayalamMessage: 'സമയം തീർന്നു! പരീക്ഷ സ്വയമേവ സമർപ്പിക്കുന്നു.'
+            message: 'Time is up! Submitting exam automatically.'
         });
         handleSubmitExam();
     };
@@ -229,6 +224,23 @@ export const ExamsAttendance: React.FC = () => {
         setSelectedMonth(month);
         setSelectedYear(year);
         loadAttendanceRecord(month, year);
+    };
+
+    const handleBack = () => {
+        // Handle navigation back to overview from different view modes
+        if (viewMode === 'exam-taking') {
+            // When taking an exam, go back to exams list
+            setViewMode('exams');
+            setCurrentExam(null);
+            setCurrentAttempt(null);
+            setExamFormData({ answers: {}, currentQuestionIndex: 0 });
+        } else if (viewMode === 'exams' || viewMode === 'attendance') {
+            // From exams or attendance view, go back to overview
+            setViewMode('overview');
+        } else {
+            // From overview mode, go back to dashboard
+            navigate('/');
+        }
     };
 
     const getUserExamResult = (exerciseId: string): ExamResult | undefined => {
@@ -247,7 +259,6 @@ export const ExamsAttendance: React.FC = () => {
                 <Card
                     title="Available Exams"
                     subtitle={`${exercises.length} exams available`}
-                    malayalamSubtitle={`${exercises.length} പരീക്ഷകൾ ലഭ്യം`}
                     onClick={() => setViewMode('exams')}
                     className="cursor-pointer hover:shadow-lg transition-shadow"
                     icon={
@@ -260,7 +271,6 @@ export const ExamsAttendance: React.FC = () => {
                 <Card
                     title="Attendance Tracking"
                     subtitle={attendanceStats ? `${attendanceStats.attendancePercentage}% attendance` : 'Loading...'}
-                    malayalamSubtitle={attendanceStats ? `${attendanceStats.attendancePercentage}% ഹാജർ` : 'ലോഡ് ചെയ്യുന്നു...'}
                     onClick={() => setViewMode('attendance')}
                     className="cursor-pointer hover:shadow-lg transition-shadow"
                     icon={
@@ -276,7 +286,6 @@ export const ExamsAttendance: React.FC = () => {
                 <div className="bg-white rounded-lg shadow-md p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         Recent Exam Results
-                        <span className="text-sm text-gray-600 ml-2" lang="ml">സമീപകാല പരീക്ഷാ ഫലങ്ങൾ</span>
                     </h3>
 
                     <div className="space-y-3">
@@ -295,7 +304,7 @@ export const ExamsAttendance: React.FC = () => {
                                             {result.score}%
                                         </p>
                                         <p className="text-xs text-gray-500">
-                                            {result.score >= (exercise?.passingScore || 70) ? 'Passed / വിജയിച്ചു' : 'Failed / പരാജയപ്പെട്ടു'}
+                                            {result.score >= (exercise?.passingScore || 70) ? 'Passed' : 'Failed'}
                                         </p>
                                     </div>
                                 </div>
@@ -310,10 +319,33 @@ export const ExamsAttendance: React.FC = () => {
     const renderExamsList = () => (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">
-                    Available Exams
-                    <span className="text-sm text-gray-600 ml-2" lang="ml">ലഭ്യമായ പരീക്ഷകൾ</span>
-                </h2>
+                <div className="flex items-center space-x-3">
+                    <AccessibleButton
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setViewMode('overview')}
+                        ariaLabel="Back to overview"
+                        className="!min-h-[36px] !min-w-[36px] !p-2"
+                    >
+                        <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 19l-7-7 7-7"
+                            />
+                        </svg>
+                    </AccessibleButton>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                        Available Exams
+                    </h2>
+                </div>
             </div>
 
             {exercises.map(exercise => {
@@ -384,6 +416,40 @@ export const ExamsAttendance: React.FC = () => {
 
         return (
             <div className="max-w-4xl mx-auto">
+                {/* Back to exams button */}
+                <div className="mb-4">
+                    <AccessibleButton
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                            if (window.confirm('Are you sure you want to exit this exam? Your progress will be lost.')) {
+                                setViewMode('exams');
+                                setCurrentExam(null);
+                                setCurrentAttempt(null);
+                                setExamFormData({ answers: {}, currentQuestionIndex: 0 });
+                            }
+                        }}
+                        ariaLabel="Exit exam and return to exams list"
+                        className="flex items-center space-x-2"
+                    >
+                        <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 19l-7-7 7-7"
+                            />
+                        </svg>
+                        <span>Exit Exam</span>
+                    </AccessibleButton>
+                </div>
+
                 {/* Timer */}
                 {currentExam.timeLimit && (
                     <div className="mb-6 text-center">
@@ -502,10 +568,33 @@ export const ExamsAttendance: React.FC = () => {
         return (
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-gray-900">
-                        Attendance Tracking
-                        <span className="text-sm text-gray-600 ml-2" lang="ml">ഹാജർ ട്രാക്കിംഗ്</span>
-                    </h2>
+                    <div className="flex items-center space-x-3">
+                        <AccessibleButton
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => setViewMode('overview')}
+                            ariaLabel="Back to overview"
+                            className="!min-h-[36px] !min-w-[36px] !p-2"
+                        >
+                            <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M15 19l-7-7 7-7"
+                                />
+                            </svg>
+                        </AccessibleButton>
+                        <h2 className="text-xl font-semibold text-gray-900">
+                            Attendance Tracking
+                        </h2>
+                    </div>
                 </div>
 
                 {/* Attendance stats */}
@@ -514,25 +603,21 @@ export const ExamsAttendance: React.FC = () => {
                         <div className="bg-white rounded-lg shadow-md p-4 text-center">
                             <div className="text-2xl font-bold text-primary-600">{attendanceStats.totalClasses}</div>
                             <div className="text-sm text-gray-600">Total Classes</div>
-                            <div className="text-xs text-gray-500" lang="ml">മൊത്തം ക്ലാസുകൾ</div>
                         </div>
 
                         <div className="bg-white rounded-lg shadow-md p-4 text-center">
                             <div className="text-2xl font-bold text-success-600">{attendanceStats.attendedClasses}</div>
                             <div className="text-sm text-gray-600">Attended</div>
-                            <div className="text-xs text-gray-500" lang="ml">ഹാജരായത്</div>
                         </div>
 
                         <div className="bg-white rounded-lg shadow-md p-4 text-center">
                             <div className="text-2xl font-bold text-primary-600">{attendanceStats.attendancePercentage}%</div>
                             <div className="text-sm text-gray-600">Attendance Rate</div>
-                            <div className="text-xs text-gray-500" lang="ml">ഹാജർ നിരക്ക്</div>
                         </div>
 
                         <div className="bg-white rounded-lg shadow-md p-4 text-center">
                             <div className="text-2xl font-bold text-warning-600">{attendanceStats.longestStreak}</div>
                             <div className="text-sm text-gray-600">Longest Streak</div>
-                            <div className="text-xs text-gray-500" lang="ml">ഏറ്റവും നീണ്ട പരമ്പര</div>
                         </div>
                     </div>
                 )}
@@ -553,7 +638,7 @@ export const ExamsAttendance: React.FC = () => {
             <Layout
                 showBackButton={true}
                 title="Exams & Attendance"
-                malayalamTitle="പരീക്ഷകളും ഹാജരും"
+                onBack={handleBack}
             >
                 <div className="space-y-4">
                     <SkeletonLoader className="h-32" />
@@ -566,9 +651,9 @@ export const ExamsAttendance: React.FC = () => {
 
     return (
         <Layout
-            showBackButton={viewMode !== 'overview'}
+            showBackButton={true}
             title="Exams & Attendance"
-            malayalamTitle="പരീക്ഷകളും ഹാജരും"
+            onBack={handleBack}
         >
             {alert && (
                 <div className="mb-4">
@@ -588,7 +673,6 @@ export const ExamsAttendance: React.FC = () => {
                     <AlertBanner
                         type="error"
                         message={error}
-                        malayalamMessage="ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ പിശക്"
                         onDismiss={() => setError(null)}
                     />
                 </div>

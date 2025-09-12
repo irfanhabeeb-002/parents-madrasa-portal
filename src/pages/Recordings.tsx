@@ -203,22 +203,15 @@ export const Recordings: React.FC = () => {
     <Layout 
       showBackButton={true}
       title="Recordings"
-      malayalamTitle="റെക്കോർഡിംഗുകൾ"
     >
       <div className="space-y-6">
         {/* Page Header */}
         <div className="mb-4">
           <h1 className="text-xl font-semibold text-gray-900">
             Recordings
-            <span className="block text-sm text-gray-500 font-normal" lang="ml">
-              റെക്കോർഡിംഗുകൾ
-            </span>
           </h1>
           <p className="text-sm text-gray-600 mt-1">
             View and access class recordings from Zoom sessions
-            <span className="block text-xs text-gray-500" lang="ml">
-              സൂം സെഷനുകളിൽ നിന്നുള്ള ക്ലാസ് റെക്കോർഡിംഗുകൾ കാണുക
-            </span>
           </p>
         </div>
 
@@ -244,7 +237,6 @@ export const Recordings: React.FC = () => {
           <AlertBanner
             type="error"
             message={state.error}
-            malayalamMessage="ഒരു പിശക് സംഭവിച്ചു"
             onDismiss={() => setState(prev => ({ ...prev, error: null }))}
           />
         )}
@@ -280,12 +272,6 @@ export const Recordings: React.FC = () => {
                 : 'No recordings available yet. Recordings from Zoom classes will appear here automatically.'
               }
             </p>
-            <p className="text-gray-400 text-sm" lang="ml">
-              {state.searchQuery 
-                ? 'തിരയൽ ഫലങ്ങൾ കണ്ടെത്തിയില്ല'
-                : 'സൂം ക്ലാസുകളിൽ നിന്നുള്ള റെക്കോർഡിംഗുകൾ സ്വയമേവ ഇവിടെ ദൃശ്യമാകും'
-              }
-            </p>
             {state.searchQuery && (
               <button
                 onClick={() => handleSearch('')}
@@ -303,9 +289,6 @@ export const Recordings: React.FC = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">
                 {state.searchQuery ? 'Search Results' : 'Available Recordings'}
-                <span className="block text-sm text-gray-500 font-normal" lang="ml">
-                  {state.searchQuery ? 'തിരയൽ ഫലങ്ങൾ' : 'ലഭ്യമായ റെക്കോർഡിംഗുകൾ'}
-                </span>
               </h2>
               <div className="text-right">
                 <span className="text-sm text-gray-500">

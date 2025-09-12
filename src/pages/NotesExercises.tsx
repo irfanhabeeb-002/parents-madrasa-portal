@@ -176,7 +176,6 @@ export const NotesExercises: React.FC = () => {
       <Layout 
         showBackButton={true}
         title="Notes & Exercises"
-        malayalamTitle="കുറിപ്പുകളും അഭ്യാസങ്ങളും"
       >
         <div className="space-y-6">
           <SkeletonLoader variant="text" lines={2} />
@@ -197,14 +196,12 @@ export const NotesExercises: React.FC = () => {
     <Layout 
       showBackButton={true}
       title="Notes & Exercises"
-      malayalamTitle="കുറിപ്പുകളും അഭ്യാസങ്ങളും"
     >
       <div className="space-y-6">
         {state.error && (
           <AlertBanner
             type="error"
             message={state.error}
-            malayalamMessage="ഒരു പിശക് സംഭവിച്ചു"
             onDismiss={() => setState(prev => ({ ...prev, error: null }))}
             autoHide={true}
           />
@@ -217,9 +214,6 @@ export const NotesExercises: React.FC = () => {
             <div>
               <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
                 Search Notes & Exercises
-                <span className="block text-xs text-gray-500 mt-1" lang="ml">
-                  കുറിപ്പുകളും അഭ്യാസങ്ങളും തിരയുക
-                </span>
               </label>
               <input
                 id="search"
@@ -237,7 +231,6 @@ export const NotesExercises: React.FC = () => {
               <div>
                 <label htmlFor="subject-filter" className="block text-sm font-medium text-gray-700 mb-2">
                   Subject
-                  <span className="block text-xs text-gray-500 mt-1" lang="ml">വിഷയം</span>
                 </label>
                 <select
                   id="subject-filter"
@@ -255,7 +248,6 @@ export const NotesExercises: React.FC = () => {
               <div>
                 <label htmlFor="difficulty-filter" className="block text-sm font-medium text-gray-700 mb-2">
                   Difficulty
-                  <span className="block text-xs text-gray-500 mt-1" lang="ml">ബുദ്ധിമുട്ട്</span>
                 </label>
                 <select
                   id="difficulty-filter"
@@ -279,17 +271,11 @@ export const NotesExercises: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Lesson Notes
-            <span className="block text-sm text-gray-600 mt-1" lang="ml">
-              പാഠ കുറിപ്പുകൾ
-            </span>
           </h2>
           
           {filteredNotes.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500">No notes found matching your criteria</p>
-              <p className="text-sm text-gray-400 mt-1" lang="ml">
-                നിങ്ങളുടെ മാനദണ്ഡങ്ങൾക്ക് അനുയോജ്യമായ കുറിപ്പുകൾ കണ്ടെത്തിയില്ല
-              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -298,7 +284,6 @@ export const NotesExercises: React.FC = () => {
                   key={note.id}
                   title={note.title}
                   subtitle={note.summary || note.subject}
-                  malayalamSubtitle={note.subject}
                   onClick={() => handleNoteClick(note)}
                   variant="interactive"
                   ariaLabel={`Open note: ${note.title}`}
@@ -322,9 +307,6 @@ export const NotesExercises: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Practice Exercises
-            <span className="block text-sm text-gray-600 mt-1" lang="ml">
-              അഭ്യാസ വ്യായാമങ്ങൾ
-            </span>
           </h2>
           
           <div className="text-center py-8">
@@ -334,9 +316,6 @@ export const NotesExercises: React.FC = () => {
             </h3>
             <p className="text-gray-600 mb-4">
               Practice with randomized questions from Islamic subjects
-              <span className="block text-sm mt-1" lang="ml">
-                ഇസ്ലാമിക വിഷയങ്ങളിൽ നിന്നുള്ള ക്രമരഹിത ചോദ്യങ്ങൾ ഉപയോഗിച്ച് അഭ്യസിക്കുക
-              </span>
             </p>
             
             <div className="bg-blue-50 rounded-lg p-4 mb-6 text-left">
@@ -362,9 +341,6 @@ export const NotesExercises: React.FC = () => {
               }}
             >
               Start Practice Exercise
-              <span className="block text-sm mt-1" lang="ml">
-                അഭ്യാസ വ്യായാമം ആരംഭിക്കുക
-              </span>
             </AccessibleButton>
           </div>
         </div>
@@ -375,7 +351,6 @@ export const NotesExercises: React.FC = () => {
             isOpen={state.showPDFViewer}
             onClose={closePDFViewer}
             title={state.selectedNote.title}
-            malayalamTitle={state.selectedNote.subject}
             size="2xl"
           >
             <PDFViewer
@@ -391,7 +366,6 @@ export const NotesExercises: React.FC = () => {
             isOpen={state.showSubjectSelector}
             onClose={closeExercise}
             title="Practice Exercises"
-            malayalamTitle="അഭ്യാസ വ്യായാമങ്ങൾ"
             size="2xl"
           >
             <SubjectSelector
@@ -407,7 +381,6 @@ export const NotesExercises: React.FC = () => {
             isOpen={state.showExercise}
             onClose={closeExercise}
             title={`${state.selectedSubject || 'Mixed'} Exercise`}
-            malayalamTitle={`${state.selectedSubject || 'മിശ്രിത'} അഭ്യാസം`}
             size="2xl"
             closeOnOverlayClick={false}
           >

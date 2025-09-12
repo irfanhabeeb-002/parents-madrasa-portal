@@ -69,9 +69,9 @@ export const Card: React.FC<CardProps> = ({
       )}
       
       <div className="text-center">
-        <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2 lg:mb-3">
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2 lg:mb-3">
           {title}
-        </h3>
+        </h2>
         
         {subtitle && (
           <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-1 sm:mb-2">

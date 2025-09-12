@@ -140,9 +140,10 @@ export const Dashboard: React.FC = () => {
         {/* ARIA Live Region for Screen Reader Announcements */}
         <div 
           aria-live="polite" 
-          aria-label="Notification updates"
           className="sr-only"
           id="notification-live-region"
+          role="status"
+          aria-label="Notification updates"
         >
           {unreadNotifications.length > 0 && 
             `You have ${unreadNotifications.length} new notification${unreadNotifications.length > 1 ? 's' : ''}`
@@ -269,9 +270,9 @@ export const Dashboard: React.FC = () => {
               </div>
 
               {/* Title */}
-              <h3 className="desktop-card-title font-inter">
+              <h2 className="desktop-card-title font-inter">
                 {card.title}
-              </h3>
+              </h2>
 
               {/* Description */}
               <p className="desktop-card-description">

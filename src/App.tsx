@@ -15,6 +15,7 @@ import { SkeletonLoader } from './components/ui';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { OfflineIndicator, InstallPrompt } from './components/pwa';
 import { offlineQueue } from './services/offlineQueue';
+import { AppIcons } from './assets/icons';
 import './App.css';
 
 // Lazy load page components for code splitting
@@ -48,6 +49,22 @@ function App() {
   // Initialize offline queue on app start
   React.useEffect(() => {
     offlineQueue.initialize();
+  }, []);
+
+  // Ensure consistent app icon usage across the application
+  React.useEffect(() => {
+    // Update favicon to use centralized icon system
+    const favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+    if (favicon) {
+      // Ensure favicon uses the centralized icon path
+      favicon.href = AppIcons.favicon;
+    }
+
+    // Update apple-touch-icon to use centralized icon system
+    const appleTouchIcon = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement;
+    if (appleTouchIcon) {
+      appleTouchIcon.href = AppIcons.appleTouchIcon;
+    }
   }, []);
 
   return (
@@ -124,7 +141,6 @@ function App() {
                         <Layout 
                           showBackButton={true}
                           title="Profile"
-                          malayalamTitle="പ്രൊഫൈൽ"
                         >
                           <Profile />
                         </Layout>

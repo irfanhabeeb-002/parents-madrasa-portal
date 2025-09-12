@@ -17,19 +17,16 @@ export const FontSizeToggle: React.FC<FontSizeToggleProps> = ({
     { 
       value: 'small' as const, 
       label: 'Small', 
-      malayalamLabel: 'ചെറുത്',
       icon: 'A'
     },
     { 
       value: 'medium' as const, 
       label: 'Medium', 
-      malayalamLabel: 'ഇടത്തരം',
       icon: 'A'
     },
     { 
       value: 'large' as const, 
       label: 'Large', 
-      malayalamLabel: 'വലുത്',
       icon: 'A'
     }
   ];
@@ -39,9 +36,6 @@ export const FontSizeToggle: React.FC<FontSizeToggleProps> = ({
       {showLabels && (
         <span className="text-xs sm:text-sm lg:text-base font-medium text-gray-700 text-center sm:text-left sm:mr-2 lg:mr-3">
           Font Size:
-          <span className="block text-xs sm:text-sm lg:text-base text-gray-500 font-normal" lang="ml">
-            ഫോണ്ട് വലുപ്പം:
-          </span>
         </span>
       )}
       
@@ -59,7 +53,7 @@ export const FontSizeToggle: React.FC<FontSizeToggleProps> = ({
               ${index === fontSizeOptions.length - 1 ? 'rounded-r-md' : ''}
               transition-all duration-200
             `}
-            ariaLabel={`Set font size to ${option.label} - ${option.malayalamLabel}`}
+            ariaLabel={`Set font size to ${option.label}`}
             aria-pressed={fontSize === option.value}
           >
             <span 
@@ -72,7 +66,7 @@ export const FontSizeToggle: React.FC<FontSizeToggleProps> = ({
             </span>
             {showLabels && (
               <span className="sr-only">
-                {option.label} - {option.malayalamLabel}
+                {option.label}
               </span>
             )}
           </AccessibleButton>

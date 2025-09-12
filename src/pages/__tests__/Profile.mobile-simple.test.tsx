@@ -1,6 +1,7 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
 import { Profile } from '../Profile'
 import { FontSizeProvider } from '../../contexts/FontSizeContext'
 
@@ -25,9 +26,11 @@ vi.mock('../../contexts/AuthContext', () => ({
 // Helper to render Profile with required providers
 const renderProfile = () => {
   return render(
-    <FontSizeProvider>
-      <Profile />
-    </FontSizeProvider>
+    <BrowserRouter>
+      <FontSizeProvider>
+        <Profile />
+      </FontSizeProvider>
+    </BrowserRouter>
   )
 }
 
@@ -67,7 +70,7 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
       
       // Check that main elements are present
       expect(screen.getByRole('heading', { name: /profile/i })).toBeInTheDocument()
-      expect(screen.getByText('പ്രൊഫൈൽ')).toBeInTheDocument()
+      // Note: Malayalam UI text removed - Malayalam should only be in educational content
       
       // Check that main card titles are present (there may be additional h3 elements)
       const cardTitles = screen.getAllByRole('heading', { level: 3 })
@@ -101,7 +104,7 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
       
       // Check account actions section (use getAllByText for multiple instances)
       expect(screen.getAllByText('Logout')).toHaveLength(2) // Title and button text
-      expect(screen.getByText('പുറത്തുകടക്കുക')).toBeInTheDocument()
+      // Note: Malayalam UI text removed - Malayalam should only be in educational content
       expect(screen.getByRole('button', { name: /logout from application/i })).toBeInTheDocument()
     })
   })
@@ -115,9 +118,7 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
       const mainTitle = screen.getByRole('heading', { name: /profile/i })
       expect(mainTitle).toHaveClass('text-xl')
       
-      // Check Malayalam subtitle has mobile typography
-      const malayalamSubtitle = screen.getByText('പ്രൊഫൈൽ')
-      expect(malayalamSubtitle).toHaveClass('text-sm')
+      // Note: Malayalam UI subtitle removed - Malayalam should only be in educational content
     })
 
     it('should have proper mobile spacing classes', () => {
@@ -144,40 +145,37 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
     })
   })
 
-  describe('Malayalam Text Rendering', () => {
-    it('should render Malayalam text with proper lang attributes', () => {
+  describe('UI Text Rendering', () => {
+    it('should render only English UI text (Malayalam reserved for educational content)', () => {
       setViewportSize(375)
       renderProfile()
       
-      // Check Malayalam elements have proper lang attribute
-      const malayalamElements = [
-        screen.getByText('പ്രൊഫൈൽ'),
-        screen.getByText('നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ'),
-        screen.getByText('പേര്'),
-        screen.getByText('ഫോൺ നമ്പർ'),
-        screen.getByText('ഇമെയിൽ'),
-        screen.getByText('ഉപയോക്തൃ ഐഡി'),
-        screen.getByText('പുറത്തുകടക്കുക')
-      ]
+      // Check that UI elements use English text only
+      expect(screen.getByText('Name')).toBeInTheDocument()
+      expect(screen.getByText('Phone Number')).toBeInTheDocument()
+      expect(screen.getByText('Email')).toBeInTheDocument()
+      expect(screen.getByText('User ID')).toBeInTheDocument()
       
-      malayalamElements.forEach(element => {
-        expect(element).toHaveAttribute('lang', 'ml')
+      // Verify Malayalam UI text is not present (Malayalam should only be in educational content)
+      const malayalamUIElements = ['പ്രൊഫൈൽ', 'നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ', 'പേര്', 'ഫോൺ നമ്പർ', 'ഇമെയിൽ', 'ഉപയോക്തൃ ഐഡി', 'പുറത്തുകടക്കുക']
+      malayalamUIElements.forEach(text => {
+        expect(screen.queryByText(text)).not.toBeInTheDocument()
       })
     })
 
-    it('should have proper mobile typography for Malayalam text', () => {
+    it('should have proper mobile typography for English UI text', () => {
       setViewportSize(375)
       renderProfile()
       
-      // Check Malayalam field labels have proper mobile classes
-      const malayalamLabels = [
-        screen.getByText('പേര്'),
-        screen.getByText('ഫോൺ നമ്പർ'),
-        screen.getByText('ഇമെയിൽ'),
-        screen.getByText('ഉപയോക്തൃ ഐഡി')
+      // Check English field labels have proper mobile classes
+      const englishLabels = [
+        screen.getByText('Name'),
+        screen.getByText('Phone Number'),
+        screen.getByText('Email'),
+        screen.getByText('User ID')
       ]
       
-      malayalamLabels.forEach(label => {
+      englishLabels.forEach(label => {
         expect(label).toHaveClass('text-xs', 'sm:text-sm')
       })
     })
@@ -198,7 +196,7 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
         
         // Check that all main elements are present regardless of screen size
         expect(screen.getByRole('heading', { name: /profile/i })).toBeInTheDocument()
-        expect(screen.getByText('പ്രൊഫൈൽ')).toBeInTheDocument()
+        // Note: Malayalam UI text removed - Malayalam should only be in educational content
         
         // Check that main cards are present
         const cardTitles = screen.getAllByRole('heading', { level: 3 })
@@ -262,9 +260,7 @@ describe('Profile Mobile Responsiveness - Core Tests', () => {
       const mainTitle = screen.getByRole('heading', { name: /profile/i })
       expect(mainTitle).toHaveClass('text-xl', 'sm:text-2xl', 'lg:text-3xl')
       
-      // Check subtitle responsive typography
-      const subtitle = screen.getByText('പ്രൊഫൈൽ')
-      expect(subtitle).toHaveClass('text-sm', 'sm:text-base', 'lg:text-lg')
+      // Note: Malayalam UI subtitle removed - Malayalam should only be in educational content
     })
 
     it('should use proper responsive classes for interactive elements', () => {

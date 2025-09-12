@@ -35,5 +35,5 @@ export const getAppIcon = (size: IconSize = '192'): string => {
 
 // Helper function for PWA manifest icons
 export const getManifestIcon = (size: IconSize = '192'): string => {
-  return size === '512' ? AppIcons.manifest.icon512 : AppIcons.manifest.icon192;
+  return size === '512' ? AppIcons.pwa512 : AppIcons.pwa192;
 };
