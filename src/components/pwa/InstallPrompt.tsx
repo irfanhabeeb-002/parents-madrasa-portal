@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { AccessibleButton } from '../ui/AccessibleButton';
 import { Modal } from '../ui/Modal';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useInstallPromptPerformance } from '../../utils/performance';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -18,6 +19,7 @@ interface InstallPromptProps {
 
 export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) => {
   const { theme, isHighContrast, prefersReducedMotion } = useTheme();
+  const { measureThemeChange, measurePositioning } = useInstallPromptPerformance();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -27,6 +29,8 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
   const bannerRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const announcementRef = useRef<HTMLDivElement>(null);
+
+
 
   // Screen reader announcement function
   const announceToScreenReader = (message: string) => {
@@ -40,6 +44,27 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
       }, 1000);
     }
   };
+
+  // Memoized event handlers to prevent unnecessary re-renders
+  const handleDismissBanner = useCallback(() => {
+    setShowInstallBanner(false);
+    // Don't show again for this session
+    sessionStorage.setItem('installBannerDismissed', 'true');
+    // Announce dismissal to screen readers
+    announceToScreenReader('Install banner dismissed');
+  }, []);
+
+  const handleShowModal = useCallback(() => {
+    setShowInstallModal(true);
+    setShowInstallBanner(false);
+    // Announce modal opening to screen readers
+    announceToScreenReader('Install app details modal opened');
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setShowInstallModal(false);
+    announceToScreenReader('Install modal closed');
+  }, []);
 
   useEffect(() => {
     // Check if app is already installed
@@ -91,16 +116,18 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
     };
   }, [isInstalled]);
 
-  // Focus management for banner appearance/disappearance
+  // Focus management for banner appearance/disappearance with performance monitoring
   useEffect(() => {
     if (showInstallBanner && bannerRef.current) {
       // Store current focus
       previousFocusRef.current = document.activeElement as HTMLElement;
       
-      // Focus the banner for screen reader announcement
+      // Focus the banner for screen reader announcement with performance monitoring
       setTimeout(() => {
         if (bannerRef.current) {
-          bannerRef.current.focus();
+          measurePositioning(() => {
+            bannerRef.current!.focus();
+          });
         }
       }, 100);
     } else if (!showInstallBanner && previousFocusRef.current) {
@@ -108,7 +135,7 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
       previousFocusRef.current.focus();
       previousFocusRef.current = null;
     }
-  }, [showInstallBanner]);
+  }, [showInstallBanner, measurePositioning]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
@@ -135,42 +162,8 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
     }
   };
 
-  const handleDismissBanner = () => {
-    setShowInstallBanner(false);
-    // Don't show again for this session
-    sessionStorage.setItem('installBannerDismissed', 'true');
-    // Announce dismissal to screen readers
-    announceToScreenReader('Install banner dismissed');
-  };
-
-  const handleShowModal = () => {
-    setShowInstallModal(true);
-    setShowInstallBanner(false);
-    // Announce modal opening to screen readers
-    announceToScreenReader('Install app details modal opened');
-  };
-
-  // Don't show if already installed or no prompt available
-  if (isInstalled || !deferredPrompt) {
-    return (
-      <>
-        {/* Screen Reader Announcements - Always present for accessibility */}
-        <div
-          ref={announcementRef}
-          className="sr-only"
-          aria-live="polite"
-          aria-atomic="true"
-          role="status"
-        />
-      </>
-    );
-  }
-
-  // Check if banner was dismissed this session
-  const bannerDismissed = sessionStorage.getItem('installBannerDismissed') === 'true';
-
-  // Get theme-aware banner styles
-  const getBannerStyles = () => {
+  // Memoized theme-aware banner styles to prevent unnecessary re-renders
+  const bannerStyles = useMemo(() => {
     if (isHighContrast) {
       return {
         background: 'bg-black',
@@ -196,12 +189,10 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
       border: 'border-primary-800',
       shadow: 'shadow-2xl'
     };
-  };
+  }, [theme, isHighContrast]);
 
-  const bannerStyles = getBannerStyles();
-
-  // Get theme-aware button styles
-  const getButtonStyles = () => {
+  // Memoized theme-aware button styles to prevent unnecessary re-renders
+  const buttonStyles = useMemo(() => {
     if (isHighContrast) {
       return {
         secondary: 'bg-white text-black hover:bg-gray-200 border-2 border-black',
@@ -221,9 +212,49 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
       secondary: 'bg-white text-primary-600 hover:bg-primary-50',
       primary: 'bg-primary-700 hover:bg-primary-800'
     };
-  };
+  }, [theme, isHighContrast]);
 
-  const buttonStyles = getButtonStyles();
+  // Performance monitoring for theme changes
+  useEffect(() => {
+    measureThemeChange(() => {
+      // Theme change effect - styles will be recalculated
+    });
+  }, [theme, isHighContrast, measureThemeChange]);
+
+  // Memoized positioning and animation classes to prevent layout shifts
+  const bannerClasses = useMemo(() => {
+    const baseClasses = `fixed bottom-22 left-4 right-4 z-60 max-w-md mx-auto md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 ${className}`;
+    const animationClasses = prefersReducedMotion ? '' : 'transition-all duration-300 ease-in-out';
+    return `${baseClasses} ${animationClasses}`;
+  }, [className, prefersReducedMotion]);
+
+  // Memoized banner positioning styles to prevent layout shifts during theme changes
+  const bannerPositionStyles = useMemo(() => ({
+    paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+    bottom: 'calc(88px + env(safe-area-inset-bottom, 0px))',
+    // Ensure consistent dimensions to prevent layout shifts
+    minHeight: '120px',
+    contain: 'layout style' as const
+  }), []);
+
+  // Check if banner was dismissed this session
+  const bannerDismissed = sessionStorage.getItem('installBannerDismissed') === 'true';
+
+  // Don't show if already installed or no prompt available
+  if (isInstalled || !deferredPrompt) {
+    return (
+      <>
+        {/* Screen Reader Announcements - Always present for accessibility */}
+        <div
+          ref={announcementRef}
+          className="sr-only"
+          aria-live="polite"
+          aria-atomic="true"
+          role="status"
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -231,18 +262,8 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
       {showInstallBanner && !bannerDismissed && (
         <div 
           ref={bannerRef}
-          className={`fixed bottom-22 left-4 right-4 z-60 max-w-md mx-auto md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 ${className} ${
-            prefersReducedMotion 
-              ? '' 
-              : 'transition-all duration-300 ease-in-out animate-slide-up-fade-in'
-          }`}
-          style={{ 
-            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-            bottom: 'calc(88px + env(safe-area-inset-bottom, 0px))',
-            ...(prefersReducedMotion ? {} : {
-              animation: 'slideUpFadeIn 0.3s ease-out forwards'
-            })
-          }}
+          className={bannerClasses}
+          style={bannerPositionStyles}
           role="banner"
           aria-live="polite"
           aria-label="Install app banner"
@@ -332,10 +353,7 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
       {/* Install Modal */}
       <Modal
         isOpen={showInstallModal}
-        onClose={() => {
-          setShowInstallModal(false);
-          announceToScreenReader('Install modal closed');
-        }}
+        onClose={handleCloseModal}
         title="Install Madrasa Portal"
         malayalamTitle="മദ്രസ പോർട്ടൽ ഇൻസ്റ്റാൾ ചെയ്യുക"
         size="md"
@@ -496,10 +514,7 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ className = '' }) 
           >
             <AccessibleButton
               variant="secondary"
-              onClick={() => {
-                setShowInstallModal(false);
-                announceToScreenReader('Install modal closed');
-              }}
+              onClick={handleCloseModal}
               className={`flex-1 min-h-[48px] px-6 py-3 text-base font-medium rounded-lg border-2 border-gray-300 hover:border-gray-400 ${
                 prefersReducedMotion 
                   ? '' 
