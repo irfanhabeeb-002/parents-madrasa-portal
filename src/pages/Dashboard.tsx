@@ -9,6 +9,7 @@ import { DailyBanner, AnnouncementsBanner } from '../components/notifications';
 import { useDashboard } from '../hooks/useDashboard';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useNotificationListener, useClassReminderListener } from '../hooks/useNotificationListener';
+import { useAuth } from '../contexts/AuthContext';
 import {
   VideoCameraIcon,
   PlayIcon,
@@ -19,6 +20,7 @@ import {
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     announcements,
     notifications: dashboardNotifications,
@@ -130,7 +132,7 @@ export const Dashboard: React.FC = () => {
         {/* Welcome Section */}
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Welcome to Your Dashboard
+            Welcome {user?.displayName || 'User'} 👋
           </h1>
         </div>
 
@@ -146,54 +148,7 @@ export const Dashboard: React.FC = () => {
           }
         </div>
 
-        {/* Today's Class Banner */}
-        {loading.todaysClass ? (
-          <SkeletonLoader className="h-16" />
-        ) : error.todaysClass ? (
-          <NotificationBanner
-            type="warning"
-            title="Unable to load today's class"
-            message={error.todaysClass}
-            malayalamMessage="আজকের ক্লাসের তথ্য লোড করতে পারছি না"
-            onDismiss={() => clearError('todaysClass')}
-          />
-        ) : todaysClass ? (
-          <DailyBanner
-            classTitle={todaysClass.title}
-            classTime={todaysClassTime || ''}
-            malayalamTitle={todaysClass.title}
-            onJoinClass={() => navigate('/live-class')}
-            isLive={todaysClass.status === 'live'}
-          />
-        ) : null}
-
-        {/* Unread Notifications */}
-        {unreadNotifications.length > 0 && (
-          <NotificationBanner
-            type="info"
-            title={`${unreadNotifications.length} new notification${unreadNotifications.length > 1 ? 's' : ''}`}
-            message={unreadNotifications[0].message}
-            malayalamMessage={unreadNotifications[0].malayalamMessage}
-
-          />
-        )}
-
-        {/* Main Navigation Cards */}
-        <div className="grid grid-cols-2 gap-4">
-          {navigationCards.map((card, index) => (
-            <Card
-              key={index}
-              title={card.title}
-              icon={card.icon}
-              onClick={card.onClick}
-              ariaLabel={card.ariaLabel}
-              variant="interactive"
-              className="min-h-[120px] flex items-center justify-center"
-            />
-          ))}
-        </div>
-
-        {/* Announcements Banner */}
+        {/* Announcements Banner - Moved directly below welcome message */}
         {loading.announcements ? (
           <SkeletonLoader className="h-16" />
         ) : error.announcements ? (
@@ -222,6 +177,25 @@ export const Dashboard: React.FC = () => {
           </div>
         )}
 
+
+
+        {/* Main Navigation Cards */}
+        <div className="grid grid-cols-2 gap-4">
+          {navigationCards.map((card, index) => (
+            <Card
+              key={index}
+              title={card.title}
+              icon={card.icon}
+              onClick={card.onClick}
+              ariaLabel={card.ariaLabel}
+              variant="interactive"
+              className="min-h-[120px] flex items-center justify-center"
+            />
+          ))}
+        </div>
+
+
+
         {/* Floating WhatsApp Button */}
         <WhatsAppButton
           teacherNumber="+918078769771"
@@ -237,7 +211,7 @@ export const Dashboard: React.FC = () => {
         {/* Welcome Section */}
         <div className="text-left desktop-welcome">
           <h1 className="text-2xl font-bold text-gray-900 mb-4 font-inter" style={{ fontSize: '22px' }}>
-            Welcome to Your Dashboard
+            Welcome {user?.displayName || 'User'} 👋
           </h1>
         </div>
 
