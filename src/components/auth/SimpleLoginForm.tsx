@@ -170,11 +170,13 @@ export const SimpleLoginForm: React.FC<SimpleLoginFormProps> = ({ onSuccess }) =
       <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-xs text-blue-800 font-medium mb-2">Demo Users:</p>
         <div className="text-xs text-blue-700 space-y-1">
-          <p>9876543210 - Abdul Rahman</p>
-          <p>9123456789 - Fatima Khatun</p>
-          <p>9012345678 - Muhammad Ali</p>
-          <p>9234567890 - Aisha Begum</p>
-          <p>9345678901 - Omar Farooq</p>
+          <p>8078769771 - Abdul Shukkoor</p>
+          <p>9400095648 - Muneer Jabbar</p>
+          <p>9388839617 - Sageer Manath</p>
+          <p>9387110300 - Rafeek M I</p>
+          <p>9895820756 - Yousuf B S</p>
+          <p>7025021695 - Irfan Habeeb</p>
+          <p>9447183133 - Abdul Rasheed</p>
         </div>
       </div>
     </div>

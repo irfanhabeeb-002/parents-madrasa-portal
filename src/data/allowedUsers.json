@@ -1,38 +1,38 @@
 [
   {
     "uid": "user-001",
-    "phoneNumber": "9876543210",
-    "displayName": "Abdul Rahman",
+    "phoneNumber": "8078769771",
+    "displayName": "Abdul Shukkoor",
     "role": "parent",
-    "email": "abdulrahman@example.com"
+    "email": "abdulshukkoor@example.com"
   },
   {
-    "uid": "user-002", 
-    "phoneNumber": "9123456789",
-    "displayName": "Fathima",
+    "uid": "user-002",
+    "phoneNumber": "9400095648",
+    "displayName": "Muneer Jabbar",
     "role": "parent",
-    "email": "fathima@example.com"
+    "email": "muneerjabbar@example.com"
   },
   {
     "uid": "user-003",
-    "phoneNumber": "9012345678", 
-    "displayName": "Muhammad Ali",
-    "role": "parent",
-    "email": "muhammadali@example.com"
+    "phoneNumber": "9388839617",
+    "displayName": "Sageer Manath",
+    "role": "student",
+    "email": "sageermanath@example.com"
   },
   {
     "uid": "user-004",
-    "phoneNumber": "9234567890",
-    "displayName": "Aisha Begum",
-    "role": "parent", 
-    "email": "aishabegum@example.com"
+    "phoneNumber": "9387110300",
+    "displayName": "Rafeek M I",
+    "role": "parent",
+    "email": "rafeekmi@example.com"
   },
   {
     "uid": "user-005",
-    "phoneNumber": "9345678901",
-    "displayName": "Omar Farooq",
-    "role": "parent",
-    "email": "omarfarooq@example.com"
+    "phoneNumber": "9895820756",
+    "displayName": "Yousuf B S",
+    "role": "student",
+    "email": "yousufbs@example.com"
   },
   {
     "uid": "user-006",
@@ -40,5 +40,12 @@
     "displayName": "Irfan Habeeb",
     "role": "parent",
     "email": "irfanhabeeb002@gmail.com"
+  },
+  {
+    "uid": "user-007",
+    "phoneNumber": "9447183133",
+    "displayName": "Abdul Rasheed",
+    "role": "parent",
+    "email": "abdulrasheed@example.com"
   }
 ]

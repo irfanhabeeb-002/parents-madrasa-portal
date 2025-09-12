@@ -289,12 +289,13 @@ For easier development and testing, use these demo accounts:
 
 | Phone Number | User Name | Role |
 |--------------|-----------|------|
-| `9876543210` | Abdul Rahman | Parent |
-| `9123456789` | Fatima Khatun | Parent |
-| `9012345678` | Muhammad Ali | Student |
-| `9234567890` | Aisha Begum | Parent |
-| `9345678901` | Omar Farooq | Student |
-| `7025021695` | Irfan Habeeb | Parent |
+| `8078769771` | Abdul Shukkoor | Parent |
+| `9400095648` | Muneer Jabbar | Parent |
+| `9388839617` | Sageer Manath | Parent |
+| `9387110300` | Rafeek M I | Parent |
+| `9895820756` | Yousuf B S | Parent |
+| `7025021695` | Irfan Habeeb | Student |
+| `9447183133` | Abdul Rasheed | Parent |
 
 #### Firebase Authentication (Production Ready)
 
