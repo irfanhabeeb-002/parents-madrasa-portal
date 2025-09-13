@@ -68,11 +68,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: [
-          '**/*.{js,css,html,ico,png,jpg,svg,woff2}',
-          'icons/**/*.{ico,png,jpg,svg}',
-          'manifest.json',
-        ],
+        globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg,woff2}'],
         // Increase maximum file size for caching
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         // Skip waiting and claim clients immediately
