@@ -1,4 +1,8 @@
 {
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": null,
   "rewrites": [
     {
       "source": "/(.*)",
@@ -30,6 +34,15 @@
         {
           "key": "Content-Type",
           "value": "text/css; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.json)$",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
         }
       ]
     },
