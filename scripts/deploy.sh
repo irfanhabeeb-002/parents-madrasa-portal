@@ -294,37 +294,34 @@ create_backup() {
   ls -t | tail -n +6 | xargs -r rm -rf
 }
 
-# Deploy to Netlify
-deploy_netlify() {
-  log_info "Deploying to Netlify ($ENVIRONMENT)..."
+# Deploy to Vercel
+deploy_vercel() {
+  log_info "Deploying to Vercel ($ENVIRONMENT)..."
   
   if [ "$DRY_RUN" = true ]; then
-    log_info "[DRY RUN] Would deploy to Netlify"
+    log_info "[DRY RUN] Would deploy to Vercel"
     return
   fi
   
   cd "$PROJECT_DIR"
   
-  # Check if Netlify CLI is installed
-  if ! command -v netlify &> /dev/null; then
-    log_info "Installing Netlify CLI..."
-    npm install -g netlify-cli
+  # Check if Vercel CLI is installed
+  if ! command -v vercel &> /dev/null; then
+    log_info "Installing Vercel CLI..."
+    npm install -g vercel
   fi
   
   # Deploy based on environment
   case $ENVIRONMENT in
     production)
-      netlify deploy --prod --dir=dist --site="$NETLIFY_PRODUCTION_SITE_ID"
+      vercel --prod
       ;;
-    staging)
-      netlify deploy --dir=dist --site="$NETLIFY_STAGING_SITE_ID"
-      ;;
-    development)
-      netlify deploy --dir=dist --site="$NETLIFY_DEV_SITE_ID"
+    *)
+      vercel
       ;;
   esac
   
-  log_success "Deployed to Netlify"
+  log_success "Deployed to Vercel"
 }
 
 # Run post-deployment tests
@@ -399,7 +396,7 @@ main() {
   build_application
   
   # Deploy
-  deploy_netlify
+  deploy_vercel
   run_post_deployment_tests
   
   # Notify success

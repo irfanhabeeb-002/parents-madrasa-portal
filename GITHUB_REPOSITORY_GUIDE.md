@@ -22,7 +22,7 @@
 
 ### Deployment and CI/CD
 - `.github/workflows/` - GitHub Actions workflows
-- `netlify.toml` - Netlify deployment configuration
+- `vercel.json` - Vercel deployment configuration
 - `lighthouserc.js` - Performance testing configuration
 - `scripts/` - Deployment and utility scripts
 - `Dockerfile` - Docker configuration
@@ -97,7 +97,7 @@ git push
 ### 1. Environment Variables
 - Never commit actual API keys or secrets
 - Use `.env.example` as a template
-- Set environment variables in your deployment platform (Netlify, Vercel, etc.)
+- Set environment variables in your deployment platform (Vercel, etc.)
 - Use different credentials for development, staging, and production
 
 ### 2. Firebase Configuration
@@ -141,7 +141,7 @@ parents-madrasa-portal/
 ├── firestore.rules
 ├── index.html
 ├── lighthouserc.js
-├── netlify.toml
+├── vercel.json
 ├── package.json
 ├── package-lock.json
 ├── README.md

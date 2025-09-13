@@ -8,6 +8,8 @@ build/
 # Generated files
 *.min.js
 *.min.css
+public/sw.js
+public/workbox-*.js
 
 # Package files
 package-lock.json
@@ -16,10 +18,32 @@ pnpm-lock.yaml
 
 # Logs
 *.log
+logs/
 
 # Coverage
 coverage/
+.nyc_output/
 
 # Cache
 .cache/
 .eslintcache
+.parcel-cache/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/settings.json
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp

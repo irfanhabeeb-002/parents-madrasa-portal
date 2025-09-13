@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import react from '@vitejs/plugin-react';
+import viteImagemin from 'vite-plugin-imagemin';
 
 export default defineConfig({
   base: '/',
@@ -10,9 +11,30 @@ export default defineConfig({
     react(),
     tailwindcss(),
     tsconfigPaths(),
+    // Image optimization plugin
+    viteImagemin({
+      gifsicle: { optimizationLevel: 7 },
+      mozjpeg: { quality: 85 },
+      pngquant: { quality: [0.65, 0.8] },
+      webp: { quality: 85 },
+      // Generate WebP versions of images
+      webpOptions: {
+        quality: 85,
+      },
+    }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg', 'pwa-192x192.jpg', 'pwa-512x512.jpg'],
+      includeAssets: [
+        'icons/favicon.ico', 
+        'icons/apple-touch-icon.png', 
+        'icons/apple-touch-icon.webp',
+        'icons/masked-icon.svg', 
+        'icons/pwa-192x192.png', 
+        'icons/pwa-192x192.jpg',
+        'icons/pwa-192x192.webp',
+        'icons/pwa-512x512.jpg',
+        'icons/pwa-512x512.webp'
+      ],
       manifestFilename: 'manifest.json',
       manifest: {
         name: 'Parents Madrasa Portal',
@@ -25,18 +47,36 @@ export default defineConfig({
         scope: '/',
         start_url: '/',
         icons: [
+          // WebP versions for modern browsers
           {
-            src: 'pwa-192x192.jpg',
+            src: 'icons/pwa-192x192.webp',
             sizes: '192x192',
-            type: 'image/jpeg',
+            type: 'image/webp',
           },
           {
-            src: 'pwa-512x512.jpg',
+            src: 'icons/pwa-512x512.webp',
+            sizes: '512x512',
+            type: 'image/webp',
+          },
+          {
+            src: 'icons/pwa-512x512.webp',
+            sizes: '512x512',
+            type: 'image/webp',
+            purpose: 'any maskable',
+          },
+          // Fallback versions for compatibility
+          {
+            src: 'icons/pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'icons/pwa-512x512.jpg',
             sizes: '512x512',
             type: 'image/jpeg',
           },
           {
-            src: 'pwa-512x512.jpg',
+            src: 'icons/pwa-512x512.jpg',
             sizes: '512x512',
             type: 'image/jpeg',
             purpose: 'any maskable',
@@ -149,47 +189,111 @@ export default defineConfig({
     // Enable code splitting and chunk optimization
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Vendor chunks
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@heroicons/react'],
+        manualChunks: (id) => {
+          // Node modules vendor chunks
+          if (id.includes('node_modules')) {
+            // React ecosystem
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'react-vendor';
+            }
+            
+            // Firebase - separate chunk due to size
+            if (id.includes('firebase')) {
+              return 'firebase-vendor';
+            }
+            
+            // Zoom SDK - separate chunk due to size
+            if (id.includes('@zoom/meetingsdk')) {
+              return 'zoom-vendor';
+            }
+            
+            // UI libraries
+            if (id.includes('@heroicons') || id.includes('tailwindcss')) {
+              return 'ui-vendor';
+            }
+            
+            // Other vendor libraries
+            return 'vendor';
+          }
           
-          // Feature-based chunks
-          'auth': [
-            './src/contexts/AuthContext',
-            './src/components/auth/ProtectedRoute',
-            './src/components/auth/SimpleLoginForm',
-            './src/components/auth/FirebaseLoginForm'
-          ],
-          'notifications': [
-            './src/contexts/NotificationContext',
-            './src/components/notifications/NotificationPreferences',
-            './src/components/notifications/DailyBanner',
-            './src/components/notifications/AnnouncementsBanner'
-          ],
-          'accessibility': [
-            './src/contexts/AccessibilityContext',
-            './src/contexts/FontSizeContext',
-            './src/components/accessibility/AccessibilitySettings',
-            './src/components/accessibility/KeyboardNavigationIndicator'
-          ]
+          // Application code chunks
+          // Services - group by functionality
+          if (id.includes('/src/services/')) {
+            if (id.includes('zoomService') || id.includes('zoomRecordingService')) {
+              return 'zoom-services';
+            }
+            if (id.includes('firebaseService') || id.includes('storageService') || id.includes('dataSync')) {
+              return 'firebase-services';
+            }
+            if (id.includes('notificationService') || id.includes('backgroundSync')) {
+              return 'notification-services';
+            }
+            return 'core-services';
+          }
+          
+          // Contexts
+          if (id.includes('/src/contexts/')) {
+            return 'contexts';
+          }
+          
+          // Components - group by feature
+          if (id.includes('/src/components/')) {
+            if (id.includes('/auth/')) {
+              return 'auth-components';
+            }
+            if (id.includes('/zoom/')) {
+              return 'zoom-components';
+            }
+            if (id.includes('/notifications/')) {
+              return 'notification-components';
+            }
+            if (id.includes('/accessibility/')) {
+              return 'accessibility-components';
+            }
+            if (id.includes('/ui/')) {
+              return 'ui-components';
+            }
+            return 'common-components';
+          }
+          
+          // Pages - each page as separate chunk for route-based splitting
+          if (id.includes('/src/pages/')) {
+            const pageName = id.split('/').pop()?.replace('.tsx', '').replace('.ts', '').toLowerCase();
+            return `page-${pageName}`;
+          }
+          
+          // Utils and hooks
+          if (id.includes('/src/utils/') || id.includes('/src/hooks/')) {
+            return 'utils';
+          }
+          
+          // Types and config
+          if (id.includes('/src/types/') || id.includes('/src/config/')) {
+            return 'config';
+          }
         },
         // Optimize chunk names for caching
         chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '') : 'chunk';
-          return `js/[name]-[hash].js`;
+          // Use shorter hashes for better caching
+          const hash = chunkInfo.facadeModuleId ? 
+            chunkInfo.facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '') : 
+            'chunk';
+          return `js/[name]-[hash:8].js`;
         },
-        entryFileNames: 'js/[name]-[hash].js',
+        entryFileNames: 'js/[name]-[hash:8].js',
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name?.split('.') || [];
           const ext = info[info.length - 1];
-          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext || '')) {
-            return `images/[name]-[hash][extname]`;
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico|webp/i.test(ext || '')) {
+            return `images/[name]-[hash:8][extname]`;
           }
           if (/css/i.test(ext || '')) {
-            return `css/[name]-[hash][extname]`;
+            return `css/[name]-[hash:8][extname]`;
           }
-          return `assets/[name]-[hash][extname]`;
+          if (/woff2?|ttf|eot/i.test(ext || '')) {
+            return `fonts/[name]-[hash:8][extname]`;
+          }
+          return `assets/[name]-[hash:8][extname]`;
         }
       }
     },
@@ -203,8 +307,8 @@ export default defineConfig({
     },
     // Enable source maps for debugging
     sourcemap: false,
-    // Set chunk size warning limit
-    chunkSizeWarningLimit: 1000,
+    // Set chunk size warning limit (increased for complex app)
+    chunkSizeWarningLimit: 1500,
   },
   // Optimize dependencies
   optimizeDeps: {
@@ -221,7 +325,15 @@ export default defineConfig({
       'firebase/auth',
       'firebase/firestore',
       'firebase/storage',
-      'firebase/messaging'
+      'firebase/messaging',
+      '@zoom/meetingsdk'
     ]
+  },
+  // Improve build performance
+  esbuild: {
+    // Drop console and debugger in production
+    drop: ['console', 'debugger'],
+    // Enable legal comments for licenses
+    legalComments: 'none'
   }
 });

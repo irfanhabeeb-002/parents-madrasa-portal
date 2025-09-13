@@ -92,12 +92,13 @@ jobs:
         name: build-artifacts
         path: dist/
         
-    - name: Deploy to Netlify (Production)
-      uses: netlify/actions/cli@master
+    - name: Deploy to Vercel (Production)
+      uses: amondnet/vercel-action@v25
       with:
-        args: deploy --prod --dir=dist --site=${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        vercel-args: '--prod'
       continue-on-error: true
 
   # Cleanup

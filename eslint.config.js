@@ -9,13 +9,27 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default [
   {
-    ignores: ['dist', 'node_modules'],
+    ignores: [
+      'dist/**',
+      'build/**',
+      'node_modules/**',
+      'coverage/**',
+      '*.min.js',
+      '*.min.css',
+      '.cache/**',
+      '.eslintcache',
+      'public/sw.js',
+      'public/workbox-*.js'
+    ],
   },
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+      ecmaVersion: 2022,
+      globals: {
+        ...globals.browser,
+        ...globals.es2022,
+      },
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 'latest',
@@ -25,6 +39,10 @@ export default [
     },
     settings: {
       react: { version: 'detect' },
+      'import/resolver': {
+        typescript: true,
+        node: true,
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
@@ -45,8 +63,11 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react/jsx-uses-react': 'off',
+      'react/jsx-no-target-blank': 'error',
+      'react/jsx-key': 'error',
+      'react/no-array-index-key': 'warn',
 
-      // Accessibility rules
+      // Accessibility rules (enhanced)
       'jsx-a11y/anchor-is-valid': 'error',
       'jsx-a11y/alt-text': 'error',
       'jsx-a11y/aria-props': 'error',
@@ -57,23 +78,54 @@ export default [
       'jsx-a11y/label-has-associated-control': 'error',
       'jsx-a11y/no-autofocus': 'error',
       'jsx-a11y/no-static-element-interactions': 'error',
+      'jsx-a11y/heading-has-content': 'error',
+      'jsx-a11y/img-redundant-alt': 'error',
 
-      // TypeScript rules
+      // TypeScript rules (enhanced)
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        { 
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
       ],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-var-requires': 'error',
+      '@typescript-eslint/ban-ts-comment': 'warn',
 
-      // General rules
-      'no-console': 'warn',
+      // General rules (enhanced)
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'prefer-const': 'error',
+      'no-var': 'error',
+      'no-duplicate-imports': 'error',
+      'no-unused-expressions': 'error',
+      'eqeqeq': ['error', 'always'],
+      'curly': ['warn', 'all'],
+
+      // React Refresh
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
+    },
+  },
+  // Configuration for test files
+  {
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/test/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.jest,
+        ...globals.node,
+      },
+    },
+    rules: {
+      // Relax some rules for test files
+      '@typescript-eslint/no-explicit-any': 'off',
+      'no-console': 'off',
     },
   },
 ];

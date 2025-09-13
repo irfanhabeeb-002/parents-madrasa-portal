@@ -1,4 +1,4 @@
-import ZoomMtgEmbedded from '@zoom/meetingsdk/embedded';
+// Dynamic import for Zoom SDK to avoid build issues
 import type {
   ZoomMeetingConfig,
   ZoomInitConfig,
@@ -21,7 +21,7 @@ import type {
  */
 export class ZoomService {
   private static instance: ZoomService;
-  private client: typeof ZoomMtgEmbedded | null = null;
+  private client: any | null = null;
   private isInitialized = false;
   private authConfig: ZoomAuthConfig | null = null;
   private currentMeetingId: string | null = null;
@@ -48,7 +48,9 @@ export class ZoomService {
         return { success: true, data: true, message: 'Zoom SDK already initialized' };
       }
 
-      // Initialize the Zoom Meeting SDK
+      // Initialize the Zoom Meeting SDK with dynamic import
+      const ZoomModule = await import('@zoom/meetingsdk/embedded');
+      const ZoomMtgEmbedded = ZoomModule.default || ZoomModule.ZoomMtgEmbedded || ZoomModule;
       this.client = ZoomMtgEmbedded.createClient();
 
       const initResult = await new Promise<boolean>((resolve, reject) => {

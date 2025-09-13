@@ -308,44 +308,31 @@ const createBackup = () => {
   }
 };
 
-// Deploy to Netlify
-const deployNetlify = () => {
-  log.info(`Deploying to Netlify (${environment})...`);
+// Deploy to Vercel
+const deployVercel = () => {
+  log.info(`Deploying to Vercel (${environment})...`);
   
   if (dryRun) {
-    log.info('[DRY RUN] Would deploy to Netlify');
+    log.info('[DRY RUN] Would deploy to Vercel');
     return;
   }
   
-  // Check if Netlify CLI is installed
+  // Check if Vercel CLI is installed
   try {
-    execSync('netlify --version', { stdio: 'ignore' });
+    execSync('vercel --version', { stdio: 'ignore' });
   } catch (error) {
-    log.info('Installing Netlify CLI...');
-    execCommand('npm install -g netlify-cli');
+    log.info('Installing Vercel CLI...');
+    execCommand('npm install -g vercel');
   }
   
   // Deploy based on environment
-  const siteIds = {
-    production: process.env.NETLIFY_PRODUCTION_SITE_ID,
-    staging: process.env.NETLIFY_STAGING_SITE_ID,
-    development: process.env.NETLIFY_DEV_SITE_ID
-  };
-  
-  const siteId = siteIds[environment];
-  if (!siteId) {
-    log.error(`Netlify site ID not configured for ${environment}`);
-    log.info(`Please set NETLIFY_${environment.toUpperCase()}_SITE_ID environment variable`);
-    process.exit(1);
-  }
-  
   const deployCommand = environment === 'production' 
-    ? `netlify deploy --prod --dir=dist --site=${siteId}`
-    : `netlify deploy --dir=dist --site=${siteId}`;
+    ? 'vercel --prod'
+    : 'vercel';
   
   execCommand(deployCommand);
   
-  log.success('Deployed to Netlify');
+  log.success('Deployed to Vercel');
 };
 
 // Send notification
@@ -387,7 +374,7 @@ const main = async () => {
     buildApplication();
     
     // Deploy
-    deployNetlify();
+    deployVercel();
     
     // Notify success
     sendNotification('success', `Deployment to ${environment} completed successfully! 🚀`);
