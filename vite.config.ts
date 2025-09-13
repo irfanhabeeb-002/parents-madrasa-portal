@@ -25,15 +25,12 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [
-        'icons/favicon.ico', 
-        'icons/apple-touch-icon.png', 
-        'icons/apple-touch-icon.webp',
-        'icons/masked-icon.svg', 
-        'icons/pwa-192x192.png', 
+        'icons/favicon.ico',
+        'icons/apple-touch-icon.png',
+        'icons/masked-icon.svg',
+        'icons/pwa-192x192.png',
         'icons/pwa-192x192.jpg',
-        'icons/pwa-192x192.webp',
         'icons/pwa-512x512.jpg',
-        'icons/pwa-512x512.webp'
       ],
       manifestFilename: 'manifest.json',
       manifest: {
@@ -47,28 +44,15 @@ export default defineConfig({
         scope: '/',
         start_url: '/',
         icons: [
-          // WebP versions for modern browsers
-          {
-            src: 'icons/pwa-192x192.webp',
-            sizes: '192x192',
-            type: 'image/webp',
-          },
-          {
-            src: 'icons/pwa-512x512.webp',
-            sizes: '512x512',
-            type: 'image/webp',
-          },
-          {
-            src: 'icons/pwa-512x512.webp',
-            sizes: '512x512',
-            type: 'image/webp',
-            purpose: 'any maskable',
-          },
-          // Fallback versions for compatibility
           {
             src: 'icons/pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png',
+          },
+          {
+            src: 'icons/pwa-192x192.jpg',
+            sizes: '192x192',
+            type: 'image/jpeg',
           },
           {
             src: 'icons/pwa-512x512.jpg',
@@ -84,7 +68,11 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
+        globPatterns: [
+          '**/*.{js,css,html,ico,png,jpg,svg,woff2}',
+          'icons/**/*.{ico,png,jpg,svg}',
+          'manifest.json',
+        ],
         // Increase maximum file size for caching
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         // Skip waiting and claim clients immediately
@@ -102,7 +90,6 @@ export default defineConfig({
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
               },
-
             },
           },
           // Google Fonts CSS - Stale While Revalidate
@@ -127,7 +114,6 @@ export default defineConfig({
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
               },
-
             },
           },
           // Firebase API calls - Network First with fallback
@@ -181,7 +167,6 @@ export default defineConfig({
             },
           },
         ],
-
       },
     }),
   ],
@@ -189,53 +174,67 @@ export default defineConfig({
     // Enable code splitting and chunk optimization
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
+        manualChunks: id => {
           // Node modules vendor chunks
           if (id.includes('node_modules')) {
             // React ecosystem
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+            if (
+              id.includes('react') ||
+              id.includes('react-dom') ||
+              id.includes('react-router')
+            ) {
               return 'react-vendor';
             }
-            
+
             // Firebase - separate chunk due to size
             if (id.includes('firebase')) {
               return 'firebase-vendor';
             }
-            
+
             // Zoom SDK - separate chunk due to size
             if (id.includes('@zoom/meetingsdk')) {
               return 'zoom-vendor';
             }
-            
+
             // UI libraries
             if (id.includes('@heroicons') || id.includes('tailwindcss')) {
               return 'ui-vendor';
             }
-            
+
             // Other vendor libraries
             return 'vendor';
           }
-          
+
           // Application code chunks
           // Services - group by functionality
           if (id.includes('/src/services/')) {
-            if (id.includes('zoomService') || id.includes('zoomRecordingService')) {
+            if (
+              id.includes('zoomService') ||
+              id.includes('zoomRecordingService')
+            ) {
               return 'zoom-services';
             }
-            if (id.includes('firebaseService') || id.includes('storageService') || id.includes('dataSync')) {
+            if (
+              id.includes('firebaseService') ||
+              id.includes('storageService') ||
+              id.includes('dataSync')
+            ) {
               return 'firebase-services';
             }
-            if (id.includes('notificationService') || id.includes('backgroundSync')) {
+            if (
+              id.includes('notificationService') ||
+              id.includes('backgroundSync')
+            ) {
               return 'notification-services';
             }
             return 'core-services';
           }
-          
+
           // Contexts
           if (id.includes('/src/contexts/')) {
             return 'contexts';
           }
-          
+
           // Components - group by feature
           if (id.includes('/src/components/')) {
             if (id.includes('/auth/')) {
@@ -255,33 +254,34 @@ export default defineConfig({
             }
             return 'common-components';
           }
-          
+
           // Pages - each page as separate chunk for route-based splitting
           if (id.includes('/src/pages/')) {
-            const pageName = id.split('/').pop()?.replace('.tsx', '').replace('.ts', '').toLowerCase();
+            const pageName = id
+              .split('/')
+              .pop()
+              ?.replace('.tsx', '')
+              .replace('.ts', '')
+              .toLowerCase();
             return `page-${pageName}`;
           }
-          
+
           // Utils and hooks
           if (id.includes('/src/utils/') || id.includes('/src/hooks/')) {
             return 'utils';
           }
-          
+
           // Types and config
           if (id.includes('/src/types/') || id.includes('/src/config/')) {
             return 'config';
           }
         },
         // Optimize chunk names for caching
-        chunkFileNames: (chunkInfo) => {
-          // Use shorter hashes for better caching
-          const hash = chunkInfo.facadeModuleId ? 
-            chunkInfo.facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '') : 
-            'chunk';
+        chunkFileNames: () => {
           return `js/[name]-[hash:8].js`;
         },
         entryFileNames: 'js/[name]-[hash:8].js',
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           const info = assetInfo.name?.split('.') || [];
           const ext = info[info.length - 1];
           if (/png|jpe?g|svg|gif|tiff|bmp|ico|webp/i.test(ext || '')) {
@@ -294,8 +294,8 @@ export default defineConfig({
             return `fonts/[name]-[hash:8][extname]`;
           }
           return `assets/[name]-[hash:8][extname]`;
-        }
-      }
+        },
+      },
     },
     // Optimize for production
     minify: 'terser',
@@ -317,7 +317,7 @@ export default defineConfig({
       'react-dom',
       'react-router-dom',
       '@heroicons/react/24/outline',
-      '@heroicons/react/24/solid'
+      '@heroicons/react/24/solid',
     ],
     exclude: [
       // Exclude heavy libraries that should be lazy loaded
@@ -326,14 +326,14 @@ export default defineConfig({
       'firebase/firestore',
       'firebase/storage',
       'firebase/messaging',
-      '@zoom/meetingsdk'
-    ]
+      '@zoom/meetingsdk',
+    ],
   },
   // Improve build performance
   esbuild: {
     // Drop console and debugger in production
     drop: ['console', 'debugger'],
     // Enable legal comments for licenses
-    legalComments: 'none'
-  }
+    legalComments: 'none',
+  },
 });
