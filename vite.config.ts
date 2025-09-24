@@ -9,6 +9,11 @@ export default defineConfig({
   base: '/',
   root: '.',
   publicDir: 'public',
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),
@@ -66,8 +71,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg,woff2}'],
-        globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
+        globPatterns: ['**/*.{js,css,html}'],
         // Increase maximum file size for caching
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         // Skip waiting and claim clients immediately
@@ -170,9 +174,7 @@ export default defineConfig({
     emptyOutDir: true,
     // Enable code splitting and chunk optimization
     rollupOptions: {
-      input: {
-        main: './index.html',
-      },
+      input: './index.html',
       output: {
         manualChunks: id => {
           // Node modules vendor chunks
