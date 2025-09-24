@@ -5,6 +5,12 @@ import { db } from './firebase';
  * Initialize Firebase with offline persistence and error handling
  */
 export async function initializeFirebase(): Promise<void> {
+  // Skip Firebase initialization if not configured (development mode)
+  if (!db) {
+    console.warn('Firebase not configured - skipping persistence setup');
+    return;
+  }
+
   try {
     // Enable offline persistence for Firestore
     await enableIndexedDbPersistence(db);

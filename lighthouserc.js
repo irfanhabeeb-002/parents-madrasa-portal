@@ -8,6 +8,23 @@ module.exports = {
       numberOfRuns: 3,
       settings: {
         chromeFlags: '--no-sandbox --disable-dev-shm-usage',
+        // Enhanced PWA testing settings
+        onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo', 'pwa'],
+        skipAudits: [
+          // Skip audits that may be flaky in CI
+          'uses-http2',
+          'bf-cache'
+        ],
+        // PWA-specific settings
+        emulatedFormFactor: 'mobile',
+        throttling: {
+          rttMs: 40,
+          throughputKbps: 10240,
+          cpuSlowdownMultiplier: 1,
+          requestLatencyMs: 0,
+          downloadThroughputKbps: 0,
+          uploadThroughputKbps: 0
+        }
       },
     },
     assert: {

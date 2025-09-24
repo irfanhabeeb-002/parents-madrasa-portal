@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AccessibleButton } from '../ui/AccessibleButton';
 import { useAuth } from '../../contexts/AuthContext';
 import { CompactSyncStatus } from '../pwa/SyncStatus';
+import { InstallButton } from '../pwa/InstallButton';
 import { AppIcons } from '../../assets/icons';
 
 interface HeaderProps {
@@ -80,8 +81,17 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Right side - Sync status and font toggle */}
+          {/* Right side - Install button, sync status and user menu */}
           <div className="flex items-center space-x-2">
+            {/* Install Button - Mobile */}
+            <InstallButton 
+              variant="minimal"
+              size="sm"
+              source="header_mobile"
+              showIcon={true}
+              className="!min-h-[44px] !min-w-[44px] !p-2 text-primary-600 hover:text-primary-700"
+            />
+
             {/* Sync Status */}
             <CompactSyncStatus />
 
@@ -169,8 +179,19 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Right side - User info and font menu */}
+          {/* Right side - Install button, user info and menu */}
           <div className="flex items-center space-x-4">
+            {/* Install Button - Desktop */}
+            <InstallButton 
+              variant="secondary"
+              size="md"
+              source="header_desktop"
+              showIcon={true}
+              className="!min-h-[48px] px-4 py-2 text-sm border border-primary-300 hover:border-primary-400 text-primary-700 hover:bg-primary-50"
+            >
+              Install App
+            </InstallButton>
+
             {/* Sync Status - Desktop */}
             <CompactSyncStatus />
 

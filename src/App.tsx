@@ -19,7 +19,7 @@ import {
 import { useLiveRegion } from './components/accessibility/LiveRegion';
 import { SkeletonLoader } from './components/ui';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { OfflineIndicator, InstallPrompt } from './components/pwa';
+import { OfflineIndicator, InstallPrompt, UpdateNotification } from './components/pwa';
 import { offlineQueue } from './services/offlineQueue';
 import { AppIcons } from './assets/icons';
 import './App.css';
@@ -111,6 +111,7 @@ function App() {
                     {/* PWA Components */}
                     <OfflineIndicator />
                     <InstallPrompt />
+                    <UpdateNotification />
 
                     {/* Keyboard Navigation Indicator */}
                     <KeyboardNavigationIndicator />

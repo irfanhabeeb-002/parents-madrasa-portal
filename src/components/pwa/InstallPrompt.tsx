@@ -9,6 +9,8 @@ import { AccessibleButton } from '../ui/AccessibleButton';
 import { Modal } from '../ui/Modal';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useInstallPromptPerformance } from '../../utils/performance';
+import { analyticsService } from '../../services/AnalyticsService';
+import { useInstallPromptTiming } from '../../hooks/useInstallPromptTiming';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -29,6 +31,15 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({
   const { theme, isHighContrast, prefersReducedMotion } = useTheme();
   const { measureThemeChange, measurePositioning } =
     useInstallPromptPerformance();
+  const {
+    canShowPrompt,
+    promptDelay,
+    handleDismissal,
+    handleInstallation,
+    handlePromptShown,
+    handlePromptInteraction,
+  } = useInstallPromptTiming();
+  
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallModal, setShowInstallModal] = useState(false);
@@ -56,23 +67,24 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({
   // Memoized event handlers to prevent unnecessary re-renders
   const handleDismissBanner = useCallback(() => {
     setShowInstallBanner(false);
-    // Don't show again for this session
-    sessionStorage.setItem('installBannerDismissed', 'true');
+    handleDismissal('close_button');
     // Announce dismissal to screen readers
     announceToScreenReader('Install banner dismissed');
-  }, []);
+  }, [handleDismissal]);
 
   const handleShowModal = useCallback(() => {
     setShowInstallModal(true);
     setShowInstallBanner(false);
+    handlePromptInteraction('learn_more', 'banner');
     // Announce modal opening to screen readers
     announceToScreenReader('Install app details modal opened');
-  }, []);
+  }, [handlePromptInteraction]);
 
   const handleCloseModal = useCallback(() => {
     setShowInstallModal(false);
+    handleDismissal('close_button');
     announceToScreenReader('Install modal closed');
-  }, []);
+  }, [handleDismissal]);
 
   useEffect(() => {
     // Check if app is already installed
@@ -95,16 +107,23 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({
       const installEvent = e as BeforeInstallPromptEvent;
       setDeferredPrompt(installEvent);
 
-      // Show install banner after a delay (don't be too aggressive)
-      setTimeout(() => {
-        if (!isInstalled) {
-          setShowInstallBanner(true);
-          // Announce banner appearance to screen readers
-          announceToScreenReader(
-            'Install app banner appeared. You can install this app for a better experience.'
-          );
-        }
-      }, 30000); // Show after 30 seconds
+      // Use smart timing for install banner based on UX best practices
+      const showBannerWithTiming = () => {
+        if (isInstalled || !canShowPrompt) return;
+        
+        setTimeout(() => {
+          if (!isInstalled && canShowPrompt) {
+            setShowInstallBanner(true);
+            handlePromptShown('automatic');
+            // Announce banner appearance to screen readers
+            announceToScreenReader(
+              'Install app banner appeared. You can install this app for a better experience.'
+            );
+          }
+        }, promptDelay);
+      };
+      
+      showBannerWithTiming();
     };
 
     // Listen for app installed event
@@ -113,6 +132,8 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({
       setShowInstallBanner(false);
       setShowInstallModal(false);
       setDeferredPrompt(null);
+
+      handleInstallation();
 
       // Announce successful installation
       announceToScreenReader('App installed successfully');
@@ -129,7 +150,7 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({
       );
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
-  }, [isInstalled]);
+  }, [isInstalled, canShowPrompt, promptDelay, handlePromptShown, handleInstallation]);
 
   // Focus management for banner appearance/disappearance with performance monitoring
   useEffect(() => {
@@ -158,16 +179,31 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({
     }
 
     try {
+      const source = showInstallModal ? 'modal' : 'banner';
+      handlePromptInteraction('install_now', source);
+
       // Show the install prompt
       await deferredPrompt.prompt();
 
       // Wait for the user to respond to the prompt
       const { outcome } = await deferredPrompt.userChoice;
 
+      // Track user choice
+      analyticsService.trackEvent({
+        action: 'install_prompt_response',
+        category: 'pwa',
+        label: outcome,
+        custom_parameters: {
+          outcome,
+          source,
+        },
+      });
+
       if (outcome === 'accepted') {
         console.warn('User accepted the install prompt');
       } else {
         console.warn('User dismissed the install prompt');
+        handleDismissal('close_button');
       }
 
       // Clear the deferredPrompt
@@ -176,6 +212,16 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({
       setShowInstallBanner(false);
     } catch (error) {
       console.error('Error during installation:', error);
+      // Track installation error
+      analyticsService.trackEvent({
+        action: 'install_error',
+        category: 'pwa',
+        label: 'installation_failed',
+        custom_parameters: {
+          error_message: error.message,
+          source: showInstallModal ? 'modal' : 'banner',
+        },
+      });
     }
   };
 
@@ -260,9 +306,8 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({
     []
   );
 
-  // Check if banner was dismissed this session
-  const bannerDismissed =
-    sessionStorage.getItem('installBannerDismissed') === 'true';
+  // Check if banner should be shown based on timing logic
+  const shouldShowBanner = canShowPrompt && showInstallBanner;
 
   // Don't show if already installed or no prompt available
   if (isInstalled || !deferredPrompt) {
@@ -283,7 +328,7 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({
   return (
     <>
       {/* Install Banner */}
-      {showInstallBanner && !bannerDismissed && (
+      {shouldShowBanner && (
         <div
           ref={bannerRef}
           className={bannerClasses}

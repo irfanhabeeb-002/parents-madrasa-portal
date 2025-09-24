@@ -287,6 +287,12 @@ export class FirebaseService {
    * Enable offline persistence
    */
   static async enableOffline(): Promise<void> {
+    // Skip if Firebase is not configured
+    if (!db) {
+      console.warn('Firebase not configured - skipping offline mode enable');
+      return;
+    }
+
     try {
       await disableNetwork(db);
       console.warn('Firebase offline mode enabled');
@@ -299,6 +305,12 @@ export class FirebaseService {
    * Enable online mode
    */
   static async enableOnline(): Promise<void> {
+    // Skip if Firebase is not configured
+    if (!db) {
+      console.warn('Firebase not configured - skipping online mode enable');
+      return;
+    }
+
     try {
       await enableNetwork(db);
       console.warn('Firebase online mode enabled');

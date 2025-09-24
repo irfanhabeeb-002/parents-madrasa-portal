@@ -397,6 +397,48 @@ class AnalyticsService {
       },
     });
   }
+
+  /**
+   * Track PWA install funnel events
+   */
+  trackPWAInstallFunnel(
+    stage: 'banner_shown' | 'banner_clicked' | 'modal_opened' | 'install_clicked' | 'install_completed',
+    source?: string,
+    additionalData?: Record<string, any>
+  ): void {
+    this.trackEvent({
+      action: `pwa_install_${stage}`,
+      category: 'pwa_funnel',
+      label: source,
+      custom_parameters: {
+        stage,
+        source,
+        timestamp: new Date().toISOString(),
+        ...additionalData,
+      },
+    });
+  }
+
+  /**
+   * Track PWA user engagement patterns
+   */
+  trackPWAEngagement(
+    action: 'session_start' | 'feature_used' | 'offline_interaction',
+    context?: string,
+    value?: number
+  ): void {
+    this.trackEvent({
+      action: `pwa_engagement_${action}`,
+      category: 'pwa_engagement',
+      label: context,
+      value,
+      custom_parameters: {
+        context,
+        timestamp: new Date().toISOString(),
+        session_time: Date.now() - (parseInt(sessionStorage.getItem('sessionStartTime') || '0') || Date.now()),
+      },
+    });
+  }
 }
 
 // Export singleton instance
