@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node fix-deployment.js",
+    "build": "tsc --noEmit && vite build && node fix-deployment.js",
     "build:analyze": "tsc && vite build --mode analyze",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
