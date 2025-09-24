@@ -55,11 +55,11 @@ export const NotesExercises: React.FC = () => {
 
   const loadData = async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
-    
+
     try {
       const [notesResponse, exercisesResponse] = await Promise.all([
         NoteService.getNotes({ limit: 50 }),
-        ExerciseService.getExercises({ limit: 50 })
+        ExerciseService.getExercises({ limit: 50 }),
       ]);
 
       if (notesResponse.success && exercisesResponse.success) {
@@ -67,32 +67,35 @@ export const NotesExercises: React.FC = () => {
           ...prev,
           notes: notesResponse.data,
           exercises: exercisesResponse.data,
-          loading: false
+          loading: false,
         }));
       } else {
         setState(prev => ({
           ...prev,
-          error: notesResponse.error || exercisesResponse.error || 'Failed to load data',
-          loading: false
+          error:
+            notesResponse.error ||
+            exercisesResponse.error ||
+            'Failed to load data',
+          loading: false,
         }));
       }
     } catch (error) {
       setState(prev => ({
         ...prev,
         error: error instanceof Error ? error.message : 'Failed to load data',
-        loading: false
+        loading: false,
       }));
     }
   };
 
   const handleNoteClick = async (note: Note) => {
     setState(prev => ({ ...prev, selectedNote: note }));
-    
+
     // Track note view
     if (user) {
       await NoteService.trackView(note.id, user.uid, 0);
     }
-    
+
     if (note.pdfUrl) {
       setState(prev => ({ ...prev, showPDFViewer: true }));
     }
@@ -101,7 +104,7 @@ export const NotesExercises: React.FC = () => {
   const handleStartExercise = () => {
     setState(prev => ({
       ...prev,
-      showSubjectSelector: true
+      showSubjectSelector: true,
     }));
   };
 
@@ -111,17 +114,17 @@ export const NotesExercises: React.FC = () => {
       selectedSubject: subject,
       questionCount,
       showSubjectSelector: false,
-      showExercise: true
+      showExercise: true,
     }));
   };
 
   const handleExerciseComplete = (result: any) => {
-    console.log('Exercise completed with result:', result);
+    console.warn('Exercise completed with result:', result);
     setState(prev => ({
       ...prev,
       showExercise: false,
       selectedSubject: '',
-      questionCount: 5
+      questionCount: 5,
     }));
   };
 
@@ -129,7 +132,7 @@ export const NotesExercises: React.FC = () => {
     setState(prev => ({
       ...prev,
       showPDFViewer: false,
-      selectedNote: null
+      selectedNote: null,
     }));
   };
 
@@ -139,31 +142,42 @@ export const NotesExercises: React.FC = () => {
       showExercise: false,
       showSubjectSelector: false,
       selectedSubject: '',
-      questionCount: 5
+      questionCount: 5,
     }));
   };
 
   // Filter and search functionality
   const filteredNotes = state.notes.filter(note => {
-    const matchesSearch = !state.searchQuery || 
+    const matchesSearch =
+      !state.searchQuery ||
       note.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
       note.content.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
-      note.tags.some(tag => tag.toLowerCase().includes(state.searchQuery.toLowerCase()));
-    
-    const matchesSubject = !state.filterSubject || note.subject === state.filterSubject;
-    const matchesDifficulty = !state.filterDifficulty || note.difficulty === state.filterDifficulty;
-    
+      note.tags.some(tag =>
+        tag.toLowerCase().includes(state.searchQuery.toLowerCase())
+      );
+
+    const matchesSubject =
+      !state.filterSubject || note.subject === state.filterSubject;
+    const matchesDifficulty =
+      !state.filterDifficulty || note.difficulty === state.filterDifficulty;
+
     return matchesSearch && matchesSubject && matchesDifficulty;
   });
 
   const filteredExercises = state.exercises.filter(exercise => {
-    const matchesSearch = !state.searchQuery || 
+    const matchesSearch =
+      !state.searchQuery ||
       exercise.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
-      exercise.description.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
-      exercise.tags.some(tag => tag.toLowerCase().includes(state.searchQuery.toLowerCase()));
-    
-    const matchesDifficulty = !state.filterDifficulty || exercise.difficulty === state.filterDifficulty;
-    
+      exercise.description
+        .toLowerCase()
+        .includes(state.searchQuery.toLowerCase()) ||
+      exercise.tags.some(tag =>
+        tag.toLowerCase().includes(state.searchQuery.toLowerCase())
+      );
+
+    const matchesDifficulty =
+      !state.filterDifficulty || exercise.difficulty === state.filterDifficulty;
+
     return matchesSearch && matchesDifficulty;
   });
 
@@ -173,15 +187,15 @@ export const NotesExercises: React.FC = () => {
 
   if (state.loading && state.notes.length === 0) {
     return (
-      <Layout 
-        showBackButton={true}
-        title="Notes & Exercises"
-      >
+      <Layout showBackButton={true} title="Notes & Exercises">
         <div className="space-y-6">
           <SkeletonLoader variant="text" lines={2} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Array.from({ length: 4 }, (_, index) => (
-              <div key={index} className="bg-white rounded-lg border border-gray-200 p-4">
+              <div
+                key={index}
+                className="bg-white rounded-lg border border-gray-200 p-4"
+              >
                 <SkeletonLoader variant="text" className="mb-2" />
                 <SkeletonLoader variant="text" lines={3} />
               </div>
@@ -193,10 +207,7 @@ export const NotesExercises: React.FC = () => {
   }
 
   return (
-    <Layout 
-      showBackButton={true}
-      title="Notes & Exercises"
-    >
+    <Layout showBackButton={true} title="Notes & Exercises">
       <div className="space-y-6">
         {state.error && (
           <AlertBanner
@@ -212,14 +223,19 @@ export const NotesExercises: React.FC = () => {
           <div className="space-y-4">
             {/* Search Input */}
             <div>
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="search"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Search Notes & Exercises
               </label>
               <input
                 id="search"
                 type="text"
                 value={state.searchQuery}
-                onChange={(e) => setState(prev => ({ ...prev, searchQuery: e.target.value }))}
+                onChange={e =>
+                  setState(prev => ({ ...prev, searchQuery: e.target.value }))
+                }
                 placeholder="Search by title, content, or tags..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 aria-label="Search notes and exercises"
@@ -229,30 +245,48 @@ export const NotesExercises: React.FC = () => {
             {/* Filters */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="subject-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="subject-filter"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Subject
                 </label>
                 <select
                   id="subject-filter"
                   value={state.filterSubject}
-                  onChange={(e) => setState(prev => ({ ...prev, filterSubject: e.target.value }))}
+                  onChange={e =>
+                    setState(prev => ({
+                      ...prev,
+                      filterSubject: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="">All Subjects</option>
                   {subjects.map(subject => (
-                    <option key={subject} value={subject}>{subject}</option>
+                    <option key={subject} value={subject}>
+                      {subject}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label htmlFor="difficulty-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="difficulty-filter"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Difficulty
                 </label>
                 <select
                   id="difficulty-filter"
                   value={state.filterDifficulty}
-                  onChange={(e) => setState(prev => ({ ...prev, filterDifficulty: e.target.value }))}
+                  onChange={e =>
+                    setState(prev => ({
+                      ...prev,
+                      filterDifficulty: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="">All Levels</option>
@@ -272,10 +306,12 @@ export const NotesExercises: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Lesson Notes
           </h2>
-          
+
           {filteredNotes.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500">No notes found matching your criteria</p>
+              <p className="text-gray-500">
+                No notes found matching your criteria
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -288,8 +324,18 @@ export const NotesExercises: React.FC = () => {
                   variant="interactive"
                   ariaLabel={`Open note: ${note.title}`}
                   icon={
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
                     </svg>
                   }
                 >
@@ -308,7 +354,7 @@ export const NotesExercises: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Practice Exercises
           </h2>
-          
+
           <div className="text-center py-8">
             <div className="text-6xl mb-4">🧠</div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -317,7 +363,7 @@ export const NotesExercises: React.FC = () => {
             <p className="text-gray-600 mb-4">
               Practice with randomized questions from Islamic subjects
             </p>
-            
+
             <div className="bg-blue-50 rounded-lg p-4 mb-6 text-left">
               <h4 className="font-semibold text-blue-900 mb-2">Features:</h4>
               <ul className="text-sm text-blue-800 space-y-1">
@@ -334,10 +380,10 @@ export const NotesExercises: React.FC = () => {
               size="lg"
               onClick={handleStartExercise}
               ariaLabel="Start practice exercise"
-              style={{ 
-                backgroundColor: '#2563eb', 
+              style={{
+                backgroundColor: '#2563eb',
                 color: 'white',
-                border: '2px solid #2563eb'
+                border: '2px solid #2563eb',
               }}
             >
               Start Practice Exercise
@@ -353,10 +399,7 @@ export const NotesExercises: React.FC = () => {
             title={state.selectedNote.title}
             size="2xl"
           >
-            <PDFViewer
-              note={state.selectedNote}
-              onClose={closePDFViewer}
-            />
+            <PDFViewer note={state.selectedNote} onClose={closePDFViewer} />
           </Modal>
         )}
 

@@ -2,13 +2,13 @@
 import React from 'react';
 import { AppNotification } from '../../types/notification';
 import { AccessibleButton } from '../ui/AccessibleButton';
-import { 
-  ClockIcon, 
-  VideoCameraIcon, 
-  DocumentTextIcon, 
+import {
+  ClockIcon,
+  VideoCameraIcon,
+  DocumentTextIcon,
   AcademicCapIcon,
   SpeakerWaveIcon,
-  XMarkIcon 
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 
 interface NotificationListProps {
@@ -26,7 +26,7 @@ export const NotificationList: React.FC<NotificationListProps> = ({
   onRemove,
   onMarkAllAsRead,
   onClearAll,
-  className = ''
+  className = '',
 }) => {
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -86,7 +86,9 @@ export const NotificationList: React.FC<NotificationListProps> = ({
     return (
       <div className={`text-center py-8 ${className}`}>
         <SpeakerWaveIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          No notifications
+        </h3>
         <p className="text-gray-500">You're all caught up!</p>
         <p className="text-gray-400 text-sm mt-1" lang="ml">
           നിങ്ങൾക്ക് പുതിയ അറിയിപ്പുകളൊന്നുമില്ല
@@ -100,14 +102,12 @@ export const NotificationList: React.FC<NotificationListProps> = ({
       {/* Header with actions */}
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
-            Notifications
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
           <p className="text-sm text-gray-500" lang="ml">
             അറിയിപ്പുകൾ
           </p>
         </div>
-        
+
         <div className="flex space-x-2">
           {unreadCount > 0 && (
             <AccessibleButton
@@ -120,7 +120,7 @@ export const NotificationList: React.FC<NotificationListProps> = ({
               Mark all read
             </AccessibleButton>
           )}
-          
+
           <AccessibleButton
             variant="secondary"
             size="sm"
@@ -135,14 +135,15 @@ export const NotificationList: React.FC<NotificationListProps> = ({
 
       {/* Notifications list */}
       <div className="space-y-3" role="list" aria-label="Notifications list">
-        {notifications.map((notification) => (
+        {notifications.map(notification => (
           <div
             key={notification.id}
             className={`
               relative p-4 rounded-lg border transition-all duration-200
-              ${notification.read 
-                ? 'bg-gray-50 border-gray-200 opacity-75' 
-                : 'bg-white border-gray-300 shadow-sm'
+              ${
+                notification.read
+                  ? 'bg-gray-50 border-gray-200 opacity-75'
+                  : 'bg-white border-gray-300 shadow-sm'
               }
               hover:shadow-md
             `}
@@ -155,10 +156,12 @@ export const NotificationList: React.FC<NotificationListProps> = ({
 
             <div className="flex items-start space-x-3 ml-4">
               {/* Icon */}
-              <div className={`
+              <div
+                className={`
                 flex-shrink-0 p-2 rounded-full
                 ${getNotificationColor(notification.type)}
-              `}>
+              `}
+              >
                 {getNotificationIcon(notification.type)}
               </div>
 
@@ -170,17 +173,20 @@ export const NotificationList: React.FC<NotificationListProps> = ({
                       {notification.title}
                     </h4>
                     {notification.malayalamTitle && (
-                      <p className="text-xs text-gray-600 truncate mt-0.5" lang="ml">
+                      <p
+                        className="text-xs text-gray-600 truncate mt-0.5"
+                        lang="ml"
+                      >
                         {notification.malayalamTitle}
                       </p>
                     )}
                   </div>
-                  
+
                   <div className="flex items-center space-x-2 ml-2">
                     <span className="text-xs text-gray-500 whitespace-nowrap">
                       {formatTime(notification.timestamp)}
                     </span>
-                    
+
                     <AccessibleButton
                       variant="secondary"
                       size="sm"
@@ -196,9 +202,12 @@ export const NotificationList: React.FC<NotificationListProps> = ({
                 <p className="text-sm text-gray-700 mt-1 leading-relaxed">
                   {notification.message}
                 </p>
-                
+
                 {notification.malayalamMessage && (
-                  <p className="text-sm text-gray-600 mt-1 leading-relaxed" lang="ml">
+                  <p
+                    className="text-sm text-gray-600 mt-1 leading-relaxed"
+                    lang="ml"
+                  >
                     {notification.malayalamMessage}
                   </p>
                 )}

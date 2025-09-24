@@ -25,10 +25,10 @@ export interface NotificationData {
   action?: string;
 }
 
-export type NotificationType = 
-  | 'class_reminder' 
-  | 'new_recording' 
-  | 'new_notes' 
+export type NotificationType =
+  | 'class_reminder'
+  | 'new_recording'
+  | 'new_notes'
   | 'exam_reminder'
   | 'general'
   | 'announcement';
@@ -90,36 +90,36 @@ export const NOTIFICATION_TRANSLATIONS = {
     title: 'Class Reminder',
     malayalamTitle: 'ക്ലാസ് ഓർമ്മപ്പെടുത്തൽ',
     template: 'Your class starts in 15 minutes',
-    malayalamTemplate: 'നിങ്ങളുടെ ക്ലാസ് 15 മിനിറ്റിനുള്ളിൽ ആരംഭിക്കും'
+    malayalamTemplate: 'നിങ്ങളുടെ ക്ലാസ് 15 മിനിറ്റിനുള്ളിൽ ആരംഭിക്കും',
   },
   new_recording: {
     title: 'New Recording Available',
     malayalamTitle: 'പുതിയ റെക്കോർഡിംഗ് ലഭ്യമാണ്',
     template: 'A new class recording has been uploaded',
-    malayalamTemplate: 'ഒരു പുതിയ ക്ലാസ് റെക്കോർഡിംഗ് അപ്‌ലോഡ് ചെയ്തിട്ടുണ്ട്'
+    malayalamTemplate: 'ഒരു പുതിയ ക്ലാസ് റെക്കോർഡിംഗ് അപ്‌ലോഡ് ചെയ്തിട്ടുണ്ട്',
   },
   new_notes: {
     title: 'New Notes Available',
     malayalamTitle: 'പുതിയ കുറിപ്പുകൾ ലഭ്യമാണ്',
     template: 'New study materials have been added',
-    malayalamTemplate: 'പുതിയ പഠന സാമഗ്രികൾ ചേർത്തിട്ടുണ്ട്'
+    malayalamTemplate: 'പുതിയ പഠന സാമഗ്രികൾ ചേർത്തിട്ടുണ്ട്',
   },
   exam_reminder: {
     title: 'Exam Reminder',
     malayalamTitle: 'പരീക്ഷാ ഓർമ്മപ്പെടുത്തൽ',
     template: 'You have an upcoming exam',
-    malayalamTemplate: 'നിങ്ങൾക്ക് ഒരു പരീക്ഷ വരാനുണ്ട്'
+    malayalamTemplate: 'നിങ്ങൾക്ക് ഒരു പരീക്ഷ വരാനുണ്ട്',
   },
   general: {
     title: 'Notification',
     malayalamTitle: 'അറിയിപ്പ്',
     template: 'You have a new notification',
-    malayalamTemplate: 'നിങ്ങൾക്ക് ഒരു പുതിയ അറിയിപ്പുണ്ട്'
+    malayalamTemplate: 'നിങ്ങൾക്ക് ഒരു പുതിയ അറിയിപ്പുണ്ട്',
   },
   announcement: {
     title: 'Announcement',
     malayalamTitle: 'പ്രഖ്യാപനം',
     template: 'New announcement available',
-    malayalamTemplate: 'പുതിയ പ്രഖ്യാപനം ലഭ്യമാണ്'
-  }
+    malayalamTemplate: 'പുതിയ പ്രഖ്യാപനം ലഭ്യമാണ്',
+  },
 } as const;

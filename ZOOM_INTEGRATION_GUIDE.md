@@ -77,7 +77,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 function LiveClassPage() {
   const { user } = useAuth();
-  
+
   const classSession = {
     id: '1',
     title: 'Arabic Grammar Class',
@@ -87,7 +87,7 @@ function LiveClassPage() {
     scheduledAt: new Date(),
     duration: 60,
     isLive: true,
-    status: 'live' as const
+    status: 'live' as const,
   };
 
   return (
@@ -98,7 +98,9 @@ function LiveClassPage() {
         userEmail={user?.email}
         onMeetingStart={() => console.log('Meeting started')}
         onMeetingEnd={() => console.log('Meeting ended')}
-        onAttendanceTracked={(duration) => console.log('Attended for:', duration, 'seconds')}
+        onAttendanceTracked={duration =>
+          console.log('Attended for:', duration, 'seconds')
+        }
       />
     </div>
   );
@@ -117,11 +119,11 @@ function CustomMeetingComponent() {
     isInMeeting,
     error,
     joinMeeting,
-    leaveMeeting
+    leaveMeeting,
   } = useZoom({
     autoInitialize: true,
     trackAttendance: true,
-    onError: (error) => console.error('Zoom error:', error)
+    onError: error => console.error('Zoom error:', error),
   });
 
   const handleJoin = async () => {
@@ -129,14 +131,14 @@ function CustomMeetingComponent() {
       meetingNumber: '123456789',
       password: 'password123',
       userName: 'Student Name',
-      apiKey: process.env.VITE_ZOOM_API_KEY!
+      apiKey: process.env.VITE_ZOOM_API_KEY!,
     });
   };
 
   return (
     <div>
       {error && <div className="error">{error.errorMessage}</div>}
-      
+
       {!isInMeeting ? (
         <button onClick={handleJoin} disabled={isJoining}>
           {isJoining ? 'Joining...' : 'Join Meeting'}
@@ -173,9 +175,9 @@ const joinMeeting = async () => {
     userName: 'Student Name',
     signature: 'generated_jwt_signature',
     apiKey: 'your_api_key',
-    role: 0 // Attendee
+    role: 0, // Attendee
   });
-  
+
   if (result.success) {
     console.log('Joined meeting successfully');
   }
@@ -196,8 +198,10 @@ const signature = zoomService.generateSignature(meetingNumber, role);
 const signature = await fetch('/api/zoom/signature', {
   method: 'POST',
   body: JSON.stringify({ meetingNumber, role }),
-  headers: { 'Content-Type': 'application/json' }
-}).then(res => res.json()).then(data => data.signature);
+  headers: { 'Content-Type': 'application/json' },
+})
+  .then(res => res.json())
+  .then(data => data.signature);
 ```
 
 ### Environment Variables
@@ -214,26 +218,34 @@ const signature = await fetch('/api/zoom/signature', {
 ```typescript
 class ZoomService {
   // Initialization
-  initialize(config: ZoomInitConfig): Promise<ZoomServiceResponse<boolean>>
-  
+  initialize(config: ZoomInitConfig): Promise<ZoomServiceResponse<boolean>>;
+
   // Meeting Management
-  joinMeeting(config: ZoomMeetingConfig): Promise<ZoomServiceResponse<boolean>>
-  leaveMeeting(): Promise<ZoomServiceResponse<boolean>>
-  
+  joinMeeting(config: ZoomMeetingConfig): Promise<ZoomServiceResponse<boolean>>;
+  leaveMeeting(): Promise<ZoomServiceResponse<boolean>>;
+
   // Event Handling
-  on<K extends keyof ZoomSDKEvents>(event: K, handler: ZoomSDKEvents[K]): void
-  off<K extends keyof ZoomSDKEvents>(event: K): void
-  
+  on<K extends keyof ZoomSDKEvents>(event: K, handler: ZoomSDKEvents[K]): void;
+  off<K extends keyof ZoomSDKEvents>(event: K): void;
+
   // Utilities
-  generateSignature(meetingNumber: string, role: ZoomRole): string
-  getCurrentMeetingId(): string | null
-  isInMeeting(): boolean
-  isSDKInitialized(): boolean
-  
+  generateSignature(meetingNumber: string, role: ZoomRole): string;
+  getCurrentMeetingId(): string | null;
+  isInMeeting(): boolean;
+  isSDKInitialized(): boolean;
+
   // API Methods (Mock implementations ready for backend integration)
-  getMeetings(userId: string): Promise<ZoomServiceResponse<ZoomMeetingListResponse>>
-  getRecordings(meetingId?: string): Promise<ZoomServiceResponse<ZoomRecordingListResponse>>
-  trackAttendance(meetingId: string, userId: string, action: 'join' | 'leave'): Promise<ZoomServiceResponse<ZoomAttendanceRecord>>
+  getMeetings(
+    userId: string
+  ): Promise<ZoomServiceResponse<ZoomMeetingListResponse>>;
+  getRecordings(
+    meetingId?: string
+  ): Promise<ZoomServiceResponse<ZoomRecordingListResponse>>;
+  trackAttendance(
+    meetingId: string,
+    userId: string,
+    action: 'join' | 'leave'
+  ): Promise<ZoomServiceResponse<ZoomAttendanceRecord>>;
 }
 ```
 
@@ -248,15 +260,15 @@ const {
   meetingStatus,
   error,
   attendanceRecord,
-  
+
   // Actions
   initializeZoom,
   joinMeeting,
   leaveMeeting,
   clearError,
-  
+
   // Utilities
-  generateMeetingSignature
+  generateMeetingSignature,
 } = useZoom(options);
 ```
 
@@ -264,13 +276,13 @@ const {
 
 ```typescript
 interface ZoomMeetingProps {
-  classSession: ClassSession;           // Class information with Zoom details
-  userName: string;                     // Student name
-  userEmail?: string;                   // Student email (optional)
-  onMeetingStart?: () => void;          // Callback when meeting starts
-  onMeetingEnd?: () => void;            // Callback when meeting ends
+  classSession: ClassSession; // Class information with Zoom details
+  userName: string; // Student name
+  userEmail?: string; // Student email (optional)
+  onMeetingStart?: () => void; // Callback when meeting starts
+  onMeetingEnd?: () => void; // Callback when meeting ends
   onAttendanceTracked?: (duration: number) => void; // Attendance callback
-  className?: string;                   // Additional CSS classes
+  className?: string; // Additional CSS classes
 }
 ```
 
@@ -360,7 +372,7 @@ Comprehensive error handling with user-friendly messages:
 
 ```typescript
 // Error types
-type ZoomErrorType = 
+type ZoomErrorType =
   | 'INITIALIZATION_ERROR'
   | 'JOIN_MEETING_ERROR'
   | 'LEAVE_MEETING_ERROR'

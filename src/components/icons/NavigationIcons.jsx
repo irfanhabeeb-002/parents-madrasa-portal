@@ -2,11 +2,11 @@ import React, { memo } from 'react';
 
 // Memoized icon components for better performance
 export const HomeIcon = memo(({ size = 20, ...props }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="currentColor" 
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
     aria-hidden="true"
     {...props}
   >
@@ -15,11 +15,11 @@ export const HomeIcon = memo(({ size = 20, ...props }) => (
 ));
 
 export const LiveClassIcon = memo(({ size = 20, ...props }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="currentColor" 
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
     aria-hidden="true"
     {...props}
   >
@@ -28,11 +28,11 @@ export const LiveClassIcon = memo(({ size = 20, ...props }) => (
 ));
 
 export const ProfileIcon = memo(({ size = 20, ...props }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="currentColor" 
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
     aria-hidden="true"
     {...props}
   >
@@ -41,11 +41,11 @@ export const ProfileIcon = memo(({ size = 20, ...props }) => (
 ));
 
 export const SettingsIcon = memo(({ size = 20, ...props }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="currentColor" 
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
     aria-hidden="true"
     {...props}
   >

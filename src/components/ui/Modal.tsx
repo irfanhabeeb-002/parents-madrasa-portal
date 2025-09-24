@@ -88,9 +88,12 @@ export const Modal: React.FC<ModalProps> = ({
         onClick={handleOverlayClick}
         aria-hidden="true"
       />
-      
+
       {/* Modal Content */}
-      <FocusTrap isActive={isOpen} initialFocus="button, [href], input, select, textarea">
+      <FocusTrap
+        isActive={isOpen}
+        initialFocus="button, [href], input, select, textarea"
+      >
         <div
           ref={modalRef}
           className={`
@@ -99,49 +102,52 @@ export const Modal: React.FC<ModalProps> = ({
           `}
           tabIndex={-1}
         >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div>
-            <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
-              {title}
-            </h2>
-            {malayalamTitle && (
-              <p className="text-sm text-gray-600 mt-1" lang="bn">
-                {malayalamTitle}
-              </p>
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div>
+              <h2
+                id="modal-title"
+                className="text-xl font-semibold text-gray-900"
+              >
+                {title}
+              </h2>
+              {malayalamTitle && (
+                <p className="text-sm text-gray-600 mt-1" lang="bn">
+                  {malayalamTitle}
+                </p>
+              )}
+            </div>
+
+            {showCloseButton && (
+              <AccessibleButton
+                variant="secondary"
+                size="sm"
+                onClick={onClose}
+                ariaLabel="Close modal"
+                className="ml-4 !min-h-[36px] !min-w-[36px] !p-2"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </AccessibleButton>
             )}
           </div>
-          
-          {showCloseButton && (
-            <AccessibleButton
-              variant="secondary"
-              size="sm"
-              onClick={onClose}
-              ariaLabel="Close modal"
-              className="ml-4 !min-h-[36px] !min-w-[36px] !p-2"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </AccessibleButton>
-          )}
-        </div>
-        
-        {/* Body */}
-        <div className="p-4" id={ariaDescribedBy}>
-          {children}
-        </div>
+
+          {/* Body */}
+          <div className="p-4" id={ariaDescribedBy}>
+            {children}
+          </div>
         </div>
       </FocusTrap>
     </div>

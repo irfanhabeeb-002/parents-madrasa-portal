@@ -4,9 +4,9 @@ import BottomNavigation from './BottomNavigation';
 const BottomNavigationExample = () => {
   const [activeTab, setActiveTab] = useState('home');
 
-  const handleTabChange = (tabId) => {
+  const handleTabChange = tabId => {
     setActiveTab(tabId);
-    console.log('Active tab changed to:', tabId);
+    console.warn('Active tab changed to:', tabId);
     // Here you can add navigation logic, e.g., using React Router
   };
 
@@ -48,10 +48,7 @@ const BottomNavigationExample = () => {
   return (
     <div style={{ paddingBottom: '80px', minHeight: '100vh' }}>
       {renderContent()}
-      <BottomNavigation 
-        activeTab={activeTab} 
-        onTabChange={handleTabChange} 
-      />
+      <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
     </div>
   );
 };

@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../contexts/AuthContext';
@@ -78,9 +84,7 @@ Object.defineProperty(window, 'matchMedia', {
 // Test component wrapper
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
-    <AuthProvider>
-      {children}
-    </AuthProvider>
+    <AuthProvider>{children}</AuthProvider>
   </BrowserRouter>
 );
 
@@ -95,10 +99,10 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(JSON.stringify(mockUser));
-    
+
     // Reset DOM
     document.body.innerHTML = '';
-    
+
     // Reset console mocks
     consoleMock.log.mockClear();
     consoleMock.error.mockClear();
@@ -139,7 +143,7 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
 
         // Test logout flow
         await userEvent.click(logoutButton);
-        
+
         // Should show confirmation dialog
         await waitFor(() => {
           expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -175,7 +179,10 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
 
         // Update matchMedia mock based on screen size
         window.matchMedia = vi.fn().mockImplementation(query => ({
-          matches: size.width <= 768 ? query.includes('max-width') : query.includes('min-width'),
+          matches:
+            size.width <= 768
+              ? query.includes('max-width')
+              : query.includes('min-width'),
           media: query,
           onchange: null,
           addListener: vi.fn(),
@@ -195,7 +202,7 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
         expect(logoutButton).toBeInTheDocument();
 
         // Verify button meets minimum touch target requirements
-        const buttonRect = logoutButton.getBoundingClientRect();
+        const _buttonRect = logoutButton.getBoundingClientRect();
         if (size.width <= 768) {
           // Mobile: should have adequate touch targets
           expect(logoutButton).toHaveClass(/min-h-\[48px\]/);
@@ -232,9 +239,12 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       await userEvent.click(confirmButton);
 
       // Should handle the error gracefully and still attempt logout
-      await waitFor(() => {
-        expect(consoleMock.error).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(consoleMock.error).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('should handle network failures during logout', async () => {
@@ -255,7 +265,7 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       });
 
       const confirmButton = screen.getByText(/yes, logout/i);
-      
+
       // Simulate network delay/failure
       await act(async () => {
         await userEvent.click(confirmButton);
@@ -264,7 +274,9 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
 
       // Should show loading state
       await waitFor(() => {
-        const loadingButton = screen.getByLabelText(/logging out, please wait/i);
+        const loadingButton = screen.getByLabelText(
+          /logging out, please wait/i
+        );
         expect(loadingButton).toBeInTheDocument();
         expect(loadingButton).toBeDisabled();
       });
@@ -295,10 +307,13 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       await userEvent.click(confirmButton);
 
       // Should handle the error and continue with logout
-      await waitFor(() => {
-        // Logout should still proceed despite sessionStorage error
-        expect(localStorageMock.removeItem).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          // Logout should still proceed despite sessionStorage error
+          expect(localStorageMock.removeItem).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
@@ -311,14 +326,14 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       );
 
       const logoutButton = screen.getByLabelText(/logout from application/i);
-      
+
       // Focus the logout button using keyboard
       logoutButton.focus();
       expect(document.activeElement).toBe(logoutButton);
 
       // Activate with Enter key
       fireEvent.keyDown(logoutButton, { key: 'Enter', code: 'Enter' });
-      
+
       await waitFor(() => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
       });
@@ -340,7 +355,10 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       });
 
       // Escape should close dialog
-      fireEvent.keyDown(document.activeElement!, { key: 'Escape', code: 'Escape' });
+      fireEvent.keyDown(document.activeElement!, {
+        key: 'Escape',
+        code: 'Escape',
+      });
       await waitFor(() => {
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       });
@@ -354,9 +372,12 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       );
 
       const logoutButton = screen.getByLabelText(/logout from application/i);
-      
+
       // Verify ARIA attributes
-      expect(logoutButton).toHaveAttribute('aria-label', 'Logout from application');
+      expect(logoutButton).toHaveAttribute(
+        'aria-label',
+        'Logout from application'
+      );
       expect(logoutButton).toHaveAttribute('aria-describedby');
       expect(logoutButton).toHaveAttribute('role', 'button');
 
@@ -384,14 +405,14 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       );
 
       const logoutButton = screen.getByLabelText(/logout from application/i);
-      
+
       // Verify button has proper styling for contrast
-      const computedStyle = window.getComputedStyle(logoutButton);
-      
+      const _computedStyle = window.getComputedStyle(logoutButton);
+
       // Button should have explicit background and text colors
       expect(logoutButton).toHaveStyle({
         'background-color': 'rgb(220, 38, 38)', // red-700
-        'color': 'white',
+        color: 'white',
       });
 
       // Verify focus indicators
@@ -406,7 +427,7 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       // Set mobile viewport
       Object.defineProperty(window, 'innerWidth', { value: 375 });
       Object.defineProperty(window, 'innerHeight', { value: 667 });
-      
+
       // Mock touch support
       Object.defineProperty(window.navigator, 'maxTouchPoints', { value: 5 });
     });
@@ -419,7 +440,7 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       );
 
       const logoutButton = screen.getByLabelText(/logout from application/i);
-      
+
       // Verify touch-friendly classes
       expect(logoutButton).toHaveClass(/touch-manipulation/);
       expect(logoutButton).toHaveClass(/min-h-\[48px\]/);
@@ -437,14 +458,16 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       // Test dialog button touch targets
       const confirmButton = screen.getByText(/yes, logout/i);
       expect(confirmButton).toHaveClass(/min-h-\[48px\]/);
-      
+
       fireEvent.touchStart(confirmButton);
       fireEvent.touchEnd(confirmButton);
       fireEvent.click(confirmButton);
 
       // Should proceed with logout
       await waitFor(() => {
-        expect(screen.getByLabelText(/logging out, please wait/i)).toBeInTheDocument();
+        expect(
+          screen.getByLabelText(/logging out, please wait/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -456,10 +479,10 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       );
 
       const logoutButton = screen.getByLabelText(/logout from application/i);
-      
+
       // Verify touch-action is set to prevent zoom
       expect(logoutButton).toHaveClass(/touch-manipulation/);
-      
+
       // Simulate rapid double tap
       fireEvent.touchStart(logoutButton);
       fireEvent.touchEnd(logoutButton);
@@ -483,7 +506,7 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       );
 
       const logoutButton = screen.getByLabelText(/logout from application/i);
-      
+
       // Rapidly click logout button multiple times
       await userEvent.click(logoutButton);
       await userEvent.click(logoutButton);
@@ -541,7 +564,9 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       );
 
       // Should handle gracefully and show login prompt
-      expect(screen.getByText(/please log in to view your profile/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/please log in to view your profile/i)
+      ).toBeInTheDocument();
     });
 
     it('should clear all session data on logout', async () => {
@@ -586,7 +611,7 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       });
 
       const confirmButton = screen.getByText(/yes, logout/i);
-      
+
       await act(async () => {
         await userEvent.click(confirmButton);
         vi.advanceTimersByTime(100);
@@ -594,7 +619,9 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
 
       // Should show loading state
       await waitFor(() => {
-        const loadingButton = screen.getByLabelText(/logging out, please wait/i);
+        const loadingButton = screen.getByLabelText(
+          /logging out, please wait/i
+        );
         expect(loadingButton).toBeInTheDocument();
         expect(loadingButton).toBeDisabled();
         expect(loadingButton).toHaveAttribute('aria-busy', 'false');
@@ -623,7 +650,7 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
       });
 
       const confirmButton = screen.getByText(/yes, logout/i);
-      
+
       await act(async () => {
         await userEvent.click(confirmButton);
         // Simulate long delay

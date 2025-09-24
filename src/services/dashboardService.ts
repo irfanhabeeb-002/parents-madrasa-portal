@@ -1,16 +1,18 @@
 import { Recording } from '../types/recording';
 import { Note } from '../types/note';
 import { Exercise } from '../types/exercise';
-import { Attendance } from '../types/attendance';
+import { _Attendance } from '../types/attendance';
 import { ClassSession } from '../types/class';
 import { ApiResponse, AnnouncementType } from '../types/common';
 import { NotificationType } from '../types/notification';
-import { FirebaseAnnouncement, FirebaseNotification, FIREBASE_COLLECTIONS } from '../types/firebase';
+import {
+  _FirebaseAnnouncement,
+  _FirebaseNotification,
+  FIREBASE_COLLECTIONS,
+} from '../types/firebase';
 // Firebase service import - COMMENTED OUT FOR MANUAL LOGIN
 // TODO: Uncomment when ready to enable Firebase
-/*
 import { FirebaseService } from './firebaseService';
-*/
 import { StorageService } from './storageService';
 // Firebase imports - COMMENTED OUT FOR MANUAL LOGIN
 // TODO: Uncomment when ready to enable Firebase
@@ -104,8 +106,10 @@ const mockAnnouncements: Announcement[] = [
   {
     id: 'ann-1',
     title: 'Welcome to Parents Madrasa Portal',
-    message: 'Access your Islamic education resources easily through our comprehensive platform',
-    malayalamMessage: 'ഞങ്ങളുടെ സമഗ്ര പ്ലാറ്റ്ഫോമിലൂടെ നിങ്ങളുടെ ഇസ്ലാമിക് വിദ്യാഭ്യാസ വിഭവങ്ങൾ എളുപ്പത്തിൽ ആക്സസ് ചെയ്യുക',
+    message:
+      'Access your Islamic education resources easily through our comprehensive platform',
+    malayalamMessage:
+      'ഞങ്ങളുടെ സമഗ്ര പ്ലാറ്റ്ഫോമിലൂടെ നിങ്ങളുടെ ഇസ്ലാമിക് വിദ്യാഭ്യാസ വിഭവങ്ങൾ എളുപ്പത്തിൽ ആക്സസ് ചെയ്യുക',
     type: 'general',
     priority: 'high',
     createdAt: new Date(),
@@ -113,31 +117,33 @@ const mockAnnouncements: Announcement[] = [
     targetAudience: 'all',
     imageUrl: '/images/welcome-banner.jpg',
     actionUrl: '/getting-started',
-    actionText: 'Get Started'
+    actionText: 'Get Started',
   },
   {
     id: 'ann-2',
     title: 'New Class Schedule Available',
     message: 'Updated class timings for the new semester are now available',
-    malayalamMessage: 'പുതിയ സെമസ്റ്ററിനായി അപ്ഡേറ്റ് ചെയ്ത ക്ലാസ് സമയങ്ങൾ ഇപ്പോൾ ലഭ്യമാണ്',
+    malayalamMessage:
+      'പുതിയ സെമസ്റ്ററിനായി അപ്ഡേറ്റ് ചെയ്ത ക്ലാസ് സമയങ്ങൾ ഇപ്പോൾ ലഭ്യമാണ്',
     type: 'class',
     priority: 'medium',
     createdAt: new Date(Date.now() - 86400000), // 1 day ago
     isActive: true,
-    targetAudience: 'students'
+    targetAudience: 'students',
   },
   {
     id: 'ann-3',
     title: 'Ramadan Schedule Changes',
     message: 'Special Ramadan class timings will be effective from next week',
-    malayalamMessage: 'അടുത്ത ആഴ്ച മുതൽ പ്രത്യേക റമദാൻ ക്ലാസ് സമയങ്ങൾ പ്രാബല്യത്തിൽ വരും',
+    malayalamMessage:
+      'അടുത്ത ആഴ്ച മുതൽ പ്രത്യേക റമദാൻ ക്ലാസ് സമയങ്ങൾ പ്രാബല്യത്തിൽ വരും',
     type: 'general',
     priority: 'high',
     createdAt: new Date(Date.now() - 172800000), // 2 days ago
     expiresAt: new Date(Date.now() + 604800000), // 1 week from now
     isActive: true,
-    targetAudience: 'all'
-  }
+    targetAudience: 'all',
+  },
 ];
 
 const mockNotifications: DashboardNotification[] = [
@@ -146,42 +152,45 @@ const mockNotifications: DashboardNotification[] = [
     type: 'class_reminder',
     title: 'Class Starting Soon',
     message: 'Your Islamic Studies class starts in 15 minutes',
-    malayalamMessage: 'നിങ്ങളുടെ ഇസ്ലാമിക് പഠന ക്ലാസ് 15 മിനിറ്റിനുള്ളിൽ ആരംഭിക്കുന്നു',
+    malayalamMessage:
+      'നിങ്ങളുടെ ഇസ്ലാമിക് പഠന ക്ലാസ് 15 മിനിറ്റിനുള്ളിൽ ആരംഭിക്കുന്നു',
     timestamp: new Date(),
     read: false,
     userId: '1',
     priority: 'high',
     actionUrl: '/live-class',
     actionText: 'Join Now',
-    data: { classId: 'class-1', meetingId: '123456789' }
+    data: { classId: 'class-1', meetingId: '123456789' },
   },
   {
     id: 'notif-2',
     type: 'new_recording',
     title: 'New Recording Available',
-    message: 'Yesterday\'s Islamic History class recording is now available',
-    malayalamMessage: 'ഇന്നലത്തെ ഇസ്ലാമിക് ചരിത്ര ക്ലാസ് റെക്കോർഡിംഗ് ഇപ്പോൾ ലഭ്യമാണ്',
+    message: "Yesterday's Islamic History class recording is now available",
+    malayalamMessage:
+      'ഇന്നലത്തെ ഇസ്ലാമിക് ചരിത്ര ക്ലാസ് റെക്കോർഡിംഗ് ഇപ്പോൾ ലഭ്യമാണ്',
     timestamp: new Date(Date.now() - 3600000), // 1 hour ago
     read: false,
     userId: '1',
     priority: 'medium',
     actionUrl: '/recordings',
     actionText: 'Watch Now',
-    data: { recordingId: 'rec-1' }
+    data: { recordingId: 'rec-1' },
   },
   {
     id: 'notif-3',
     type: 'new_notes',
     title: 'New Study Notes Added',
     message: 'Tajweed rules study notes have been uploaded',
-    malayalamMessage: 'തജ്വീദ് നിയമങ്ങളുടെ പഠന കുറിപ്പുകൾ അപ്‌ലോഡ് ചെയ്തിട്ടുണ്ട്',
+    malayalamMessage:
+      'തജ്വീദ് നിയമങ്ങളുടെ പഠന കുറിപ്പുകൾ അപ്‌ലോഡ് ചെയ്തിട്ടുണ്ട്',
     timestamp: new Date(Date.now() - 7200000), // 2 hours ago
     read: true,
     userId: '1',
     priority: 'low',
     actionUrl: '/notes',
     actionText: 'View Notes',
-    data: { noteId: 'note-2' }
+    data: { noteId: 'note-2' },
   },
   {
     id: 'notif-4',
@@ -195,15 +204,16 @@ const mockNotifications: DashboardNotification[] = [
     priority: 'high',
     actionUrl: '/exams',
     actionText: 'Take Quiz',
-    data: { exerciseId: 'exercise-1' }
-  }
+    data: { exerciseId: 'exercise-1' },
+  },
 ];
 
 const mockClassSessions: ClassSession[] = [
   {
     id: 'class-1',
     title: 'Islamic History - Early Period',
-    description: 'Comprehensive study of early Islamic history including the life of Prophet Muhammad (PBUH)',
+    description:
+      'Comprehensive study of early Islamic history including the life of Prophet Muhammad (PBUH)',
     scheduledAt: new Date(Date.now() + 900000), // 15 minutes from now
     duration: 90,
     zoomMeetingId: '123456789',
@@ -215,7 +225,7 @@ const mockClassSessions: ClassSession[] = [
     subject: 'Islamic History',
     maxParticipants: 50,
     currentParticipants: 0,
-    tags: ['history', 'early-islam', 'prophet']
+    tags: ['history', 'early-islam', 'prophet'],
   },
   {
     id: 'class-2',
@@ -232,7 +242,7 @@ const mockClassSessions: ClassSession[] = [
     subject: 'Quran Recitation',
     maxParticipants: 30,
     currentParticipants: 0,
-    tags: ['quran', 'tajweed', 'recitation']
+    tags: ['quran', 'tajweed', 'recitation'],
   },
   {
     id: 'class-3',
@@ -248,8 +258,8 @@ const mockClassSessions: ClassSession[] = [
     subject: 'Islamic Fundamentals',
     maxParticipants: 40,
     currentParticipants: 0,
-    tags: ['fundamentals', 'five-pillars', 'basics']
-  }
+    tags: ['fundamentals', 'five-pillars', 'basics'],
+  },
 ];
 
 // Enhanced Dashboard Service Class
@@ -262,20 +272,26 @@ export class DashboardService {
   // Initialize Firebase services
   private static getAnnouncementsService(): FirebaseService {
     if (!this.announcementsService) {
-      this.announcementsService = new FirebaseService(FIREBASE_COLLECTIONS.ANNOUNCEMENTS);
+      this.announcementsService = new FirebaseService(
+        FIREBASE_COLLECTIONS.ANNOUNCEMENTS
+      );
     }
     return this.announcementsService;
   }
 
   private static getNotificationsService(): FirebaseService {
     if (!this.notificationsService) {
-      this.notificationsService = new FirebaseService(FIREBASE_COLLECTIONS.NOTIFICATIONS);
+      this.notificationsService = new FirebaseService(
+        FIREBASE_COLLECTIONS.NOTIFICATIONS
+      );
     }
     return this.notificationsService;
   }
 
   // Get comprehensive dashboard data
-  static async getDashboardData(userId: string): Promise<ApiResponse<DashboardData>> {
+  static async getDashboardData(
+    userId: string
+  ): Promise<ApiResponse<DashboardData>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 400));
 
@@ -284,7 +300,7 @@ export class DashboardService {
         id: userId,
         name: 'Ahmad Student',
         role: 'student',
-        lastLoginAt: new Date()
+        lastLoginAt: new Date(),
       };
 
       // Calculate stats (in real app, this would come from various services)
@@ -298,16 +314,20 @@ export class DashboardService {
         completedExercises: 4,
         averageScore: 85,
         upcomingClasses: 3,
-        unreadNotifications: mockNotifications.filter(n => n.userId === userId && !n.read).length
+        unreadNotifications: mockNotifications.filter(
+          n => n.userId === userId && !n.read
+        ).length,
       };
 
       // Get today's classes
       const today = new Date();
       const todaysClasses = mockClassSessions.filter(cls => {
         const classDate = new Date(cls.scheduledAt);
-        return classDate.getDate() === today.getDate() &&
-               classDate.getMonth() === today.getMonth() &&
-               classDate.getFullYear() === today.getFullYear();
+        return (
+          classDate.getDate() === today.getDate() &&
+          classDate.getMonth() === today.getMonth() &&
+          classDate.getFullYear() === today.getFullYear()
+        );
       });
 
       // Mock recent data (in real app, these would come from respective services)
@@ -323,30 +343,35 @@ export class DashboardService {
         recentNotes,
         upcomingExercises,
         announcements: mockAnnouncements.filter(a => a.isActive),
-        notifications: mockNotifications.filter(n => n.userId === userId)
+        notifications: mockNotifications.filter(n => n.userId === userId),
       };
 
       return {
         data: dashboardData,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: {} as DashboardData,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch dashboard data',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch dashboard data',
+        timestamp: new Date(),
       };
     }
   }
 
   // Get active announcements - USING MOCK DATA (Firebase disabled)
-  static async getAnnouncements(targetAudience?: string): Promise<ApiResponse<Announcement[]>> {
+  static async getAnnouncements(
+    targetAudience?: string
+  ): Promise<ApiResponse<Announcement[]>> {
     // Firebase is disabled, use mock data directly
-    console.log('Using mock announcements (Firebase disabled)');
+    console.warn('Using mock announcements (Firebase disabled)');
     return this.getMockAnnouncements(targetAudience);
-    
+
     /* 
     // FIREBASE VERSION - COMMENTED OUT FOR MANUAL LOGIN
     // TODO: Uncomment when ready to enable Firebase
@@ -398,22 +423,28 @@ export class DashboardService {
   }
 
   // Fallback method using mock data
-  private static async getMockAnnouncements(targetAudience?: string): Promise<ApiResponse<Announcement[]>> {
+  private static async getMockAnnouncements(
+    targetAudience?: string
+  ): Promise<ApiResponse<Announcement[]>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 300));
-      
-      let announcements = mockAnnouncements.filter(a => {
+
+      const announcements = mockAnnouncements.filter(a => {
         // Check if announcement is active
         if (!a.isActive) return false;
-        
+
         // Check if announcement has expired
         if (a.expiresAt && new Date() > a.expiresAt) return false;
-        
+
         // Check target audience
-        if (targetAudience && a.targetAudience !== 'all' && a.targetAudience !== targetAudience) {
+        if (
+          targetAudience &&
+          a.targetAudience !== 'all' &&
+          a.targetAudience !== targetAudience
+        ) {
           return false;
         }
-        
+
         return true;
       });
 
@@ -422,36 +453,46 @@ export class DashboardService {
         const priorityOrder = { high: 3, medium: 2, low: 1 };
         const aPriority = priorityOrder[a.priority];
         const bPriority = priorityOrder[b.priority];
-        
+
         if (aPriority !== bPriority) {
           return bPriority - aPriority; // Higher priority first
         }
-        
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Newer first
+
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        ); // Newer first
       });
 
       return {
         data: announcements,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch announcements',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch announcements',
+        timestamp: new Date(),
       };
     }
   }
 
   // Get user notifications
-  static async getUserNotifications(userId: string, includeRead: boolean = true): Promise<ApiResponse<DashboardNotification[]>> {
+  static async getUserNotifications(
+    userId: string,
+    includeRead: boolean = true
+  ): Promise<ApiResponse<DashboardNotification[]>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 200));
-      
-      let notifications = mockNotifications.filter(notif => notif.userId === userId);
-      
+
+      const notifications = mockNotifications.filter(
+        notif => notif.userId === userId
+      );
+
       if (!includeRead) {
         notifications = notifications.filter(notif => !notif.read);
       }
@@ -461,51 +502,66 @@ export class DashboardService {
         const priorityOrder = { high: 3, medium: 2, low: 1 };
         const aPriority = priorityOrder[a.priority];
         const bPriority = priorityOrder[b.priority];
-        
+
         if (aPriority !== bPriority) {
           return bPriority - aPriority; // Higher priority first
         }
-        
-        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(); // Newer first
+
+        return (
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        ); // Newer first
       });
 
       return {
         data: notifications,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch notifications',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch notifications',
+        timestamp: new Date(),
       };
     }
   }
 
   // Mark notification as read
-  static async markNotificationAsRead(notificationId: string): Promise<ApiResponse<boolean>> {
+  static async markNotificationAsRead(
+    notificationId: string
+  ): Promise<ApiResponse<boolean>> {
     try {
-      const notificationIndex = mockNotifications.findIndex(n => n.id === notificationId);
+      const notificationIndex = mockNotifications.findIndex(
+        n => n.id === notificationId
+      );
       if (notificationIndex !== -1) {
         mockNotifications[notificationIndex].read = true;
-        
+
         // Update in storage
-        await StorageService.setArray(this.NOTIFICATIONS_STORAGE_KEY, mockNotifications);
+        await StorageService.setArray(
+          this.NOTIFICATIONS_STORAGE_KEY,
+          mockNotifications
+        );
       }
 
       return {
         data: true,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: false,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to mark notification as read',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to mark notification as read',
+        timestamp: new Date(),
       };
     }
   }
@@ -520,83 +576,105 @@ export class DashboardService {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch today\'s classes',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch today's classes",
+        timestamp: new Date(),
       };
     }
   }
 
   // Get upcoming classes
-  static async getUpcomingClasses(limit: number = 5): Promise<ApiResponse<ClassSession[]>> {
+  static async getUpcomingClasses(
+    limit: number = 5
+  ): Promise<ApiResponse<ClassSession[]>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 250));
-      
+
       const now = new Date();
       const upcomingClasses = mockClassSessions
         .filter(cls => new Date(cls.scheduledAt) > now)
-        .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())
+        .sort(
+          (a, b) =>
+            new Date(a.scheduledAt).getTime() -
+            new Date(b.scheduledAt).getTime()
+        )
         .slice(0, limit);
 
       return {
         data: upcomingClasses,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch upcoming classes',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch upcoming classes',
+        timestamp: new Date(),
       };
     }
   }
 
   // Get class by ID
-  static async getClassById(classId: string): Promise<ApiResponse<ClassSession | null>> {
+  static async getClassById(
+    classId: string
+  ): Promise<ApiResponse<ClassSession | null>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 150));
-      
+
       const classSession = mockClassSessions.find(cls => cls.id === classId);
-      
+
       return {
         data: classSession || null,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: null,
         success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch class',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
 
   // Create notification (for admin/system use)
-  static async createNotification(notification: Omit<DashboardNotification, 'id' | 'timestamp'>): Promise<ApiResponse<DashboardNotification>> {
+  static async createNotification(
+    notification: Omit<DashboardNotification, 'id' | 'timestamp'>
+  ): Promise<ApiResponse<DashboardNotification>> {
     try {
       const newNotification: DashboardNotification = {
         ...notification,
         id: `notif-${Date.now()}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
       mockNotifications.unshift(newNotification);
-      await StorageService.setArray(this.NOTIFICATIONS_STORAGE_KEY, mockNotifications);
+      await StorageService.setArray(
+        this.NOTIFICATIONS_STORAGE_KEY,
+        mockNotifications
+      );
 
       return {
         data: newNotification,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: {} as DashboardNotification,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to create notification',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to create notification',
+        timestamp: new Date(),
       };
     }
   }
@@ -607,15 +685,15 @@ export class DashboardService {
     targetAudience?: string
   ): () => void {
     // Firebase is disabled, use periodic mock data updates
-    console.log('Using mock announcements subscription (Firebase disabled)');
-    
+    console.warn('Using mock announcements subscription (Firebase disabled)');
+
     // Initial call
     this.getAnnouncements(targetAudience).then(response => {
       if (response.success) {
         callback(response.data);
       }
     });
-    
+
     // Periodic updates with mock data
     const intervalId = setInterval(() => {
       this.getAnnouncements(targetAudience).then(response => {
@@ -624,9 +702,9 @@ export class DashboardService {
         }
       });
     }, 30000); // Update every 30 seconds
-    
+
     return () => clearInterval(intervalId);
-    
+
     /* 
     // FIREBASE VERSION - COMMENTED OUT FOR MANUAL LOGIN
     // TODO: Uncomment when ready to enable Firebase
@@ -680,15 +758,15 @@ export class DashboardService {
     callback: (notifications: DashboardNotification[]) => void
   ): () => void {
     // Firebase is disabled, use periodic mock data updates
-    console.log('Using mock notifications subscription (Firebase disabled)');
-    
+    console.warn('Using mock notifications subscription (Firebase disabled)');
+
     // Initial call
     this.getUserNotifications(userId).then(response => {
       if (response.success) {
         callback(response.data);
       }
     });
-    
+
     // Periodic updates with mock data
     const intervalId = setInterval(() => {
       this.getUserNotifications(userId).then(response => {
@@ -697,9 +775,9 @@ export class DashboardService {
         }
       });
     }, 10000); // Update every 10 seconds
-    
+
     return () => clearInterval(intervalId);
-    
+
     /* 
     // FIREBASE VERSION - COMMENTED OUT FOR MANUAL LOGIN
     // TODO: Uncomment when ready to enable Firebase
@@ -745,8 +823,8 @@ export class DashboardService {
     callback: (classes: ClassSession[]) => void
   ): () => void {
     // Firebase is disabled, use mock data
-    console.log('Using mock classes subscription (Firebase disabled)');
-    
+    console.warn('Using mock classes subscription (Firebase disabled)');
+
     // Initial call with mock data
     const mockClasses: ClassSession[] = [
       {
@@ -765,15 +843,15 @@ export class DashboardService {
         tags: ['arabic', 'grammar'],
         materials: [],
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     ];
-    
+
     callback(mockClasses);
-    
+
     // Return empty cleanup function
     return () => {};
-    
+
     /* 
     // FIREBASE VERSION - COMMENTED OUT FOR MANUAL LOGIN
     // TODO: Uncomment when ready to enable Firebase
@@ -791,22 +869,22 @@ export const withRetry = async <T>(
   delay: number = 1000
 ): Promise<T> => {
   let lastError: Error;
-  
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+
+  for (const attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       return await operation();
     } catch (error) {
       lastError = error as Error;
-      
+
       if (attempt === maxRetries) {
         throw lastError;
       }
-      
+
       // Exponential backoff
       const waitTime = delay * Math.pow(2, attempt - 1);
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
   }
-  
+
   throw lastError!;
 };

@@ -1,13 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import {
-  DashboardService,
-  withRetry
-} from '../services/dashboardService';
+import { DashboardService, withRetry } from '../services/dashboardService';
 import type {
   Announcement,
   DashboardNotification,
-  ClassSession
+  ClassSession,
 } from '../services/dashboardService';
 
 interface DashboardState {
@@ -53,31 +50,40 @@ export const useDashboard = (): DashboardState & DashboardActions => {
   });
 
   // Update loading state for specific data type
-  const setLoading = useCallback((type: keyof DashboardState['loading'], loading: boolean) => {
-    setState(prev => ({
-      ...prev,
-      loading: {
-        ...prev.loading,
-        [type]: loading,
-      },
-    }));
-  }, []);
+  const setLoading = useCallback(
+    (type: keyof DashboardState['loading'], loading: boolean) => {
+      setState(prev => ({
+        ...prev,
+        loading: {
+          ...prev.loading,
+          [type]: loading,
+        },
+      }));
+    },
+    []
+  );
 
   // Update error state for specific data type
-  const setError = useCallback((type: keyof DashboardState['error'], error: string | null) => {
-    setState(prev => ({
-      ...prev,
-      error: {
-        ...prev.error,
-        [type]: error,
-      },
-    }));
-  }, []);
+  const setError = useCallback(
+    (type: keyof DashboardState['error'], error: string | null) => {
+      setState(prev => ({
+        ...prev,
+        error: {
+          ...prev.error,
+          [type]: error,
+        },
+      }));
+    },
+    []
+  );
 
   // Clear error for specific data type
-  const clearError = useCallback((type: keyof DashboardState['error']) => {
-    setError(type, null);
-  }, [setError]);
+  const clearError = useCallback(
+    (type: keyof DashboardState['error']) => {
+      setError(type, null);
+    },
+    [setError]
+  );
 
   // Refresh announcements with retry mechanism
   const refreshAnnouncements = useCallback(async () => {
@@ -85,13 +91,16 @@ export const useDashboard = (): DashboardState & DashboardActions => {
     setError('announcements', null);
 
     try {
-      const announcements = await withRetry(() => DashboardService.getAnnouncements());
+      const announcements = await withRetry(() =>
+        DashboardService.getAnnouncements()
+      );
       setState(prev => ({
         ...prev,
         announcements,
       }));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load announcements';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load announcements';
       setError('announcements', errorMessage);
     } finally {
       setLoading('announcements', false);
@@ -114,7 +123,8 @@ export const useDashboard = (): DashboardState & DashboardActions => {
         notifications,
       }));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load notifications';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load notifications';
       setError('notifications', errorMessage);
     } finally {
       setLoading('notifications', false);
@@ -127,14 +137,20 @@ export const useDashboard = (): DashboardState & DashboardActions => {
     setError('todaysClass', null);
 
     try {
-      const todaysClassResponse = await withRetry(() => DashboardService.getTodaysClasses());
-      const todaysClass = todaysClassResponse.success && todaysClassResponse.data.length > 0 ? todaysClassResponse.data[0] : null;
+      const todaysClassResponse = await withRetry(() =>
+        DashboardService.getTodaysClasses()
+      );
+      const todaysClass =
+        todaysClassResponse.success && todaysClassResponse.data.length > 0
+          ? todaysClassResponse.data[0]
+          : null;
       setState(prev => ({
         ...prev,
         todaysClass,
       }));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load today\'s class';
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to load today's class";
       setError('todaysClass', errorMessage);
     } finally {
       setLoading('todaysClass', false);
@@ -149,7 +165,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
 
     // Subscribe to announcements
     unsubscribeAnnouncements = DashboardService.subscribeToAnnouncements(
-      (announcements) => {
+      announcements => {
         setState(prev => ({
           ...prev,
           announcements,
@@ -163,7 +179,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
     if (user?.uid) {
       unsubscribeNotifications = DashboardService.subscribeToUserNotifications(
         user.uid,
-        (notifications) => {
+        notifications => {
           setState(prev => ({
             ...prev,
             notifications,
@@ -176,7 +192,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
 
     // Subscribe to today's class
     unsubscribeTodaysClass = DashboardService.subscribeToTodaysClasses(
-      (todaysClass) => {
+      todaysClass => {
         setState(prev => ({
           ...prev,
           todaysClass,

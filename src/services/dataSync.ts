@@ -44,7 +44,8 @@ export class DataSyncService {
       isSyncing: status?.isSyncing || false,
       lastSyncAt: lastSync || undefined,
       pendingOperations: queue.length,
-      failedOperations: queue.filter(item => item.retryCount >= item.maxRetries).length
+      failedOperations: queue.filter(item => item.retryCount >= item.maxRetries)
+        .length,
     };
   }
 
@@ -63,10 +64,13 @@ export class DataSyncService {
         data,
         timestamp: new Date(),
         retryCount: 0,
-        maxRetries
+        maxRetries,
       };
 
-      const success = StorageService.appendToArray(this.SYNC_QUEUE_KEY, queueItem);
+      const success = StorageService.appendToArray(
+        this.SYNC_QUEUE_KEY,
+        queueItem
+      );
 
       if (success && this.isOnline()) {
         // Try to sync immediately if online
@@ -76,39 +80,42 @@ export class DataSyncService {
       return {
         data: success,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: false,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to queue operation',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to queue operation',
+        timestamp: new Date(),
       };
     }
   }
 
   // Process sync queue
-  static async processSyncQueue(): Promise<ApiResponse<{ processed: number; failed: number }>> {
+  static async processSyncQueue(): Promise<
+    ApiResponse<{ processed: number; failed: number }>
+  > {
     try {
       if (!this.isOnline()) {
         return {
           data: { processed: 0, failed: 0 },
           success: false,
           error: 'Device is offline',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
       // Update sync status
-      StorageService.set(this.SYNC_STATUS_KEY, { 
-        ...this.getSyncStatus(), 
-        isSyncing: true 
+      StorageService.set(this.SYNC_STATUS_KEY, {
+        ...this.getSyncStatus(),
+        isSyncing: true,
       });
 
       const queue = StorageService.getArray<SyncQueueItem>(this.SYNC_QUEUE_KEY);
-      let processed = 0;
-      let failed = 0;
+      const processed = 0;
+      const failed = 0;
       const remainingQueue: SyncQueueItem[] = [];
 
       for (const item of queue) {
@@ -122,7 +129,11 @@ export class DataSyncService {
             remainingQueue.push(item);
           } else {
             failed++;
-            console.error(`Failed to sync operation after ${item.maxRetries} retries:`, item, error);
+            console.error(
+              `Failed to sync operation after ${item.maxRetries} retries:`,
+              item,
+              error
+            );
           }
         }
       }
@@ -131,9 +142,9 @@ export class DataSyncService {
       StorageService.setArray(this.SYNC_QUEUE_KEY, remainingQueue);
 
       // Update sync status
-      StorageService.set(this.SYNC_STATUS_KEY, { 
-        ...this.getSyncStatus(), 
-        isSyncing: false 
+      StorageService.set(this.SYNC_STATUS_KEY, {
+        ...this.getSyncStatus(),
+        isSyncing: false,
       });
 
       if (processed > 0) {
@@ -143,20 +154,20 @@ export class DataSyncService {
       return {
         data: { processed, failed },
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       // Update sync status
-      StorageService.set(this.SYNC_STATUS_KEY, { 
-        ...this.getSyncStatus(), 
-        isSyncing: false 
+      StorageService.set(this.SYNC_STATUS_KEY, {
+        ...this.getSyncStatus(),
+        isSyncing: false,
       });
 
       return {
         data: { processed: 0, failed: 0 },
         success: false,
         error: error instanceof Error ? error.message : 'Sync failed',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -164,14 +175,20 @@ export class DataSyncService {
   // Simulate API call (replace with actual API calls in production)
   private static async simulateApiCall(item: SyncQueueItem): Promise<void> {
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
-    
+    await new Promise(resolve =>
+      setTimeout(resolve, 100 + Math.random() * 200)
+    );
+
     // Simulate occasional failures for testing
-    if (Math.random() < 0.1) { // 10% failure rate
+    if (Math.random() < 0.1) {
+      // 10% failure rate
       throw new Error('Simulated API failure');
     }
 
-    console.log(`Synced ${item.operation} operation for ${item.collection}:`, item.data);
+    console.warn(
+      `Synced ${item.operation} operation for ${item.collection}:`,
+      item.data
+    );
   }
 
   // Clear sync queue
@@ -181,14 +198,15 @@ export class DataSyncService {
       return {
         data: true,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: false,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to clear sync queue',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to clear sync queue',
+        timestamp: new Date(),
       };
     }
   }
@@ -219,14 +237,15 @@ export class DataSyncService {
       return {
         data: true,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: false,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to retry operations',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to retry operations',
+        timestamp: new Date(),
       };
     }
   }
@@ -234,12 +253,14 @@ export class DataSyncService {
   // Setup online/offline event listeners
   static setupNetworkListeners(): void {
     window.addEventListener('online', () => {
-      console.log('Device came online, processing sync queue...');
+      console.warn('Device came online, processing sync queue...');
       this.processSyncQueue();
     });
 
     window.addEventListener('offline', () => {
-      console.log('Device went offline, operations will be queued for later sync');
+      console.warn(
+        'Device went offline, operations will be queued for later sync'
+      );
     });
   }
 
@@ -251,7 +272,7 @@ export class DataSyncService {
           data: false,
           success: false,
           error: 'Device is offline',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -262,8 +283,8 @@ export class DataSyncService {
       // 4. Update local storage
       // 5. Push local changes to server
 
-      console.log('Force sync all data - simulated');
-      
+      console.warn('Force sync all data - simulated');
+
       // Simulate sync delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -272,14 +293,14 @@ export class DataSyncService {
       return {
         data: true,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: false,
         success: false,
         error: error instanceof Error ? error.message : 'Force sync failed',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -294,13 +315,15 @@ export class DataSyncService {
   } {
     const queue = StorageService.getArray<SyncQueueItem>(this.SYNC_QUEUE_KEY);
     const lastSync = StorageService.get<Date>(this.LAST_SYNC_KEY);
-    
+
     return {
       totalOperations: queue.length,
-      pendingOperations: queue.filter(item => item.retryCount < item.maxRetries).length,
-      failedOperations: queue.filter(item => item.retryCount >= item.maxRetries).length,
+      pendingOperations: queue.filter(item => item.retryCount < item.maxRetries)
+        .length,
+      failedOperations: queue.filter(item => item.retryCount >= item.maxRetries)
+        .length,
       lastSyncAge: lastSync ? Date.now() - new Date(lastSync).getTime() : null,
-      isOnline: this.isOnline()
+      isOnline: this.isOnline(),
     };
   }
 }

@@ -2,14 +2,21 @@ import React from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 
 export const NavigationDemo: React.FC = () => {
-  const { theme, userTheme, setTheme, toggleTheme, isHighContrast, prefersReducedMotion } = useTheme();
+  const {
+    theme,
+    userTheme,
+    setTheme,
+    toggleTheme,
+    isHighContrast,
+    prefersReducedMotion,
+  } = useTheme();
 
   return (
     <div className="p-6 max-w-md mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-lg">
       <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
         Navigation Theme Demo
       </h2>
-      
+
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -59,10 +66,22 @@ export const NavigationDemo: React.FC = () => {
         </div>
 
         <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-          <div>Current Theme: <span className="font-medium">{theme}</span></div>
-          <div>User Preference: <span className="font-medium">{userTheme}</span></div>
-          <div>High Contrast: <span className="font-medium">{isHighContrast ? 'Yes' : 'No'}</span></div>
-          <div>Reduced Motion: <span className="font-medium">{prefersReducedMotion ? 'Yes' : 'No'}</span></div>
+          <div>
+            Current Theme: <span className="font-medium">{theme}</span>
+          </div>
+          <div>
+            User Preference: <span className="font-medium">{userTheme}</span>
+          </div>
+          <div>
+            High Contrast:{' '}
+            <span className="font-medium">{isHighContrast ? 'Yes' : 'No'}</span>
+          </div>
+          <div>
+            Reduced Motion:{' '}
+            <span className="font-medium">
+              {prefersReducedMotion ? 'Yes' : 'No'}
+            </span>
+          </div>
         </div>
 
         <div className="border-t pt-4 dark:border-gray-700">

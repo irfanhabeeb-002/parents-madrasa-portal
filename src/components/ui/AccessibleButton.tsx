@@ -1,8 +1,15 @@
 import React, { forwardRef } from 'react';
 import type { ButtonHTMLAttributes } from 'react';
 
-interface AccessibleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'danger';
+interface AccessibleButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'error'
+    | 'warning'
+    | 'danger';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   children: React.ReactNode;
@@ -13,7 +20,10 @@ interface AccessibleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> 
   screenReaderText?: string;
 }
 
-export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonProps>(
+export const AccessibleButton = forwardRef<
+  HTMLButtonElement,
+  AccessibleButtonProps
+>(
   (
     {
       variant = 'primary',
@@ -71,12 +81,18 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
     ];
 
     const variantClasses = {
-      primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 border border-blue-600 hover:border-blue-700',
-      secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400 border border-gray-300',
-      success: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 border border-green-600 hover:border-green-700',
-      error: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 border border-red-600 hover:border-red-700',
-      warning: 'bg-yellow-600 text-white hover:bg-yellow-700 active:bg-yellow-800 border border-yellow-600 hover:border-yellow-700',
-      danger: 'bg-red-700 text-white hover:bg-red-800 active:bg-red-900 border border-red-700 hover:border-red-800 shadow-lg',
+      primary:
+        'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 border border-blue-600 hover:border-blue-700',
+      secondary:
+        'bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400 border border-gray-300',
+      success:
+        'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 border border-green-600 hover:border-green-700',
+      error:
+        'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 border border-red-600 hover:border-red-700',
+      warning:
+        'bg-yellow-600 text-white hover:bg-yellow-700 active:bg-yellow-800 border border-yellow-600 hover:border-yellow-700',
+      danger:
+        'bg-red-700 text-white hover:bg-red-800 active:bg-red-900 border border-red-700 hover:border-red-800 shadow-lg',
     };
 
     const sizeClasses = {
@@ -92,11 +108,14 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
       className,
     ].join(' ');
 
-    const describedByIds = [
-      malayalamLabel ? `${props.id || 'button'}-malayalam` : null,
-      ariaDescribedBy,
-      screenReaderText ? `${props.id || 'button'}-sr-text` : null,
-    ].filter(Boolean).join(' ') || undefined;
+    const describedByIds =
+      [
+        malayalamLabel ? `${props.id || 'button'}-malayalam` : null,
+        ariaDescribedBy,
+        screenReaderText ? `${props.id || 'button'}-sr-text` : null,
+      ]
+        .filter(Boolean)
+        .join(' ') || undefined;
 
     return (
       <>
@@ -104,7 +123,9 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
           ref={ref}
           className={combinedClasses}
           disabled={disabled || loading}
-          aria-label={ariaLabel || (typeof children === 'string' ? children : undefined)}
+          aria-label={
+            ariaLabel || (typeof children === 'string' ? children : undefined)
+          }
           aria-busy={loading}
           aria-describedby={describedByIds}
           aria-live={ariaLive}
@@ -138,9 +159,9 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
           <div className="flex flex-col items-center">
             <span>{children}</span>
             {malayalamLabel && (
-              <span 
+              <span
                 id={`${props.id || 'button'}-malayalam`}
-                className="text-xs opacity-80 mt-1" 
+                className="text-xs opacity-80 mt-1"
                 lang="ml"
               >
                 {malayalamLabel}
@@ -148,13 +169,10 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
             )}
           </div>
         </button>
-        
+
         {/* Screen reader only text for additional context */}
         {screenReaderText && (
-          <span 
-            id={`${props.id || 'button'}-sr-text`}
-            className="sr-only"
-          >
+          <span id={`${props.id || 'button'}-sr-text`} className="sr-only">
             {screenReaderText}
           </span>
         )}

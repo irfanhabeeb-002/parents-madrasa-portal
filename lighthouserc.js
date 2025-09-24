@@ -18,22 +18,22 @@ module.exports = {
         'categories:best-practices': ['error', { minScore: 0.9 }],
         'categories:seo': ['error', { minScore: 0.9 }],
         'categories:pwa': ['error', { minScore: 0.9 }],
-        
+
         // Core Web Vitals
         'first-contentful-paint': ['error', { maxNumericValue: 1800 }],
         'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
         'first-input-delay': ['error', { maxNumericValue: 100 }],
         'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
-        
+
         // Resource optimization
         'unused-javascript': ['warn', { maxNumericValue: 20000 }],
         'unused-css-rules': ['warn', { maxNumericValue: 20000 }],
         'render-blocking-resources': ['warn', { maxNumericValue: 500 }],
-        
+
         // Accessibility requirements
         'color-contrast': 'error',
         'image-alt': 'error',
-        'label': 'error',
+        label: 'error',
         'link-name': 'error',
         'button-name': 'error',
         'aria-allowed-attr': 'error',
@@ -42,19 +42,19 @@ module.exports = {
         'aria-valid-attr': 'error',
         'heading-order': 'error',
         'landmark-one-main': 'error',
-        'list': 'error',
-        'listitem': 'error',
+        list: 'error',
+        listitem: 'error',
         'meta-viewport': 'error',
-        'tabindex': 'error',
-        
+        tabindex: 'error',
+
         // PWA requirements
         'installable-manifest': 'error',
         'splash-screen': 'error',
         'themed-omnibox': 'error',
         'content-width': 'error',
-        'viewport': 'error',
+        viewport: 'error',
         'without-javascript': 'error',
-        
+
         // Security
         'is-on-https': 'error',
         'uses-http2': 'warn',

@@ -9,7 +9,7 @@ export interface NetworkStatus {
 export class NetworkService {
   private static listeners: ((status: NetworkStatus) => void)[] = [];
   private static currentStatus: NetworkStatus = {
-    isOnline: navigator.onLine
+    isOnline: navigator.onLine,
   };
 
   /**
@@ -23,8 +23,11 @@ export class NetworkService {
     // Listen for connection changes if supported
     if ('connection' in navigator) {
       const connection = (navigator as any).connection;
-      connection.addEventListener('change', this.handleConnectionChange.bind(this));
-      
+      connection.addEventListener(
+        'change',
+        this.handleConnectionChange.bind(this)
+      );
+
       // Update initial connection info
       this.currentStatus.connectionType = connection.type;
       this.currentStatus.effectiveType = connection.effectiveType;
@@ -46,10 +49,10 @@ export class NetworkService {
    */
   static subscribe(callback: (status: NetworkStatus) => void): () => void {
     this.listeners.push(callback);
-    
+
     // Call immediately with current status
     callback(this.currentStatus);
-    
+
     // Return unsubscribe function
     return () => {
       const index = this.listeners.indexOf(callback);
@@ -106,10 +109,11 @@ export class NetworkService {
    * Update Firebase network state based on connectivity
    */
   private static updateFirebaseNetworkState(): void {
-    FirebaseService.handleNetworkStateChange(this.currentStatus.isOnline)
-      .catch(error => {
+    FirebaseService.handleNetworkStateChange(this.currentStatus.isOnline).catch(
+      error => {
         console.error('Failed to update Firebase network state:', error);
-      });
+      }
+    );
   }
 
   /**
@@ -134,12 +138,15 @@ export class NetworkService {
   static cleanup(): void {
     window.removeEventListener('online', this.handleOnline.bind(this));
     window.removeEventListener('offline', this.handleOffline.bind(this));
-    
+
     if ('connection' in navigator) {
       const connection = (navigator as any).connection;
-      connection.removeEventListener('change', this.handleConnectionChange.bind(this));
+      connection.removeEventListener(
+        'change',
+        this.handleConnectionChange.bind(this)
+      );
     }
-    
+
     this.listeners = [];
   }
 }

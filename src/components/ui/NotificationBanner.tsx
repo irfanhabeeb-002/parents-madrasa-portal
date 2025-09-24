@@ -1,9 +1,9 @@
 import React from 'react';
-import { 
-  CheckCircleIcon, 
-  ExclamationTriangleIcon, 
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
   InformationCircleIcon,
-  XMarkIcon 
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 
 interface NotificationBannerProps {
@@ -70,21 +70,21 @@ export const NotificationBanner: React.FC<NotificationBannerProps> = ({
     >
       <div className="flex items-start">
         <div className="flex-shrink-0">
-          <IconComponent 
-            className={`w-5 h-5 ${styles.icon}`} 
+          <IconComponent
+            className={`w-5 h-5 ${styles.icon}`}
             aria-hidden="true"
           />
         </div>
-        
+
         <div className="ml-3 flex-1">
-          <h3 
+          <h3
             id="notification-title"
             className={`text-sm font-medium ${styles.title}`}
           >
             {title}
           </h3>
-          
-          <div 
+
+          <div
             id="notification-message"
             className={`mt-1 text-sm ${styles.message}`}
           >
@@ -96,7 +96,7 @@ export const NotificationBanner: React.FC<NotificationBannerProps> = ({
             )}
           </div>
         </div>
-        
+
         {onDismiss && (
           <div className="ml-auto pl-3">
             <button

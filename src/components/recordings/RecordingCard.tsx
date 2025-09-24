@@ -1,11 +1,11 @@
 import React from 'react';
 import { Recording } from '../../types/recording';
-import { 
-  PlayIcon, 
-  ClockIcon, 
+import {
+  PlayIcon,
+  ClockIcon,
   EyeIcon,
   ArrowDownTrayIcon,
-  TagIcon
+  TagIcon,
 } from '@heroicons/react/24/outline';
 
 interface RecordingCardProps {
@@ -13,7 +13,10 @@ interface RecordingCardProps {
   onPlay: () => void;
 }
 
-export const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPlay }) => {
+export const RecordingCard: React.FC<RecordingCardProps> = ({
+  recording,
+  onPlay,
+}) => {
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -29,7 +32,7 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPlay 
     const sizes = ['B', 'KB', 'MB', 'GB'];
     if (bytes === 0) return '0 B';
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${Math.round(bytes / Math.pow(1024, i) * 100) / 100} ${sizes[i]}`;
+    return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${sizes[i]}`;
   };
 
   const formatDate = (date: Date | { seconds: number }): string => {
@@ -37,7 +40,7 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPlay 
     return dateObj.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -68,19 +71,21 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPlay 
                   src={recording.thumbnailUrl}
                   alt={`Thumbnail for ${recording.title}`}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
+                  onError={e => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                     target.nextElementSibling?.classList.remove('hidden');
                   }}
                 />
               ) : null}
-              
+
               {/* Fallback thumbnail */}
-              <div className={`w-full h-full flex items-center justify-center bg-gray-100 ${recording.thumbnailUrl ? 'hidden' : ''}`}>
+              <div
+                className={`w-full h-full flex items-center justify-center bg-gray-100 ${recording.thumbnailUrl ? 'hidden' : ''}`}
+              >
                 <PlayIcon className="w-8 h-8 text-gray-400" />
               </div>
-              
+
               {/* Play button overlay */}
               <button
                 onClick={onPlay}
@@ -92,7 +97,7 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPlay 
                 </div>
               </button>
             </div>
-            
+
             {/* Duration badge */}
             <div className="absolute bottom-1 right-1 bg-black bg-opacity-75 text-white text-xs px-1.5 py-0.5 rounded">
               {formatDuration(recording.duration)}
@@ -106,16 +111,18 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPlay 
                 <h3 className="text-lg font-semibold text-gray-900 truncate mb-1">
                   {recording.title}
                 </h3>
-                
+
                 {recording.description && (
                   <p className="text-sm text-gray-600 line-clamp-2 mb-2">
                     {recording.description}
                   </p>
                 )}
               </div>
-              
+
               {/* Quality badge */}
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getQualityBadgeColor(recording.quality)}`}>
+              <span
+                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getQualityBadgeColor(recording.quality)}`}
+              >
                 {recording.quality.toUpperCase()}
               </span>
             </div>
@@ -126,12 +133,12 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPlay 
                 <ClockIcon className="w-4 h-4 mr-1" />
                 {formatDate(recording.createdAt)}
               </div>
-              
+
               <div className="flex items-center">
                 <EyeIcon className="w-4 h-4 mr-1" />
                 {recording.viewCount} views
               </div>
-              
+
               <div className="flex items-center">
                 <ArrowDownTrayIcon className="w-4 h-4 mr-1" />
                 {formatFileSize(recording.fileSize)}
@@ -163,7 +170,8 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPlay 
             {/* Chapters indicator */}
             {recording.chapters && recording.chapters.length > 0 && (
               <div className="text-xs text-gray-500">
-                {recording.chapters.length} chapter{recording.chapters.length !== 1 ? 's' : ''}
+                {recording.chapters.length} chapter
+                {recording.chapters.length !== 1 ? 's' : ''}
               </div>
             )}
           </div>
@@ -178,7 +186,7 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPlay 
             <PlayIcon className="w-4 h-4 mr-2" />
             Play Video
           </button>
-          
+
           <div className="flex items-center space-x-2">
             {/* Processing status */}
             {!recording.isProcessed && (
@@ -186,7 +194,7 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPlay 
                 Processing...
               </span>
             )}
-            
+
             {/* Captions available */}
             {recording.captions && recording.captions.length > 0 && (
               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">

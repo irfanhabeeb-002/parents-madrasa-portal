@@ -26,13 +26,13 @@ To add new questions to the system, edit the `questions.json` file following the
       "textMalayalam": "Option A in Malayalam (optional)"
     },
     {
-      "id": "b", 
+      "id": "b",
       "text": "Option B text",
       "textMalayalam": "Option B in Malayalam (optional)"
     },
     {
       "id": "c",
-      "text": "Option C text", 
+      "text": "Option C text",
       "textMalayalam": "Option C in Malayalam (optional)"
     },
     {
@@ -77,7 +77,7 @@ The system currently supports these subjects:
 Use the following prefixes for question IDs:
 
 - `kt_` - Kithabu Thawheed
-- `ss_` - Swiffathul Swalathu Nabi  
+- `ss_` - Swiffathul Swalathu Nabi
 - `tj_` - Tajweed
 - `hf_` - Hifz
 - `tf_` - Tafseer
@@ -111,7 +111,7 @@ Example: `kt_001`, `ss_002`, `tj_003`
         },
         {
           "id": "b",
-          "text": "Kufr", 
+          "text": "Kufr",
           "textMalayalam": "കുഫ്ർ"
         },
         {
@@ -160,15 +160,18 @@ After adding questions:
 ### Troubleshooting
 
 **Question not appearing:**
+
 - Check that the subject name matches exactly
 - Verify JSON syntax is valid
 - Ensure the question ID is unique
 
 **Malayalam text not displaying:**
+
 - Check that the text is properly encoded in UTF-8
 - Verify the `lang="ml"` attribute is applied in the component
 
 **Application crashes:**
+
 - Validate JSON syntax using an online JSON validator
 - Check for missing required fields
 - Ensure all option IDs are unique within each question

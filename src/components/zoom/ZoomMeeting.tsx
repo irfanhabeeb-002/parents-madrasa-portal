@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useZoom } from '../../hooks/useZoom';
 import { AccessibleButton } from '../ui/AccessibleButton';
 import { AlertBanner } from '../ui/AlertBanner';
-import { ZOOM_MEETING_CONTAINER, ZOOM_ERROR_MESSAGES, MEETING_STATUS_MESSAGES } from '../../config/zoom';
+import {
+  ZOOM_MEETING_CONTAINER,
+  ZOOM_ERROR_MESSAGES,
+  MEETING_STATUS_MESSAGES,
+} from '../../config/zoom';
 import type { ClassSession } from '../../types/class';
 import type { ZoomError } from '../../types/zoom';
 
@@ -27,7 +31,7 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
   onMeetingStart,
   onMeetingEnd,
   onAttendanceTracked,
-  className = ''
+  className = '',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showControls, setShowControls] = useState(true);
@@ -43,7 +47,7 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
     initializeZoom,
     joinMeeting,
     leaveMeeting,
-    clearError
+    clearError,
   } = useZoom({
     autoInitialize: true,
     trackAttendance: true,
@@ -55,7 +59,9 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
     onMeetingEnd: () => {
       setShowControls(true);
       if (joinTime && onAttendanceTracked) {
-        const duration = Math.floor((new Date().getTime() - joinTime.getTime()) / 1000);
+        const duration = Math.floor(
+          (new Date().getTime() - joinTime.getTime()) / 1000
+        );
         onAttendanceTracked(duration);
       }
       setJoinTime(null);
@@ -64,7 +70,7 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
     onError: (zoomError: ZoomError) => {
       console.error('Zoom error:', zoomError);
       setShowControls(true);
-    }
+    },
   });
 
   /**
@@ -83,7 +89,7 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
       password: classSession.zoomPassword,
       userName,
       userEmail,
-      apiKey: process.env.VITE_ZOOM_API_KEY || ''
+      apiKey: process.env.VITE_ZOOM_API_KEY || '',
     });
 
     if (!success) {
@@ -106,7 +112,7 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
    */
   const getErrorMessage = (zoomError: ZoomError): string => {
     const messages = ZOOM_ERROR_MESSAGES;
-    
+
     switch (zoomError.type) {
       case 'INITIALIZATION_ERROR':
         return messages.INITIALIZATION_FAILED.en;
@@ -124,7 +130,7 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
    */
   const getStatusMessage = (): string => {
     if (!meetingStatus) return '';
-    
+
     const messages = MEETING_STATUS_MESSAGES[meetingStatus];
     return messages ? messages.en : '';
   };
@@ -153,14 +159,17 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
     return scheduledTime.toLocaleString('en-IN', {
       timeZone: 'Asia/Kolkata',
       dateStyle: 'medium',
-      timeStyle: 'short'
+      timeStyle: 'short',
     });
   };
 
   // Set up container styling
   useEffect(() => {
     if (containerRef.current && isInMeeting) {
-      Object.assign(containerRef.current.style, ZOOM_MEETING_CONTAINER.containerStyle);
+      Object.assign(
+        containerRef.current.style,
+        ZOOM_MEETING_CONTAINER.containerStyle
+      );
     }
   }, [isInMeeting]);
 
@@ -198,7 +207,7 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
             backgroundColor: '#000000',
             display: isInMeeting ? 'block' : 'flex',
             alignItems: isInMeeting ? 'stretch' : 'center',
-            justifyContent: isInMeeting ? 'stretch' : 'center'
+            justifyContent: isInMeeting ? 'stretch' : 'center',
           }}
         >
           {/* Pre-meeting UI */}
@@ -206,12 +215,20 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
             <div className="text-center text-white p-8">
               <div className="mb-6">
                 <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/>
+                  <svg
+                    className="w-8 h-8"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{classSession.title}</h3>
-                <p className="text-gray-300 mb-1">Instructor: {classSession.instructor}</p>
+                <h3 className="text-xl font-semibold mb-2">
+                  {classSession.title}
+                </h3>
+                <p className="text-gray-300 mb-1">
+                  Instructor: {classSession.instructor}
+                </p>
                 <p className="text-gray-400 text-sm">
                   Scheduled: {getMeetingTimeDisplay()}
                 </p>
@@ -225,11 +242,21 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
                     LIVE
                   </div>
                 )}
-                
+
                 {isMeetingScheduled() && (
                   <div className="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded-full text-sm font-medium mb-4">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-4 h-4 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                     SCHEDULED
                   </div>
@@ -237,8 +264,18 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
 
                 {classSession.status === 'completed' && (
                   <div className="inline-flex items-center px-3 py-1 bg-gray-600 text-white rounded-full text-sm font-medium mb-4">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="w-4 h-4 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                     COMPLETED
                   </div>
@@ -261,8 +298,18 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
                       </div>
                     ) : (
                       <div className="flex items-center">
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        <svg
+                          className="w-5 h-5 mr-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
                         </svg>
                         Join Meeting
                       </div>
@@ -296,11 +343,23 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
               ariaLabel="Leave the meeting"
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
               </svg>
               Leave
-              <span className="block text-xs" lang="ml">പുറത്തുകടക്കുക</span>
+              <span className="block text-xs" lang="ml">
+                പുറത്തുകടക്കുക
+              </span>
             </AccessibleButton>
           </div>
         )}
@@ -310,12 +369,24 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
       {attendanceRecord && (
         <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center text-green-800">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span className="text-sm font-medium">
               Attendance tracked
-              <span className="block text-xs" lang="ml">ഹാജർ രേഖപ്പെടുത്തി</span>
+              <span className="block text-xs" lang="ml">
+                ഹാജർ രേഖപ്പെടുത്തി
+              </span>
             </span>
           </div>
           {attendanceRecord.duration > 0 && (
@@ -338,7 +409,7 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
             <span className="ml-2">{classSession.duration} minutes</span>
           </div>
         </div>
-        
+
         {classSession.zoomPassword && (
           <div className="mt-2">
             <span className="font-medium">Password:</span>

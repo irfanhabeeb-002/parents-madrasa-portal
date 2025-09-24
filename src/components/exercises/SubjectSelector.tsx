@@ -20,34 +20,46 @@ interface SubjectInfo {
 
 export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   onSubjectSelect,
-  onClose
+  onClose,
 }) => {
   // Get unique subjects and their question counts
-  const subjectCounts = questionsData.questions.reduce((acc, question) => {
-    acc[question.subject] = (acc[question.subject] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const subjectCounts = questionsData.questions.reduce(
+    (acc, question) => {
+      acc[question.subject] = (acc[question.subject] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-  const subjects: SubjectInfo[] = Object.keys(SUBJECT_INFO).map(subjectName => ({
-    name: subjectName,
-    malayalamName: SUBJECT_INFO[subjectName].malayalamName,
-    description: SUBJECT_INFO[subjectName].description,
-    malayalamDescription: SUBJECT_INFO[subjectName].malayalamDescription,
-    questionCount: subjectCounts[subjectName] || 0,
-    icon: SUBJECT_INFO[subjectName].icon,
-    difficulty: SUBJECT_INFO[subjectName].difficulty
-  }));
+  const subjects: SubjectInfo[] = Object.keys(SUBJECT_INFO).map(
+    subjectName => ({
+      name: subjectName,
+      malayalamName: SUBJECT_INFO[subjectName].malayalamName,
+      description: SUBJECT_INFO[subjectName].description,
+      malayalamDescription: SUBJECT_INFO[subjectName].malayalamDescription,
+      questionCount: subjectCounts[subjectName] || 0,
+      icon: SUBJECT_INFO[subjectName].icon,
+      difficulty: SUBJECT_INFO[subjectName].difficulty,
+    })
+  );
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
-      case 'easy': return 'text-green-600';
-      case 'medium': return 'text-yellow-600';
-      case 'hard': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'easy':
+        return 'text-green-600';
+      case 'medium':
+        return 'text-yellow-600';
+      case 'hard':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
     }
   };
 
-  const totalQuestions = Object.values(subjectCounts).reduce((sum, count) => sum + count, 0);
+  const totalQuestions = Object.values(subjectCounts).reduce(
+    (sum, count) => sum + count,
+    0
+  );
 
   return (
     <div className="space-y-6">
@@ -60,7 +72,8 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           നിങ്ങളുടെ വിഷയം തിരഞ്ഞെടുക്കുക
         </p>
         <p className="text-sm text-gray-500 mt-2">
-          Select a subject to start practicing. Each test contains 5 random questions.
+          Select a subject to start practicing. Each test contains 5 random
+          questions.
         </p>
       </div>
 
@@ -77,36 +90,42 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
       >
         <div className="flex justify-between items-center text-sm mt-2">
           <span className="text-primary-700 font-medium">All Subjects</span>
-          <span className="text-primary-600">{totalQuestions} questions available</span>
+          <span className="text-primary-600">
+            {totalQuestions} questions available
+          </span>
         </div>
       </Card>
 
       {/* Subject Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {subjects.map((subject) => (
+        {subjects.map(subject => (
           <Card
             key={subject.name}
             title={subject.name}
             subtitle={subject.description}
             malayalamSubtitle={subject.malayalamDescription}
-            onClick={() => subject.questionCount > 0 && onSubjectSelect(subject.name, Math.min(5, subject.questionCount))}
+            onClick={() =>
+              subject.questionCount > 0 &&
+              onSubjectSelect(subject.name, Math.min(5, subject.questionCount))
+            }
             variant="interactive"
             disabled={subject.questionCount === 0}
             ariaLabel={`Start ${subject.name} exercise`}
             icon={<span className="text-2xl">{subject.icon}</span>}
           >
             <div className="flex justify-between items-center text-sm mt-2">
-              <span className={`font-medium ${getDifficultyColor(subject.difficulty)}`}>
+              <span
+                className={`font-medium ${getDifficultyColor(subject.difficulty)}`}
+              >
                 {subject.difficulty}
               </span>
               <span className="text-gray-600">
-                {subject.questionCount} question{subject.questionCount !== 1 ? 's' : ''}
+                {subject.questionCount} question
+                {subject.questionCount !== 1 ? 's' : ''}
               </span>
             </div>
             {subject.questionCount === 0 && (
-              <div className="text-xs text-gray-500 mt-1">
-                Coming soon...
-              </div>
+              <div className="text-xs text-gray-500 mt-1">Coming soon...</div>
             )}
           </Card>
         ))}
@@ -116,7 +135,10 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
       <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
         <h3 className="font-semibold text-blue-900 mb-2">
           How it works:
-          <span className="block text-sm font-normal text-blue-700 mt-1" lang="ml">
+          <span
+            className="block text-sm font-normal text-blue-700 mt-1"
+            lang="ml"
+          >
             ഇത് എങ്ങനെ പ്രവർത്തിക്കുന്നു:
           </span>
         </h3>

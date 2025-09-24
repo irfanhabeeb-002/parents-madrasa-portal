@@ -43,9 +43,9 @@ export const ZOOM_SDK_CONFIG: ZoomInitConfig = {
     'host',
     'mn', // Meeting number
     'pwd', // Password
-    'participant'
+    'participant',
   ],
-  meetingInfoDescription: 'Parents Madrasa Portal - Live Class'
+  meetingInfoDescription: 'Parents Madrasa Portal - Live Class',
 };
 
 /**
@@ -59,7 +59,9 @@ export const getZoomAuthConfig = (): ZoomAuthConfig => {
     accountId: process.env.VITE_ZOOM_ACCOUNT_ID || '',
     clientId: process.env.VITE_ZOOM_CLIENT_ID || '',
     clientSecret: process.env.VITE_ZOOM_CLIENT_SECRET || '',
-    redirectUrl: process.env.VITE_ZOOM_REDIRECT_URL || `${window.location.origin}/auth/zoom/callback`
+    redirectUrl:
+      process.env.VITE_ZOOM_REDIRECT_URL ||
+      `${window.location.origin}/auth/zoom/callback`,
   };
 };
 
@@ -77,8 +79,8 @@ export const ZOOM_MEETING_CONTAINER = {
     minHeight: '400px',
     backgroundColor: '#000000',
     borderRadius: '8px',
-    overflow: 'hidden'
-  }
+    overflow: 'hidden',
+  },
 };
 
 /**
@@ -87,28 +89,28 @@ export const ZOOM_MEETING_CONTAINER = {
 export const ZOOM_ERROR_MESSAGES = {
   INITIALIZATION_FAILED: {
     en: 'Failed to initialize Zoom. Please refresh and try again.',
-    ml: 'സൂം ആരംഭിക്കുന്നതിൽ പരാജയപ്പെട്ടു. ദയവായി പുതുക്കി വീണ്ടും ശ്രമിക്കുക.'
+    ml: 'സൂം ആരംഭിക്കുന്നതിൽ പരാജയപ്പെട്ടു. ദയവായി പുതുക്കി വീണ്ടും ശ്രമിക്കുക.',
   },
   JOIN_FAILED: {
     en: 'Failed to join the meeting. Please check your internet connection.',
-    ml: 'മീറ്റിംഗിൽ ചേരുന്നതിൽ പരാജയപ്പെട്ടു. ദയവായി നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക.'
+    ml: 'മീറ്റിംഗിൽ ചേരുന്നതിൽ പരാജയപ്പെട്ടു. ദയവായി നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക.',
   },
   INVALID_MEETING_ID: {
     en: 'Invalid meeting ID or password. Please contact your teacher.',
-    ml: 'അസാധുവായ മീറ്റിംഗ് ഐഡി അല്ലെങ്കിൽ പാസ്‌വേഡ്. ദയവായി നിങ്ങളുടെ അധ്യാപകനെ ബന്ധപ്പെടുക.'
+    ml: 'അസാധുവായ മീറ്റിംഗ് ഐഡി അല്ലെങ്കിൽ പാസ്‌വേഡ്. ദയവായി നിങ്ങളുടെ അധ്യാപകനെ ബന്ധപ്പെടുക.',
   },
   NETWORK_ERROR: {
     en: 'Network connection error. Please check your internet and try again.',
-    ml: 'നെറ്റ്‌വർക്ക് കണക്ഷൻ പിശക്. ദയവായി നിങ്ങളുടെ ഇന്റർനെറ്റ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.'
+    ml: 'നെറ്റ്‌വർക്ക് കണക്ഷൻ പിശക്. ദയവായി നിങ്ങളുടെ ഇന്റർനെറ്റ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.',
   },
   MEETING_ENDED: {
     en: 'The meeting has ended.',
-    ml: 'മീറ്റിംഗ് അവസാനിച്ചു.'
+    ml: 'മീറ്റിംഗ് അവസാനിച്ചു.',
   },
   PERMISSION_DENIED: {
     en: 'Camera or microphone permission denied. Please allow access and refresh.',
-    ml: 'ക്യാമറ അല്ലെങ്കിൽ മൈക്രോഫോൺ അനുമതി നിഷേധിച്ചു. ദയവായി ആക്‌സസ് അനുവദിച്ച് പുതുക്കുക.'
-  }
+    ml: 'ക്യാമറ അല്ലെങ്കിൽ മൈക്രോഫോൺ അനുമതി നിഷേധിച്ചു. ദയവായി ആക്‌സസ് അനുവദിച്ച് പുതുക്കുക.',
+  },
 };
 
 /**
@@ -122,7 +124,7 @@ export const STUDENT_MEETING_SETTINGS = {
   allowVideo: true,
   allowChat: true,
   allowScreenShare: false,
-  allowRecord: false
+  allowRecord: false,
 };
 
 /**
@@ -131,28 +133,28 @@ export const STUDENT_MEETING_SETTINGS = {
 export const MEETING_STATUS_MESSAGES = {
   connecting: {
     en: 'Connecting to meeting...',
-    ml: 'മീറ്റിംഗിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു...'
+    ml: 'മീറ്റിംഗിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു...',
   },
   connected: {
     en: 'Connected to meeting',
-    ml: 'മീറ്റിംഗിലേക്ക് കണക്റ്റ് ചെയ്തു'
+    ml: 'മീറ്റിംഗിലേക്ക് കണക്റ്റ് ചെയ്തു',
   },
   disconnecting: {
     en: 'Leaving meeting...',
-    ml: 'മീറ്റിംഗിൽ നിന്ന് പുറത്തുകടക്കുന്നു...'
+    ml: 'മീറ്റിംഗിൽ നിന്ന് പുറത്തുകടക്കുന്നു...',
   },
   disconnected: {
     en: 'Disconnected from meeting',
-    ml: 'മീറ്റിംഗിൽ നിന്ന് വിച്ഛേദിച്ചു'
+    ml: 'മീറ്റിംഗിൽ നിന്ന് വിച്ഛേദിച്ചു',
   },
   reconnecting: {
     en: 'Reconnecting to meeting...',
-    ml: 'മീറ്റിംഗിലേക്ക് വീണ്ടും കണക്റ്റ് ചെയ്യുന്നു...'
+    ml: 'മീറ്റിംഗിലേക്ക് വീണ്ടും കണക്റ്റ് ചെയ്യുന്നു...',
   },
   failed: {
     en: 'Failed to connect to meeting',
-    ml: 'മീറ്റിംഗിലേക്ക് കണക്റ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു'
-  }
+    ml: 'മീറ്റിംഗിലേക്ക് കണക്റ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു',
+  },
 };
 
 /**
@@ -163,7 +165,7 @@ export const RECORDING_SETTINGS = {
   quality: 'high' as const,
   format: 'mp4' as const,
   includeChat: true,
-  includeTranscript: false // Disable for privacy
+  includeTranscript: false, // Disable for privacy
 };
 
 /**
@@ -175,5 +177,5 @@ export const ATTENDANCE_SETTINGS = {
   trackDuration: true,
   minimumDuration: 300, // 5 minutes minimum to count as attended
   trackAttentionScore: false, // Disable attention tracking for privacy
-  autoSubmit: true // Automatically submit attendance when leaving
+  autoSubmit: true, // Automatically submit attendance when leaving
 };

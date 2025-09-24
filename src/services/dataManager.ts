@@ -1,36 +1,50 @@
-import { ApiResponse, PaginationOptions, SearchOptions, FilterOptions, CacheOptions } from '../types/common';
+import {
+  ApiResponse,
+  PaginationOptions,
+  SearchOptions,
+  FilterOptions,
+  _CacheOptions,
+} from '../types/common';
 import { StorageService } from './storageService';
 
 /**
  * Generic Data Manager for CRUD operations with caching and offline support
  */
-export class DataManager<T extends { id: string; createdAt: Date | string; updatedAt?: Date | string }> {
+export class DataManager<
+  T extends { id: string; createdAt: Date | string; updatedAt?: Date | string },
+> {
   private storageKey: string;
   private cacheTTL: number;
 
-  constructor(storageKey: string, cacheTTL: number = 5 * 60 * 1000) { // 5 minutes default
+  constructor(storageKey: string, cacheTTL: number = 5 * 60 * 1000) {
+    // 5 minutes default
     this.storageKey = storageKey;
     this.cacheTTL = cacheTTL;
   }
 
   // Create a new item
-  async create(item: Omit<T, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<T>> {
+  async create(
+    item: Omit<T, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<ApiResponse<T>> {
     try {
       const newItem: T = {
         ...item,
         id: this.generateId(),
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       } as T;
 
-      const success = await StorageService.appendToArray(this.storageKey, newItem);
-      
+      const success = await StorageService.appendToArray(
+        this.storageKey,
+        newItem
+      );
+
       if (!success) {
         return {
           data: {} as T,
           success: false,
           error: 'Failed to save item',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -40,14 +54,14 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return {
         data: newItem,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: {} as T,
         success: false,
         error: error instanceof Error ? error.message : 'Failed to create item',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -63,18 +77,21 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       // Try to get from cache first
       if (options?.useCache !== false) {
         const cacheKey = `${this.storageKey}_all_${JSON.stringify(options)}`;
-        const cachedData = StorageService.getWithCache<T[]>({ key: cacheKey, ttl: this.cacheTTL });
+        const cachedData = StorageService.getWithCache<T[]>({
+          key: cacheKey,
+          ttl: this.cacheTTL,
+        });
         if (cachedData) {
           return {
             data: cachedData,
             success: true,
-            timestamp: new Date()
+            timestamp: new Date(),
           };
         }
       }
 
       // Get all items from storage
-      let items = StorageService.getArray<T>(this.storageKey);
+      const items = StorageService.getArray<T>(this.storageKey);
 
       // Apply filters
       if (options?.filters) {
@@ -105,30 +122,36 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return {
         data: items,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch items',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
 
   // Get item by ID
-  async getById(id: string, useCache: boolean = true): Promise<ApiResponse<T | null>> {
+  async getById(
+    id: string,
+    useCache: boolean = true
+  ): Promise<ApiResponse<T | null>> {
     try {
       // Try cache first
       if (useCache) {
         const cacheKey = `${this.storageKey}_${id}`;
-        const cachedItem = StorageService.getWithCache<T>({ key: cacheKey, ttl: this.cacheTTL });
+        const cachedItem = StorageService.getWithCache<T>({
+          key: cacheKey,
+          ttl: this.cacheTTL,
+        });
         if (cachedItem) {
           return {
             data: cachedItem,
             success: true,
-            timestamp: new Date()
+            timestamp: new Date(),
           };
         }
       }
@@ -145,20 +168,23 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return {
         data: item,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: null,
         success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch item',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
 
   // Update an item
-  async update(id: string, updates: Partial<T>): Promise<ApiResponse<T | null>> {
+  async update(
+    id: string,
+    updates: Partial<T>
+  ): Promise<ApiResponse<T | null>> {
     try {
       const items = StorageService.getArray<T>(this.storageKey);
       const itemIndex = items.findIndex(i => i.id === id);
@@ -168,14 +194,14 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
           data: null,
           success: false,
           error: 'Item not found',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
       const updatedItem: T = {
         ...items[itemIndex],
         ...updates,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       items[itemIndex] = updatedItem;
@@ -186,7 +212,7 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
           data: null,
           success: false,
           error: 'Failed to update item',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -197,14 +223,14 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return {
         data: updatedItem,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: null,
         success: false,
         error: error instanceof Error ? error.message : 'Failed to update item',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -212,14 +238,17 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
   // Delete an item
   async delete(id: string): Promise<ApiResponse<boolean>> {
     try {
-      const success = StorageService.removeFromArray<T>(this.storageKey, item => item.id === id);
+      const success = StorageService.removeFromArray<T>(
+        this.storageKey,
+        item => item.id === id
+      );
 
       if (!success) {
         return {
           data: false,
           success: false,
           error: 'Failed to delete item',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -230,27 +259,32 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return {
         data: true,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: false,
         success: false,
         error: error instanceof Error ? error.message : 'Failed to delete item',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
 
   // Bulk operations
-  async bulkCreate(items: Omit<T, 'id' | 'createdAt' | 'updatedAt'>[]): Promise<ApiResponse<T[]>> {
+  async bulkCreate(
+    items: Omit<T, 'id' | 'createdAt' | 'updatedAt'>[]
+  ): Promise<ApiResponse<T[]>> {
     try {
-      const newItems: T[] = items.map(item => ({
-        ...item,
-        id: this.generateId(),
-        createdAt: new Date(),
-        updatedAt: new Date()
-      } as T));
+      const newItems: T[] = items.map(
+        item =>
+          ({
+            ...item,
+            id: this.generateId(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          }) as T
+      );
 
       const currentItems = StorageService.getArray<T>(this.storageKey);
       const allItems = [...currentItems, ...newItems];
@@ -261,7 +295,7 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
           data: [],
           success: false,
           error: 'Failed to save items',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -270,19 +304,22 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return {
         data: newItems,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to create items',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to create items',
+        timestamp: new Date(),
       };
     }
   }
 
-  async bulkUpdate(updates: { id: string; data: Partial<T> }[]): Promise<ApiResponse<T[]>> {
+  async bulkUpdate(
+    updates: { id: string; data: Partial<T> }[]
+  ): Promise<ApiResponse<T[]>> {
     try {
       const items = StorageService.getArray<T>(this.storageKey);
       const updatedItems: T[] = [];
@@ -293,7 +330,7 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
           items[itemIndex] = {
             ...items[itemIndex],
             ...update.data,
-            updatedAt: new Date()
+            updatedAt: new Date(),
           };
           updatedItems.push(items[itemIndex]);
         }
@@ -306,7 +343,7 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
           data: [],
           success: false,
           error: 'Failed to update items',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -315,14 +352,15 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return {
         data: updatedItems,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to update items',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to update items',
+        timestamp: new Date(),
       };
     }
   }
@@ -341,7 +379,7 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
           data: 0,
           success: false,
           error: 'Failed to delete items',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -350,14 +388,15 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return {
         data: deletedCount,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: 0,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to delete items',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to delete items',
+        timestamp: new Date(),
       };
     }
   }
@@ -371,25 +410,34 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
     return items.filter(item => {
       return Object.entries(filters).every(([key, value]) => {
         if (value === undefined || value === null) return true;
-        
+
         const itemValue = (item as any)[key];
-        
+
         if (Array.isArray(value)) {
           return value.includes(itemValue);
         }
-        
+
         if (typeof value === 'object' && value.operator) {
           switch (value.operator) {
-            case 'gt': return itemValue > value.value;
-            case 'gte': return itemValue >= value.value;
-            case 'lt': return itemValue < value.value;
-            case 'lte': return itemValue <= value.value;
-            case 'ne': return itemValue !== value.value;
-            case 'contains': return String(itemValue).toLowerCase().includes(String(value.value).toLowerCase());
-            default: return itemValue === value.value;
+            case 'gt':
+              return itemValue > value.value;
+            case 'gte':
+              return itemValue >= value.value;
+            case 'lt':
+              return itemValue < value.value;
+            case 'lte':
+              return itemValue <= value.value;
+            case 'ne':
+              return itemValue !== value.value;
+            case 'contains':
+              return String(itemValue)
+                .toLowerCase()
+                .includes(String(value.value).toLowerCase());
+            default:
+              return itemValue === value.value;
           }
         }
-        
+
         return itemValue === value;
       });
     });
@@ -404,7 +452,9 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
         // Search all string fields
         return Object.values(item).some(value => {
           if (typeof value === 'string') {
-            return caseSensitive ? value.includes(searchTerm) : value.toLowerCase().includes(searchTerm);
+            return caseSensitive
+              ? value.includes(searchTerm)
+              : value.toLowerCase().includes(searchTerm);
           }
           return false;
         });
@@ -413,12 +463,16 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return fields.some(field => {
         const fieldValue = (item as any)[field];
         if (Array.isArray(fieldValue)) {
-          return fieldValue.some(val => 
-            caseSensitive ? String(val).includes(searchTerm) : String(val).toLowerCase().includes(searchTerm)
+          return fieldValue.some(val =>
+            caseSensitive
+              ? String(val).includes(searchTerm)
+              : String(val).toLowerCase().includes(searchTerm)
           );
         }
         if (typeof fieldValue === 'string') {
-          return caseSensitive ? fieldValue.includes(searchTerm) : fieldValue.toLowerCase().includes(searchTerm);
+          return caseSensitive
+            ? fieldValue.includes(searchTerm)
+            : fieldValue.toLowerCase().includes(searchTerm);
         }
         return false;
       });
@@ -466,19 +520,22 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return {
         data: items,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
         error: error instanceof Error ? error.message : 'Failed to export data',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
 
-  async importData(items: T[], replaceExisting: boolean = false): Promise<ApiResponse<number>> {
+  async importData(
+    items: T[],
+    replaceExisting: boolean = false
+  ): Promise<ApiResponse<number>> {
     try {
       if (replaceExisting) {
         StorageService.setArray(this.storageKey, items);
@@ -493,25 +550,27 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
       return {
         data: items.length,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: 0,
         success: false,
         error: error instanceof Error ? error.message : 'Failed to import data',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
 
   // Get statistics
-  async getStats(): Promise<ApiResponse<{
-    total: number;
-    createdToday: number;
-    updatedToday: number;
-    storageSize: number;
-  }>> {
+  async getStats(): Promise<
+    ApiResponse<{
+      total: number;
+      createdToday: number;
+      updatedToday: number;
+      storageSize: number;
+    }>
+  > {
     try {
       const items = StorageService.getArray<T>(this.storageKey);
       const today = new Date();
@@ -537,17 +596,18 @@ export class DataManager<T extends { id: string; createdAt: Date | string; updat
           total: items.length,
           createdToday,
           updatedToday,
-          storageSize
+          storageSize,
         },
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: { total: 0, createdToday: 0, updatedToday: 0, storageSize: 0 },
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to get statistics',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to get statistics',
+        timestamp: new Date(),
       };
     }
   }

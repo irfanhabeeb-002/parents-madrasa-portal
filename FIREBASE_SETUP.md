@@ -44,13 +44,13 @@ This guide will help you set up Firebase Authentication for the Parents Madrasa 
 
 ```javascript
 const firebaseConfig = {
-  apiKey: "your-api-key-here",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id",
-  measurementId: "your-measurement-id"
+  apiKey: 'your-api-key-here',
+  authDomain: 'your-project.firebaseapp.com',
+  projectId: 'your-project-id',
+  storageBucket: 'your-project.appspot.com',
+  messagingSenderId: '123456789',
+  appId: 'your-app-id',
+  measurementId: 'your-measurement-id',
 };
 ```
 
@@ -76,6 +76,7 @@ VITE_USE_FIREBASE_EMULATOR=false
 ## Step 6: Configure Phone Authentication
 
 ### For Development (Testing)
+
 1. In Firebase Console, go to Authentication > Sign-in method
 2. Click on "Phone" provider
 3. Scroll down to "Phone numbers for testing"
@@ -84,6 +85,7 @@ VITE_USE_FIREBASE_EMULATOR=false
    - Phone: `+919123456780`, Code: `123456`
 
 ### For Production
+
 1. You'll need to set up reCAPTCHA verification
 2. Add your domain to the authorized domains list in Authentication > Settings > Authorized domains
 
@@ -100,42 +102,42 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-    
+
     // Class sessions are read-only for authenticated users
     match /classes/{classId} {
       allow read: if request.auth != null;
       allow write: if false; // Only admin can write
     }
-    
+
     // Recordings are read-only for authenticated users
     match /recordings/{recordingId} {
       allow read: if request.auth != null;
       allow write: if false; // Only admin can write
     }
-    
+
     // Notes are read-only for authenticated users
     match /notes/{noteId} {
       allow read: if request.auth != null;
       allow write: if false; // Only admin can write
     }
-    
+
     // Students can read exercises and write their own results
     match /exercises/{exerciseId} {
       allow read: if request.auth != null;
       allow write: if false; // Only admin can write
     }
-    
+
     match /examResults/{resultId} {
-      allow read, write: if request.auth != null && 
+      allow read, write: if request.auth != null &&
         request.auth.uid == resource.data.userId;
     }
-    
+
     // Students can write their own attendance
     match /attendance/{attendanceId} {
-      allow read, write: if request.auth != null && 
+      allow read, write: if request.auth != null &&
         request.auth.uid == resource.data.userId;
     }
-    
+
     // Announcements are read-only for students
     match /announcements/{announcementId} {
       allow read: if request.auth != null;
@@ -177,6 +179,7 @@ service cloud.firestore {
 ### Getting Help
 
 If you encounter issues:
+
 1. Check the browser console for detailed error messages
 2. Verify your Firebase project settings
 3. Ensure all required services (Authentication, Firestore) are enabled
@@ -193,6 +196,7 @@ If you encounter issues:
 ## Next Steps
 
 Once Firebase is set up:
+
 1. Test the authentication flow thoroughly
 2. Set up Firebase Cloud Messaging for push notifications
 3. Configure Firebase Storage for file uploads

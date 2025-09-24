@@ -15,7 +15,7 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
   malayalamMessage,
   onDismiss,
   autoHide = false,
-  duration = 5000
+  duration = 5000,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -38,31 +38,31 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
         return {
           container: 'bg-green-50 border-green-200 text-green-800',
           icon: '✓',
-          iconColor: 'text-green-600'
+          iconColor: 'text-green-600',
         };
       case 'error':
         return {
           container: 'bg-red-50 border-red-200 text-red-800',
           icon: '✗',
-          iconColor: 'text-red-600'
+          iconColor: 'text-red-600',
         };
       case 'warning':
         return {
           container: 'bg-yellow-50 border-yellow-200 text-yellow-800',
           icon: '⚠',
-          iconColor: 'text-yellow-600'
+          iconColor: 'text-yellow-600',
         };
       case 'info':
         return {
           container: 'bg-blue-50 border-blue-200 text-blue-800',
           icon: 'ℹ',
-          iconColor: 'text-blue-600'
+          iconColor: 'text-blue-600',
         };
       default:
         return {
           container: 'bg-gray-50 border-gray-200 text-gray-800',
           icon: 'ℹ',
-          iconColor: 'text-gray-600'
+          iconColor: 'text-gray-600',
         };
     }
   };
@@ -79,7 +79,7 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
         <div className={`flex-shrink-0 ${styles.iconColor} text-lg`}>
           {styles.icon}
         </div>
-        
+
         <div className="flex-1">
           <p className="font-medium">{message}</p>
           {malayalamMessage && (

@@ -6,7 +6,7 @@ import { WhatsAppButton, MESSAGE_TEMPLATES } from './WhatsAppButton';
  * This demonstrates all the features implemented in the WhatsAppButton component
  */
 export const WhatsAppButtonDemo: React.FC = () => {
-  const teacherNumber = "+918078769771";
+  const teacherNumber = '+918078769771';
 
   return (
     <div className="p-8 space-y-8 bg-gray-50 min-h-screen">
@@ -15,7 +15,8 @@ export const WhatsAppButtonDemo: React.FC = () => {
           WhatsApp Button Component Demo
         </h1>
         <p className="text-gray-600 mb-8">
-          Demonstrating the WhatsApp integration component with different contexts and configurations
+          Demonstrating the WhatsApp integration component with different
+          contexts and configurations
         </p>
 
         {/* Context-based Message Templates */}
@@ -47,9 +48,12 @@ export const WhatsAppButtonDemo: React.FC = () => {
             Custom Message
           </h2>
           <div className="border rounded-lg p-4">
-            <h3 className="font-medium text-gray-900 mb-2">Custom Help Request</h3>
+            <h3 className="font-medium text-gray-900 mb-2">
+              Custom Help Request
+            </h3>
             <p className="text-sm text-gray-600 mb-3">
-              "السلام عليكم، أحتاج مساعدة في فهم درس اليوم حول التاريخ الإسلامي."
+              "السلام عليكم، أحتاج مساعدة في فهم درس اليوم حول التاريخ
+              الإسلامي."
             </p>
             <WhatsAppButton
               teacherNumber={teacherNumber}
@@ -98,8 +102,12 @@ export const WhatsAppButtonDemo: React.FC = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="border rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-2">With Hover Label</h3>
-              <p className="text-sm text-gray-600 mb-3">Hover to see the label</p>
+              <h3 className="font-medium text-gray-900 mb-2">
+                With Hover Label
+              </h3>
+              <p className="text-sm text-gray-600 mb-3">
+                Hover to see the label
+              </p>
               <WhatsAppButton
                 teacherNumber={teacherNumber}
                 context="class_help"
@@ -130,7 +138,9 @@ export const WhatsAppButtonDemo: React.FC = () => {
           </h2>
           <div className="space-y-4">
             <div className="border rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-2">Keyboard Navigation</h3>
+              <h3 className="font-medium text-gray-900 mb-2">
+                Keyboard Navigation
+              </h3>
               <p className="text-sm text-gray-600 mb-3">
                 Try tabbing to the button and pressing Enter or Space
               </p>
@@ -142,9 +152,11 @@ export const WhatsAppButtonDemo: React.FC = () => {
                 className="relative bottom-auto right-auto"
               />
             </div>
-            
+
             <div className="border rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-2">Screen Reader Support</h3>
+              <h3 className="font-medium text-gray-900 mb-2">
+                Screen Reader Support
+              </h3>
               <p className="text-sm text-gray-600 mb-3">
                 Includes comprehensive ARIA labels and screen reader text
               </p>
@@ -158,7 +170,9 @@ export const WhatsAppButtonDemo: React.FC = () => {
             </div>
 
             <div className="border rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-2">Touch Target Size</h3>
+              <h3 className="font-medium text-gray-900 mb-2">
+                Touch Target Size
+              </h3>
               <p className="text-sm text-gray-600 mb-3">
                 Minimum 44px touch target for mobile accessibility
               </p>

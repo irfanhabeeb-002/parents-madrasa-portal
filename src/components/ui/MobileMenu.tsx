@@ -47,7 +47,10 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
 
       // Handle click outside
       const handleClickOutside = (event: MouseEvent) => {
-        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        if (
+          menuRef.current &&
+          !menuRef.current.contains(event.target as Node)
+        ) {
           onClose();
         }
       };
@@ -71,8 +74,18 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
       onClick: () => {}, // Handled by FontSizeToggle component
       ariaLabel: 'Adjust font size settings',
       icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6h16M4 12h8m-8 6h16"
+          />
         </svg>
       ),
     },
@@ -81,12 +94,12 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-50 z-40"
         aria-hidden="true"
         onClick={onClose}
       />
-      
+
       {/* Menu Panel */}
       <div
         ref={menuRef}
@@ -104,7 +117,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                 {user?.displayName?.charAt(0).toUpperCase() || 'U'}
               </span>
             </div>
-            
+
             {/* User info */}
             <div>
               <p className="font-medium text-gray-900">
@@ -115,7 +128,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
               </p>
             </div>
           </div>
-          
+
           {/* Close button */}
           <AccessibleButton
             ref={firstFocusableRef}
@@ -151,16 +164,28 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="text-gray-600">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h8m-8 6h16"
+                      />
                     </svg>
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-gray-900">Font Size</p>
-                    <p className="text-sm text-gray-600" lang="ml">ഫോണ്ട് വലുപ്പം</p>
+                    <p className="text-sm text-gray-600" lang="ml">
+                      ഫോണ്ട് വലുപ്പം
+                    </p>
                   </div>
                 </div>
-                
+
                 {/* Font Size Toggle Component */}
                 <div className="pl-8">
                   <FontSizeToggle showLabels={true} />
@@ -179,11 +204,11 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
               }}
               ariaLabel="Logout from application"
               className="w-full flex items-center justify-center space-x-3 !min-h-[48px] text-base font-medium"
-              style={{ 
-                backgroundColor: '#dc2626', 
+              style={{
+                backgroundColor: '#dc2626',
                 color: 'white',
                 border: '2px solid #dc2626',
-                padding: '12px 16px'
+                padding: '12px 16px',
               }}
             >
               <svg
@@ -201,7 +226,9 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                 />
               </svg>
               <span>Logout</span>
-              <span className="text-sm opacity-90" lang="ml">പുറത്തുകടക്കുക</span>
+              <span className="text-sm opacity-90" lang="ml">
+                പുറത്തുകടക്കുക
+              </span>
             </AccessibleButton>
           </div>
         </div>

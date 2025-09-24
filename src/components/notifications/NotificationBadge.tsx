@@ -16,7 +16,7 @@ export const NotificationBadge: React.FC<NotificationBadgeProps> = ({
   size = 'sm',
   color = 'red',
   className = '',
-  ariaLabel
+  ariaLabel,
 }) => {
   if (!visible || count <= 0) {
     return null;
@@ -25,14 +25,14 @@ export const NotificationBadge: React.FC<NotificationBadgeProps> = ({
   const sizeClasses = {
     sm: 'w-4 h-4 text-xs',
     md: 'w-5 h-5 text-xs',
-    lg: 'w-6 h-6 text-sm'
+    lg: 'w-6 h-6 text-sm',
   };
 
   const colorClasses = {
     red: 'bg-red-500 text-white',
     blue: 'bg-blue-500 text-white',
     green: 'bg-green-500 text-white',
-    yellow: 'bg-yellow-500 text-black'
+    yellow: 'bg-yellow-500 text-black',
   };
 
   // Format count display (show 99+ for counts over 99)

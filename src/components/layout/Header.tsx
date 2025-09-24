@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header 
+    <header
       className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40"
       role="banner"
     >
@@ -71,11 +71,11 @@ export const Header: React.FC<HeaderProps> = ({
                 />
               </div>
             )}
-            
+
             {/* Title */}
             <div>
               <h1 className="text-lg font-semibold text-gray-900">
-                {title || "Parents Madrasa Portal"}
+                {title || 'Parents Madrasa Portal'}
               </h1>
             </div>
           </div>
@@ -84,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center space-x-2">
             {/* Sync Status */}
             <CompactSyncStatus />
-            
+
             {user && (
               <>
                 {/* User avatar/initial */}
@@ -93,23 +93,31 @@ export const Header: React.FC<HeaderProps> = ({
                     {user.displayName?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 </div>
-                
+
                 {/* Disabled hamburger menu button */}
                 <button
                   disabled
                   aria-label="Menu (disabled)"
                   className="!min-h-[44px] !min-w-[44px] !p-2 rounded-md border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h8m-8 6h16"
+                    />
                   </svg>
                 </button>
               </>
             )}
           </div>
         </div>
-
-
       </div>
 
       {/* Desktop Header */}
@@ -149,11 +157,14 @@ export const Header: React.FC<HeaderProps> = ({
                 />
               </div>
             )}
-            
+
             {/* Title */}
             <div>
-              <h1 className="text-xl font-bold text-gray-900 font-inter" style={{ fontSize: '20px' }}>
-                {title || "Parents Madrasa Portal"}
+              <h1
+                className="text-xl font-bold text-gray-900 font-inter"
+                style={{ fontSize: '20px' }}
+              >
+                {title || 'Parents Madrasa Portal'}
               </h1>
             </div>
           </div>
@@ -162,7 +173,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center space-x-4">
             {/* Sync Status - Desktop */}
             <CompactSyncStatus />
-            
+
             {user && (
               <>
                 {/* User avatar/initial */}
@@ -171,23 +182,31 @@ export const Header: React.FC<HeaderProps> = ({
                     {user.displayName?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 </div>
-                
+
                 {/* Disabled hamburger menu button */}
                 <button
                   disabled
                   aria-label="Menu (disabled)"
                   className="!min-h-[48px] !min-w-[48px] !p-3 rounded-md border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h8m-8 6h16"
+                    />
                   </svg>
                 </button>
               </>
             )}
           </div>
         </div>
-
-
       </div>
     </header>
   );

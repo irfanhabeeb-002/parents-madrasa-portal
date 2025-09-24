@@ -8,8 +8,8 @@ import {
   deleteDoc,
   query,
   where,
-  orderBy,
-  limit,
+  _orderBy,
+  _limit,
   onSnapshot,
   Timestamp,
   DocumentReference,
@@ -139,17 +139,17 @@ export class FirebaseService {
     constraints: QueryConstraint[] = []
   ): () => void {
     const q = query(this.getCollection(), ...constraints);
-    
+
     return onSnapshot(
       q,
-      (snapshot) => {
+      snapshot => {
         const data = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         })) as T[];
         callback(data);
       },
-      (error) => {
+      error => {
         console.error(`Listener error for ${this.collectionName}:`, error);
         throw this.handleError(error);
       }
@@ -289,7 +289,7 @@ export class FirebaseService {
   static async enableOffline(): Promise<void> {
     try {
       await disableNetwork(db);
-      console.log('Firebase offline mode enabled');
+      console.warn('Firebase offline mode enabled');
     } catch (error) {
       console.error('Failed to enable offline mode:', error);
     }
@@ -301,7 +301,7 @@ export class FirebaseService {
   static async enableOnline(): Promise<void> {
     try {
       await enableNetwork(db);
-      console.log('Firebase online mode enabled');
+      console.warn('Firebase online mode enabled');
     } catch (error) {
       console.error('Failed to enable online mode:', error);
     }
@@ -314,7 +314,7 @@ export class FirebaseService {
     try {
       // Firestore automatically enables offline persistence by default
       // This method can be used to configure additional offline settings
-      console.log('Firebase offline persistence initialized');
+      console.warn('Firebase offline persistence initialized');
     } catch (error) {
       console.error('Failed to initialize offline persistence:', error);
     }

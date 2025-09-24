@@ -76,7 +76,7 @@ describe('InstallPrompt Motion Preferences', () => {
     mockUseTheme.mockReturnValue(mockTheme);
 
     const { container } = render(<InstallPrompt />);
-    
+
     // Component should render successfully with motion preferences
     expect(container).toBeTruthy();
   });

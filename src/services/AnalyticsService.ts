@@ -52,16 +52,16 @@ class AnalyticsService {
 
     try {
       this.measurementId = config.analytics.measurementId;
-      
+
       // Load Google Analytics script
       await this.loadGoogleAnalytics();
-      
+
       // Configure Google Analytics
       this.configureAnalytics();
-      
+
       this.initialized = true;
       logger.log('Analytics initialized successfully');
-      
+
       // Track app initialization
       this.trackEvent({
         action: 'app_initialized',
@@ -72,7 +72,6 @@ class AnalyticsService {
           app_version: config.APP_VERSION,
         },
       });
-      
     } catch (error) {
       logger.error('Failed to initialize analytics:', error);
     }
@@ -90,7 +89,7 @@ class AnalyticsService {
 
       // Initialize dataLayer
       window.dataLayer = window.dataLayer || [];
-      window.gtag = function() {
+      window.gtag = function () {
         window.dataLayer.push(arguments);
       };
 
@@ -99,8 +98,9 @@ class AnalyticsService {
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${this.measurementId}`;
       script.onload = () => resolve();
-      script.onerror = () => reject(new Error('Failed to load Google Analytics script'));
-      
+      script.onerror = () =>
+        reject(new Error('Failed to load Google Analytics script'));
+
       document.head.appendChild(script);
     });
   }
@@ -120,19 +120,19 @@ class AnalyticsService {
       anonymize_ip: true,
       allow_google_signals: false,
       allow_ad_personalization_signals: false,
-      
+
       // Performance settings
       send_page_view: true,
       page_title: document.title,
       page_location: window.location.href,
-      
+
       // Custom dimensions
       custom_map: {
         dimension1: 'app_version',
         dimension2: 'environment',
         dimension3: 'user_role',
       },
-      
+
       // Enhanced measurement
       enhanced_measurements: {
         scrolls: true,
@@ -160,7 +160,7 @@ class AnalyticsService {
         value: event.value,
         ...event.custom_parameters,
       });
-      
+
       logger.debug('Analytics event tracked:', event);
     } catch (error) {
       logger.error('Failed to track analytics event:', error);
@@ -178,7 +178,7 @@ class AnalyticsService {
         page_path: pagePath,
         page_title: pageTitle || document.title,
       });
-      
+
       logger.debug('Page view tracked:', { pagePath, pageTitle });
     } catch (error) {
       logger.error('Failed to track page view:', error);
@@ -200,7 +200,7 @@ class AnalyticsService {
           environment: properties.environment || config.APP_ENV,
         },
       });
-      
+
       logger.debug('User properties set:', properties);
     } catch (error) {
       logger.error('Failed to set user properties:', error);
@@ -235,7 +235,10 @@ class AnalyticsService {
   /**
    * Track class-related events
    */
-  trackClassEvent(action: 'join' | 'leave' | 'schedule_view', classId?: string): void {
+  trackClassEvent(
+    action: 'join' | 'leave' | 'schedule_view',
+    classId?: string
+  ): void {
     this.trackEvent({
       action: `class_${action}`,
       category: 'education',
@@ -249,7 +252,10 @@ class AnalyticsService {
   /**
    * Track recording events
    */
-  trackRecordingEvent(action: 'play' | 'pause' | 'complete', recordingId?: string): void {
+  trackRecordingEvent(
+    action: 'play' | 'pause' | 'complete',
+    recordingId?: string
+  ): void {
     this.trackEvent({
       action: `recording_${action}`,
       category: 'education',
@@ -263,7 +269,11 @@ class AnalyticsService {
   /**
    * Track exam events
    */
-  trackExamEvent(action: 'start' | 'submit' | 'complete', examId?: string, score?: number): void {
+  trackExamEvent(
+    action: 'start' | 'submit' | 'complete',
+    examId?: string,
+    score?: number
+  ): void {
     this.trackEvent({
       action: `exam_${action}`,
       category: 'education',
@@ -353,7 +363,10 @@ class AnalyticsService {
   /**
    * Track notification events
    */
-  trackNotificationEvent(action: 'permission_granted' | 'permission_denied' | 'received' | 'clicked', type?: string): void {
+  trackNotificationEvent(
+    action: 'permission_granted' | 'permission_denied' | 'received' | 'clicked',
+    type?: string
+  ): void {
     this.trackEvent({
       action: `notification_${action}`,
       category: 'notifications',
@@ -367,7 +380,9 @@ class AnalyticsService {
   /**
    * Track PWA events
    */
-  trackPWAEvent(action: 'install_prompt' | 'installed' | 'offline_usage'): void {
+  trackPWAEvent(
+    action: 'install_prompt' | 'installed' | 'offline_usage'
+  ): void {
     this.trackEvent({
       action: `pwa_${action}`,
       category: 'pwa',

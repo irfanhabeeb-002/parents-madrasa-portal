@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { VideoQuality } from '../../types/recording';
-import { 
-  MagnifyingGlassIcon, 
+import {
+  MagnifyingGlassIcon,
   FunnelIcon,
   XMarkIcon,
   CloudIcon,
   ComputerDesktopIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 
 interface SearchAndFilterProps {
@@ -36,26 +36,32 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   selectedSource = 'all',
   disabled = false,
   showZoomFeatures = true,
-  syncStatus
+  syncStatus,
 }) => {
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
   const [showFilters, setShowFilters] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSearchSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(localSearchQuery);
-  }, [localSearchQuery, onSearch]);
+  const handleSearchSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      onSearch(localSearchQuery);
+    },
+    [localSearchQuery, onSearch]
+  );
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setLocalSearchQuery(value);
-    
-    // Auto-search after a short delay for better UX
-    if (value.length === 0) {
-      onSearch('');
-    }
-  }, [onSearch]);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setLocalSearchQuery(value);
+
+      // Auto-search after a short delay for better UX
+      if (value.length === 0) {
+        onSearch('');
+      }
+    },
+    [onSearch]
+  );
 
   const handleClearSearch = useCallback(() => {
     setLocalSearchQuery('');
@@ -63,15 +69,21 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     searchInputRef.current?.focus();
   }, [onSearch]);
 
-  const handleQualityChange = useCallback((quality: VideoQuality | 'all') => {
-    onQualityFilter(quality);
-  }, [onQualityFilter]);
+  const handleQualityChange = useCallback(
+    (quality: VideoQuality | 'all') => {
+      onQualityFilter(quality);
+    },
+    [onQualityFilter]
+  );
 
-  const handleSourceChange = useCallback((source: 'all' | 'zoom' | 'local') => {
-    if (onSourceFilter) {
-      onSourceFilter(source);
-    }
-  }, [onSourceFilter]);
+  const handleSourceChange = useCallback(
+    (source: 'all' | 'zoom' | 'local') => {
+      if (onSourceFilter) {
+        onSourceFilter(source);
+      }
+    },
+    [onSourceFilter]
+  );
 
   const handleSyncZoom = useCallback(() => {
     if (onSyncZoom && !syncStatus?.syncing) {
@@ -79,27 +91,54 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     }
   }, [onSyncZoom, syncStatus?.syncing]);
 
-  const qualityOptions: Array<{ value: VideoQuality | 'all'; label: string; malayalamLabel: string }> = [
-    { value: 'all', label: 'All Qualities', malayalamLabel: 'എല്ലാ ഗുണനിലവാരങ്ങളും' },
+  const qualityOptions: Array<{
+    value: VideoQuality | 'all';
+    label: string;
+    malayalamLabel: string;
+  }> = [
+    {
+      value: 'all',
+      label: 'All Qualities',
+      malayalamLabel: 'എല്ലാ ഗുണനിലവാരങ്ങളും',
+    },
     { value: 'hd', label: 'HD Quality', malayalamLabel: 'എച്ച്ഡി ഗുണനിലവാരം' },
-    { value: 'high', label: 'High Quality', malayalamLabel: 'ഉയർന്ന ഗുണനിലവാരം' },
-    { value: 'medium', label: 'Medium Quality', malayalamLabel: 'ഇടത്തരം ഗുണനിലവാരം' },
+    {
+      value: 'high',
+      label: 'High Quality',
+      malayalamLabel: 'ഉയർന്ന ഗുണനിലവാരം',
+    },
+    {
+      value: 'medium',
+      label: 'Medium Quality',
+      malayalamLabel: 'ഇടത്തരം ഗുണനിലവാരം',
+    },
     { value: 'low', label: 'Low Quality', malayalamLabel: 'കുറഞ്ഞ ഗുണനിലവാരം' },
   ];
 
   const sourceOptions = [
-    { value: 'all' as const, label: 'All Recordings', malayalamLabel: 'എല്ലാ റെക്കോർഡിംഗുകളും', icon: null },
-    { value: 'zoom' as const, label: 'Zoom Cloud', malayalamLabel: 'സൂം ക്ലൗഡ്', icon: CloudIcon }
+    {
+      value: 'all' as const,
+      label: 'All Recordings',
+      malayalamLabel: 'എല്ലാ റെക്കോർഡിംഗുകളും',
+      icon: null,
+    },
+    {
+      value: 'zoom' as const,
+      label: 'Zoom Cloud',
+      malayalamLabel: 'സൂം ക്ലൗഡ്',
+      icon: CloudIcon,
+    },
   ];
 
-  const activeFiltersCount = (selectedQuality !== 'all' ? 1 : 0) + (selectedSource !== 'all' ? 1 : 0);
+  const activeFiltersCount =
+    (selectedQuality !== 'all' ? 1 : 0) + (selectedSource !== 'all' ? 1 : 0);
 
   const formatLastSync = (date: Date | null): string => {
     if (!date) return 'Never';
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / (1000 * 60));
-    
+
     if (diffMins < 1) return 'Just now';
     if (diffMins < 60) return `${diffMins}m ago`;
     const diffHours = Math.floor(diffMins / 60);
@@ -116,7 +155,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
           </div>
-          
+
           <input
             ref={searchInputRef}
             type="text"
@@ -127,7 +166,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-50 disabled:text-gray-500 text-base"
             aria-label="Search recordings"
           />
-          
+
           {localSearchQuery && (
             <button
               type="button"
@@ -140,7 +179,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             </button>
           )}
         </div>
-        
+
         {/* Malayalam placeholder text */}
         <p className="text-xs text-gray-500 mt-1" lang="ml">
           റെക്കോർഡിംഗുകൾ തിരയുക...
@@ -186,7 +225,10 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
               )}
               {selectedSource !== 'all' && (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                  {sourceOptions.find(opt => opt.value === selectedSource)?.label}
+                  {
+                    sourceOptions.find(opt => opt.value === selectedSource)
+                      ?.label
+                  }
                   <button
                     type="button"
                     onClick={() => handleSourceChange('all')}
@@ -209,10 +251,12 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                 className="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
                 aria-label="Sync Zoom recordings"
               >
-                <ArrowPathIcon className={`h-3 w-3 mr-1 ${syncStatus?.syncing ? 'animate-spin' : ''}`} />
+                <ArrowPathIcon
+                  className={`h-3 w-3 mr-1 ${syncStatus?.syncing ? 'animate-spin' : ''}`}
+                />
                 {syncStatus?.syncing ? 'Syncing...' : 'Sync'}
               </button>
-              
+
               {syncStatus && (
                 <div className="text-xs text-gray-500 text-right">
                   <div>Last: {formatLastSync(syncStatus.lastSync)}</div>
@@ -226,7 +270,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
 
       {/* Filter Panel */}
       {showFilters && (
-        <div 
+        <div
           id="filter-panel"
           className="border-t border-gray-200 pt-4 space-y-4"
           role="region"
@@ -237,13 +281,16 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Recording Source
-                <span className="block text-xs text-gray-500 font-normal" lang="ml">
+                <span
+                  className="block text-xs text-gray-500 font-normal"
+                  lang="ml"
+                >
                   റെക്കോർഡിംഗ് ഉറവിടം
                 </span>
               </label>
-              
+
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                {sourceOptions.map((option) => {
+                {sourceOptions.map(option => {
                   const IconComponent = option.icon;
                   return (
                     <label
@@ -259,16 +306,21 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                         disabled={disabled}
                         className="sr-only"
                       />
-                      <div className={`
+                      <div
+                        className={`
                         flex-1 px-3 py-2 text-sm text-center border rounded-md transition-colors duration-200
-                        ${selectedSource === option.value
-                          ? 'border-primary-500 bg-primary-50 text-primary-700'
-                          : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                        ${
+                          selectedSource === option.value
+                            ? 'border-primary-500 bg-primary-50 text-primary-700'
+                            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                         }
                         ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                      `}>
+                      `}
+                      >
                         <div className="flex items-center justify-center space-x-2">
-                          {IconComponent && <IconComponent className="h-4 w-4" />}
+                          {IconComponent && (
+                            <IconComponent className="h-4 w-4" />
+                          )}
                           <div>
                             <div className="font-medium">{option.label}</div>
                             <div className="text-xs text-gray-500" lang="ml">
@@ -288,13 +340,16 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Video Quality
-              <span className="block text-xs text-gray-500 font-normal" lang="ml">
+              <span
+                className="block text-xs text-gray-500 font-normal"
+                lang="ml"
+              >
                 വീഡിയോ ഗുണനിലവാരം
               </span>
             </label>
-            
+
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {qualityOptions.map((option) => (
+              {qualityOptions.map(option => (
                 <label
                   key={option.value}
                   className="relative flex items-center cursor-pointer"
@@ -308,14 +363,17 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                     disabled={disabled}
                     className="sr-only"
                   />
-                  <div className={`
+                  <div
+                    className={`
                     flex-1 px-3 py-2 text-sm text-center border rounded-md transition-colors duration-200
-                    ${selectedQuality === option.value
-                      ? 'border-primary-500 bg-primary-50 text-primary-700'
-                      : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                    ${
+                      selectedQuality === option.value
+                        ? 'border-primary-500 bg-primary-50 text-primary-700'
+                        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                     }
                     ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                  `}>
+                  `}
+                  >
                     <div className="font-medium">{option.label}</div>
                     <div className="text-xs text-gray-500" lang="ml">
                       {option.malayalamLabel}

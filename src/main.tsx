@@ -12,16 +12,16 @@ const initializeServices = async () => {
   try {
     // Initialize security configuration first
     initializeSecurity();
-    
+
     // Initialize Firebase with offline persistence
     await initializeFirebase();
-    
+
     // Initialize analytics service
     await analyticsService.initialize();
-    
+
     // Initialize performance monitoring
     performanceService.initialize();
-    
+
     logger.log('All services initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize services:', error);

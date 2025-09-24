@@ -1,27 +1,33 @@
 /**
  * Comprehensive Logout Functionality Tests - Fixed Version
- * 
+ *
  * This test suite covers all aspects of logout functionality:
  * - Unit tests for AuthContext logout function
  * - Integration tests for complete logout flow
  * - Accessibility tests for keyboard navigation and screen readers
  * - Mobile responsiveness and touch interaction tests
- * 
+ *
  * Requirements covered: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 2.4
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  _waitFor,
+  act,
+} from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { axe, toHaveNoViolations } from 'jest-axe';
+import _userEvent from '@testing-library/user-event';
+import { _axe, toHaveNoViolations } from 'jest-_axe';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { Profile } from '../pages/Profile';
-import allowedUsers from '../data/allowedUsers.json';
+import _allowedUsers from '../data/_allowedUsers.json';
 
-// Extend expect with jest-axe matchers
+// Extend expect with jest-_axe matchers
 expect.extend(toHaveNoViolations);
 
 // Mock react-router-dom
@@ -112,7 +118,9 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
       });
 
       // Verify logout results
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(result.current.user).toBeNull();
       expect(result.current.loading).toBe(false);
       expect(result.current.error).toBeNull();
@@ -121,7 +129,7 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
     it('should handle comprehensive storage cleanup during logout', async () => {
       // Setup mock storage keys
       const authKeys = ['manualAuthUser', 'authToken', 'userSession'];
-      localStorageMock.key.mockImplementation((index) => authKeys[index] || null);
+      localStorageMock.key.mockImplementation(index => authKeys[index] || null);
       localStorageMock.length = authKeys.length;
 
       const { result } = renderHook(() => useAuth(), { wrapper: AuthWrapper });
@@ -131,7 +139,9 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
       });
 
       // Verify comprehensive cleanup
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(result.current.user).toBeNull();
     });
 
@@ -194,7 +204,9 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
       // Temporarily replace the useAuth import
       vi.doMock('../contexts/AuthContext', () => ({
         useAuth: mockUseAuth,
-        AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+        AuthProvider: ({ children }: { children: React.ReactNode }) => (
+          <>{children}</>
+        ),
       }));
 
       render(
@@ -222,7 +234,9 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
 
       vi.doMock('../contexts/AuthContext', () => ({
         useAuth: mockUseAuth,
-        AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+        AuthProvider: ({ children }: { children: React.ReactNode }) => (
+          <>{children}</>
+        ),
       }));
 
       render(
@@ -232,7 +246,7 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
       );
 
       const logoutButton = screen.getByRole('button', { name: /logout/i });
-      
+
       // Check basic accessibility attributes
       expect(logoutButton).toHaveAttribute('role', 'button');
       expect(logoutButton).toBeVisible();
@@ -251,7 +265,9 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
 
       vi.doMock('../contexts/AuthContext', () => ({
         useAuth: mockUseAuth,
-        AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+        AuthProvider: ({ children }: { children: React.ReactNode }) => (
+          <>{children}</>
+        ),
       }));
 
       render(
@@ -261,14 +277,14 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
       );
 
       const logoutButton = screen.getByRole('button', { name: /logout/i });
-      
+
       // Focus the button
       logoutButton.focus();
       expect(document.activeElement).toBe(logoutButton);
 
       // Activate with Enter key
       fireEvent.keyDown(logoutButton, { key: 'Enter', code: 'Enter' });
-      
+
       // Should trigger some action (dialog opening or logout)
       expect(logoutButton).toBeInTheDocument();
     });
@@ -315,7 +331,9 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
 
       vi.doMock('../contexts/AuthContext', () => ({
         useAuth: mockUseAuth,
-        AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+        AuthProvider: ({ children }: { children: React.ReactNode }) => (
+          <>{children}</>
+        ),
       }));
 
       render(
@@ -325,10 +343,10 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
       );
 
       const logoutButton = screen.getByRole('button', { name: /logout/i });
-      
+
       // Check that button exists and is visible
       expect(logoutButton).toBeVisible();
-      
+
       // Check for responsive classes (basic validation)
       expect(logoutButton.className).toMatch(/px-|py-/);
     });
@@ -345,7 +363,9 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
 
       vi.doMock('../contexts/AuthContext', () => ({
         useAuth: mockUseAuth,
-        AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+        AuthProvider: ({ children }: { children: React.ReactNode }) => (
+          <>{children}</>
+        ),
       }));
 
       render(
@@ -355,14 +375,14 @@ describe('Comprehensive Logout Functionality Tests - Fixed', () => {
       );
 
       const logoutButton = screen.getByRole('button', { name: /logout/i });
-      
+
       // Simulate touch events
       fireEvent.touchStart(logoutButton, {
-        touches: [{ clientX: 100, clientY: 100 }]
+        touches: [{ clientX: 100, clientY: 100 }],
       });
-      
+
       fireEvent.touchEnd(logoutButton, {
-        changedTouches: [{ clientX: 100, clientY: 100 }]
+        changedTouches: [{ clientX: 100, clientY: 100 }],
       });
 
       // Button should still be functional

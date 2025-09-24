@@ -1,17 +1,23 @@
 /**
  * Comprehensive Logout Functionality Tests
- * 
+ *
  * This test suite covers all aspects of logout functionality:
  * - Unit tests for AuthContext logout function
  * - Integration tests for complete logout flow
  * - Accessibility tests for keyboard navigation and screen readers
  * - Mobile responsiveness and touch interaction tests
- * 
+ *
  * Requirements covered: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 2.4
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
@@ -19,7 +25,7 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { Profile } from '../pages/Profile';
-import allowedUsers from '../data/allowedUsers.json';
+import _allowedUsers from '../data/_allowedUsers.json';
 
 // Extend expect with jest-axe matchers
 expect.extend(toHaveNoViolations);
@@ -62,7 +68,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => (
   <AuthProvider>{children}</AuthProvider>
 );
 
-const FullWrapper = ({ children }: { children: React.ReactNode }) => (
+const _FullWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
     <AuthProvider>{children}</AuthProvider>
   </BrowserRouter>
@@ -118,7 +124,9 @@ describe('Comprehensive Logout Functionality Tests', () => {
       });
 
       // Verify logout results
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(result.current.user).toBeNull();
       expect(result.current.loading).toBe(false);
       expect(result.current.error).toBeNull();
@@ -127,7 +135,7 @@ describe('Comprehensive Logout Functionality Tests', () => {
     it('should handle comprehensive storage cleanup during logout', async () => {
       // Setup mock storage keys
       const authKeys = ['manualAuthUser', 'authToken', 'userSession'];
-      localStorageMock.key.mockImplementation((index) => authKeys[index] || null);
+      localStorageMock.key.mockImplementation(index => authKeys[index] || null);
       localStorageMock.length = authKeys.length;
 
       const { result } = renderHook(() => useAuth(), { wrapper: AuthWrapper });
@@ -137,7 +145,9 @@ describe('Comprehensive Logout Functionality Tests', () => {
       });
 
       // Verify comprehensive cleanup
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(result.current.user).toBeNull();
     });
 
@@ -222,11 +232,15 @@ describe('Comprehensive Logout Functionality Tests', () => {
       );
 
       // Click logout button
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await userEvent.click(logoutButton);
 
       // Confirm logout
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await userEvent.click(confirmButton);
 
       // Verify logout was called
@@ -237,31 +251,42 @@ describe('Comprehensive Logout Functionality Tests', () => {
         expect(screen.getByText('Logout Successful')).toBeInTheDocument();
       });
 
-      await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/auth');
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(mockNavigate).toHaveBeenCalledWith('/auth');
+        },
+        { timeout: 2000 }
+      );
     });
 
     it('should display confirmation dialog with proper messaging', async () => {
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await userEvent.click(logoutButton);
 
       // Verify dialog content
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('Confirm Logout')).toBeInTheDocument();
-      expect(screen.getByText(/are you sure you want to logout/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/are you sure you want to logout/i)
+      ).toBeInTheDocument();
       expect(screen.getByText(/you will be signed out/i)).toBeInTheDocument();
     });
 
     it('should handle logout cancellation properly', async () => {
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await userEvent.click(logoutButton);
 
-      const cancelButton = screen.getByRole('button', { name: /cancel logout/i });
+      const _cancelButton = screen.getByRole('button', {
+        name: /cancel logout/i,
+      });
       await userEvent.click(cancelButton);
 
       // Dialog should be closed
@@ -269,10 +294,12 @@ describe('Comprehensive Logout Functionality Tests', () => {
     });
 
     it('should show loading state during logout process', async () => {
-      const mockLogout = vi.fn().mockImplementation(() => 
-        new Promise(resolve => setTimeout(resolve, 100))
-      );
-      
+      const mockLogout = vi
+        .fn()
+        .mockImplementation(
+          () => new Promise(resolve => setTimeout(resolve, 100))
+        );
+
       vi.mocked(useAuth).mockReturnValue({
         user: testUser,
         loading: false,
@@ -288,10 +315,14 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await userEvent.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await userEvent.click(confirmButton);
 
       // Check loading state
@@ -302,7 +333,7 @@ describe('Comprehensive Logout Functionality Tests', () => {
 
     it('should provide error recovery options when logout fails', async () => {
       const mockLogout = vi.fn().mockRejectedValue(new Error('Network error'));
-      
+
       vi.mocked(useAuth).mockReturnValue({
         user: testUser,
         loading: false,
@@ -318,10 +349,14 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await userEvent.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await userEvent.click(confirmButton);
 
       // Wait for error message
@@ -330,8 +365,12 @@ describe('Comprehensive Logout Functionality Tests', () => {
       });
 
       // Check recovery options
-      expect(screen.getByRole('button', { name: /retry logout/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /force logout/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /retry logout/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /force logout/i })
+      ).toBeInTheDocument();
     });
   });
 
@@ -372,15 +411,17 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Focus the button
       logoutButton.focus();
       expect(document.activeElement).toBe(logoutButton);
 
       // Activate with Enter key
       fireEvent.keyDown(logoutButton, { key: 'Enter', code: 'Enter' });
-      
+
       // Should open confirmation dialog
       await waitFor(() => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -403,12 +444,18 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await userEvent.click(logoutButton);
 
       // Test Tab navigation in dialog
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
-      const cancelButton = screen.getByRole('button', { name: /cancel logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
+      const _cancelButton = screen.getByRole('button', {
+        name: /cancel logout/i,
+      });
 
       // Focus should be manageable
       confirmButton.focus();
@@ -420,7 +467,7 @@ describe('Comprehensive Logout Functionality Tests', () => {
 
       // Activate cancel with Space key
       fireEvent.keyDown(cancelButton, { key: ' ', code: 'Space' });
-      
+
       await waitFor(() => {
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       });
@@ -442,8 +489,10 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Check ARIA attributes
       expect(logoutButton).toHaveAttribute('aria-label');
       expect(logoutButton).toHaveAttribute('aria-describedby');
@@ -466,11 +515,15 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await userEvent.click(logoutButton);
 
       // Check for screen reader announcement region
-      const announcement = screen.getByText(/logout confirmation dialog opened/i);
+      const announcement = screen.getByText(
+        /logout confirmation dialog opened/i
+      );
       expect(announcement).toBeInTheDocument();
     });
 
@@ -490,11 +543,13 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await userEvent.click(logoutButton);
 
       const dialog = screen.getByRole('dialog');
-      
+
       // Check dialog ARIA attributes
       expect(dialog).toHaveAttribute('aria-modal', 'true');
       expect(dialog).toHaveAttribute('aria-labelledby');
@@ -534,9 +589,11 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      const styles = window.getComputedStyle(logoutButton);
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+      const _styles = window.getComputedStyle(logoutButton);
+
       // Check minimum touch target size
       const height = parseInt(styles.height) || parseInt(styles.minHeight) || 0;
       expect(height).toBeGreaterThanOrEqual(48);
@@ -558,8 +615,10 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Simulate touch events
       fireEvent.touchStart(logoutButton);
       fireEvent.touchEnd(logoutButton);
@@ -590,7 +649,7 @@ describe('Comprehensive Logout Functionality Tests', () => {
       // Check for responsive classes
       const logoutSection = container.querySelector('[class*="bg-red-50"]');
       expect(logoutSection).toBeInTheDocument();
-      
+
       // Should have responsive padding and spacing
       expect(logoutSection).toHaveClass(/p-4|sm:p-5|lg:p-6/);
     });
@@ -611,18 +670,24 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await userEvent.click(logoutButton);
 
       const dialog = screen.getByRole('dialog');
-      
+
       // Dialog should be properly sized for mobile
       expect(dialog.parentElement).toHaveClass('p-4');
-      
+
       // Buttons should be stacked on mobile
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
-      const cancelButton = screen.getByRole('button', { name: /cancel logout/i });
-      
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
+      const _cancelButton = screen.getByRole('button', {
+        name: /cancel logout/i,
+      });
+
       expect(confirmButton.parentElement).toHaveClass(/flex-col|sm:flex-row/);
     });
 
@@ -642,16 +707,18 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Check for adequate padding
-      const styles = window.getComputedStyle(logoutButton);
+      const _styles = window.getComputedStyle(logoutButton);
       expect(logoutButton).toHaveClass(/px-4|py-3|sm:px-6|sm:py-4/);
     });
 
     it('should handle error recovery buttons on mobile', async () => {
       const mockLogout = vi.fn().mockRejectedValue(new Error('Network error'));
-      
+
       vi.mocked(useAuth).mockReturnValue({
         user: testUser,
         loading: false,
@@ -667,10 +734,14 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await userEvent.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await userEvent.click(confirmButton);
 
       // Wait for error state
@@ -681,7 +752,7 @@ describe('Comprehensive Logout Functionality Tests', () => {
       // Check recovery buttons are properly sized for mobile
       const retryButton = screen.getByRole('button', { name: /retry logout/i });
       const forceButton = screen.getByRole('button', { name: /force logout/i });
-      
+
       expect(retryButton).toHaveClass(/px-4|py-3|sm:px-6|sm:py-3/);
       expect(forceButton).toHaveClass(/px-4|py-3|sm:px-6|sm:py-3/);
     });

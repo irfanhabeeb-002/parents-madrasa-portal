@@ -17,7 +17,9 @@ const mockThemeContext = {
 
 vi.mock('../../../contexts/ThemeContext', () => ({
   useTheme: () => mockThemeContext,
-  ThemeProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 // Mock beforeinstallprompt event
@@ -32,7 +34,7 @@ describe('InstallPrompt Accessibility', () => {
   beforeEach(() => {
     // Reset mocks
     vi.clearAllMocks();
-    
+
     // Mock sessionStorage
     Object.defineProperty(window, 'sessionStorage', {
       value: {
@@ -61,11 +63,7 @@ describe('InstallPrompt Accessibility', () => {
   });
 
   const renderWithTheme = (component: React.ReactElement) => {
-    return render(
-      <ThemeProvider>
-        {component}
-      </ThemeProvider>
-    );
+    return render(<ThemeProvider>{component}</ThemeProvider>);
   };
 
   const triggerInstallPrompt = () => {
@@ -78,9 +76,9 @@ describe('InstallPrompt Accessibility', () => {
   describe('ARIA Labels and Roles', () => {
     test('banner has proper ARIA labels and roles', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
         const banner = screen.getByRole('banner');
         expect(banner).toBeInTheDocument();
@@ -91,16 +89,21 @@ describe('InstallPrompt Accessibility', () => {
 
       const region = screen.getByRole('region');
       expect(region).toHaveAttribute('aria-labelledby', 'install-banner-title');
-      expect(region).toHaveAttribute('aria-describedby', 'install-banner-description');
+      expect(region).toHaveAttribute(
+        'aria-describedby',
+        'install-banner-description'
+      );
     });
 
     test('modal has proper ARIA attributes', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
-        const learnMoreButton = screen.getByRole('button', { name: /learn more/i });
+        const learnMoreButton = screen.getByRole('button', {
+          name: /learn more/i,
+        });
         fireEvent.click(learnMoreButton);
       });
 
@@ -109,24 +112,31 @@ describe('InstallPrompt Accessibility', () => {
         expect(modal).toBeInTheDocument();
         expect(modal).toHaveAttribute('aria-modal', 'true');
         expect(modal).toHaveAttribute('aria-labelledby', 'modal-title');
-        expect(modal).toHaveAttribute('aria-describedby', 'install-modal-content');
+        expect(modal).toHaveAttribute(
+          'aria-describedby',
+          'install-modal-content'
+        );
       });
     });
 
     test('benefits list has proper list semantics', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
-        const learnMoreButton = screen.getByRole('button', { name: /learn more/i });
+        const learnMoreButton = screen.getByRole('button', {
+          name: /learn more/i,
+        });
         fireEvent.click(learnMoreButton);
       });
 
       await waitFor(() => {
-        const benefitsList = screen.getByRole('list', { name: /app installation benefits/i });
+        const benefitsList = screen.getByRole('list', {
+          name: /app installation benefits/i,
+        });
         expect(benefitsList).toBeInTheDocument();
-        
+
         const listItems = screen.getAllByRole('listitem');
         expect(listItems).toHaveLength(4);
       });
@@ -134,13 +144,16 @@ describe('InstallPrompt Accessibility', () => {
 
     test('Malayalam text has proper lang attributes and aria-labels', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
         const malayalamText = screen.getByText(/വേഗത്തിലുള്ള ആക്സസും/);
         expect(malayalamText).toHaveAttribute('lang', 'ml');
-        expect(malayalamText).toHaveAttribute('aria-label', 'Malayalam translation: Get quick access and work offline');
+        expect(malayalamText).toHaveAttribute(
+          'aria-label',
+          'Malayalam translation: Get quick access and work offline'
+        );
       });
     });
   });
@@ -149,9 +162,9 @@ describe('InstallPrompt Accessibility', () => {
     test('banner is focusable and keyboard navigable', async () => {
       const user = userEvent.setup();
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
         const banner = screen.getByRole('banner');
         expect(banner).toBeInTheDocument();
@@ -159,23 +172,29 @@ describe('InstallPrompt Accessibility', () => {
 
       // Tab through interactive elements
       await user.tab();
-      expect(screen.getByRole('button', { name: /dismiss install banner/i })).toHaveFocus();
-      
+      expect(
+        screen.getByRole('button', { name: /dismiss install banner/i })
+      ).toHaveFocus();
+
       await user.tab();
       expect(screen.getByRole('button', { name: /learn more/i })).toHaveFocus();
-      
+
       await user.tab();
-      expect(screen.getByRole('button', { name: /install madrasa portal app now/i })).toHaveFocus();
+      expect(
+        screen.getByRole('button', { name: /install madrasa portal app now/i })
+      ).toHaveFocus();
     });
 
     test('modal keyboard navigation works correctly', async () => {
       const user = userEvent.setup();
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
-        const learnMoreButton = screen.getByRole('button', { name: /learn more/i });
+        const learnMoreButton = screen.getByRole('button', {
+          name: /learn more/i,
+        });
         fireEvent.click(learnMoreButton);
       });
 
@@ -186,7 +205,7 @@ describe('InstallPrompt Accessibility', () => {
 
       // Test Escape key closes modal
       await user.keyboard('{Escape}');
-      
+
       await waitFor(() => {
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       });
@@ -195,18 +214,20 @@ describe('InstallPrompt Accessibility', () => {
     test('dismiss button is keyboard accessible', async () => {
       const user = userEvent.setup();
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
-        const dismissButton = screen.getByRole('button', { name: /dismiss install banner/i });
+        const dismissButton = screen.getByRole('button', {
+          name: /dismiss install banner/i,
+        });
         dismissButton.focus();
         expect(dismissButton).toHaveFocus();
       });
 
       // Press Enter to dismiss
       await user.keyboard('{Enter}');
-      
+
       await waitFor(() => {
         expect(screen.queryByRole('banner')).not.toBeInTheDocument();
       });
@@ -216,12 +237,12 @@ describe('InstallPrompt Accessibility', () => {
   describe('Focus Management', () => {
     test('focus is managed when banner appears', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       // Store initial focus
       const initialFocus = document.activeElement;
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
         const banner = screen.getByRole('banner');
         expect(banner).toHaveFocus();
@@ -231,24 +252,26 @@ describe('InstallPrompt Accessibility', () => {
     test('focus is restored when banner is dismissed', async () => {
       const user = userEvent.setup();
       renderWithTheme(<InstallPrompt />);
-      
+
       // Create a focusable element to test focus restoration
       const testButton = document.createElement('button');
       testButton.textContent = 'Test Button';
       document.body.appendChild(testButton);
       testButton.focus();
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
-        const dismissButton = screen.getByRole('button', { name: /dismiss install banner/i });
+        const dismissButton = screen.getByRole('button', {
+          name: /dismiss install banner/i,
+        });
         fireEvent.click(dismissButton);
       });
 
       await waitFor(() => {
         expect(testButton).toHaveFocus();
       });
-      
+
       document.body.removeChild(testButton);
     });
   });
@@ -256,7 +279,7 @@ describe('InstallPrompt Accessibility', () => {
   describe('Screen Reader Announcements', () => {
     test('screen reader announcement element exists', () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       const announcement = screen.getByRole('status');
       expect(announcement).toBeInTheDocument();
       expect(announcement).toHaveAttribute('aria-live', 'polite');
@@ -266,22 +289,26 @@ describe('InstallPrompt Accessibility', () => {
 
     test('banner appearance is announced', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
         const announcement = screen.getByRole('status');
-        expect(announcement).toHaveTextContent('Install app banner appeared. You can install this app for a better experience.');
+        expect(announcement).toHaveTextContent(
+          'Install app banner appeared. You can install this app for a better experience.'
+        );
       });
     });
 
     test('banner dismissal is announced', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
-        const dismissButton = screen.getByRole('button', { name: /dismiss install banner/i });
+        const dismissButton = screen.getByRole('button', {
+          name: /dismiss install banner/i,
+        });
         fireEvent.click(dismissButton);
       });
 
@@ -295,14 +322,20 @@ describe('InstallPrompt Accessibility', () => {
   describe('Touch Target Sizes', () => {
     test('all interactive elements meet minimum touch target size (44px)', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
-        const dismissButton = screen.getByRole('button', { name: /dismiss install banner/i });
-        const learnMoreButton = screen.getByRole('button', { name: /learn more/i });
-        const installButton = screen.getByRole('button', { name: /install madrasa portal app now/i });
-        
+        const dismissButton = screen.getByRole('button', {
+          name: /dismiss install banner/i,
+        });
+        const learnMoreButton = screen.getByRole('button', {
+          name: /learn more/i,
+        });
+        const installButton = screen.getByRole('button', {
+          name: /install madrasa portal app now/i,
+        });
+
         // Check minimum height
         expect(dismissButton).toHaveClass('min-h-[44px]');
         expect(dismissButton).toHaveClass('min-w-[44px]');
@@ -313,21 +346,24 @@ describe('InstallPrompt Accessibility', () => {
 
     test('modal buttons meet minimum touch target size (48px)', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
-        const learnMoreButton = screen.getByRole('button', { name: /learn more/i });
+        const learnMoreButton = screen.getByRole('button', {
+          name: /learn more/i,
+        });
         fireEvent.click(learnMoreButton);
       });
 
       await waitFor(() => {
         const modalButtons = screen.getAllByRole('button');
-        const actionButtons = modalButtons.filter(button => 
-          button.textContent?.includes('Maybe Later') || 
-          button.textContent?.includes('Install Now')
+        const actionButtons = modalButtons.filter(
+          button =>
+            button.textContent?.includes('Maybe Later') ||
+            button.textContent?.includes('Install Now')
         );
-        
+
         actionButtons.forEach(button => {
           expect(button).toHaveClass('min-h-[48px]');
         });
@@ -339,15 +375,15 @@ describe('InstallPrompt Accessibility', () => {
     test('high contrast styles are applied correctly', async () => {
       // Mock high contrast preference
       mockThemeContext.isHighContrast = true;
-      
+
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
         const banner = screen.getByRole('banner');
         const bannerContent = banner.querySelector('div');
-        
+
         expect(bannerContent).toHaveClass('bg-black');
         expect(bannerContent).toHaveClass('text-white');
         expect(bannerContent).toHaveClass('border-white');
@@ -360,14 +396,14 @@ describe('InstallPrompt Accessibility', () => {
     test('animations are disabled when user prefers reduced motion', async () => {
       // Mock reduced motion preference
       mockThemeContext.prefersReducedMotion = true;
-      
+
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
         const banner = screen.getByRole('banner');
-        
+
         // Should not have transition classes when reduced motion is preferred
         expect(banner).not.toHaveClass('transition-all');
         expect(banner).not.toHaveClass('duration-300');
@@ -378,25 +414,25 @@ describe('InstallPrompt Accessibility', () => {
   describe('Accessibility Compliance', () => {
     test('component follows accessibility best practices', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
         const banner = screen.getByRole('banner');
         expect(banner).toBeInTheDocument();
-        
+
         // Check for proper ARIA attributes
         expect(banner).toHaveAttribute('aria-live', 'polite');
         expect(banner).toHaveAttribute('aria-label', 'Install app banner');
-        
+
         // Check for proper heading structure
         const heading = screen.getByRole('heading', { level: 3 });
         expect(heading).toBeInTheDocument();
-        
+
         // Check for proper button roles
         const buttons = screen.getAllByRole('button');
         expect(buttons.length).toBeGreaterThan(0);
-        
+
         buttons.forEach(button => {
           expect(button).toHaveAttribute('aria-label');
         });
@@ -405,11 +441,13 @@ describe('InstallPrompt Accessibility', () => {
 
     test('modal follows accessibility best practices', async () => {
       renderWithTheme(<InstallPrompt />);
-      
+
       triggerInstallPrompt();
-      
+
       await waitFor(() => {
-        const learnMoreButton = screen.getByRole('button', { name: /learn more/i });
+        const learnMoreButton = screen.getByRole('button', {
+          name: /learn more/i,
+        });
         fireEvent.click(learnMoreButton);
       });
 
@@ -418,11 +456,13 @@ describe('InstallPrompt Accessibility', () => {
         expect(modal).toBeInTheDocument();
         expect(modal).toHaveAttribute('aria-modal', 'true');
         expect(modal).toHaveAttribute('aria-labelledby', 'modal-title');
-        
+
         // Check for proper list structure
-        const list = screen.getByRole('list', { name: /app installation benefits/i });
+        const list = screen.getByRole('list', {
+          name: /app installation benefits/i,
+        });
         expect(list).toBeInTheDocument();
-        
+
         const listItems = screen.getAllByRole('listitem');
         expect(listItems.length).toBe(4);
       });

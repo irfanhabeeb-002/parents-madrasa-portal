@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { InitializationService, InitializationStatus } from '../services/initializationService';
+import {
+  InitializationService,
+  InitializationStatus,
+} from '../services/initializationService';
 import { NetworkService, NetworkStatus } from '../services/networkService';
 
 export interface UseInitializationResult {
@@ -15,16 +18,16 @@ export const useInitialization = (): UseInitializationResult => {
   const [status, setStatus] = useState<InitializationStatus>({
     firebase: false,
     network: false,
-    offlinePersistence: false
+    offlinePersistence: false,
   });
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>({
-    isOnline: navigator.onLine
+    isOnline: navigator.onLine,
   });
   const [isInitializing, setIsInitializing] = useState(false);
 
   const initialize = async () => {
     if (isInitializing) return;
-    
+
     setIsInitializing(true);
     try {
       const initStatus = await InitializationService.initialize();
@@ -33,7 +36,7 @@ export const useInitialization = (): UseInitializationResult => {
       console.error('Initialization failed:', error);
       setStatus(prev => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Initialization failed'
+        error: error instanceof Error ? error.message : 'Initialization failed',
       }));
     } finally {
       setIsInitializing(false);
@@ -50,7 +53,7 @@ export const useInitialization = (): UseInitializationResult => {
     initialize();
 
     // Subscribe to network status changes
-    const unsubscribeNetwork = NetworkService.subscribe((newNetworkStatus) => {
+    const unsubscribeNetwork = NetworkService.subscribe(newNetworkStatus => {
       setNetworkStatus(newNetworkStatus);
     });
 
@@ -66,7 +69,7 @@ export const useInitialization = (): UseInitializationResult => {
     isReady: InitializationService.isReady(),
     isFirebaseAvailable: InitializationService.isFirebaseAvailable(),
     error: status.error,
-    retry
+    retry,
   };
 };
 

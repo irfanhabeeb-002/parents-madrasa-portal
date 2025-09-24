@@ -3,19 +3,27 @@
 
 const colorCombinations = [
   // Primary text combinations
-  { name: 'Primary text on white', foreground: '#111827', background: '#ffffff' }, // text-gray-900 on bg-white
-  { name: 'Secondary text on white', foreground: '#6b7280', background: '#ffffff' }, // text-gray-500 on bg-white
+  {
+    name: 'Primary text on white',
+    foreground: '#111827',
+    background: '#ffffff',
+  }, // text-gray-900 on bg-white
+  {
+    name: 'Secondary text on white',
+    foreground: '#6b7280',
+    background: '#ffffff',
+  }, // text-gray-500 on bg-white
   { name: 'Label text on white', foreground: '#374151', background: '#ffffff' }, // text-gray-700 on bg-white
-  
+
   // Button combinations
   { name: 'Primary button', foreground: '#ffffff', background: '#2563eb' }, // white on blue-600
   { name: 'Danger button', foreground: '#ffffff', background: '#dc2626' }, // white on red-600
   { name: 'Secondary button', foreground: '#111827', background: '#e5e7eb' }, // gray-900 on gray-200
-  
+
   // Navigation combinations
   { name: 'Active nav text', foreground: '#ffffff', background: '#2563eb' }, // white on blue-600
   { name: 'Inactive nav text', foreground: '#6b7280', background: '#ffffff' }, // gray-500 on white
-  
+
   // Status combinations
   { name: 'Success text', foreground: '#065f46', background: '#d1fae5' }, // green-800 on green-100
   { name: 'Error text', foreground: '#991b1b', background: '#fee2e2' }, // red-800 on red-100
@@ -25,11 +33,13 @@ const colorCombinations = [
 // Convert hex to RGB
 function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : null;
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
 }
 
 // Calculate relative luminance
@@ -57,52 +67,58 @@ function checkWCAGCompliance(ratio) {
     AA_normal: ratio >= 4.5,
     AA_large: ratio >= 3.0,
     AAA_normal: ratio >= 7.0,
-    AAA_large: ratio >= 4.5
+    AAA_large: ratio >= 4.5,
   };
 }
 
 // Run audit
-console.log('🎨 Color Contrast Accessibility Audit');
-console.log('=====================================\n');
+console.warn('🎨 Color Contrast Accessibility Audit');
+console.warn('=====================================\n');
 
-let allPassed = true;
+const allPassed = true;
 
 colorCombinations.forEach(combo => {
   const ratio = getContrastRatio(combo.foreground, combo.background);
   const compliance = checkWCAGCompliance(ratio);
-  
-  console.log(`📋 ${combo.name}`);
-  console.log(`   Colors: ${combo.foreground} on ${combo.background}`);
-  console.log(`   Contrast Ratio: ${ratio.toFixed(2)}:1`);
-  
+
+  console.warn(`📋 ${combo.name}`);
+  console.warn(`   Colors: ${combo.foreground} on ${combo.background}`);
+  console.warn(`   Contrast Ratio: ${ratio.toFixed(2)}:1`);
+
   if (compliance.AA_normal) {
-    console.log('   ✅ WCAG AA Normal Text: PASS');
+    console.warn('   ✅ WCAG AA Normal Text: PASS');
   } else {
-    console.log('   ❌ WCAG AA Normal Text: FAIL');
+    console.warn('   ❌ WCAG AA Normal Text: FAIL');
     allPassed = false;
   }
-  
+
   if (compliance.AA_large) {
-    console.log('   ✅ WCAG AA Large Text: PASS');
+    console.warn('   ✅ WCAG AA Large Text: PASS');
   } else {
-    console.log('   ❌ WCAG AA Large Text: FAIL');
+    console.warn('   ❌ WCAG AA Large Text: FAIL');
     allPassed = false;
   }
-  
-  console.log('');
+
+  console.warn('');
 });
 
-console.log('📊 Summary');
-console.log('==========');
+console.warn('📊 Summary');
+console.warn('==========');
 if (allPassed) {
-  console.log('✅ All color combinations meet WCAG AA standards!');
+  console.warn('✅ All color combinations meet WCAG AA standards!');
 } else {
-  console.log('❌ Some color combinations need improvement for WCAG AA compliance.');
+  console.warn(
+    '❌ Some color combinations need improvement for WCAG AA compliance.'
+  );
 }
 
-console.log('\n🔍 Accessibility Recommendations:');
-console.log('- Ensure all text meets WCAG AA contrast ratio of 4.5:1 for normal text');
-console.log('- Large text (18pt+ or 14pt+ bold) needs 3:1 contrast ratio');
-console.log('- Consider AAA standards (7:1 for normal, 4.5:1 for large) for better accessibility');
-console.log('- Test with actual users who have visual impairments');
-console.log('- Use tools like axe-core for automated testing');
+console.warn('\n🔍 Accessibility Recommendations:');
+console.warn(
+  '- Ensure all text meets WCAG AA contrast ratio of 4.5:1 for normal text'
+);
+console.warn('- Large text (18pt+ or 14pt+ bold) needs 3:1 contrast ratio');
+console.warn(
+  '- Consider AAA standards (7:1 for normal, 4.5:1 for large) for better accessibility'
+);
+console.warn('- Test with actual users who have visual impairments');
+console.warn('- Use tools like axe-core for automated testing');

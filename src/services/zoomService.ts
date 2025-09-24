@@ -12,7 +12,7 @@ import type {
   ZoomAttendanceRecord,
   ZoomSDKEvents,
   ZoomMeetingSDKStatus,
-  ZoomRole
+  ZoomRole,
 } from '../types/zoom';
 
 /**
@@ -42,15 +42,22 @@ export class ZoomService {
   /**
    * Initialize the Zoom SDK with configuration
    */
-  public async initialize(config: ZoomInitConfig): Promise<ZoomServiceResponse<boolean>> {
+  public async initialize(
+    config: ZoomInitConfig
+  ): Promise<ZoomServiceResponse<boolean>> {
     try {
       if (this.isInitialized) {
-        return { success: true, data: true, message: 'Zoom SDK already initialized' };
+        return {
+          success: true,
+          data: true,
+          message: 'Zoom SDK already initialized',
+        };
       }
 
       // Initialize the Zoom Meeting SDK with dynamic import
       const ZoomModule = await import('@zoom/meetingsdk/embedded');
-      const ZoomMtgEmbedded = ZoomModule.default || ZoomModule.ZoomMtgEmbedded || ZoomModule;
+      const ZoomMtgEmbedded =
+        ZoomModule.default || ZoomModule.ZoomMtgEmbedded || ZoomModule;
       this.client = ZoomMtgEmbedded.createClient();
 
       const initResult = await new Promise<boolean>((resolve, reject) => {
@@ -59,54 +66,71 @@ export class ZoomService {
           return;
         }
 
-        this.client.init({
-          debug: config.debug || false,
-          leaveOnPageUnload: config.leaveOnPageUnload ?? true,
-          showMeetingHeader: config.showMeetingHeader ?? false,
-          disableInvite: config.disableInvite ?? true,
-          disableCallOut: config.disableCallOut ?? true,
-          disableRecord: config.disableRecord ?? true,
-          disableJoinAudio: config.disableJoinAudio ?? false,
-          audioPanelAlwaysOpen: config.audioPanelAlwaysOpen ?? false,
-          showPureSharingContent: config.showPureSharingContent ?? false,
-          isSupportAV: config.isSupportAV ?? true,
-          isSupportChat: config.isSupportChat ?? true,
-          isSupportQA: config.isSupportQA ?? false,
-          isSupportCC: config.isSupportCC ?? false,
-          screenShare: config.screenShare ?? false,
-          rwcBackup: config.rwcBackup || '',
-          videoDrag: config.videoDrag ?? false,
-          sharingMode: config.sharingMode || 'both',
-          videoHeader: config.videoHeader ?? false,
-          isShowJoiningErrorDialog: config.isShowJoiningErrorDialog ?? true,
-          disablePreview: config.disablePreview ?? false,
-          disableSetting: config.disableSetting ?? true,
-          disableShareAudioVideo: config.disableShareAudioVideo ?? true,
-          meetingInfo: config.meetingInfo || ['topic', 'host', 'mn', 'pwd', 'telPwd', 'invite', 'participant', 'dc', 'enctype'],
-          disableReport: config.disableReport ?? true,
-          meetingInfoDescription: config.meetingInfoDescription || '',
-          disableVoIP: config.disableVoIP ?? false,
-          disablePhoneAudio: config.disablePhoneAudio ?? false,
-        }).then(() => {
-          resolve(true);
-        }).catch((error: any) => {
-          reject(error);
-        });
+        this.client
+          .init({
+            debug: config.debug || false,
+            leaveOnPageUnload: config.leaveOnPageUnload ?? true,
+            showMeetingHeader: config.showMeetingHeader ?? false,
+            disableInvite: config.disableInvite ?? true,
+            disableCallOut: config.disableCallOut ?? true,
+            disableRecord: config.disableRecord ?? true,
+            disableJoinAudio: config.disableJoinAudio ?? false,
+            audioPanelAlwaysOpen: config.audioPanelAlwaysOpen ?? false,
+            showPureSharingContent: config.showPureSharingContent ?? false,
+            isSupportAV: config.isSupportAV ?? true,
+            isSupportChat: config.isSupportChat ?? true,
+            isSupportQA: config.isSupportQA ?? false,
+            isSupportCC: config.isSupportCC ?? false,
+            screenShare: config.screenShare ?? false,
+            rwcBackup: config.rwcBackup || '',
+            videoDrag: config.videoDrag ?? false,
+            sharingMode: config.sharingMode || 'both',
+            videoHeader: config.videoHeader ?? false,
+            isShowJoiningErrorDialog: config.isShowJoiningErrorDialog ?? true,
+            disablePreview: config.disablePreview ?? false,
+            disableSetting: config.disableSetting ?? true,
+            disableShareAudioVideo: config.disableShareAudioVideo ?? true,
+            meetingInfo: config.meetingInfo || [
+              'topic',
+              'host',
+              'mn',
+              'pwd',
+              'telPwd',
+              'invite',
+              'participant',
+              'dc',
+              'enctype',
+            ],
+            disableReport: config.disableReport ?? true,
+            meetingInfoDescription: config.meetingInfoDescription || '',
+            disableVoIP: config.disableVoIP ?? false,
+            disablePhoneAudio: config.disablePhoneAudio ?? false,
+          })
+          .then(() => {
+            resolve(true);
+          })
+          .catch((error: any) => {
+            reject(error);
+          });
       });
 
       if (initResult) {
         this.isInitialized = true;
         this.setupEventListeners();
-        return { success: true, data: true, message: 'Zoom SDK initialized successfully' };
+        return {
+          success: true,
+          data: true,
+          message: 'Zoom SDK initialized successfully',
+        };
       } else {
         throw new Error('Failed to initialize Zoom SDK');
       }
     } catch (error) {
       const zoomError: ZoomError = {
-        type: 'INITIALIZATION_ERROR',
+        _type: 'INITIALIZATION_ERROR',
         reason: 'Failed to initialize Zoom SDK',
         errorCode: -1,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
       };
       return { success: false, error: zoomError };
     }
@@ -119,18 +143,24 @@ export class ZoomService {
     if (!this.client) return;
 
     // Meeting status events
-    this.client.on('meeting-status', (payload: { meetingStatus: ZoomMeetingSDKStatus }) => {
-      if (this.eventHandlers.onMeetingStatus) {
-        this.eventHandlers.onMeetingStatus(payload.meetingStatus);
+    this.client.on(
+      'meeting-status',
+      (payload: { meetingStatus: ZoomMeetingSDKStatus }) => {
+        if (this.eventHandlers.onMeetingStatus) {
+          this.eventHandlers.onMeetingStatus(payload.meetingStatus);
+        }
       }
-    });
+    );
 
     // Connection change events
-    this.client.on('connection-change', (payload: { state: string; reason: string }) => {
-      if (this.eventHandlers.onConnectionChange) {
-        this.eventHandlers.onConnectionChange(payload);
+    this.client.on(
+      'connection-change',
+      (payload: { state: string; reason: string }) => {
+        if (this.eventHandlers.onConnectionChange) {
+          this.eventHandlers.onConnectionChange(payload);
+        }
       }
-    });
+    );
 
     // User events
     this.client.on('user-added', (payload: any) => {
@@ -190,7 +220,10 @@ export class ZoomService {
   /**
    * Register event handlers
    */
-  public on<K extends keyof ZoomSDKEvents>(event: K, handler: ZoomSDKEvents[K]): void {
+  public on<K extends keyof ZoomSDKEvents>(
+    event: K,
+    handler: ZoomSDKEvents[K]
+  ): void {
     this.eventHandlers[event] = handler;
   }
 
@@ -204,14 +237,21 @@ export class ZoomService {
   /**
    * Join a Zoom meeting
    */
-  public async joinMeeting(config: ZoomMeetingConfig): Promise<ZoomServiceResponse<boolean>> {
+  public async joinMeeting(
+    config: ZoomMeetingConfig
+  ): Promise<ZoomServiceResponse<boolean>> {
     try {
       if (!this.isInitialized || !this.client) {
         throw new Error('Zoom SDK not initialized. Call initialize() first.');
       }
 
       // Validate required parameters
-      if (!config.meetingNumber || !config.signature || !config.apiKey || !config.userName) {
+      if (
+        !config.meetingNumber ||
+        !config.signature ||
+        !config.apiKey ||
+        !config.userName
+      ) {
         throw new Error('Missing required meeting parameters');
       }
 
@@ -238,17 +278,21 @@ export class ZoomService {
           error: (error: any) => {
             if (config.error) config.error(error);
             reject(error);
-          }
+          },
         });
       });
 
-      return { success: true, data: joinResult, message: 'Successfully joined meeting' };
+      return {
+        success: true,
+        data: joinResult,
+        message: 'Successfully joined meeting',
+      };
     } catch (error) {
       const zoomError: ZoomError = {
-        type: 'JOIN_MEETING_ERROR',
+        _type: 'JOIN_MEETING_ERROR',
         reason: 'Failed to join meeting',
         errorCode: -1,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
       };
       return { success: false, error: zoomError };
     }
@@ -260,7 +304,11 @@ export class ZoomService {
   public async leaveMeeting(): Promise<ZoomServiceResponse<boolean>> {
     try {
       if (!this.client || !this.currentMeetingId) {
-        return { success: true, data: true, message: 'No active meeting to leave' };
+        return {
+          success: true,
+          data: true,
+          message: 'No active meeting to leave',
+        };
       }
 
       await new Promise<void>((resolve, reject) => {
@@ -276,17 +324,21 @@ export class ZoomService {
           },
           error: (error: any) => {
             reject(error);
-          }
+          },
         });
       });
 
-      return { success: true, data: true, message: 'Successfully left meeting' };
+      return {
+        success: true,
+        data: true,
+        message: 'Successfully left meeting',
+      };
     } catch (error) {
       const zoomError: ZoomError = {
-        type: 'LEAVE_MEETING_ERROR',
+        _type: 'LEAVE_MEETING_ERROR',
         reason: 'Failed to leave meeting',
         errorCode: -1,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
       };
       return { success: false, error: zoomError };
     }
@@ -308,7 +360,7 @@ export class ZoomService {
 
     const header = {
       alg: 'HS256',
-      typ: 'JWT'
+      typ: 'JWT',
     };
 
     const payload = {
@@ -320,7 +372,7 @@ export class ZoomService {
       tokenExp: exp,
       alg: 'HS256',
       mn: meetingNumber,
-      role: role
+      role: role,
     };
 
     // Note: This is a placeholder - implement proper JWT signing
@@ -378,7 +430,10 @@ export class ZoomService {
    * Get list of meetings (mock implementation)
    * In production, this should call your backend API
    */
-  public async getMeetings(userId: string, type: 'scheduled' | 'live' | 'upcoming' = 'scheduled'): Promise<ZoomServiceResponse<ZoomMeetingListResponse>> {
+  public async getMeetings(
+    userId: string,
+    _type: 'scheduled' | 'live' | 'upcoming' = 'scheduled'
+  ): Promise<ZoomServiceResponse<ZoomMeetingListResponse>> {
     try {
       // Mock implementation - replace with actual API call
       const mockMeetings: ZoomMeetingInfo[] = [
@@ -420,9 +475,9 @@ export class ZoomService {
             autoSaveChat: false,
             entryExitChime: 'host',
             recordPlayOwnVoice: false,
-            enableLiveStream: false
-          }
-        }
+            enableLiveStream: false,
+          },
+        },
       ];
 
       const response: ZoomMeetingListResponse = {
@@ -430,16 +485,16 @@ export class ZoomService {
         page_number: 1,
         page_size: 30,
         total_records: mockMeetings.length,
-        meetings: mockMeetings
+        meetings: mockMeetings,
       };
 
       return { success: true, data: response };
     } catch (error) {
       const zoomError: ZoomError = {
-        type: 'API_ERROR',
+        _type: 'API_ERROR',
         reason: 'Failed to fetch meetings',
         errorCode: -1,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
       };
       return { success: false, error: zoomError };
     }
@@ -449,16 +504,19 @@ export class ZoomService {
    * Get meeting recordings from Zoom Cloud API
    * Fetches recordings for a specific meeting or all recordings for the account
    */
-  public async getRecordings(meetingId?: string, options?: {
-    from?: Date;
-    to?: Date;
-    pageSize?: number;
-    pageNumber?: number;
-  }): Promise<ZoomServiceResponse<ZoomRecordingListResponse>> {
+  public async getRecordings(
+    meetingId?: string,
+    options?: {
+      from?: Date;
+      to?: Date;
+      pageSize?: number;
+      pageNumber?: number;
+    }
+  ): Promise<ZoomServiceResponse<ZoomRecordingListResponse>> {
     try {
       // In production, this should call your backend API which then calls Zoom REST API
       // For now, we'll use enhanced mock data with more realistic scenarios
-      
+
       const mockRecordings: ZoomRecordingInfo[] = [
         {
           id: 'rec-zoom-001',
@@ -484,7 +542,7 @@ export class ZoomService {
               playUrl: 'https://zoom.us/rec/play/video123',
               downloadUrl: 'https://zoom.us/rec/download/video123',
               status: 'completed',
-              recordingType: 'shared_screen_with_speaker_view'
+              recordingType: 'shared_screen_with_speaker_view',
             },
             {
               id: 'file-audio-123',
@@ -497,11 +555,11 @@ export class ZoomService {
               playUrl: 'https://zoom.us/rec/play/audio123',
               downloadUrl: 'https://zoom.us/rec/download/audio123',
               status: 'completed',
-              recordingType: 'audio_only'
-            }
+              recordingType: 'audio_only',
+            },
           ],
           createdAt: new Date(Date.now() - 86400000),
-          updatedAt: new Date(Date.now() - 86400000)
+          updatedAt: new Date(Date.now() - 86400000),
         },
         {
           id: 'rec-zoom-002',
@@ -527,11 +585,11 @@ export class ZoomService {
               playUrl: 'https://zoom.us/rec/play/video456',
               downloadUrl: 'https://zoom.us/rec/download/video456',
               status: 'completed',
-              recordingType: 'speaker_view'
-            }
+              recordingType: 'speaker_view',
+            },
           ],
           createdAt: new Date(Date.now() - 172800000),
-          updatedAt: new Date(Date.now() - 172800000)
+          updatedAt: new Date(Date.now() - 172800000),
         },
         {
           id: 'rec-zoom-003',
@@ -557,28 +615,28 @@ export class ZoomService {
               playUrl: 'https://zoom.us/rec/play/video789',
               downloadUrl: 'https://zoom.us/rec/download/video789',
               status: 'completed',
-              recordingType: 'shared_screen_with_gallery_view'
-            }
+              recordingType: 'shared_screen_with_gallery_view',
+            },
           ],
           createdAt: new Date(Date.now() - 259200000),
-          updatedAt: new Date(Date.now() - 259200000)
-        }
+          updatedAt: new Date(Date.now() - 259200000),
+        },
       ];
 
       // Filter by meetingId if provided
-      let filteredRecordings = meetingId 
+      const filteredRecordings = meetingId
         ? mockRecordings.filter(rec => rec.meetingId === meetingId)
         : mockRecordings;
 
       // Apply date filters if provided
       if (options?.from) {
-        filteredRecordings = filteredRecordings.filter(rec => 
-          new Date(rec.startTime) >= options.from!
+        filteredRecordings = filteredRecordings.filter(
+          rec => new Date(rec.startTime) >= options.from!
         );
       }
       if (options?.to) {
-        filteredRecordings = filteredRecordings.filter(rec => 
-          new Date(rec.startTime) <= options.to!
+        filteredRecordings = filteredRecordings.filter(
+          rec => new Date(rec.startTime) <= options.to!
         );
       }
 
@@ -586,23 +644,26 @@ export class ZoomService {
       const pageSize = options?.pageSize || 30;
       const pageNumber = options?.pageNumber || 1;
       const startIndex = (pageNumber - 1) * pageSize;
-      const paginatedRecordings = filteredRecordings.slice(startIndex, startIndex + pageSize);
+      const paginatedRecordings = filteredRecordings.slice(
+        startIndex,
+        startIndex + pageSize
+      );
 
       const response: ZoomRecordingListResponse = {
         page_count: Math.ceil(filteredRecordings.length / pageSize),
         page_number: pageNumber,
         page_size: pageSize,
         total_records: filteredRecordings.length,
-        meetings: paginatedRecordings
+        meetings: paginatedRecordings,
       };
 
       return { success: true, data: response };
     } catch (error) {
       const zoomError: ZoomError = {
-        type: 'API_ERROR',
+        _type: 'API_ERROR',
         reason: 'Failed to fetch recordings',
         errorCode: -1,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
       };
       return { success: false, error: zoomError };
     }
@@ -611,25 +672,29 @@ export class ZoomService {
   /**
    * Get recording details by recording ID
    */
-  public async getRecordingById(recordingId: string): Promise<ZoomServiceResponse<ZoomRecordingInfo | null>> {
+  public async getRecordingById(
+    recordingId: string
+  ): Promise<ZoomServiceResponse<ZoomRecordingInfo | null>> {
     try {
       const recordingsResponse = await this.getRecordings();
       if (!recordingsResponse.success || !recordingsResponse.data) {
         return { success: false, error: recordingsResponse.error };
       }
 
-      const recording = recordingsResponse.data.meetings.find(rec => rec.id === recordingId);
-      return { 
-        success: true, 
+      const recording = recordingsResponse.data.meetings.find(
+        rec => rec.id === recordingId
+      );
+      return {
+        success: true,
         data: recording || null,
-        message: recording ? 'Recording found' : 'Recording not found'
+        message: recording ? 'Recording found' : 'Recording not found',
       };
     } catch (error) {
       const zoomError: ZoomError = {
-        type: 'API_ERROR',
+        _type: 'API_ERROR',
         reason: 'Failed to fetch recording details',
         errorCode: -1,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
       };
       return { success: false, error: zoomError };
     }
@@ -638,12 +703,15 @@ export class ZoomService {
   /**
    * Search recordings by topic or meeting ID
    */
-  public async searchRecordings(query: string, options?: {
-    from?: Date;
-    to?: Date;
-    pageSize?: number;
-    pageNumber?: number;
-  }): Promise<ZoomServiceResponse<ZoomRecordingListResponse>> {
+  public async searchRecordings(
+    query: string,
+    options?: {
+      from?: Date;
+      to?: Date;
+      pageSize?: number;
+      pageNumber?: number;
+    }
+  ): Promise<ZoomServiceResponse<ZoomRecordingListResponse>> {
     try {
       const recordingsResponse = await this.getRecordings(undefined, options);
       if (!recordingsResponse.success || !recordingsResponse.data) {
@@ -651,26 +719,29 @@ export class ZoomService {
       }
 
       const searchTerm = query.toLowerCase();
-      const filteredRecordings = recordingsResponse.data.meetings.filter(recording => 
-        recording.topic.toLowerCase().includes(searchTerm) ||
-        recording.meetingId.includes(query) ||
-        recording.id.toLowerCase().includes(searchTerm)
+      const filteredRecordings = recordingsResponse.data.meetings.filter(
+        recording =>
+          recording.topic.toLowerCase().includes(searchTerm) ||
+          recording.meetingId.includes(query) ||
+          recording.id.toLowerCase().includes(searchTerm)
       );
 
       const response: ZoomRecordingListResponse = {
         ...recordingsResponse.data,
         meetings: filteredRecordings,
         total_records: filteredRecordings.length,
-        page_count: Math.ceil(filteredRecordings.length / (options?.pageSize || 30))
+        page_count: Math.ceil(
+          filteredRecordings.length / (options?.pageSize || 30)
+        ),
       };
 
       return { success: true, data: response };
     } catch (error) {
       const zoomError: ZoomError = {
-        type: 'API_ERROR',
+        _type: 'API_ERROR',
         reason: 'Failed to search recordings',
         errorCode: -1,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
       };
       return { success: false, error: zoomError };
     }
@@ -679,30 +750,35 @@ export class ZoomService {
   /**
    * Track attendance for a meeting
    */
-  public async trackAttendance(meetingId: string, userId: string, action: 'join' | 'leave'): Promise<ZoomServiceResponse<ZoomAttendanceRecord>> {
+  public async trackAttendance(
+    meetingId: string,
+    userId: string,
+    action: 'join' | 'leave'
+  ): Promise<ZoomServiceResponse<ZoomAttendanceRecord>> {
     try {
       const attendanceRecord: ZoomAttendanceRecord = {
         meetingId,
         meetingUuid: `uuid-${meetingId}`,
         userId,
         userName: 'Student Name', // This would come from user context
-        joinTime: action === 'join' ? new Date() : new Date(Date.now() - 1800000), // 30 minutes ago if leaving
+        joinTime:
+          action === 'join' ? new Date() : new Date(Date.now() - 1800000), // 30 minutes ago if leaving
         leaveTime: action === 'leave' ? new Date() : undefined,
         duration: action === 'leave' ? 1800 : 0, // 30 minutes if leaving
         isHost: false,
-        deviceType: 'web'
+        deviceType: 'web',
       };
 
       // In production, save this to your database
-      console.log('Attendance tracked:', attendanceRecord);
+      console.warn('Attendance tracked:', attendanceRecord);
 
       return { success: true, data: attendanceRecord };
     } catch (error) {
       const zoomError: ZoomError = {
-        type: 'ATTENDANCE_ERROR',
+        _type: 'ATTENDANCE_ERROR',
         reason: 'Failed to track attendance',
         errorCode: -1,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
       };
       return { success: false, error: zoomError };
     }

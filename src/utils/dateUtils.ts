@@ -7,12 +7,12 @@ export const toDate = (dateOrTimestamp: Date | Timestamp): Date => {
   if (dateOrTimestamp instanceof Date) {
     return dateOrTimestamp;
   }
-  
+
   // Handle Firestore Timestamp
   if (typeof dateOrTimestamp === 'object' && 'seconds' in dateOrTimestamp) {
     return new Date(dateOrTimestamp.seconds * 1000);
   }
-  
+
   // Fallback - try to parse as date
   return new Date(dateOrTimestamp as any);
 };
@@ -20,7 +20,10 @@ export const toDate = (dateOrTimestamp: Date | Timestamp): Date => {
 /**
  * Formats a Date or Timestamp as a locale date string
  */
-export const formatDate = (dateOrTimestamp: Date | Timestamp, locale?: string): string => {
+export const formatDate = (
+  dateOrTimestamp: Date | Timestamp,
+  locale?: string
+): string => {
   const date = toDate(dateOrTimestamp);
   return date.toLocaleDateString(locale);
 };
@@ -28,7 +31,10 @@ export const formatDate = (dateOrTimestamp: Date | Timestamp, locale?: string): 
 /**
  * Formats a Date or Timestamp as a locale date and time string
  */
-export const formatDateTime = (dateOrTimestamp: Date | Timestamp, locale?: string): string => {
+export const formatDateTime = (
+  dateOrTimestamp: Date | Timestamp,
+  locale?: string
+): string => {
   const date = toDate(dateOrTimestamp);
   return date.toLocaleString(locale);
 };
@@ -36,7 +42,10 @@ export const formatDateTime = (dateOrTimestamp: Date | Timestamp, locale?: strin
 /**
  * Gets the time difference in milliseconds between two dates
  */
-export const getTimeDifference = (date1: Date | Timestamp, date2: Date | Timestamp): number => {
+export const getTimeDifference = (
+  date1: Date | Timestamp,
+  date2: Date | Timestamp
+): number => {
   return toDate(date1).getTime() - toDate(date2).getTime();
 };
 

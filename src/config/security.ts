@@ -42,61 +42,68 @@ export const getSecurityConfig = (): SecurityConfig => {
         "'self'",
         "'unsafe-inline'", // Required for React development
         "'unsafe-eval'", // Required for development tools
-        "https://firebase.googleapis.com",
-        "https://www.gstatic.com",
-        "https://zoom.us",
-        "https://source.zoom.us",
-        "https://fcm.googleapis.com",
-        "https://www.googletagmanager.com",
-        "https://www.google-analytics.com",
+        'https://firebase.googleapis.com',
+        'https://www.gstatic.com',
+        'https://zoom.us',
+        'https://source.zoom.us',
+        'https://fcm.googleapis.com',
+        'https://www.googletagmanager.com',
+        'https://www.google-analytics.com',
       ],
       styleSrc: [
         "'self'",
         "'unsafe-inline'", // Required for dynamic styles
-        "https://fonts.googleapis.com",
+        'https://fonts.googleapis.com',
       ],
       imgSrc: [
         "'self'",
-        "data:",
-        "blob:",
-        "https://firebasestorage.googleapis.com",
-        "https://www.googletagmanager.com",
-        "https://www.google-analytics.com",
+        'data:',
+        'blob:',
+        'https://firebasestorage.googleapis.com',
+        'https://www.googletagmanager.com',
+        'https://www.google-analytics.com',
       ],
       connectSrc: [
         "'self'",
-        "https://firebase.googleapis.com",
-        "https://firestore.googleapis.com",
-        "https://api.zoom.us",
-        "https://zoom.us",
-        "wss://zoom.us",
-        "https://fcm.googleapis.com",
-        "https://www.google-analytics.com",
-        "https://analytics.google.com",
+        'https://firebase.googleapis.com',
+        'https://firestore.googleapis.com',
+        'https://api.zoom.us',
+        'https://zoom.us',
+        'wss://zoom.us',
+        'https://fcm.googleapis.com',
+        'https://www.google-analytics.com',
+        'https://analytics.google.com',
       ],
-      fontSrc: [
-        "'self'",
-        "https://fonts.gstatic.com",
-      ],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       mediaSrc: [
         "'self'",
-        "blob:",
-        "https://firebasestorage.googleapis.com",
-        "https://zoom.us",
+        'blob:',
+        'https://firebasestorage.googleapis.com',
+        'https://zoom.us',
       ],
       objectSrc: ["'none'"],
       frameSrc: ["'none'"],
     },
     headers: {
-      xFrameOptions: "DENY",
-      xContentTypeOptions: "nosniff",
-      xXSSProtection: "1; mode=block",
-      referrerPolicy: "strict-origin-when-cross-origin",
-      permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()",
+      xFrameOptions: 'DENY',
+      xContentTypeOptions: 'nosniff',
+      xXSSProtection: '1; mode=block',
+      referrerPolicy: 'strict-origin-when-cross-origin',
+      permissionsPolicy:
+        'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
     },
     validation: {
       maxInputLength: 10000,
-      allowedFileTypes: ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.mp4', '.webm'],
+      allowedFileTypes: [
+        '.pdf',
+        '.jpg',
+        '.jpeg',
+        '.png',
+        '.gif',
+        '.webp',
+        '.mp4',
+        '.webm',
+      ],
       maxFileSize: 50 * 1024 * 1024, // 50MB
     },
   };
@@ -128,7 +135,9 @@ export class SecurityUtils {
    */
   static validateFileType(fileName: string): boolean {
     const allowedTypes = getSecurityConfig().validation.allowedFileTypes;
-    const extension = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
+    const extension = fileName
+      .toLowerCase()
+      .substring(fileName.lastIndexOf('.'));
     return allowedTypes.includes(extension);
   }
 
@@ -146,7 +155,9 @@ export class SecurityUtils {
   static generateSecureRandom(length: number = 32): string {
     const array = new Uint8Array(length);
     crypto.getRandomValues(array);
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join(
+      ''
+    );
   }
 
   /**
@@ -155,12 +166,12 @@ export class SecurityUtils {
   static validateUrl(url: string): boolean {
     try {
       const parsedUrl = new URL(url);
-      
+
       // Only allow HTTPS in production
       if (config.APP_ENV === 'production' && parsedUrl.protocol !== 'https:') {
         return false;
       }
-      
+
       // Check against allowed domains
       const allowedDomains = [
         'firebase.googleapis.com',
@@ -173,17 +184,18 @@ export class SecurityUtils {
         'www.google-analytics.com',
         'analytics.google.com',
       ];
-      
+
       // Allow same origin
       if (parsedUrl.origin === window.location.origin) {
         return true;
       }
-      
+
       // Check if domain is in allowed list
-      return allowedDomains.some(domain => 
-        parsedUrl.hostname === domain || parsedUrl.hostname.endsWith('.' + domain)
+      return allowedDomains.some(
+        domain =>
+          parsedUrl.hostname === domain ||
+          parsedUrl.hostname.endsWith('.' + domain)
       );
-      
     } catch (error) {
       logger.error('Invalid URL:', error);
       return false;
@@ -196,7 +208,7 @@ export class SecurityUtils {
   static validatePhoneNumber(phoneNumber: string): boolean {
     // Indian phone number format: +91XXXXXXXXXX or 91XXXXXXXXXX or XXXXXXXXXX
     const indianPhoneRegex = /^(\+91|91)?[6-9]\d{9}$/;
-    const cleanNumber = phoneNumber.replace(/[\s\-\(\)]/g, '');
+    const cleanNumber = phoneNumber.replace(/[\s\-()]/g, '');
     return indianPhoneRegex.test(cleanNumber);
   }
 
@@ -213,20 +225,20 @@ export class SecurityUtils {
    */
   static createRateLimiter(maxAttempts: number, windowMs: number) {
     const attempts = new Map<string, { count: number; resetTime: number }>();
-    
+
     return (identifier: string): boolean => {
       const now = Date.now();
       const record = attempts.get(identifier);
-      
+
       if (!record || now > record.resetTime) {
         attempts.set(identifier, { count: 1, resetTime: now + windowMs });
         return true;
       }
-      
+
       if (record.count >= maxAttempts) {
         return false;
       }
-      
+
       record.count++;
       return true;
     };
@@ -274,7 +286,7 @@ export class SecurityUtils {
      */
     clear(): void {
       const keysToRemove: string[] = [];
-      for (let i = 0; i < localStorage.length; i++) {
+      for (const i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key?.startsWith('secure_')) {
           keysToRemove.push(key);
@@ -308,15 +320,18 @@ export class SecurityUtils {
    */
   static initializeSecurityListeners(): void {
     // Listen for CSP violations
-    document.addEventListener('securitypolicyviolation', this.handleCSPViolation);
+    document.addEventListener(
+      'securitypolicyviolation',
+      this.handleCSPViolation
+    );
 
     // Listen for unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener('unhandledrejection', event => {
       logger.error('Unhandled promise rejection:', event.reason);
     });
 
     // Listen for global errors
-    window.addEventListener('error', (event) => {
+    window.addEventListener('error', event => {
       logger.error('Global error:', {
         message: event.message,
         filename: event.filename,
@@ -335,17 +350,17 @@ export const initializeSecurity = (): void => {
   try {
     // Initialize security event listeners
     SecurityUtils.initializeSecurityListeners();
-    
+
     // Set up rate limiters for common actions
     const loginRateLimit = SecurityUtils.createRateLimiter(5, 15 * 60 * 1000); // 5 attempts per 15 minutes
     const apiRateLimit = SecurityUtils.createRateLimiter(100, 60 * 1000); // 100 requests per minute
-    
+
     // Store rate limiters globally for use in components
     (window as any).__rateLimiters = {
       login: loginRateLimit,
       api: apiRateLimit,
     };
-    
+
     logger.log('Security configuration initialized');
   } catch (error) {
     logger.error('Failed to initialize security configuration:', error);

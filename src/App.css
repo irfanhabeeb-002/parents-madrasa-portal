@@ -19,7 +19,9 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: 'Noto Sans Malayalam', 'Inter', 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  font-family:
+    'Noto Sans Malayalam', 'Inter', 'Poppins', ui-sans-serif, system-ui,
+    sans-serif;
 }
 
 /* Enhanced Focus styles for accessibility */
@@ -150,7 +152,7 @@ body {
 }
 
 .keyboard-navigation button:focus,
-.keyboard-navigation [role="button"]:focus {
+.keyboard-navigation [role='button']:focus {
   box-shadow: 0 0 0 3px #3b82f6;
 }
 
@@ -245,7 +247,8 @@ body {
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
   }
   50% {
@@ -273,7 +276,7 @@ body {
   .animate-pulse-glow {
     animation: none;
   }
-  
+
   /* Ensure immediate visibility when animations are disabled */
   .animate-slide-up-fade-in {
     opacity: 1;
@@ -282,10 +285,12 @@ body {
 }
 
 /* Malayalam Font Styling */
-[lang="ml"] {
+[lang='ml'] {
   font-family: 'Noto Sans Malayalam', sans-serif;
   line-height: 1.6;
-  font-feature-settings: "kern" 1, "liga" 1;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1;
   text-rendering: optimizeLegibility;
   min-font-size: 16px;
 }
@@ -300,13 +305,23 @@ body {
 }
 
 /* Heading fonts with Inter for desktop, Manjari for mobile */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Manjari', 'Noto Sans Malayalam', sans-serif;
   font-weight: 600;
 }
 
 @media (min-width: 768px) {
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Inter', 'Poppins', ui-sans-serif, system-ui, sans-serif;
     font-weight: 700;
   }
@@ -334,7 +349,10 @@ html.font-large {
 /* Better text rendering for Malayalam */
 .malayalam-text {
   font-family: 'Noto Sans Malayalam', sans-serif;
-  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1,
+    'calt' 1;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -347,60 +365,62 @@ html.font-large {
     font-size: 16px;
     line-height: 1.6;
   }
-  
+
   /* Force smaller font sizes on desktop */
   .hidden.md\\:block h1 {
     font-size: 20px !important;
   }
-  
+
   .hidden.md\\:block h2 {
     font-size: 18px !important;
   }
-  
+
   .hidden.md\\:block h3 {
     font-size: 18px !important;
   }
-  
+
   .hidden.md\\:block p {
     font-size: 14px !important;
   }
-  
+
   /* Specific overrides for desktop dashboard */
   .desktop-welcome h1 {
     font-size: 24px !important;
   }
-  
+
   .desktop-welcome p {
     font-size: 18px !important;
   }
-  
+
   /* High contrast colors */
   .text-gray-900 {
     color: #1a1a1a;
   }
-  
+
   .text-gray-600 {
     color: #4a4a4a;
   }
-  
+
   /* Generous spacing */
   .space-y-12 > * + * {
     margin-top: 3rem;
   }
-  
+
   /* Card hover effects */
   .card-hover {
     transition: all 0.2s ease-in-out;
   }
-  
+
   .card-hover:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
-  
+
   /* Focus styles for desktop */
   button:focus-visible,
-  [role="button"]:focus-visible {
+  [role='button']:focus-visible {
     outline: 3px solid #3b82f6;
     outline-offset: 3px;
   }
@@ -408,36 +428,36 @@ html.font-large {
 
 /* Accent colors */
 .accent-green {
-  background-color: #5A8866;
+  background-color: #5a8866;
 }
 
 .accent-blue {
-  background-color: #1A3A6B;
+  background-color: #1a3a6b;
 }
 
 .accent-gold {
-  background-color: #C49E4B;
+  background-color: #c49e4b;
 }
 
 /* Text accent colors */
 .text-accent-green {
-  color: #5A8866;
+  color: #5a8866;
 }
 
 .text-accent-green-dark {
-  color: #4A7356;
+  color: #4a7356;
 }
 
 .border-accent-green {
-  border-color: #5A8866;
+  border-color: #5a8866;
 }
 
 .hover\\:border-accent-green:hover {
-  border-color: #5A8866;
+  border-color: #5a8866;
 }
 
 .group:hover .group-hover\\:text-accent-green-dark {
-  color: #4A7356;
+  color: #4a7356;
 }
 
 /* Desktop navigation styles */
@@ -450,37 +470,37 @@ html.font-large {
     background: white;
     transition: all 0.2s ease-in-out;
   }
-  
+
   .desktop-nav-item:hover {
-    border-color: #5A8866;
+    border-color: #5a8866;
     box-shadow: 0 4px 12px rgba(90, 136, 102, 0.15);
   }
-  
+
   /* Force font size updates - v2 */
   .desktop-layout * {
     font-size: inherit !important;
   }
-  
+
   .desktop-layout h1 {
     font-size: 22px !important;
     line-height: 1.3 !important;
   }
-  
+
   .desktop-layout h2 {
     font-size: 18px !important;
     line-height: 1.3 !important;
   }
-  
+
   .desktop-layout h3 {
     font-size: 16px !important;
     line-height: 1.3 !important;
   }
-  
+
   .desktop-layout p {
     font-size: 14px !important;
     line-height: 1.5 !important;
   }
-  
+
   /* Desktop card grid styles */
   .desktop-card-grid {
     display: grid;
@@ -488,11 +508,13 @@ html.font-large {
     gap: 2rem;
     margin: 2rem 0;
   }
-  
+
   .desktop-card {
     background: white;
     border-radius: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
     border: 1px solid #f3f4f6;
     padding: 2rem;
     text-align: center;
@@ -503,25 +525,27 @@ html.font-large {
     flex-direction: column;
     justify-content: center;
   }
-  
+
   .desktop-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-color: #5A8866;
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: #5a8866;
     transform: translateY(-2px);
   }
-  
+
   .desktop-card-icon {
     width: 80px;
     height: 80px;
     margin: 0 auto 1.5rem auto;
-    color: #5A8866;
+    color: #5a8866;
     transition: color 0.2s ease-in-out;
   }
-  
+
   .desktop-card:hover .desktop-card-icon {
-    color: #4A7356;
+    color: #4a7356;
   }
-  
+
   .desktop-card-title {
     font-size: 20px !important;
     font-weight: 700;
@@ -529,18 +553,18 @@ html.font-large {
     margin-bottom: 0.75rem;
     transition: color 0.2s ease-in-out;
   }
-  
+
   .desktop-card:hover .desktop-card-title {
-    color: #4A7356;
+    color: #4a7356;
   }
-  
+
   .desktop-card-description {
     font-size: 16px !important;
     color: #6b7280;
     line-height: 1.5;
     margin-bottom: 0.5rem;
   }
-  
+
   .desktop-card-subtitle {
     font-size: 14px !important;
     color: #9ca3af;
@@ -635,9 +659,13 @@ html.font-large {
 
 /* Enhanced focus ring utilities */
 .focus-visible\\:ring-4:focus-visible {
-  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
-  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
+    var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0
+    calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow:
+    var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+    var(--tw-shadow, 0 0 #0000);
 }
 
 .focus-visible\\:outline-2:focus-visible {
@@ -657,11 +685,11 @@ html.font-large {
   border-width: 2px;
 }
 
-.forced-colors\\:border-ButtonText {
+.forced-colors\\:border-buttontext {
   border-color: ButtonText;
 }
 
-.forced-colors\\:focus-visible\\:outline-ButtonText:focus-visible {
+.forced-colors\\:focus-visible\\:outline-buttontext:focus-visible {
   outline-color: ButtonText;
 }
 

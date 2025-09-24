@@ -13,7 +13,7 @@ export const LiveRegion: React.FC<LiveRegionProps> = ({
   malayalamMessage,
   priority = 'polite',
   clearAfter = 5000,
-  className = ''
+  className = '',
 }) => {
   const [currentMessage, setCurrentMessage] = useState('');
   const [currentMalayalamMessage, setCurrentMalayalamMessage] = useState('');
@@ -94,6 +94,6 @@ export const useLiveRegion = () => {
         malayalamMessage={announcement.malayalamMessage}
         priority={announcement.priority}
       />
-    ) : null
+    ) : null,
   };
 };

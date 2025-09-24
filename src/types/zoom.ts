@@ -178,11 +178,30 @@ export interface ZoomWebhookEvent {
 // Enums and Union Types
 export type ZoomRole = 0 | 1; // 0 = attendee, 1 = host
 export type ZoomMeetingStatus = 'waiting' | 'started' | 'ended' | 'cancelled';
-export type ZoomRecordingFileType = 'MP4' | 'M4A' | 'TIMELINE' | 'TRANSCRIPT' | 'CHAT' | 'CC' | 'CSV';
+export type ZoomRecordingFileType =
+  | 'MP4'
+  | 'M4A'
+  | 'TIMELINE'
+  | 'TRANSCRIPT'
+  | 'CHAT'
+  | 'CC'
+  | 'CSV';
 export type ZoomRecordingStatus = 'completed' | 'processing' | 'failed';
-export type ZoomRecordingType = 'shared_screen_with_speaker_view' | 'shared_screen_with_gallery_view' | 'speaker_view' | 'gallery_view' | 'shared_screen' | 'audio_only' | 'audio_transcript' | 'chat_file' | 'active_speaker' | 'poll' | 'timeline' | 'closed_caption';
+export type ZoomRecordingType =
+  | 'shared_screen_with_speaker_view'
+  | 'shared_screen_with_gallery_view'
+  | 'speaker_view'
+  | 'gallery_view'
+  | 'shared_screen'
+  | 'audio_only'
+  | 'audio_transcript'
+  | 'chat_file'
+  | 'active_speaker'
+  | 'poll'
+  | 'timeline'
+  | 'closed_caption';
 
-export type ZoomWebhookEventType = 
+export type ZoomWebhookEventType =
   | 'meeting.started'
   | 'meeting.ended'
   | 'meeting.participant_joined'
@@ -204,7 +223,7 @@ export interface ZoomSDKEvents {
   onError: (error: ZoomError) => void;
 }
 
-export type ZoomMeetingSDKStatus = 
+export type ZoomMeetingSDKStatus =
   | 'connecting'
   | 'connected'
   | 'disconnecting'

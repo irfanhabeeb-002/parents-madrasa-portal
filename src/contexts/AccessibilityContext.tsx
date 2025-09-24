@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from 'react';
 
 interface AccessibilitySettings {
   highContrast: boolean;
@@ -13,7 +19,9 @@ interface AccessibilityContextType {
   resetSettings: () => void;
 }
 
-const AccessibilityContext = createContext<AccessibilityContextType | undefined>(undefined);
+const AccessibilityContext = createContext<
+  AccessibilityContextType | undefined
+>(undefined);
 
 const ACCESSIBILITY_STORAGE_KEY = 'madrasa-portal-accessibility';
 
@@ -28,13 +36,16 @@ interface AccessibilityProviderProps {
   children: ReactNode;
 }
 
-export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ children }) => {
-  const [settings, setSettings] = useState<AccessibilitySettings>(defaultSettings);
+export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
+  children,
+}) => {
+  const [settings, setSettings] =
+    useState<AccessibilitySettings>(defaultSettings);
 
   // Load settings from localStorage and detect system preferences
   useEffect(() => {
     const savedSettings = localStorage.getItem(ACCESSIBILITY_STORAGE_KEY);
-    let initialSettings = defaultSettings;
+    const initialSettings = defaultSettings;
 
     if (savedSettings) {
       try {
@@ -45,8 +56,12 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ ch
     }
 
     // Detect system preferences
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const prefersHighContrast = window.matchMedia('(prefers-contrast: high)').matches;
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+    const prefersHighContrast = window.matchMedia(
+      '(prefers-contrast: high)'
+    ).matches;
 
     // Apply system preferences if not explicitly set by user
     if (!savedSettings) {
@@ -60,7 +75,7 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ ch
   // Apply accessibility settings to document
   useEffect(() => {
     const root = document.documentElement;
-    
+
     // High contrast mode
     if (settings.highContrast) {
       root.classList.add('high-contrast');
@@ -96,7 +111,7 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ ch
   const updateSetting = (key: keyof AccessibilitySettings, value: boolean) => {
     setSettings(prev => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
@@ -121,7 +136,9 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ ch
 export const useAccessibility = (): AccessibilityContextType => {
   const context = useContext(AccessibilityContext);
   if (context === undefined) {
-    throw new Error('useAccessibility must be used within an AccessibilityProvider');
+    throw new Error(
+      'useAccessibility must be used within an AccessibilityProvider'
+    );
   }
   return context;
 };

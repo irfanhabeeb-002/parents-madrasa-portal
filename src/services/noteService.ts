@@ -1,9 +1,19 @@
-import { Note, NoteView, NoteBookmark, NoteDifficulty } from '../types/note';
-import { ApiResponse, PaginationOptions, SearchOptions, FilterOptions } from '../types/common';
+import { Note, NoteView, NoteBookmark, _NoteDifficulty } from '../types/note';
+import {
+  ApiResponse,
+  PaginationOptions,
+  SearchOptions,
+  FilterOptions,
+} from '../types/common';
 import { FirebaseNote, FIREBASE_COLLECTIONS } from '../types/firebase';
 import { FirebaseService } from './firebaseService';
 import { StorageService } from './storageService';
-import { where, orderBy, limit as firestoreLimit, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
+import {
+  where,
+  orderBy,
+  limit as firestoreLimit,
+  Timestamp as _FirestoreTimestamp,
+} from 'firebase/firestore';
 
 export class NoteService extends FirebaseService {
   private static instance: NoteService;
@@ -57,11 +67,12 @@ export class NoteService extends FirebaseService {
 - Capital: Baghdad
 - Golden Age of Islamic civilization
 - Scientific and cultural achievements`,
-      summary: 'Comprehensive timeline of early Islamic history from pre-Islamic Arabia through the Abbasid period',
+      summary:
+        'Comprehensive timeline of early Islamic history from pre-Islamic Arabia through the Abbasid period',
       pdfUrl: '/pdfs/islamic-history-timeline.pdf',
       imageUrls: [
         '/images/islamic-timeline-chart.jpg',
-        '/images/early-islamic-map.jpg'
+        '/images/early-islamic-map.jpg',
       ],
       author: 'Dr. Ahmad Hassan',
       subject: 'Islamic History',
@@ -81,7 +92,7 @@ export class NoteService extends FirebaseService {
           url: '/pdfs/islamic-history-timeline.pdf',
           size: 2048000,
           mimeType: 'application/pdf',
-          description: 'Complete timeline with detailed explanations'
+          description: 'Complete timeline with detailed explanations',
         },
         {
           id: 'att-2',
@@ -90,11 +101,11 @@ export class NoteService extends FirebaseService {
           url: '/images/islamic-timeline-chart.jpg',
           size: 512000,
           mimeType: 'image/jpeg',
-          description: 'Visual timeline chart'
-        }
+          description: 'Visual timeline chart',
+        },
       ],
       createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-01-15')
+      updatedAt: new Date('2024-01-15'),
     },
     {
       id: 'note-2',
@@ -134,11 +145,12 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
 2. Listen to qualified reciters
 3. Practice regularly with a teacher
 4. Record yourself and compare`,
-      summary: 'Essential tajweed rules for proper Quran recitation including makharij, sifaat, and key pronunciation rules',
+      summary:
+        'Essential tajweed rules for proper Quran recitation including makharij, sifaat, and key pronunciation rules',
       pdfUrl: '/pdfs/tajweed-basic-principles.pdf',
       imageUrls: [
         '/images/makharij-diagram.jpg',
-        '/images/tajweed-rules-chart.jpg'
+        '/images/tajweed-rules-chart.jpg',
       ],
       author: 'Qari Muhammad Ali',
       subject: 'Quran Recitation',
@@ -158,7 +170,7 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
           url: '/pdfs/tajweed-basic-principles.pdf',
           size: 3145728,
           mimeType: 'application/pdf',
-          description: 'Complete guide with examples and exercises'
+          description: 'Complete guide with examples and exercises',
         },
         {
           id: 'att-4',
@@ -167,11 +179,11 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
           url: '/images/makharij-diagram.jpg',
           size: 768000,
           mimeType: 'image/jpeg',
-          description: 'Anatomical diagram showing points of articulation'
-        }
+          description: 'Anatomical diagram showing points of articulation',
+        },
       ],
       createdAt: new Date('2024-01-20'),
-      updatedAt: new Date('2024-01-22')
+      updatedAt: new Date('2024-01-22'),
     },
     {
       id: 'note-3',
@@ -248,16 +260,25 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
 - Standing at Arafat
 - Stoning of pillars
 - Animal sacrifice`,
-      summary: 'Comprehensive study of the Five Pillars of Islam with detailed explanations, requirements, and significance',
+      summary:
+        'Comprehensive study of the Five Pillars of Islam with detailed explanations, requirements, and significance',
       pdfUrl: '/pdfs/five-pillars-detailed.pdf',
       imageUrls: [
         '/images/five-pillars-infographic.jpg',
         '/images/kaaba-hajj.jpg',
-        '/images/prayer-positions.jpg'
+        '/images/prayer-positions.jpg',
       ],
       author: 'Sheikh Abdullah Rahman',
       subject: 'Islamic Fundamentals',
-      tags: ['five-pillars', 'shahada', 'salah', 'zakat', 'sawm', 'hajj', 'fundamentals'],
+      tags: [
+        'five-pillars',
+        'shahada',
+        'salah',
+        'zakat',
+        'sawm',
+        'hajj',
+        'fundamentals',
+      ],
       isPublic: true,
       downloadCount: 123,
       viewCount: 234,
@@ -273,12 +294,13 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
           url: '/pdfs/five-pillars-detailed.pdf',
           size: 4194304,
           mimeType: 'application/pdf',
-          description: 'Complete guide with Arabic text, translations, and practical guidance'
-        }
+          description:
+            'Complete guide with Arabic text, translations, and practical guidance',
+        },
       ],
       createdAt: new Date('2024-01-25'),
-      updatedAt: new Date('2024-01-25')
-    }
+      updatedAt: new Date('2024-01-25'),
+    },
   ];
 
   // Get all notes with pagination and filtering
@@ -317,7 +339,7 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       }
 
       const firestoreNotes = await service.getAll<FirebaseNote>(constraints);
-      
+
       // Convert Firestore data to Note format
       const notes: Note[] = firestoreNotes.map(note => ({
         ...note,
@@ -336,11 +358,11 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
         pageCount: note.pageCount || 1,
         language: note.language || 'en',
         difficulty: note.difficulty || 'beginner',
-        attachments: note.attachments || []
+        attachments: note.attachments || [],
       }));
 
       // Apply client-side pagination if offset is specified
-      let paginatedNotes = notes;
+      const paginatedNotes = notes;
       if (options?.offset) {
         const offset = options.offset;
         const limit = options.limit || 10;
@@ -350,11 +372,11 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       return {
         data: paginatedNotes,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       console.error('Error fetching notes:', error);
-      
+
       // Fallback to mock data
       return this.getMockNotes(options);
     }
@@ -367,7 +389,7 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
     try {
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      let notes = [...this.mockNotes];
+      const notes = [...this.mockNotes];
 
       // Apply filters
       if (options?.classSessionId) {
@@ -380,7 +402,9 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
         notes = notes.filter(n => n.difficulty === options.difficulty);
       }
       if (options?.language) {
-        notes = notes.filter(n => n.language === options.language || n.language === 'both');
+        notes = notes.filter(
+          n => n.language === options.language || n.language === 'both'
+        );
       }
       if (options?.isPublic !== undefined) {
         notes = notes.filter(n => n.isPublic === options.isPublic);
@@ -392,7 +416,7 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
           const aValue = a[options.orderBy as keyof Note];
           const bValue = b[options.orderBy as keyof Note];
           const direction = options.orderDirection === 'desc' ? -1 : 1;
-          
+
           if (aValue < bValue) return -1 * direction;
           if (aValue > bValue) return 1 * direction;
           return 0;
@@ -407,14 +431,14 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       return {
         data: paginatedNotes,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch notes',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -423,9 +447,9 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
   static async getNoteById(id: string): Promise<ApiResponse<Note | null>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 200));
-      
+
       const note = this.mockNotes.find(n => n.id === id);
-      
+
       if (note) {
         // Increment view count
         const noteIndex = this.mockNotes.findIndex(n => n.id === id);
@@ -433,18 +457,18 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
           this.mockNotes[noteIndex].viewCount += 1;
         }
       }
-      
+
       return {
         data: note || null,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: null,
         success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch note',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -457,19 +481,27 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
     try {
       await new Promise(resolve => setTimeout(resolve, 250));
 
-      const { query, fields = ['title', 'content', 'summary', 'tags'], caseSensitive = false } = searchOptions;
+      const {
+        query,
+        fields = ['title', 'content', 'summary', 'tags'],
+        caseSensitive = false,
+      } = searchOptions;
       const searchTerm = caseSensitive ? query : query.toLowerCase();
 
-      let filteredNotes = this.mockNotes.filter(note => {
+      const filteredNotes = this.mockNotes.filter(note => {
         return fields.some(field => {
           const fieldValue = note[field as keyof Note];
           if (Array.isArray(fieldValue)) {
-            return fieldValue.some(item => 
-              caseSensitive ? item.includes(searchTerm) : item.toLowerCase().includes(searchTerm)
+            return fieldValue.some(item =>
+              caseSensitive
+                ? item.includes(searchTerm)
+                : item.toLowerCase().includes(searchTerm)
             );
           }
           if (typeof fieldValue === 'string') {
-            return caseSensitive ? fieldValue.includes(searchTerm) : fieldValue.toLowerCase().includes(searchTerm);
+            return caseSensitive
+              ? fieldValue.includes(searchTerm)
+              : fieldValue.toLowerCase().includes(searchTerm);
           }
           return false;
         });
@@ -483,20 +515,25 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       return {
         data: filteredNotes,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
         error: error instanceof Error ? error.message : 'Search failed',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
 
   // Track note view
-  static async trackView(noteId: string, userId: string, duration: number, pagesViewed?: number[]): Promise<ApiResponse<boolean>> {
+  static async trackView(
+    noteId: string,
+    userId: string,
+    duration: number,
+    pagesViewed?: number[]
+  ): Promise<ApiResponse<boolean>> {
     try {
       const view: NoteView = {
         id: `view-${Date.now()}`,
@@ -505,7 +542,7 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
         viewedAt: new Date(),
         duration,
         pagesViewed,
-        downloaded: false
+        downloaded: false,
       };
 
       await StorageService.appendToArray(this.VIEWS_STORAGE_KEY, view);
@@ -513,27 +550,31 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       return {
         data: true,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: false,
         success: false,
         error: error instanceof Error ? error.message : 'Failed to track view',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
 
   // Bookmark note
-  static async bookmarkNote(noteId: string, userId: string, notes?: string): Promise<ApiResponse<boolean>> {
+  static async bookmarkNote(
+    noteId: string,
+    userId: string,
+    notes?: string
+  ): Promise<ApiResponse<boolean>> {
     try {
       const bookmark: NoteBookmark = {
         id: `bookmark-${Date.now()}`,
         noteId,
         userId,
         bookmarkedAt: new Date(),
-        notes
+        notes,
       };
 
       await StorageService.appendToArray(this.BOOKMARKS_STORAGE_KEY, bookmark);
@@ -541,51 +582,65 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       return {
         data: true,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: false,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to bookmark note',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to bookmark note',
+        timestamp: new Date(),
       };
     }
   }
 
   // Get user bookmarks
-  static async getUserBookmarks(userId: string): Promise<ApiResponse<NoteBookmark[]>> {
+  static async getUserBookmarks(
+    userId: string
+  ): Promise<ApiResponse<NoteBookmark[]>> {
     try {
-      const allBookmarks = await StorageService.getArray<NoteBookmark>(this.BOOKMARKS_STORAGE_KEY);
-      const userBookmarks = allBookmarks.filter(bookmark => bookmark.userId === userId);
+      const allBookmarks = await StorageService.getArray<NoteBookmark>(
+        this.BOOKMARKS_STORAGE_KEY
+      );
+      const userBookmarks = allBookmarks.filter(
+        bookmark => bookmark.userId === userId
+      );
 
       return {
         data: userBookmarks,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch bookmarks',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to fetch bookmarks',
+        timestamp: new Date(),
       };
     }
   }
 
   // Get notes by class session
-  static async getNotesByClass(classSessionId: string): Promise<ApiResponse<Note[]>> {
+  static async getNotesByClass(
+    classSessionId: string
+  ): Promise<ApiResponse<Note[]>> {
     return this.getNotes({ classSessionId });
   }
 
   // Get notes by subject
-  static async getNotesBySubject(subject: string): Promise<ApiResponse<Note[]>> {
+  static async getNotesBySubject(
+    subject: string
+  ): Promise<ApiResponse<Note[]>> {
     return this.getNotes({ subject });
   }
 
   // Get popular notes
-  static async getPopularNotes(limit: number = 5): Promise<ApiResponse<Note[]>> {
+  static async getPopularNotes(
+    limit: number = 5
+  ): Promise<ApiResponse<Note[]>> {
     try {
       const sortedNotes = [...this.mockNotes]
         .sort((a, b) => b.viewCount - a.viewCount)
@@ -594,14 +649,17 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       return {
         data: sortedNotes,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch popular notes',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch popular notes',
+        timestamp: new Date(),
       };
     }
   }
@@ -610,20 +668,26 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
   static async getRecentNotes(limit: number = 5): Promise<ApiResponse<Note[]>> {
     try {
       const sortedNotes = [...this.mockNotes]
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
         .slice(0, limit);
 
       return {
         data: sortedNotes,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch recent notes',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch recent notes',
+        timestamp: new Date(),
       };
     }
   }

@@ -1,6 +1,6 @@
 /**
  * Core Session Cleanup and Security Test
- * 
+ *
  * This test verifies the essential requirements for task 6:
  * - Complete removal of all user data from localStorage
  * - AuthContext state properly reset to null
@@ -43,7 +43,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('Core Session Cleanup and Security', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Reset storage mocks
     localStorageMock.getItem.mockClear();
     localStorageMock.setItem.mockClear();
@@ -51,14 +51,14 @@ describe('Core Session Cleanup and Security', () => {
     localStorageMock.clear.mockClear();
     localStorageMock.key.mockClear();
     localStorageMock.length = 0;
-    
+
     sessionStorageMock.getItem.mockClear();
     sessionStorageMock.setItem.mockClear();
     sessionStorageMock.removeItem.mockClear();
     sessionStorageMock.clear.mockClear();
     sessionStorageMock.key.mockClear();
     sessionStorageMock.length = 0;
-    
+
     consoleSpy.log.mockClear();
     consoleSpy.warn.mockClear();
     consoleSpy.error.mockClear();
@@ -75,9 +75,9 @@ describe('Core Session Cleanup and Security', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
-      
+
       // Mock localStorage with auth-related keys
       const mockKeys = [
         'manualAuthUser',
@@ -87,9 +87,9 @@ describe('Core Session Cleanup and Security', () => {
         'user_profile_data',
         'authentication_state',
       ];
-      
+
       localStorageMock.length = mockKeys.length;
-      localStorageMock.key.mockImplementation((index) => mockKeys[index] || null);
+      localStorageMock.key.mockImplementation(index => mockKeys[index] || null);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -104,22 +104,32 @@ describe('Core Session Cleanup and Security', () => {
       });
 
       // Verify primary cleanup
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
-      
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
+
       // Verify known auth keys cleanup
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('authToken');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('userSession');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('user_profile_data');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('authentication_state');
-      
-      // Verify sessionStorage cleanup
-      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
-      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('authToken');
-      
-      // Verify non-auth key was not removed
-      expect(localStorageMock.removeItem).not.toHaveBeenCalledWith('someOtherKey');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'user_profile_data'
+      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'authentication_state'
+      );
 
-      console.log('✅ Comprehensive storage cleanup verified');
+      // Verify sessionStorage cleanup
+      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
+      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('authToken');
+
+      // Verify non-auth key was not removed
+      expect(localStorageMock.removeItem).not.toHaveBeenCalledWith(
+        'someOtherKey'
+      );
+
+      console.warn('✅ Comprehensive storage cleanup verified');
     });
 
     it('should use nuclear cleanup when individual key removal fails', async () => {
@@ -143,7 +153,7 @@ describe('Core Session Cleanup and Security', () => {
       expect(localStorageMock.clear).toHaveBeenCalled();
       expect(sessionStorageMock.clear).toHaveBeenCalled();
 
-      console.log('✅ Nuclear cleanup fallback verified');
+      console.warn('✅ Nuclear cleanup fallback verified');
     });
   });
 
@@ -158,7 +168,7 @@ describe('Core Session Cleanup and Security', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -182,7 +192,7 @@ describe('Core Session Cleanup and Security', () => {
       expect(result.current.error).toBeNull();
       expect(result.current.loading).toBe(false);
 
-      console.log('✅ User state properly reset to null');
+      console.warn('✅ User state properly reset to null');
     });
 
     it('should force user state to null even when logout fails', async () => {
@@ -205,7 +215,7 @@ describe('Core Session Cleanup and Security', () => {
       // Verify user state is still reset to null for security
       expect(result.current.user).toBeNull();
 
-      console.log('✅ Forced user state reset on failure verified');
+      console.warn('✅ Forced user state reset on failure verified');
     });
   });
 
@@ -220,13 +230,18 @@ describe('Core Session Cleanup and Security', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
-      
+
       // Mock various auth-related keys
-      const mockKeys = ['manualAuthUser', 'authToken', 'userSession', 'loginTime'];
+      const mockKeys = [
+        'manualAuthUser',
+        'authToken',
+        'userSession',
+        'loginTime',
+      ];
       localStorageMock.length = mockKeys.length;
-      localStorageMock.key.mockImplementation((index) => mockKeys[index] || null);
+      localStorageMock.key.mockImplementation(index => mockKeys[index] || null);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -246,18 +261,22 @@ describe('Core Session Cleanup and Security', () => {
       // Verify comprehensive cleanup
       expect(result.current.user).toBeNull();
       expect(result.current.error).toBeNull();
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('authToken');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('userSession');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('loginTime');
-      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
 
-      console.log('✅ Comprehensive session cleanup verified');
+      console.warn('✅ Comprehensive session cleanup verified');
     });
 
     it('should handle retry logic for failed logout attempts', async () => {
       // Setup: Mock intermittent failure
-      let callCount = 0;
+      const callCount = 0;
       localStorageMock.removeItem.mockImplementation(() => {
         callCount++;
         if (callCount <= 2) {
@@ -277,7 +296,7 @@ describe('Core Session Cleanup and Security', () => {
       expect(result.current.user).toBeNull();
       expect(callCount).toBeGreaterThan(1); // Should have retried
 
-      console.log('✅ Retry logic for failed logout attempts verified');
+      console.warn('✅ Retry logic for failed logout attempts verified');
     });
 
     it('should provide enhanced error messages with actionable guidance', async () => {
@@ -300,7 +319,9 @@ describe('Core Session Cleanup and Security', () => {
         }
       });
 
-      console.log('✅ Enhanced error messages with actionable guidance verified');
+      console.warn(
+        '✅ Enhanced error messages with actionable guidance verified'
+      );
     });
 
     it('should clear error state during logout process', async () => {
@@ -313,7 +334,7 @@ describe('Core Session Cleanup and Security', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -337,7 +358,7 @@ describe('Core Session Cleanup and Security', () => {
       // Verify error state is cleared
       expect(result.current.error).toBeNull();
 
-      console.log('✅ Error state clearing during logout verified');
+      console.warn('✅ Error state clearing during logout verified');
     });
   });
 
@@ -352,13 +373,13 @@ describe('Core Session Cleanup and Security', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
-      
+
       // Mock comprehensive auth-related keys
       const authKeys = [
         'manualAuthUser',
-        'authUser', 
+        'authUser',
         'user',
         'userSession',
         'sessionData',
@@ -368,11 +389,11 @@ describe('Core Session Cleanup and Security', () => {
         'loginTime',
         'lastActivity',
         'userPreferences',
-        'authState'
+        'authState',
       ];
-      
+
       localStorageMock.length = authKeys.length;
-      localStorageMock.key.mockImplementation((index) => authKeys[index] || null);
+      localStorageMock.key.mockImplementation(index => authKeys[index] || null);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -396,7 +417,9 @@ describe('Core Session Cleanup and Security', () => {
       expect(result.current.user).toBeNull();
       expect(result.current.error).toBeNull();
 
-      console.log('✅ Complete session data removal security verification passed');
+      console.warn(
+        '✅ Complete session data removal security verification passed'
+      );
     });
 
     it('should handle emergency cleanup on critical failures', async () => {
@@ -422,7 +445,7 @@ describe('Core Session Cleanup and Security', () => {
       // Verify user state is still cleared for security
       expect(result.current.user).toBeNull();
 
-      console.log('✅ Emergency cleanup on critical failures verified');
+      console.warn('✅ Emergency cleanup on critical failures verified');
     });
   });
 });

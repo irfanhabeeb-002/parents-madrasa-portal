@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from 'react';
 
 type FontSize = 'small' | 'medium' | 'large';
 
@@ -8,21 +14,25 @@ interface FontSizeContextType {
   fontSizeClass: string;
 }
 
-const FontSizeContext = createContext<FontSizeContextType | undefined>(undefined);
+const FontSizeContext = createContext<FontSizeContextType | undefined>(
+  undefined
+);
 
 const FONT_SIZE_KEY = 'madrasa-portal-font-size';
 
 const fontSizeClasses: Record<FontSize, string> = {
   small: 'text-font-small',
-  medium: 'text-font-medium', 
-  large: 'text-font-large'
+  medium: 'text-font-medium',
+  large: 'text-font-large',
 };
 
 interface FontSizeProviderProps {
   children: ReactNode;
 }
 
-export const FontSizeProvider: React.FC<FontSizeProviderProps> = ({ children }) => {
+export const FontSizeProvider: React.FC<FontSizeProviderProps> = ({
+  children,
+}) => {
   const [fontSize, setFontSizeState] = useState<FontSize>('medium');
 
   // Load font size from localStorage on mount
@@ -37,9 +47,13 @@ export const FontSizeProvider: React.FC<FontSizeProviderProps> = ({ children }) 
   const setFontSize = (size: FontSize) => {
     setFontSizeState(size);
     localStorage.setItem(FONT_SIZE_KEY, size);
-    
+
     // Apply font size class to document root for global effect
-    document.documentElement.classList.remove('font-small', 'font-medium', 'font-large');
+    document.documentElement.classList.remove(
+      'font-small',
+      'font-medium',
+      'font-large'
+    );
     document.documentElement.classList.add(`font-${size}`);
   };
 
@@ -51,7 +65,7 @@ export const FontSizeProvider: React.FC<FontSizeProviderProps> = ({ children }) 
   const value: FontSizeContextType = {
     fontSize,
     setFontSize,
-    fontSizeClass: fontSizeClasses[fontSize]
+    fontSizeClass: fontSizeClasses[fontSize],
   };
 
   return (

@@ -7,9 +7,9 @@ interface ProtectedRouteProps {
   requireAuth?: boolean;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  requireAuth = true 
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  requireAuth = true,
 }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -22,7 +22,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       try {
         // Replace current history entry to prevent back navigation
         window.history.replaceState(null, '', '/auth');
-        
+
         // Add a popstate listener to handle back button attempts
         const handlePopState = (event: PopStateEvent) => {
           // If user tries to go back and they're not authenticated, redirect to auth
@@ -31,9 +31,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             window.location.href = '/auth';
           }
         };
-        
+
         window.addEventListener('popstate', handlePopState);
-        
+
         // Cleanup listener on unmount
         return () => {
           window.removeEventListener('popstate', handlePopState);
@@ -56,19 +56,23 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         window.location.href = '/auth';
         return;
       }
-      
+
       // Verify localStorage consistency
       try {
         const storedUser = localStorage.getItem('manualAuthUser');
         if (!storedUser) {
-          console.warn('User in context but no localStorage data, forcing logout');
+          console.warn(
+            'User in context but no localStorage data, forcing logout'
+          );
           window.location.href = '/auth';
           return;
         }
-        
+
         const parsedUser = JSON.parse(storedUser);
         if (parsedUser.uid !== user.uid) {
-          console.warn('User data mismatch between context and localStorage, forcing logout');
+          console.warn(
+            'User data mismatch between context and localStorage, forcing logout'
+          );
           localStorage.removeItem('manualAuthUser');
           sessionStorage.removeItem('manualAuthUser');
           window.location.href = '/auth';
@@ -88,7 +92,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div 
+        <div
           className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
           role="status"
           aria-label="Loading authentication state"
@@ -105,7 +109,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     try {
       localStorage.removeItem('manualAuthUser');
       sessionStorage.removeItem('manualAuthUser');
-      
+
       // Clear any other potential auth-related data
       const authKeys = ['authUser', 'user', 'userSession', 'sessionData'];
       authKeys.forEach(key => {
@@ -115,7 +119,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     } catch (error) {
       console.warn('Error clearing session data during redirect:', error);
     }
-    
+
     // Redirect to auth page, saving the attempted location
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }

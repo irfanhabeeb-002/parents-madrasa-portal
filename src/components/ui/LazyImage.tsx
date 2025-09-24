@@ -66,7 +66,9 @@ export const LazyImage: React.FC<LazyImageProps> = ({
   };
 
   // Generate placeholder with proper aspect ratio
-  const placeholderSrc = placeholder || `data:image/svg+xml;base64,${btoa(`
+  const placeholderSrc =
+    placeholder ||
+    `data:image/svg+xml;base64,${btoa(`
     <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
       <rect width="100%" height="100%" fill="#f3f4f6"/>
       <text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#9ca3af" font-family="system-ui, sans-serif" font-size="14">
@@ -151,7 +153,7 @@ export const useImagePreloader = (imageSources: string[]) => {
     };
 
     const preloadAll = async () => {
-      const promises = imageSources.map(src => 
+      const promises = imageSources.map(src =>
         preloadImage(src)
           .then(loadedSrc => {
             setLoadedImages(prev => new Set([...prev, loadedSrc]));
@@ -182,19 +184,20 @@ export const useImagePreloader = (imageSources: string[]) => {
 // WebP support detection
 export const supportsWebP = (() => {
   let supported: boolean | null = null;
-  
+
   return (): Promise<boolean> => {
     if (supported !== null) {
       return Promise.resolve(supported);
     }
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const webP = new Image();
       webP.onload = webP.onerror = () => {
         supported = webP.height === 2;
         resolve(supported);
       };
-      webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+      webP.src =
+        'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
     });
   };
 })();
@@ -205,6 +208,6 @@ export const generateWebPSource = (originalSrc: string): string => {
   // For now, we'll assume WebP versions exist with .webp extension
   const lastDotIndex = originalSrc.lastIndexOf('.');
   if (lastDotIndex === -1) return originalSrc;
-  
+
   return originalSrc.substring(0, lastDotIndex) + '.webp';
 };

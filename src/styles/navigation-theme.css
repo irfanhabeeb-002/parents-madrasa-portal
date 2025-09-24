@@ -6,19 +6,27 @@
   --nav-border-light: rgb(229, 231, 235);
   --nav-text-inactive-light: rgb(107, 114, 128);
   --nav-text-active-light: rgb(255, 255, 255);
-  --nav-indicator-light: linear-gradient(to top, rgb(37, 99, 235), rgb(59, 130, 246));
+  --nav-indicator-light: linear-gradient(
+    to top,
+    rgb(37, 99, 235),
+    rgb(59, 130, 246)
+  );
   --nav-hover-light: rgba(243, 244, 246, 0.8);
   --nav-shadow-light: rgba(0, 0, 0, 0.1);
-  
+
   /* Dark theme colors with WCAG AA compliance */
   --nav-bg-dark: rgba(17, 24, 39, 0.95);
   --nav-border-dark: rgb(55, 65, 81);
   --nav-text-inactive-dark: rgb(156, 163, 175);
   --nav-text-active-dark: rgb(255, 255, 255);
-  --nav-indicator-dark: linear-gradient(to top, rgb(59, 130, 246), rgb(96, 165, 250));
+  --nav-indicator-dark: linear-gradient(
+    to top,
+    rgb(59, 130, 246),
+    rgb(96, 165, 250)
+  );
   --nav-hover-dark: rgba(55, 65, 81, 0.5);
   --nav-shadow-dark: rgba(0, 0, 0, 0.3);
-  
+
   /* High contrast theme colors */
   --nav-bg-hc-light: rgb(255, 255, 255);
   --nav-border-hc-light: rgb(0, 0, 0);
@@ -26,24 +34,24 @@
   --nav-text-active-hc-light: rgb(255, 255, 255);
   --nav-indicator-hc-light: rgb(0, 0, 0);
   --nav-hover-hc-light: rgb(229, 231, 235);
-  
+
   --nav-bg-hc-dark: rgb(0, 0, 0);
   --nav-border-hc-dark: rgb(255, 255, 255);
   --nav-text-inactive-hc-dark: rgb(255, 255, 255);
   --nav-text-active-hc-dark: rgb(0, 0, 0);
   --nav-indicator-hc-dark: rgb(255, 255, 255);
   --nav-hover-hc-dark: rgb(55, 65, 81);
-  
+
   /* Focus ring colors for better visibility */
   --nav-focus-light: rgb(59, 130, 246);
   --nav-focus-dark: rgb(96, 165, 250);
   --nav-focus-hc: currentColor;
-  
+
   /* Animation durations */
   --nav-transition-normal: 200ms;
   --nav-transition-slow: 300ms;
   --nav-transition-none: 0ms;
-  
+
   /* Touch target sizes for accessibility - WCAG AA compliant */
   --nav-touch-target-min: 44px;
   --nav-touch-target-comfortable: 48px;
@@ -75,9 +83,13 @@
 
 /* Enhanced focus ring for keyboard users */
 .nav-button-enhanced.focus-visible\:ring-4 {
-  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
-  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
+    var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0
+    calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow:
+    var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+    var(--tw-shadow, 0 0 #0000);
 }
 
 .nav-button-enhanced.focus-visible\:ring-offset-2 {
@@ -210,7 +222,7 @@
     --nav-transition-normal: var(--nav-transition-none);
     --nav-transition-slow: var(--nav-transition-none);
   }
-  
+
   .nav-button-enhanced,
   .nav-icon-enhanced,
   .nav-indicator-enhanced {
@@ -224,11 +236,11 @@
   .nav-container-enhanced {
     border-top-width: 3px;
   }
-  
+
   .nav-button-enhanced {
     border: 2px solid transparent;
   }
-  
+
   .nav-button-enhanced.active {
     border-color: currentColor;
   }
@@ -277,25 +289,25 @@
     border-top-width: 3px;
     background: var(--nav-bg-hc-light);
   }
-  
+
   .dark .nav-container-enhanced {
     background: var(--nav-bg-hc-dark);
   }
-  
+
   .nav-button-enhanced {
     border: 2px solid transparent;
     font-weight: 700;
   }
-  
+
   .nav-button-enhanced.active {
     border-color: currentColor;
     background-color: currentColor;
   }
-  
+
   .nav-button-enhanced:not(.active) {
     border-color: rgba(128, 128, 128, 0.5);
   }
-  
+
   .nav-button-enhanced:hover:not(.active) {
     border-color: currentColor;
     background-color: rgba(128, 128, 128, 0.1);
@@ -308,23 +320,23 @@
     background: Canvas;
     border-top: 2px solid ButtonText;
   }
-  
+
   .nav-button-enhanced {
     color: ButtonText;
     border: 1px solid ButtonText;
   }
-  
+
   .nav-button-enhanced.active {
     background: Highlight;
     color: HighlightText;
     border-color: Highlight;
   }
-  
+
   .nav-button-enhanced:hover:not(.active) {
     background: ButtonFace;
     border-color: ButtonText;
   }
-  
+
   .nav-indicator-enhanced {
     background: Highlight;
     border: 2px solid HighlightText;

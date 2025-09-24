@@ -7,10 +7,7 @@ import { ApiResponse } from '../types/common';
 import { VideoPlayer } from '../components/recordings/VideoPlayer';
 import { RecordingCard } from '../components/recordings/RecordingCard';
 import { SearchAndFilter } from '../components/recordings/SearchAndFilter';
-import { 
-  PlayIcon, 
-  ExclamationTriangleIcon
-} from '@heroicons/react/24/outline';
+import { PlayIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 interface RecordingsState {
   recordings: Recording[];
@@ -41,8 +38,8 @@ export const Recordings: React.FC = () => {
     syncing: false,
     syncStatus: {
       lastSync: null,
-      recordingCount: 0
-    }
+      recordingCount: 0,
+    },
   });
 
   // Load recordings on component mount
@@ -53,34 +50,35 @@ export const Recordings: React.FC = () => {
 
   const loadRecordings = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
-    
+
     try {
-      const response: ApiResponse<Recording[]> = await RecordingService.getRecordings({
-        orderBy: 'createdAt',
-        orderDirection: 'desc',
-        limit: 50,
-        includeZoom: true, // Include Zoom recordings by default
-        zoomOnly: state.selectedSource === 'zoom'
-      });
+      const response: ApiResponse<Recording[]> =
+        await RecordingService.getRecordings({
+          orderBy: 'createdAt',
+          orderDirection: 'desc',
+          limit: 50,
+          includeZoom: true, // Include Zoom recordings by default
+          zoomOnly: state.selectedSource === 'zoom',
+        });
 
       if (response.success) {
         setState(prev => ({
           ...prev,
           recordings: response.data,
-          loading: false
+          loading: false,
         }));
       } else {
         setState(prev => ({
           ...prev,
           error: response.error || 'Failed to load recordings',
-          loading: false
+          loading: false,
         }));
       }
     } catch (error) {
       setState(prev => ({
         ...prev,
         error: 'Network error occurred while loading recordings',
-        loading: false
+        loading: false,
       }));
     }
   }, [state.selectedSource]);
@@ -89,84 +87,92 @@ export const Recordings: React.FC = () => {
     const syncStatus = RecordingService.getZoomSyncStatus();
     setState(prev => ({
       ...prev,
-      syncStatus
+      syncStatus,
     }));
   }, []);
 
-  const handleSearch = useCallback(async (query: string) => {
-    setState(prev => ({ ...prev, searchQuery: query, loading: true }));
+  const handleSearch = useCallback(
+    async (query: string) => {
+      setState(prev => ({ ...prev, searchQuery: query, loading: true }));
 
-    if (!query.trim()) {
-      loadRecordings();
-      return;
-    }
+      if (!query.trim()) {
+        loadRecordings();
+        return;
+      }
 
-    try {
-      const response = await RecordingService.searchRecordings({
-        query: query.trim(),
-        fields: ['title', 'description', 'tags'],
-        caseSensitive: false
-      });
+      try {
+        const response = await RecordingService.searchRecordings({
+          query: query.trim(),
+          fields: ['title', 'description', 'tags'],
+          caseSensitive: false,
+        });
 
-      if (response.success) {
+        if (response.success) {
+          setState(prev => ({
+            ...prev,
+            recordings: response.data,
+            loading: false,
+          }));
+        } else {
+          setState(prev => ({
+            ...prev,
+            error: response.error || 'Search failed',
+            loading: false,
+          }));
+        }
+      } catch (error) {
         setState(prev => ({
           ...prev,
-          recordings: response.data,
-          loading: false
-        }));
-      } else {
-        setState(prev => ({
-          ...prev,
-          error: response.error || 'Search failed',
-          loading: false
+          error: 'Search error occurred',
+          loading: false,
         }));
       }
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: 'Search error occurred',
-        loading: false
-      }));
-    }
-  }, [loadRecordings]);
+    },
+    [loadRecordings]
+  );
 
   const handleQualityFilter = useCallback((quality: VideoQuality | 'all') => {
     setState(prev => ({ ...prev, selectedQuality: quality }));
   }, []);
 
-  const handleSourceFilter = useCallback((source: 'all' | 'zoom') => {
-    setState(prev => ({ ...prev, selectedSource: source }));
-    // Reload recordings when source changes
-    setTimeout(() => loadRecordings(), 100);
-  }, [loadRecordings]);
+  const handleSourceFilter = useCallback(
+    (source: 'all' | 'zoom') => {
+      setState(prev => ({ ...prev, selectedSource: source }));
+      // Reload recordings when source changes
+      setTimeout(() => loadRecordings(), 100);
+    },
+    [loadRecordings]
+  );
 
   const handleSyncZoom = useCallback(async () => {
     setState(prev => ({ ...prev, syncing: true, error: null }));
-    
+
     try {
-      const response = await RecordingService.syncZoomRecordings({ forceSync: true });
-      
+      const response = await RecordingService.syncZoomRecordings({
+        forceSync: true,
+      });
+
       if (response.success) {
         // Reload recordings after sync
         await loadRecordings();
         loadSyncStatus();
-        
+
         setState(prev => ({
           ...prev,
-          syncing: false
+          syncing: false,
         }));
       } else {
         setState(prev => ({
           ...prev,
           syncing: false,
-          error: response.error || 'Failed to sync Zoom recordings'
+          error: response.error || 'Failed to sync Zoom recordings',
         }));
       }
     } catch (error) {
       setState(prev => ({
         ...prev,
         syncing: false,
-        error: 'Failed to sync Zoom recordings'
+        error: 'Failed to sync Zoom recordings',
       }));
     }
   }, [loadRecordings, loadSyncStatus]);
@@ -175,7 +181,7 @@ export const Recordings: React.FC = () => {
     setState(prev => ({
       ...prev,
       selectedRecording: recording,
-      showPlayer: true
+      showPlayer: true,
     }));
   }, []);
 
@@ -183,15 +189,13 @@ export const Recordings: React.FC = () => {
     setState(prev => ({
       ...prev,
       selectedRecording: null,
-      showPlayer: false
+      showPlayer: false,
     }));
   }, []);
 
   const handleRetry = useCallback(() => {
     loadRecordings();
   }, [loadRecordings]);
-
-
 
   // Filter recordings based on selected quality
   const filteredRecordings = state.recordings.filter(recording => {
@@ -200,16 +204,11 @@ export const Recordings: React.FC = () => {
   });
 
   return (
-    <Layout 
-      showBackButton={true}
-      title="Recordings"
-    >
+    <Layout showBackButton={true} title="Recordings">
       <div className="space-y-6">
         {/* Page Header */}
         <div className="mb-4">
-          <h1 className="text-xl font-semibold text-gray-900">
-            Recordings
-          </h1>
+          <h1 className="text-xl font-semibold text-gray-900">Recordings</h1>
           <p className="text-sm text-gray-600 mt-1">
             View and access class recordings from Zoom sessions
           </p>
@@ -228,7 +227,7 @@ export const Recordings: React.FC = () => {
           showZoomFeatures={true}
           syncStatus={{
             ...state.syncStatus,
-            syncing: state.syncing
+            syncing: state.syncing,
           }}
         />
 
@@ -245,7 +244,10 @@ export const Recordings: React.FC = () => {
         {state.loading && (
           <div className="space-y-4">
             {Array.from({ length: 3 }, (_, index) => (
-              <div key={index} className="bg-white rounded-lg border border-gray-200 p-4">
+              <div
+                key={index}
+                className="bg-white rounded-lg border border-gray-200 p-4"
+              >
                 <div className="flex space-x-4">
                   <SkeletonLoader variant="image" width="120px" height="80px" />
                   <div className="flex-1 space-y-2">
@@ -264,13 +266,14 @@ export const Recordings: React.FC = () => {
           <div className="text-center py-12">
             <PlayIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {state.searchQuery ? 'No recordings found' : 'No recordings available'}
+              {state.searchQuery
+                ? 'No recordings found'
+                : 'No recordings available'}
             </h3>
             <p className="text-gray-500 mb-2">
-              {state.searchQuery 
+              {state.searchQuery
                 ? `No recordings match "${state.searchQuery}"`
-                : 'No recordings available yet. Recordings from Zoom classes will appear here automatically.'
-              }
+                : 'No recordings available yet. Recordings from Zoom classes will appear here automatically.'}
             </p>
             {state.searchQuery && (
               <button
@@ -292,17 +295,20 @@ export const Recordings: React.FC = () => {
               </h2>
               <div className="text-right">
                 <span className="text-sm text-gray-500">
-                  {filteredRecordings.length} recording{filteredRecordings.length !== 1 ? 's' : ''}
+                  {filteredRecordings.length} recording
+                  {filteredRecordings.length !== 1 ? 's' : ''}
                 </span>
                 {state.selectedSource !== 'all' && (
                   <div className="text-xs text-gray-400">
-                    {state.selectedSource === 'zoom' ? 'From Zoom Cloud' : 'Manual Uploads'}
+                    {state.selectedSource === 'zoom'
+                      ? 'From Zoom Cloud'
+                      : 'Manual Uploads'}
                   </div>
                 )}
               </div>
             </div>
-            
-            {filteredRecordings.map((recording) => (
+
+            {filteredRecordings.map(recording => (
               <RecordingCard
                 key={recording.id}
                 recording={recording}
@@ -334,8 +340,6 @@ export const Recordings: React.FC = () => {
           onClose={handleClosePlayer}
         />
       )}
-
-
     </Layout>
   );
 };

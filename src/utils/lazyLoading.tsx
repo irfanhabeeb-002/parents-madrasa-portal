@@ -2,14 +2,25 @@ import { lazy, Suspense, ComponentType } from 'react';
 import { SkeletonLoader } from '../components/ui/SkeletonLoader';
 
 // Generic loading fallback for components
-export const ComponentLoadingFallback = ({ height = '200px', className = '' }: { height?: string; className?: string }) => (
-  <div className={`flex items-center justify-center ${className}`} style={{ minHeight: height }}>
+export const ComponentLoadingFallback = ({
+  height = '200px',
+  className = '',
+}: {
+  height?: string;
+  className?: string;
+}) => (
+  <div
+    className={`flex items-center justify-center ${className}`}
+    style={{ minHeight: height }}
+  >
     <div className="text-center space-y-3">
       <SkeletonLoader className="w-32 h-6 mx-auto" />
       <SkeletonLoader className="w-24 h-4 mx-auto" />
       <div className="text-sm text-gray-500" role="status" aria-live="polite">
         Loading component...
-        <span className="block text-xs mt-1" lang="ml">കോംപോണന്റ് ലോഡ് ചെയ്യുന്നു...</span>
+        <span className="block text-xs mt-1" lang="ml">
+          കോംപോണന്റ് ലോഡ് ചെയ്യുന്നു...
+        </span>
       </div>
     </div>
   </div>
@@ -35,9 +46,15 @@ export const PDFViewerLoadingFallback = () => (
     <div className="border border-gray-200 rounded-lg">
       <SkeletonLoader className="w-full h-96" />
     </div>
-    <div className="text-sm text-gray-500 text-center" role="status" aria-live="polite">
+    <div
+      className="text-sm text-gray-500 text-center"
+      role="status"
+      aria-live="polite"
+    >
       Loading PDF viewer...
-      <span className="block text-xs mt-1" lang="ml">PDF വ്യൂവർ ലോഡ് ചെയ്യുന്നു...</span>
+      <span className="block text-xs mt-1" lang="ml">
+        PDF വ്യൂവർ ലോഡ് ചെയ്യുന്നു...
+      </span>
     </div>
   </div>
 );
@@ -49,7 +66,9 @@ export const VideoPlayerLoadingFallback = () => (
       <div className="text-center text-white">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
         <p>Loading video player...</p>
-        <p className="text-sm mt-1" lang="ml">വീഡിയോ പ്ലേയർ ലോഡ് ചെയ്യുന്നു...</p>
+        <p className="text-sm mt-1" lang="ml">
+          വീഡിയോ പ്ലേയർ ലോഡ് ചെയ്യുന്നു...
+        </p>
       </div>
     </div>
   </div>
@@ -70,9 +89,15 @@ export const CalendarLoadingFallback = () => (
         <SkeletonLoader key={i} className="w-10 h-10" />
       ))}
     </div>
-    <div className="text-sm text-gray-500 text-center" role="status" aria-live="polite">
+    <div
+      className="text-sm text-gray-500 text-center"
+      role="status"
+      aria-live="polite"
+    >
       Loading calendar...
-      <span className="block text-xs mt-1" lang="ml">കലണ്ടർ ലോഡ് ചെയ്യുന്നു...</span>
+      <span className="block text-xs mt-1" lang="ml">
+        കലണ്ടർ ലോഡ് ചെയ്യുന്നു...
+      </span>
     </div>
   </div>
 );
@@ -102,28 +127,43 @@ export function withLazyLoading<T extends ComponentType<any>>(
 
 // Lazy loaded heavy components
 export const LazyPDFViewer = withLazyLoading(
-  () => import('../components/notes/PDFViewer').then(module => ({ default: module.PDFViewer })),
+  () =>
+    import('../components/notes/PDFViewer').then(module => ({
+      default: module.PDFViewer,
+    })),
   PDFViewerLoadingFallback
 );
 
 export const LazyVideoPlayer = withLazyLoading(
-  () => import('../components/recordings/VideoPlayer').then(module => ({ default: module.VideoPlayer })),
+  () =>
+    import('../components/recordings/VideoPlayer').then(module => ({
+      default: module.VideoPlayer,
+    })),
   VideoPlayerLoadingFallback
 );
 
 export const LazyCalendarView = withLazyLoading(
-  () => import('../components/ui/CalendarView').then(module => ({ default: module.CalendarView })),
+  () =>
+    import('../components/ui/CalendarView').then(module => ({
+      default: module.CalendarView,
+    })),
   CalendarLoadingFallback
 );
 
 // Lazy load exercise components
 export const LazyExerciseComponent = withLazyLoading(
-  () => import('../components/exercises/ExerciseComponent').then(module => ({ default: module.ExerciseComponent })),
+  () =>
+    import('../components/exercises/ExerciseComponent').then(module => ({
+      default: module.ExerciseComponent,
+    })),
   () => <ComponentLoadingFallback height="300px" />
 );
 
 // Lazy load accessibility settings (heavy component with many features)
 export const LazyAccessibilitySettings = withLazyLoading(
-  () => import('../components/accessibility/AccessibilitySettings').then(module => ({ default: module.AccessibilitySettings })),
+  () =>
+    import('../components/accessibility/AccessibilitySettings').then(
+      module => ({ default: module.AccessibilitySettings })
+    ),
   () => <ComponentLoadingFallback height="400px" />
 );

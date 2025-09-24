@@ -23,14 +23,16 @@ interface UseNotificationListenerOptions {
   pollInterval?: number; // For manual mode
 }
 
-export const useNotificationListener = (options: UseNotificationListenerOptions = {}) => {
+export const useNotificationListener = (
+  options: UseNotificationListenerOptions = {}
+) => {
   const { enabled = true, pollInterval = 30000 } = options; // 30 seconds default
   const { user } = useAuth();
-  const { 
-    notifyNewRecording, 
-    notifyNewNotes, 
+  const {
+    notifyNewRecording,
+    notifyNewNotes,
     notifyExamReminder,
-    notifyAnnouncement 
+    notifyAnnouncement,
   } = useNotifications();
 
   useEffect(() => {
@@ -38,20 +40,20 @@ export const useNotificationListener = (options: UseNotificationListenerOptions 
 
     // MANUAL MODE - Simulate real-time updates with polling
     // TODO: Replace with Firebase real-time listeners when enabled
-    
-    let lastCheck = new Date();
-    
+
+    const lastCheck = new Date();
+
     const checkForUpdates = async () => {
       try {
         // Simulate checking for new content
         // In real implementation, this would query Firestore collections
-        
+
         // Mock data for demonstration
         const mockUpdates = {
           recordings: [],
           notes: [],
           exams: [],
-          announcements: []
+          announcements: [],
         };
 
         // Process new recordings
@@ -72,7 +74,7 @@ export const useNotificationListener = (options: UseNotificationListenerOptions 
         // Process announcements
         mockUpdates.announcements.forEach((announcement: any) => {
           notifyAnnouncement(
-            announcement.title, 
+            announcement.title,
             announcement.message,
             announcement.malayalamTitle,
             announcement.malayalamMessage
@@ -192,12 +194,21 @@ export const useNotificationListener = (options: UseNotificationListenerOptions 
       unsubscribers.forEach(unsubscribe => unsubscribe());
     };
     */
-
-  }, [enabled, user, pollInterval, notifyNewRecording, notifyNewNotes, notifyExamReminder, notifyAnnouncement]);
+  }, [
+    enabled,
+    user,
+    pollInterval,
+    notifyNewRecording,
+    notifyNewNotes,
+    notifyExamReminder,
+    notifyAnnouncement,
+  ]);
 };
 
 // Hook for listening to class schedule changes for reminders
-export const useClassReminderListener = (options: UseNotificationListenerOptions = {}) => {
+export const useClassReminderListener = (
+  options: UseNotificationListenerOptions = {}
+) => {
   const { enabled = true, pollInterval = 60000 } = options; // 1 minute default
   const { user } = useAuth();
   const { scheduleClassReminder } = useNotifications();
@@ -209,7 +220,7 @@ export const useClassReminderListener = (options: UseNotificationListenerOptions
       try {
         // MANUAL MODE - Mock class schedule check
         // TODO: Replace with Firebase query when enabled
-        
+
         const now = new Date();
         const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
@@ -218,8 +229,8 @@ export const useClassReminderListener = (options: UseNotificationListenerOptions
           {
             id: 'class_1',
             title: 'Arabic Grammar',
-            scheduledTime: new Date(now.getTime() + 2 * 60 * 60 * 1000) // 2 hours from now
-          }
+            scheduledTime: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
+          },
         ];
 
         mockClasses.forEach(classItem => {
@@ -228,10 +239,13 @@ export const useClassReminderListener = (options: UseNotificationListenerOptions
 
           // Schedule reminder if class is within 24 hours and more than 15 minutes away
           if (minutesDiff > 15 && minutesDiff <= 1440) {
-            scheduleClassReminder(classItem.id, classItem.title, classItem.scheduledTime);
+            scheduleClassReminder(
+              classItem.id,
+              classItem.title,
+              classItem.scheduledTime
+            );
           }
         });
-
       } catch (error) {
         console.error('Error checking upcoming classes:', error);
       }
@@ -276,6 +290,5 @@ export const useClassReminderListener = (options: UseNotificationListenerOptions
 
     return () => unsubscribe();
     */
-
   }, [enabled, user, pollInterval, scheduleClassReminder]);
 };

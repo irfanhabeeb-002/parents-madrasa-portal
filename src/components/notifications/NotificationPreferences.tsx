@@ -1,13 +1,13 @@
 import React from 'react';
 import { NotificationPreferences as NotificationPrefsType } from '../../types/notification';
 import { AccessibleButton } from '../ui/AccessibleButton';
-import { 
-  BellIcon, 
-  VideoCameraIcon, 
-  DocumentTextIcon, 
+import {
+  BellIcon,
+  VideoCameraIcon,
+  DocumentTextIcon,
   AcademicCapIcon,
   SpeakerWaveIcon,
-  DevicePhoneMobileIcon
+  DevicePhoneMobileIcon,
 } from '@heroicons/react/24/outline';
 
 interface NotificationPreferencesProps {
@@ -25,11 +25,11 @@ interface ToggleSwitchProps {
   ariaLabel: string;
 }
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ 
-  enabled, 
-  onChange, 
-  disabled = false, 
-  ariaLabel 
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
+  enabled,
+  onChange,
+  disabled = false,
+  ariaLabel,
 }) => {
   return (
     <button
@@ -57,12 +57,14 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
   );
 };
 
-export const NotificationPreferences: React.FC<NotificationPreferencesProps> = ({
+export const NotificationPreferences: React.FC<
+  NotificationPreferencesProps
+> = ({
   preferences,
   onUpdatePreferences,
   permissionGranted,
   onRequestPermission,
-  className = ''
+  className = '',
 }) => {
   const handleToggle = (key: keyof NotificationPrefsType) => {
     onUpdatePreferences({ [key]: !preferences[key] });
@@ -75,9 +77,12 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
           <div className="flex items-start space-x-3">
             <BellIcon className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h3 className="text-sm font-medium text-yellow-800">Enable Notifications</h3>
+              <h3 className="text-sm font-medium text-yellow-800">
+                Enable Notifications
+              </h3>
               <p className="text-sm text-yellow-700 mt-2">
-                Allow notifications to receive class reminders and important updates.
+                Allow notifications to receive class reminders and important
+                updates.
               </p>
               <div className="mt-3">
                 <AccessibleButton
@@ -95,14 +100,20 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
       )}
 
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Notification Types</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">
+          Notification Types
+        </h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
             <div className="flex items-start space-x-3 flex-1">
               <BellIcon className="w-5 h-5 text-gray-600 mt-1" />
               <div>
-                <h4 className="text-sm font-medium text-gray-900">Class Reminders</h4>
-                <p className="text-sm text-gray-600 mt-1">Get notified 15 minutes before your class starts</p>
+                <h4 className="text-sm font-medium text-gray-900">
+                  Class Reminders
+                </h4>
+                <p className="text-sm text-gray-600 mt-1">
+                  Get notified 15 minutes before your class starts
+                </p>
               </div>
             </div>
             <ToggleSwitch
@@ -117,8 +128,12 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
             <div className="flex items-start space-x-3 flex-1">
               <DocumentTextIcon className="w-5 h-5 text-gray-600 mt-1" />
               <div>
-                <h4 className="text-sm font-medium text-gray-900">New Content</h4>
-                <p className="text-sm text-gray-600 mt-1">Notifications for new recordings, notes, and exercises</p>
+                <h4 className="text-sm font-medium text-gray-900">
+                  New Content
+                </h4>
+                <p className="text-sm text-gray-600 mt-1">
+                  Notifications for new recordings, notes, and exercises
+                </p>
               </div>
             </div>
             <ToggleSwitch
@@ -133,8 +148,12 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
             <div className="flex items-start space-x-3 flex-1">
               <AcademicCapIcon className="w-5 h-5 text-gray-600 mt-1" />
               <div>
-                <h4 className="text-sm font-medium text-gray-900">Exam Reminders</h4>
-                <p className="text-sm text-gray-600 mt-1">Get reminded about upcoming exams and tests</p>
+                <h4 className="text-sm font-medium text-gray-900">
+                  Exam Reminders
+                </h4>
+                <p className="text-sm text-gray-600 mt-1">
+                  Get reminded about upcoming exams and tests
+                </p>
               </div>
             </div>
             <ToggleSwitch
@@ -149,8 +168,12 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
             <div className="flex items-start space-x-3 flex-1">
               <SpeakerWaveIcon className="w-5 h-5 text-gray-600 mt-1" />
               <div>
-                <h4 className="text-sm font-medium text-gray-900">Announcements</h4>
-                <p className="text-sm text-gray-600 mt-1">Important announcements from the madrasa</p>
+                <h4 className="text-sm font-medium text-gray-900">
+                  Announcements
+                </h4>
+                <p className="text-sm text-gray-600 mt-1">
+                  Important announcements from the madrasa
+                </p>
               </div>
             </div>
             <ToggleSwitch
@@ -164,14 +187,18 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
       </div>
 
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Device Settings</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">
+          Device Settings
+        </h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
             <div className="flex items-start space-x-3 flex-1">
               <DevicePhoneMobileIcon className="w-5 h-5 text-gray-600 mt-1" />
               <div>
                 <h4 className="text-sm font-medium text-gray-900">Vibration</h4>
-                <p className="text-sm text-gray-600 mt-1">Vibrate device for notifications</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Vibrate device for notifications
+                </p>
               </div>
             </div>
             <ToggleSwitch
@@ -187,7 +214,9 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
               <SpeakerWaveIcon className="w-5 h-5 text-gray-600 mt-1" />
               <div>
                 <h4 className="text-sm font-medium text-gray-900">Sound</h4>
-                <p className="text-sm text-gray-600 mt-1">Play sound for notifications</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Play sound for notifications
+                </p>
               </div>
             </div>
             <ToggleSwitch

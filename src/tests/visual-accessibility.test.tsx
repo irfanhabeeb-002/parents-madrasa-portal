@@ -10,31 +10,31 @@ vi.mock('../contexts/AuthContext', () => ({
       uid: 'test-uid',
       displayName: 'Test User',
       email: 'test@example.com',
-      phone: '+1234567890'
+      phone: '+1234567890',
     },
     loading: false,
     logout: vi.fn(),
-    login: vi.fn()
-  })
+    login: vi.fn(),
+  }),
 }));
 
 vi.mock('../contexts/NotificationContext', () => ({
   useNotifications: () => ({
     notifications: [],
-    unreadCount: 0
+    unreadCount: 0,
   }),
   useNotificationBadge: () => ({
     visible: false,
-    count: 0
-  })
+    count: 0,
+  }),
 }));
 
 vi.mock('../contexts/ThemeContext', () => ({
   useTheme: () => ({
     theme: 'light',
     isHighContrast: false,
-    prefersReducedMotion: false
-  })
+    prefersReducedMotion: false,
+  }),
 }));
 
 vi.mock('../hooks/useDashboard', () => ({
@@ -45,38 +45,36 @@ vi.mock('../hooks/useDashboard', () => ({
     loading: {
       announcements: false,
       notifications: false,
-      todaysClass: false
+      todaysClass: false,
     },
     error: {
       announcements: null,
       notifications: null,
-      todaysClass: null
+      todaysClass: null,
     },
     refreshAnnouncements: vi.fn(),
     refreshNotifications: vi.fn(),
     refreshTodaysClass: vi.fn(),
-    clearError: vi.fn()
-  })
+    clearError: vi.fn(),
+  }),
 }));
 
 vi.mock('../hooks/useNotificationListener', () => ({
   useNotificationListener: () => {},
-  useClassReminderListener: () => {}
+  useClassReminderListener: () => {},
 }));
 
 vi.mock('../assets/icons', () => ({
   AppIcons: {
-    main: '/test-icon.png'
-  }
+    main: '/test-icon.png',
+  },
 }));
 
 import { Profile } from '../pages/Profile';
 import { Dashboard } from '../pages/Dashboard';
 
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <BrowserRouter>
-    {children}
-  </BrowserRouter>
+  <BrowserRouter>{children}</BrowserRouter>
 );
 
 describe('Visual Accessibility and Balance Tests', () => {
@@ -108,7 +106,12 @@ describe('Visual Accessibility and Balance Tests', () => {
       );
 
       // Check that navigation cards are properly balanced
-      const navigationCards = ['Live Class', 'Recordings', 'Notes/Exercises', 'Exams/Attendance'];
+      const navigationCards = [
+        'Live Class',
+        'Recordings',
+        'Notes/Exercises',
+        'Exams/Attendance',
+      ];
       navigationCards.forEach(cardTitle => {
         expect(screen.getAllByText(cardTitle).length).toBeGreaterThan(0);
       });
@@ -129,17 +132,28 @@ describe('Visual Accessibility and Balance Tests', () => {
       const containers = screen.getAllByRole('generic');
       containers.forEach(container => {
         // Skip containers that are intentionally empty (like spacers)
-        if (container.className.includes('space-') || container.className.includes('gap-')) {
+        if (
+          container.className.includes('space-') ||
+          container.className.includes('gap-')
+        ) {
           return;
         }
-        
+
         // Check that non-spacer containers have some content
-        const hasContent = container.textContent && container.textContent.trim().length > 0;
+        const hasContent =
+          container.textContent && container.textContent.trim().length > 0;
         const hasChildren = container.children.length > 0;
-        
-        if (!hasContent && !hasChildren && !container.className.includes('sr-only')) {
+
+        if (
+          !hasContent &&
+          !hasChildren &&
+          !container.className.includes('sr-only')
+        ) {
           // This would indicate an empty container that might affect visual balance
-          console.warn('Potentially empty container found:', container.className);
+          console.warn(
+            'Potentially empty container found:',
+            container.className
+          );
         }
       });
     });
@@ -156,7 +170,7 @@ describe('Visual Accessibility and Balance Tests', () => {
       // Check for proper heading structure
       const h1Elements = screen.getAllByRole('heading', { level: 1 });
       expect(h1Elements.length).toBeGreaterThan(0);
-      
+
       // Verify main heading content
       expect(h1Elements[0]).toHaveTextContent('Profile');
     });
@@ -173,7 +187,10 @@ describe('Visual Accessibility and Balance Tests', () => {
       expect(nameLabel).toHaveClass('text-gray-700'); // Should have sufficient contrast
 
       const logoutButton = screen.getByLabelText(/logout from application/i);
-      expect(logoutButton).toHaveStyle({ backgroundColor: '#dc2626', color: 'white' });
+      expect(logoutButton).toHaveStyle({
+        backgroundColor: '#dc2626',
+        color: 'white',
+      });
     });
 
     it('should maintain visual balance in card layouts', () => {
@@ -185,15 +202,16 @@ describe('Visual Accessibility and Balance Tests', () => {
 
       // Check that cards have consistent structure
       const cardButtons = screen.getAllByRole('button');
-      const navigationCards = cardButtons.filter(button => 
-        button.getAttribute('aria-label')?.includes('class') ||
-        button.getAttribute('aria-label')?.includes('recordings') ||
-        button.getAttribute('aria-label')?.includes('notes') ||
-        button.getAttribute('aria-label')?.includes('exams')
+      const navigationCards = cardButtons.filter(
+        button =>
+          button.getAttribute('aria-label')?.includes('class') ||
+          button.getAttribute('aria-label')?.includes('recordings') ||
+          button.getAttribute('aria-label')?.includes('notes') ||
+          button.getAttribute('aria-label')?.includes('exams')
       );
 
       expect(navigationCards.length).toBe(4);
-      
+
       // Each navigation card should have meaningful content
       navigationCards.forEach(card => {
         expect(card.textContent).toBeTruthy();
@@ -212,7 +230,7 @@ describe('Visual Accessibility and Balance Tests', () => {
 
       const liveRegions = screen.getAllByRole('status');
       expect(liveRegions.length).toBeGreaterThan(0);
-      
+
       liveRegions.forEach(region => {
         expect(region).toHaveAttribute('aria-live');
       });

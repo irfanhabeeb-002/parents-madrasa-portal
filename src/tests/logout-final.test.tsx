@@ -1,17 +1,23 @@
 /**
  * Final Comprehensive Logout Tests
- * 
+ *
  * This test suite covers all aspects of logout functionality as required:
  * - Unit tests for AuthContext logout function
  * - Integration tests for complete logout flow
  * - Accessibility tests for keyboard navigation and screen readers
  * - Mobile responsiveness and touch interaction tests
- * 
+ *
  * Requirements covered: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 2.4
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
@@ -118,7 +124,9 @@ describe('Final Comprehensive Logout Tests', () => {
       });
 
       // Verify logout results
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(result.current.user).toBeNull();
       expect(result.current.loading).toBe(false);
       expect(result.current.error).toBeNull();
@@ -127,7 +135,7 @@ describe('Final Comprehensive Logout Tests', () => {
     it('should handle comprehensive storage cleanup during logout', async () => {
       // Setup mock storage keys
       const authKeys = ['manualAuthUser', 'authToken', 'userSession'];
-      localStorageMock.key.mockImplementation((index) => authKeys[index] || null);
+      localStorageMock.key.mockImplementation(index => authKeys[index] || null);
       localStorageMock.length = authKeys.length;
 
       const { result } = renderHook(() => useAuth(), { wrapper: AuthWrapper });
@@ -137,7 +145,9 @@ describe('Final Comprehensive Logout Tests', () => {
       });
 
       // Verify comprehensive cleanup
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(result.current.user).toBeNull();
     });
 
@@ -277,18 +287,26 @@ describe('Final Comprehensive Logout Tests', () => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
       });
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout and sign out/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout and sign out/i,
+      });
       await user.click(confirmButton);
 
       // Should show success message
-      await waitFor(() => {
-        expect(screen.getByText('Logout Successful')).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Logout Successful')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // Should navigate to auth page
-      await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/auth');
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockNavigate).toHaveBeenCalledWith('/auth');
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
@@ -316,14 +334,14 @@ describe('Final Comprehensive Logout Tests', () => {
       );
 
       const logoutButton = screen.getByRole('button', { name: /logout/i });
-      
+
       // Focus the button
       logoutButton.focus();
       expect(document.activeElement).toBe(logoutButton);
 
       // Activate with Enter key
       fireEvent.keyDown(logoutButton, { key: 'Enter', code: 'Enter' });
-      
+
       // Should open confirmation dialog
       await waitFor(() => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -348,8 +366,12 @@ describe('Final Comprehensive Logout Tests', () => {
       });
 
       // Test Tab navigation in dialog
-      const confirmButton = screen.getByRole('button', { name: /confirm logout and sign out/i });
-      const cancelButton = screen.getByRole('button', { name: /cancel logout and stay logged in/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout and sign out/i,
+      });
+      const cancelButton = screen.getByRole('button', {
+        name: /cancel logout and stay logged in/i,
+      });
 
       // Focus should be manageable
       confirmButton.focus();
@@ -361,7 +383,7 @@ describe('Final Comprehensive Logout Tests', () => {
 
       // Activate cancel with Space key
       fireEvent.keyDown(cancelButton, { key: ' ', code: 'Space' });
-      
+
       await waitFor(() => {
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       });
@@ -377,7 +399,7 @@ describe('Final Comprehensive Logout Tests', () => {
       );
 
       const logoutButton = screen.getByRole('button', { name: /logout/i });
-      
+
       // Check ARIA attributes
       expect(logoutButton).toHaveAttribute('aria-label');
       expect(logoutButton).toHaveAttribute('id', 'logout-button');
@@ -398,7 +420,7 @@ describe('Final Comprehensive Logout Tests', () => {
 
       await waitFor(() => {
         const dialog = screen.getByRole('dialog');
-        
+
         // Check dialog ARIA attributes
         expect(dialog).toHaveAttribute('aria-modal', 'true');
         expect(dialog).toHaveAttribute('aria-labelledby');
@@ -422,7 +444,9 @@ describe('Final Comprehensive Logout Tests', () => {
 
       // Check for screen reader announcement region
       await waitFor(() => {
-        const announcement = screen.getByText(/logout confirmation dialog opened/i);
+        const announcement = screen.getByText(
+          /logout confirmation dialog opened/i
+        );
         expect(announcement).toBeInTheDocument();
       });
     });
@@ -467,10 +491,10 @@ describe('Final Comprehensive Logout Tests', () => {
       );
 
       const logoutButton = screen.getByRole('button', { name: /logout/i });
-      
+
       // Check that button exists and is visible
       expect(logoutButton).toBeVisible();
-      
+
       // Check for responsive classes (basic validation)
       expect(logoutButton.className).toMatch(/px-|py-/);
     });
@@ -485,16 +509,16 @@ describe('Final Comprehensive Logout Tests', () => {
       );
 
       const logoutButton = screen.getByRole('button', { name: /logout/i });
-      
+
       // Simulate touch events
       fireEvent.touchStart(logoutButton, {
-        touches: [{ clientX: 100, clientY: 100 }]
+        touches: [{ clientX: 100, clientY: 100 }],
       });
-      
+
       fireEvent.touchEnd(logoutButton, {
-        changedTouches: [{ clientX: 100, clientY: 100 }]
+        changedTouches: [{ clientX: 100, clientY: 100 }],
       });
-      
+
       fireEvent.click(logoutButton);
 
       // Should open confirmation dialog
@@ -515,7 +539,7 @@ describe('Final Comprehensive Logout Tests', () => {
       // Check for responsive classes
       const logoutSection = container.querySelector('[class*="bg-red-50"]');
       expect(logoutSection).toBeInTheDocument();
-      
+
       // Should have responsive padding and spacing
       expect(logoutSection).toHaveClass(/p-4|sm:p-5|lg:p-6/);
     });
@@ -535,12 +559,14 @@ describe('Final Comprehensive Logout Tests', () => {
 
       await waitFor(() => {
         const dialog = screen.getByRole('dialog');
-        
+
         // Dialog should be properly sized for mobile
         expect(dialog).toHaveClass('p-4');
-        
+
         // Buttons should be stacked on mobile
-        const confirmButton = screen.getByRole('button', { name: /confirm logout and sign out/i });
+        const confirmButton = screen.getByRole('button', {
+          name: /confirm logout and sign out/i,
+        });
         expect(confirmButton.parentElement).toHaveClass(/flex-col|sm:flex-row/);
       });
     });
@@ -555,7 +581,7 @@ describe('Final Comprehensive Logout Tests', () => {
       );
 
       const logoutButton = screen.getByRole('button', { name: /logout/i });
-      
+
       // Check for adequate padding
       expect(logoutButton).toHaveClass(/px-4|py-3|sm:px-6|sm:py-4/);
     });
@@ -587,7 +613,7 @@ describe('Final Comprehensive Logout Tests', () => {
 
     it('should show error recovery options in Profile component', async () => {
       localStorageMock.getItem.mockReturnValue(userDataString);
-      
+
       // Mock logout to fail
       localStorageMock.removeItem.mockImplementation(() => {
         throw new Error('Network error');
@@ -608,17 +634,26 @@ describe('Final Comprehensive Logout Tests', () => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
       });
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout and sign out/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout and sign out/i,
+      });
       await user.click(confirmButton);
 
       // Wait for error state
-      await waitFor(() => {
-        expect(screen.getByText('Logout Failed')).toBeInTheDocument();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Logout Failed')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Check recovery options
-      expect(screen.getByRole('button', { name: /retry logout/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /force logout/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /retry logout/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /force logout/i })
+      ).toBeInTheDocument();
     });
   });
 
@@ -642,7 +677,9 @@ describe('Final Comprehensive Logout Tests', () => {
       );
 
       // Should show login message instead of logout
-      expect(screen.getByText('Please log in to view your profile.')).toBeInTheDocument();
+      expect(
+        screen.getByText('Please log in to view your profile.')
+      ).toBeInTheDocument();
     });
   });
 });

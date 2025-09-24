@@ -12,21 +12,23 @@ const defaultLinks = [
   {
     href: '#main-content',
     label: 'Skip to main content',
-    malayalamLabel: 'പ്രധാന ഉള്ളടക്കത്തിലേക്ക് പോകുക'
+    malayalamLabel: 'പ്രധാന ഉള്ളടക്കത്തിലേക്ക് പോകുക',
   },
   {
     href: '#navigation',
     label: 'Skip to navigation',
-    malayalamLabel: 'നാവിഗേഷനിലേക്ക് പോകുക'
+    malayalamLabel: 'നാവിഗേഷനിലേക്ക് പോകുക',
   },
   {
     href: '#footer',
     label: 'Skip to footer',
-    malayalamLabel: 'അടിക്കുറിപ്പിലേക്ക് പോകുക'
-  }
+    malayalamLabel: 'അടിക്കുറിപ്പിലേക്ക് പോകുക',
+  },
 ];
 
-export const SkipLinks: React.FC<SkipLinksProps> = ({ links = defaultLinks }) => {
+export const SkipLinks: React.FC<SkipLinksProps> = ({
+  links = defaultLinks,
+}) => {
   return (
     <div className="skip-links">
       {links.map((link, index) => (
@@ -39,11 +41,11 @@ export const SkipLinks: React.FC<SkipLinksProps> = ({ links = defaultLinks }) =>
             z-50 focus:z-50 transition-all duration-200
             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
           "
-          onFocus={(e) => {
+          onFocus={e => {
             // Ensure the skip link is visible when focused
             e.currentTarget.classList.remove('sr-only');
           }}
-          onBlur={(e) => {
+          onBlur={e => {
             // Hide the skip link when focus is lost
             e.currentTarget.classList.add('sr-only');
           }}

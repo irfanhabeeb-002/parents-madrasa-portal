@@ -3,6 +3,7 @@
 ## ✅ Files that SHOULD be in your GitHub repository:
 
 ### Core Application Files
+
 - `src/` - All source code files
 - `public/` - Static assets and PWA files
 - `index.html` - Main HTML file
@@ -10,6 +11,7 @@
 - `package-lock.json` - Locked dependency versions
 
 ### Configuration Files
+
 - `.env.example` - Template for environment variables (NO SECRETS)
 - `vite.config.ts` - Build configuration
 - `tsconfig.json` - TypeScript configuration
@@ -21,6 +23,7 @@
 - `.lintstagedrc.json` - Pre-commit hook configuration
 
 ### Deployment and CI/CD
+
 - `.github/workflows/` - GitHub Actions workflows
 - `vercel.json` - Vercel deployment configuration
 - `lighthouserc.js` - Performance testing configuration
@@ -29,22 +32,26 @@
 - `.dockerignore` - Docker ignore file
 
 ### Documentation
+
 - `README.md` - Project documentation
 - `DEPLOYMENT_CHECKLIST.md` - Production deployment guide
 - `FIREBASE_SETUP.md` - Firebase setup instructions
 - `*.md` files - All documentation files
 
 ### Firebase Configuration
+
 - `firestore.rules` - Firestore security rules
 - `storage.rules` - Firebase Storage security rules
 
 ### Git Configuration
+
 - `.gitignore` - Files to ignore in git
 - `.husky/` - Git hooks configuration
 
 ## ❌ Files that should NOT be in your GitHub repository:
 
 ### Environment Variables (SENSITIVE DATA)
+
 - `.env` - Contains actual API keys and secrets
 - `.env.local` - Local environment overrides
 - `.env.production` - Production credentials
@@ -53,12 +60,14 @@
 - `.env.test.local` - Test environment overrides
 
 ### Build Artifacts
+
 - `dist/` - Production build output
 - `build/` - Alternative build directory
 - `node_modules/` - Dependencies (managed by npm)
 - `coverage/` - Test coverage reports
 
 ### Temporary and Cache Files
+
 - `.cache/` - Build cache
 - `.vite/` - Vite cache
 - `*.log` - Log files
@@ -67,6 +76,7 @@
 - `lighthouse-reports/` - Performance test reports
 
 ### IDE and OS Files
+
 - `.vscode/` - VS Code settings (except extensions.json)
 - `.idea/` - IntelliJ IDEA settings
 - `.DS_Store` - macOS system files
@@ -95,17 +105,20 @@ git push
 ## 🛡️ Security Best Practices:
 
 ### 1. Environment Variables
+
 - Never commit actual API keys or secrets
 - Use `.env.example` as a template
 - Set environment variables in your deployment platform (Vercel, etc.)
 - Use different credentials for development, staging, and production
 
 ### 2. Firebase Configuration
+
 - Use separate Firebase projects for dev/staging/production
 - Keep Firebase service account keys out of the repository
 - Use Firebase security rules to protect data
 
 ### 3. API Keys
+
 - Rotate any API keys that were accidentally committed
 - Use environment variables for all sensitive configuration
 - Consider using secret management services for production

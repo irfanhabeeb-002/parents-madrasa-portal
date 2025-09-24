@@ -20,7 +20,7 @@ const colors = {
   green: '\x1b[32m',
   yellow: '\x1b[33m',
   blue: '\x1b[34m',
-  reset: '\x1b[0m'
+  reset: '\x1b[0m',
 };
 
 // Default values
@@ -57,7 +57,9 @@ args.forEach((arg, index) => {
       console.log('  development   Deploy to development');
       console.log('');
       console.log('Options:');
-      console.log('  --dry-run     Show what would be deployed without actually deploying');
+      console.log(
+        '  --dry-run     Show what would be deployed without actually deploying'
+      );
       console.log('  --skip-tests  Skip running tests before deployment');
       console.log('  --skip-build  Skip building the application');
       console.log('  -h, --help    Show this help message');
@@ -72,19 +74,23 @@ args.forEach((arg, index) => {
 
 // Logging functions
 const log = {
-  info: (message) => console.log(`${colors.blue}[INFO]${colors.reset} ${message}`),
-  success: (message) => console.log(`${colors.green}[SUCCESS]${colors.reset} ${message}`),
-  warning: (message) => console.log(`${colors.yellow}[WARNING]${colors.reset} ${message}`),
-  error: (message) => console.log(`${colors.red}[ERROR]${colors.reset} ${message}`)
+  info: message =>
+    console.log(`${colors.blue}[INFO]${colors.reset} ${message}`),
+  success: message =>
+    console.log(`${colors.green}[SUCCESS]${colors.reset} ${message}`),
+  warning: message =>
+    console.log(`${colors.yellow}[WARNING]${colors.reset} ${message}`),
+  error: message =>
+    console.log(`${colors.red}[ERROR]${colors.reset} ${message}`),
 };
 
 // Execute command with error handling
 const execCommand = (command, options = {}) => {
   try {
-    const result = execSync(command, { 
-      stdio: 'inherit', 
+    const result = execSync(command, {
+      stdio: 'inherit',
       cwd: PROJECT_DIR,
-      ...options 
+      ...options,
     });
     return result;
   } catch (error) {
@@ -96,10 +102,10 @@ const execCommand = (command, options = {}) => {
 // Check if required tools are installed
 const checkDependencies = () => {
   log.info('Checking dependencies...');
-  
+
   const requiredCommands = ['node', 'npm'];
   const missingDeps = [];
-  
+
   requiredCommands.forEach(cmd => {
     try {
       execSync(`${cmd} --version`, { stdio: 'ignore' });
@@ -107,25 +113,25 @@ const checkDependencies = () => {
       missingDeps.push(cmd);
     }
   });
-  
+
   if (missingDeps.length > 0) {
     log.error(`Missing required dependencies: ${missingDeps.join(', ')}`);
     process.exit(1);
   }
-  
+
   log.success('All dependencies are installed');
 };
 
 // Validate environment
 const validateEnvironment = () => {
   log.info(`Validating environment: ${environment}`);
-  
+
   const envFiles = {
     production: '.env.production',
     staging: '.env.staging',
-    development: '.env'
+    development: '.env',
   };
-  
+
   const envFile = envFiles[environment];
   if (envFile && !fs.existsSync(path.join(PROJECT_DIR, envFile))) {
     if (environment === 'development') {
@@ -136,18 +142,18 @@ const validateEnvironment = () => {
       process.exit(1);
     }
   }
-  
+
   log.success('Environment validation passed');
 };
 
 // Check git status
 const checkGitStatus = () => {
   log.info('Checking git status...');
-  
+
   try {
     // Check if we're in a git repository
     execSync('git rev-parse --git-dir', { stdio: 'ignore' });
-    
+
     // Check for uncommitted changes
     try {
       execSync('git diff-index --quiet HEAD --', { stdio: 'ignore' });
@@ -158,38 +164,44 @@ const checkGitStatus = () => {
         process.exit(1);
       }
     }
-    
+
     // Check current branch
-    const currentBranch = execSync('git branch --show-current', { encoding: 'utf8' }).trim();
+    const currentBranch = execSync('git branch --show-current', {
+      encoding: 'utf8',
+    }).trim();
     log.info(`Current branch: ${currentBranch}`);
-    
+
     if (environment === 'production' && currentBranch !== 'main') {
-      log.error('Production deployments must be from \'main\' branch');
+      log.error("Production deployments must be from 'main' branch");
       process.exit(1);
     }
-    
-    if (environment === 'staging' && !['staging', 'main'].includes(currentBranch)) {
-      log.warning('Staging deployments should be from \'staging\' or \'main\' branch');
+
+    if (
+      environment === 'staging' &&
+      !['staging', 'main'].includes(currentBranch)
+    ) {
+      log.warning(
+        "Staging deployments should be from 'staging' or 'main' branch"
+      );
     }
-    
   } catch (error) {
     log.warning('Not in a git repository');
   }
-  
+
   log.success('Git status check passed');
 };
 
 // Install dependencies
 const installDependencies = () => {
   log.info('Installing dependencies...');
-  
+
   if (!fs.existsSync(path.join(PROJECT_DIR, 'package-lock.json'))) {
     log.warning('package-lock.json not found, running npm install');
     execCommand('npm install');
   } else {
     execCommand('npm ci');
   }
-  
+
   log.success('Dependencies installed');
 };
 
@@ -199,25 +211,25 @@ const runTests = () => {
     log.warning('Skipping tests (--skip-tests flag provided)');
     return;
   }
-  
+
   log.info('Running tests...');
-  
+
   // Type checking
   log.info('Running type checking...');
   execCommand('npm run typecheck');
-  
+
   // Linting
   log.info('Running linter...');
   execCommand('npm run lint');
-  
+
   // Unit tests
   log.info('Running unit tests...');
   execCommand('npm run test');
-  
+
   // Accessibility tests
   log.info('Running accessibility tests...');
   execCommand('npm run test:accessibility');
-  
+
   log.success('All tests passed');
 };
 
@@ -227,42 +239,44 @@ const buildApplication = () => {
     log.warning('Skipping build (--skip-build flag provided)');
     return;
   }
-  
+
   log.info(`Building application for ${environment}...`);
-  
+
   // Copy environment file
   const envFiles = {
     production: '.env.production',
-    staging: '.env.staging'
+    staging: '.env.staging',
   };
-  
+
   if (envFiles[environment]) {
     const srcFile = path.join(PROJECT_DIR, envFiles[environment]);
     const destFile = path.join(PROJECT_DIR, '.env.local');
-    
+
     if (fs.existsSync(srcFile)) {
       fs.copyFileSync(srcFile, destFile);
     }
   }
-  
+
   // Build
-  execCommand(`npm run build`, { env: { ...process.env, NODE_ENV: environment } });
-  
+  execCommand(`npm run build`, {
+    env: { ...process.env, NODE_ENV: environment },
+  });
+
   // Verify build output
   if (!fs.existsSync(BUILD_DIR)) {
     log.error(`Build directory not found: ${BUILD_DIR}`);
     process.exit(1);
   }
-  
+
   if (!fs.existsSync(path.join(BUILD_DIR, 'index.html'))) {
     log.error('Build output invalid: index.html not found');
     process.exit(1);
   }
-  
+
   // Get build size
   const stats = fs.statSync(BUILD_DIR);
   log.info(`Build completed successfully`);
-  
+
   log.success('Application built successfully');
 };
 
@@ -272,17 +286,17 @@ const createBackup = () => {
     log.info('[DRY RUN] Would create backup');
     return;
   }
-  
+
   log.info('Creating backup...');
-  
+
   if (!fs.existsSync(BACKUP_DIR)) {
     fs.mkdirSync(BACKUP_DIR, { recursive: true });
   }
-  
+
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
   const backupName = `backup_${environment}_${timestamp}`;
   const backupPath = path.join(BACKUP_DIR, backupName);
-  
+
   // Create backup of current build
   if (fs.existsSync(BUILD_DIR)) {
     fs.cpSync(BUILD_DIR, backupPath, { recursive: true });
@@ -290,17 +304,18 @@ const createBackup = () => {
   } else {
     log.warning('No existing build to backup');
   }
-  
+
   // Keep only last 5 backups
-  const backups = fs.readdirSync(BACKUP_DIR)
+  const backups = fs
+    .readdirSync(BACKUP_DIR)
     .filter(name => name.startsWith('backup_'))
     .map(name => ({
       name,
       path: path.join(BACKUP_DIR, name),
-      mtime: fs.statSync(path.join(BACKUP_DIR, name)).mtime
+      mtime: fs.statSync(path.join(BACKUP_DIR, name)).mtime,
     }))
     .sort((a, b) => b.mtime - a.mtime);
-  
+
   if (backups.length > 5) {
     backups.slice(5).forEach(backup => {
       fs.rmSync(backup.path, { recursive: true, force: true });
@@ -311,12 +326,12 @@ const createBackup = () => {
 // Deploy to Vercel
 const deployVercel = () => {
   log.info(`Deploying to Vercel (${environment})...`);
-  
+
   if (dryRun) {
     log.info('[DRY RUN] Would deploy to Vercel');
     return;
   }
-  
+
   // Check if Vercel CLI is installed
   try {
     execSync('vercel --version', { stdio: 'ignore' });
@@ -324,14 +339,13 @@ const deployVercel = () => {
     log.info('Installing Vercel CLI...');
     execCommand('npm install -g vercel');
   }
-  
+
   // Deploy based on environment
-  const deployCommand = environment === 'production' 
-    ? 'vercel --prod'
-    : 'vercel';
-  
+  const deployCommand =
+    environment === 'production' ? 'vercel --prod' : 'vercel';
+
   execCommand(deployCommand);
-  
+
   log.success('Deployed to Vercel');
 };
 
@@ -341,9 +355,9 @@ const sendNotification = (status, message) => {
     log.info(`[DRY RUN] Would send notification: ${message}`);
     return;
   }
-  
+
   log.info('Sending notification...');
-  
+
   // This would integrate with your notification service (Slack, Discord, etc.)
   // For now, just log the message
   if (status === 'success') {
@@ -357,30 +371,32 @@ const sendNotification = (status, message) => {
 const main = async () => {
   try {
     log.info(`Starting deployment to ${environment}...`);
-    
+
     if (dryRun) {
       log.warning('DRY RUN MODE - No actual changes will be made');
     }
-    
+
     // Pre-deployment checks
     checkDependencies();
     validateEnvironment();
     checkGitStatus();
-    
+
     // Build and test
     installDependencies();
     runTests();
     createBackup();
     buildApplication();
-    
+
     // Deploy
     deployVercel();
-    
+
     // Notify success
-    sendNotification('success', `Deployment to ${environment} completed successfully! 🚀`);
-    
+    sendNotification(
+      'success',
+      `Deployment to ${environment} completed successfully! 🚀`
+    );
+
     log.success('Deployment completed successfully!');
-    
   } catch (error) {
     log.error('Deployment failed!');
     sendNotification('error', `Deployment to ${environment} failed! ❌`);

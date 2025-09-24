@@ -52,8 +52,8 @@ export const Card: React.FC<CardProps> = ({
 
   const combinedClasses = [
     ...baseClasses,
-    ...(Array.isArray(variantClasses[variant]) 
-      ? variantClasses[variant] 
+    ...(Array.isArray(variantClasses[variant])
+      ? variantClasses[variant]
       : [variantClasses[variant]]),
     className,
   ].join(' ');
@@ -67,30 +67,29 @@ export const Card: React.FC<CardProps> = ({
           </div>
         </div>
       )}
-      
+
       <div className="text-center">
         <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2 lg:mb-3">
           {title}
         </h2>
-        
+
         {subtitle && (
           <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-1 sm:mb-2">
             {subtitle}
           </p>
         )}
-        
+
         {malayalamSubtitle && (
-          <p className="text-sm sm:text-base lg:text-lg text-gray-500" lang="ml">
+          <p
+            className="text-sm sm:text-base lg:text-lg text-gray-500"
+            lang="ml"
+          >
             {malayalamSubtitle}
           </p>
         )}
       </div>
-      
-      {children && (
-        <div className="mt-4 sm:mt-5 lg:mt-6">
-          {children}
-        </div>
-      )}
+
+      {children && <div className="mt-4 sm:mt-5 lg:mt-6">{children}</div>}
     </div>
   );
 
@@ -103,7 +102,7 @@ export const Card: React.FC<CardProps> = ({
         aria-label={ariaLabel || title}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             onClick();

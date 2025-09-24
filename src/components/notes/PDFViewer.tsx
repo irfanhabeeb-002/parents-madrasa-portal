@@ -52,7 +52,7 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({ note, onClose }) => {
           <span className="mx-2">•</span>
           <span>Difficulty: {note.difficulty}</span>
         </div>
-        
+
         <AccessibleButton variant="secondary" onClick={onClose}>
           Close
         </AccessibleButton>

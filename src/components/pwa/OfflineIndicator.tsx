@@ -5,7 +5,9 @@ interface OfflineIndicatorProps {
   className?: string;
 }
 
-export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ className = '' }) => {
+export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
+  className = '',
+}) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showOfflineMessage, setShowOfflineMessage] = useState(false);
   const [showOnlineMessage, setShowOnlineMessage] = useState(false);
@@ -15,7 +17,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ className = 
       setIsOnline(true);
       setShowOnlineMessage(true);
       setShowOfflineMessage(false);
-      
+
       // Hide online message after 3 seconds
       setTimeout(() => {
         setShowOnlineMessage(false);
@@ -96,7 +98,9 @@ export const useOnlineStatus = () => {
 };
 
 // Network status indicator component
-export const NetworkStatus: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const NetworkStatus: React.FC<{ className?: string }> = ({
+  className = '',
+}) => {
   const isOnline = useOnlineStatus();
 
   return (

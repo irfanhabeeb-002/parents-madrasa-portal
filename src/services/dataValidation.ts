@@ -29,7 +29,6 @@ interface ValidationWarning {
  * Data Validation Service for ensuring data integrity
  */
 export class DataValidationService {
-
   // Common validation rules
   private static readonly VALIDATION_RULES = {
     required: (value: any, fieldName: string): ValidationError | null => {
@@ -38,7 +37,7 @@ export class DataValidationService {
           field: fieldName,
           message: `${fieldName} is required`,
           code: 'REQUIRED_FIELD',
-          severity: 'error' as const
+          severity: 'error' as const,
         };
       }
       return null;
@@ -50,19 +49,19 @@ export class DataValidationService {
           field: fieldName,
           message: `${fieldName} must be a valid email address`,
           code: 'INVALID_EMAIL',
-          severity: 'error' as const
+          severity: 'error' as const,
         };
       }
       return null;
     },
 
     phone: (value: string, fieldName: string): ValidationError | null => {
-      if (value && !/^\+?[\d\s\-\(\)]{10,}$/.test(value)) {
+      if (value && !/^\+?[\d\s\-()]{10,}$/.test(value)) {
         return {
           field: fieldName,
           message: `${fieldName} must be a valid phone number`,
           code: 'INVALID_PHONE',
-          severity: 'error' as const
+          severity: 'error' as const,
         };
       }
       return null;
@@ -74,50 +73,60 @@ export class DataValidationService {
           field: fieldName,
           message: `${fieldName} must be a valid URL`,
           code: 'INVALID_URL',
-          severity: 'error' as const
+          severity: 'error' as const,
         };
       }
       return null;
     },
 
-    positiveNumber: (value: number, fieldName: string): ValidationError | null => {
+    positiveNumber: (
+      value: number,
+      fieldName: string
+    ): ValidationError | null => {
       if (value !== undefined && value !== null && value < 0) {
         return {
           field: fieldName,
           message: `${fieldName} must be a positive number`,
           code: 'INVALID_POSITIVE_NUMBER',
-          severity: 'error' as const
+          severity: 'error' as const,
         };
       }
       return null;
     },
 
-    dateRange: (startDate: Date | string, endDate: Date | string, fieldName: string): ValidationError | null => {
+    dateRange: (
+      startDate: Date | string,
+      endDate: Date | string,
+      fieldName: string
+    ): ValidationError | null => {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      
+
       if (start > end) {
         return {
           field: fieldName,
           message: `Start date must be before end date`,
           code: 'INVALID_DATE_RANGE',
-          severity: 'error' as const
+          severity: 'error' as const,
         };
       }
       return null;
     },
 
-    arrayNotEmpty: (value: any[], fieldName: string): ValidationError | null => {
+    arrayNotEmpty: (
+      value: any[],
+      fieldName: string
+    ): ValidationError | null => {
       if (Array.isArray(value) && value.length === 0) {
         return {
           field: fieldName,
           message: `${fieldName} cannot be empty`,
           code: 'EMPTY_ARRAY',
-          severity: 'error' as const
+          severity: 'error' as const,
         };
       }
       return null;
-    }
+    },
   };
 
   // Validate Recording
@@ -126,9 +135,18 @@ export class DataValidationService {
     const warnings: ValidationWarning[] = [];
 
     // Required fields
-    const requiredFields = ['id', 'classSessionId', 'title', 'videoUrl', 'duration'];
+    const requiredFields = [
+      'id',
+      'classSessionId',
+      'title',
+      'videoUrl',
+      'duration',
+    ];
     requiredFields.forEach(field => {
-      const error = this.VALIDATION_RULES.required((recording as any)[field], field);
+      const error = this.VALIDATION_RULES.required(
+        (recording as any)[field],
+        field
+      );
       if (error) errors.push(error);
     });
 
@@ -139,42 +157,53 @@ export class DataValidationService {
     }
 
     if (recording.thumbnailUrl) {
-      const error = this.VALIDATION_RULES.url(recording.thumbnailUrl, 'thumbnailUrl');
+      const error = this.VALIDATION_RULES.url(
+        recording.thumbnailUrl,
+        'thumbnailUrl'
+      );
       if (error) errors.push(error);
     }
 
     // Positive numbers
     if (recording.duration !== undefined) {
-      const error = this.VALIDATION_RULES.positiveNumber(recording.duration, 'duration');
+      const error = this.VALIDATION_RULES.positiveNumber(
+        recording.duration,
+        'duration'
+      );
       if (error) errors.push(error);
     }
 
     if (recording.fileSize !== undefined) {
-      const error = this.VALIDATION_RULES.positiveNumber(recording.fileSize, 'fileSize');
+      const error = this.VALIDATION_RULES.positiveNumber(
+        recording.fileSize,
+        'fileSize'
+      );
       if (error) errors.push(error);
     }
 
     // Warnings
-    if (recording.duration && recording.duration > 7200) { // 2 hours
+    if (recording.duration && recording.duration > 7200) {
+      // 2 hours
       warnings.push({
         field: 'duration',
         message: 'Recording duration is unusually long (over 2 hours)',
-        code: 'LONG_DURATION'
+        code: 'LONG_DURATION',
       });
     }
 
-    if (recording.fileSize && recording.fileSize > 1073741824) { // 1GB
+    if (recording.fileSize && recording.fileSize > 1073741824) {
+      // 1GB
       warnings.push({
         field: 'fileSize',
         message: 'Recording file size is very large (over 1GB)',
-        code: 'LARGE_FILE_SIZE'
+        code: 'LARGE_FILE_SIZE',
       });
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -184,7 +213,14 @@ export class DataValidationService {
     const warnings: ValidationWarning[] = [];
 
     // Required fields
-    const requiredFields = ['id', 'classSessionId', 'title', 'content', 'author', 'subject'];
+    const requiredFields = [
+      'id',
+      'classSessionId',
+      'title',
+      'content',
+      'author',
+      'subject',
+    ];
     requiredFields.forEach(field => {
       const error = this.VALIDATION_RULES.required((note as any)[field], field);
       if (error) errors.push(error);
@@ -206,12 +242,18 @@ export class DataValidationService {
 
     // Positive numbers
     if (note.fileSize !== undefined) {
-      const error = this.VALIDATION_RULES.positiveNumber(note.fileSize, 'fileSize');
+      const error = this.VALIDATION_RULES.positiveNumber(
+        note.fileSize,
+        'fileSize'
+      );
       if (error) errors.push(error);
     }
 
     if (note.pageCount !== undefined) {
-      const error = this.VALIDATION_RULES.positiveNumber(note.pageCount, 'pageCount');
+      const error = this.VALIDATION_RULES.positiveNumber(
+        note.pageCount,
+        'pageCount'
+      );
       if (error) errors.push(error);
     }
 
@@ -220,14 +262,14 @@ export class DataValidationService {
       warnings.push({
         field: 'content',
         message: 'Note content is quite short (less than 100 characters)',
-        code: 'SHORT_CONTENT'
+        code: 'SHORT_CONTENT',
       });
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -237,54 +279,80 @@ export class DataValidationService {
     const warnings: ValidationWarning[] = [];
 
     // Required fields
-    const requiredFields = ['id', 'title', 'description', 'questions', 'passingScore', 'maxAttempts'];
+    const requiredFields = [
+      'id',
+      'title',
+      'description',
+      'questions',
+      'passingScore',
+      'maxAttempts',
+    ];
     requiredFields.forEach(field => {
-      const error = this.VALIDATION_RULES.required((exercise as any)[field], field);
+      const error = this.VALIDATION_RULES.required(
+        (exercise as any)[field],
+        field
+      );
       if (error) errors.push(error);
     });
 
     // Questions validation
     if (exercise.questions) {
-      const questionsError = this.VALIDATION_RULES.arrayNotEmpty(exercise.questions, 'questions');
+      const questionsError = this.VALIDATION_RULES.arrayNotEmpty(
+        exercise.questions,
+        'questions'
+      );
       if (questionsError) errors.push(questionsError);
 
       exercise.questions.forEach((question, index) => {
-        const questionErrors = this.validateQuestion(question, `questions[${index}]`);
+        const questionErrors = this.validateQuestion(
+          question,
+          `questions[${index}]`
+        );
         errors.push(...questionErrors);
       });
     }
 
     // Positive numbers
     if (exercise.passingScore !== undefined) {
-      const error = this.VALIDATION_RULES.positiveNumber(exercise.passingScore, 'passingScore');
+      const error = this.VALIDATION_RULES.positiveNumber(
+        exercise.passingScore,
+        'passingScore'
+      );
       if (error) errors.push(error);
-      
+
       if (exercise.passingScore > 100) {
         errors.push({
           field: 'passingScore',
           message: 'Passing score cannot exceed 100%',
           code: 'INVALID_PASSING_SCORE',
-          severity: 'error'
+          severity: 'error',
         });
       }
     }
 
     if (exercise.maxAttempts !== undefined) {
-      const error = this.VALIDATION_RULES.positiveNumber(exercise.maxAttempts, 'maxAttempts');
+      const error = this.VALIDATION_RULES.positiveNumber(
+        exercise.maxAttempts,
+        'maxAttempts'
+      );
       if (error) errors.push(error);
     }
 
     if (exercise.timeLimit !== undefined) {
-      const error = this.VALIDATION_RULES.positiveNumber(exercise.timeLimit, 'timeLimit');
+      const error = this.VALIDATION_RULES.positiveNumber(
+        exercise.timeLimit,
+        'timeLimit'
+      );
       if (error) errors.push(error);
     }
 
     // Warnings
-    if (exercise.timeLimit && exercise.timeLimit > 180) { // 3 hours
+    if (exercise.timeLimit && exercise.timeLimit > 180) {
+      // 3 hours
       warnings.push({
         field: 'timeLimit',
         message: 'Exercise time limit is very long (over 3 hours)',
-        code: 'LONG_TIME_LIMIT'
+        code: 'LONG_TIME_LIMIT',
       });
     }
 
@@ -292,26 +360,38 @@ export class DataValidationService {
       warnings.push({
         field: 'questions',
         message: 'Exercise has many questions (over 50), consider splitting',
-        code: 'MANY_QUESTIONS'
+        code: 'MANY_QUESTIONS',
       });
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
   // Validate Question
-  private static validateQuestion(question: Partial<Question>, fieldPrefix: string = ''): ValidationError[] {
+  private static validateQuestion(
+    question: Partial<Question>,
+    fieldPrefix: string = ''
+  ): ValidationError[] {
     const errors: ValidationError[] = [];
     const prefix = fieldPrefix ? `${fieldPrefix}.` : '';
 
     // Required fields
-    const requiredFields = ['id', 'type', 'question', 'correctAnswer', 'points'];
+    const requiredFields = [
+      'id',
+      'type',
+      'question',
+      'correctAnswer',
+      'points',
+    ];
     requiredFields.forEach(field => {
-      const error = this.VALIDATION_RULES.required((question as any)[field], `${prefix}${field}`);
+      const error = this.VALIDATION_RULES.required(
+        (question as any)[field],
+        `${prefix}${field}`
+      );
       if (error) errors.push(error);
     });
 
@@ -322,7 +402,7 @@ export class DataValidationService {
           field: `${prefix}options`,
           message: 'MCQ questions must have at least 2 options',
           code: 'INSUFFICIENT_OPTIONS',
-          severity: 'error'
+          severity: 'error',
         });
       }
 
@@ -333,7 +413,7 @@ export class DataValidationService {
             field: `${prefix}options`,
             message: 'MCQ questions must have at least one correct option',
             code: 'NO_CORRECT_OPTION',
-            severity: 'error'
+            severity: 'error',
           });
         }
       }
@@ -341,7 +421,10 @@ export class DataValidationService {
 
     // Points validation
     if (question.points !== undefined) {
-      const error = this.VALIDATION_RULES.positiveNumber(question.points, `${prefix}points`);
+      const error = this.VALIDATION_RULES.positiveNumber(
+        question.points,
+        `${prefix}points`
+      );
       if (error) errors.push(error);
     }
 
@@ -354,37 +437,57 @@ export class DataValidationService {
     const warnings: ValidationWarning[] = [];
 
     // Required fields
-    const requiredFields = ['id', 'userId', 'classSessionId', 'joinedAt', 'isPresent'];
+    const requiredFields = [
+      'id',
+      'userId',
+      'classSessionId',
+      'joinedAt',
+      'isPresent',
+    ];
     requiredFields.forEach(field => {
-      const error = this.VALIDATION_RULES.required((attendance as any)[field], field);
+      const error = this.VALIDATION_RULES.required(
+        (attendance as any)[field],
+        field
+      );
       if (error) errors.push(error);
     });
 
     // Date validation
     if (attendance.joinedAt && attendance.leftAt) {
-      const error = this.VALIDATION_RULES.dateRange(attendance.joinedAt, attendance.leftAt, 'attendance period');
+      const error = this.VALIDATION_RULES.dateRange(
+        attendance.joinedAt,
+        attendance.leftAt,
+        'attendance period'
+      );
       if (error) errors.push(error);
     }
 
     // Duration validation
     if (attendance.duration !== undefined) {
-      const error = this.VALIDATION_RULES.positiveNumber(attendance.duration, 'duration');
+      const error = this.VALIDATION_RULES.positiveNumber(
+        attendance.duration,
+        'duration'
+      );
       if (error) errors.push(error);
     }
 
     // Logical validation
-    if (attendance.isPresent === false && attendance.duration && attendance.duration > 0) {
+    if (
+      attendance.isPresent === false &&
+      attendance.duration &&
+      attendance.duration > 0
+    ) {
       warnings.push({
         field: 'duration',
         message: 'Attendance marked as absent but has positive duration',
-        code: 'INCONSISTENT_ATTENDANCE'
+        code: 'INCONSISTENT_ATTENDANCE',
       });
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -418,20 +521,23 @@ export class DataValidationService {
         field: 'contact',
         message: 'User must have either email or phone number',
         code: 'NO_CONTACT_METHOD',
-        severity: 'error'
+        severity: 'error',
       });
     }
 
     // Profile picture URL
     if (user.profilePictureUrl) {
-      const error = this.VALIDATION_RULES.url(user.profilePictureUrl, 'profilePictureUrl');
+      const error = this.VALIDATION_RULES.url(
+        user.profilePictureUrl,
+        'profilePictureUrl'
+      );
       if (error) errors.push(error);
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -452,17 +558,17 @@ export class DataValidationService {
     try {
       const validItems: T[] = [];
       const invalidItems: { item: T; validation: ValidationResult }[] = [];
-      let totalWarnings = 0;
+      const totalWarnings = 0;
 
       items.forEach(item => {
         const validation = validator(item);
-        
+
         if (validation.isValid) {
           validItems.push(item);
         } else {
           invalidItems.push({ item, validation });
         }
-        
+
         totalWarnings += validation.warnings.length;
       });
 
@@ -470,28 +576,28 @@ export class DataValidationService {
         total: items.length,
         valid: validItems.length,
         invalid: invalidItems.length,
-        warnings: totalWarnings
+        warnings: totalWarnings,
       };
 
       return {
         data: {
           validItems,
           invalidItems,
-          summary
+          summary,
         },
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: {
           validItems: [],
           invalidItems: [],
-          summary: { total: 0, valid: 0, invalid: 0, warnings: 0 }
+          summary: { total: 0, valid: 0, invalid: 0, warnings: 0 },
         },
         success: false,
         error: error instanceof Error ? error.message : 'Validation failed',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -508,7 +614,14 @@ export class DataValidationService {
     });
 
     // Convert date strings to Date objects
-    const dateFields = ['createdAt', 'updatedAt', 'joinedAt', 'leftAt', 'scheduledAt', 'completedAt'];
+    const dateFields = [
+      'createdAt',
+      'updatedAt',
+      'joinedAt',
+      'leftAt',
+      'scheduledAt',
+      'completedAt',
+    ];
     dateFields.forEach(field => {
       if (sanitized[field] && typeof sanitized[field] === 'string') {
         try {
@@ -522,7 +635,9 @@ export class DataValidationService {
     // Remove null/undefined values from arrays
     Object.keys(sanitized).forEach(key => {
       if (Array.isArray(sanitized[key])) {
-        sanitized[key] = sanitized[key].filter((item: any) => item !== null && item !== undefined);
+        sanitized[key] = sanitized[key].filter(
+          (item: any) => item !== null && item !== undefined
+        );
       }
     });
 
@@ -541,7 +656,7 @@ export class DataValidationService {
     const totalItems = validationResults.length;
     const validItems = validationResults.filter(r => r.isValid).length;
     const invalidItems = totalItems - validItems;
-    
+
     const allErrors = validationResults.flatMap(r => r.errors);
     const totalErrors = allErrors.length;
     const totalWarnings = validationResults.flatMap(r => r.warnings).length;
@@ -556,7 +671,11 @@ export class DataValidationService {
     });
 
     const commonErrors = Object.entries(errorCounts)
-      .map(([code, data]) => ({ code, count: data.count, message: data.message }))
+      .map(([code, data]) => ({
+        code,
+        count: data.count,
+        message: data.message,
+      }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5); // Top 5 most common errors
 
@@ -566,7 +685,7 @@ export class DataValidationService {
       invalidItems,
       totalErrors,
       totalWarnings,
-      commonErrors
+      commonErrors,
     };
   }
 }

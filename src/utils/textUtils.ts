@@ -20,10 +20,11 @@ export const truncateText = (
 
   // Find the last space within the maxLength to avoid cutting words
   const truncateIndex = text.lastIndexOf(' ', maxLength - suffix.length);
-  
+
   // If no space found within range, just cut at maxLength
-  const cutIndex = truncateIndex > 0 ? truncateIndex : maxLength - suffix.length;
-  
+  const cutIndex =
+    truncateIndex > 0 ? truncateIndex : maxLength - suffix.length;
+
   return text.substring(0, cutIndex).trim() + suffix;
 };
 
@@ -41,8 +42,8 @@ export const truncateAnnouncement = (
 
   // Different truncation lengths for different contexts
   const maxLengths = {
-    mobile: 120,   // Shorter for mobile banner
-    desktop: 200   // Longer for desktop cards
+    mobile: 120, // Shorter for mobile banner
+    desktop: 200, // Longer for desktop cards
   };
 
   return truncateText(message, maxLengths[context]);

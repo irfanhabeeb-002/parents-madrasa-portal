@@ -26,32 +26,36 @@ export class MobileNotificationManager {
     if (this.isPWA || this.isStandalone) {
       return true; // PWA has better notification support
     }
-    
+
     if (this.isIOS) {
       return this.isStandalone; // iOS needs PWA installation
     }
-    
+
     if (this.isAndroid) {
       return 'Notification' in window; // Android browsers have better support
     }
-    
+
     return 'Notification' in window;
   }
 
   // Get mobile-specific notification strategy
-  getNotificationStrategy(): 'pwa' | 'browser' | 'in-app-only' | 'install-prompt' {
+  getNotificationStrategy():
+    | 'pwa'
+    | 'browser'
+    | 'in-app-only'
+    | 'install-prompt' {
     if (this.isPWA || this.isStandalone) {
       return 'pwa';
     }
-    
+
     if (this.isIOS && !this.isStandalone) {
       return 'install-prompt'; // iOS needs PWA installation
     }
-    
+
     if (this.isAndroid && 'Notification' in window) {
       return 'browser';
     }
-    
+
     return 'in-app-only';
   }
 
@@ -69,18 +73,18 @@ export class MobileNotificationManager {
     } = {}
   ): Promise<boolean> {
     const strategy = this.getNotificationStrategy();
-    
+
     switch (strategy) {
       case 'pwa':
         return this.sendPWANotification(title, message, options);
-      
+
       case 'browser':
         return this.sendBrowserNotification(title, message, options);
-      
+
       case 'install-prompt':
         this.showInstallPrompt();
         return this.sendInAppNotification(title, message, options);
-      
+
       case 'in-app-only':
       default:
         return this.sendInAppNotification(title, message, options);
@@ -88,11 +92,15 @@ export class MobileNotificationManager {
   }
 
   // PWA notifications (best mobile experience)
-  private async sendPWANotification(title: string, message: string, options: any): Promise<boolean> {
+  private async sendPWANotification(
+    title: string,
+    message: string,
+    options: any
+  ): Promise<boolean> {
     try {
       if ('serviceWorker' in navigator) {
         const registration = await navigator.serviceWorker.ready;
-        
+
         await registration.showNotification(title, {
           body: message,
           icon: '/icons/icon-192x192.png',
@@ -104,34 +112,38 @@ export class MobileNotificationManager {
           data: {
             malayalamTitle: options.malayalamTitle,
             malayalamMessage: options.malayalamMessage,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           },
           actions: [
             {
               action: 'view',
               title: 'View',
-              icon: '/icons/view-icon.png'
+              icon: '/icons/view-icon.png',
             },
             {
               action: 'dismiss',
               title: 'Dismiss',
-              icon: '/icons/dismiss-icon.png'
-            }
-          ]
+              icon: '/icons/dismiss-icon.png',
+            },
+          ],
         });
-        
-        console.log('✅ PWA notification sent successfully');
+
+        console.warn('✅ PWA notification sent successfully');
         return true;
       }
     } catch (error) {
       console.error('PWA notification failed:', error);
     }
-    
+
     return false;
   }
 
   // Browser notifications (Android Chrome)
-  private async sendBrowserNotification(title: string, message: string, options: any): Promise<boolean> {
+  private async sendBrowserNotification(
+    title: string,
+    message: string,
+    options: any
+  ): Promise<boolean> {
     try {
       if (Notification.permission === 'granted') {
         const notification = new Notification(title, {
@@ -141,7 +153,7 @@ export class MobileNotificationManager {
           tag: `mobile-browser-${Date.now()}`,
           requireInteraction: options.priority === 'high',
           silent: !options.sound,
-          vibrate: options.vibrate ? [200, 100, 200] : undefined
+          vibrate: options.vibrate ? [200, 100, 200] : undefined,
         });
 
         // Mobile-specific: shorter auto-close time
@@ -149,44 +161,52 @@ export class MobileNotificationManager {
           setTimeout(() => notification.close(), 4000);
         }
 
-        console.log('✅ Mobile browser notification sent');
+        console.warn('✅ Mobile browser notification sent');
         return true;
       }
     } catch (error) {
       console.error('Mobile browser notification failed:', error);
     }
-    
+
     return false;
   }
 
   // In-app notifications (fallback for all mobile)
-  private sendInAppNotification(title: string, message: string, options: any): boolean {
+  private sendInAppNotification(
+    title: string,
+    message: string,
+    options: any
+  ): boolean {
     // Create mobile-optimized in-app notification
     this.createMobileToast(title, message, options);
-    
+
     // Vibrate if supported and enabled
     if (options.vibrate && 'vibrate' in navigator) {
       navigator.vibrate([200, 100, 200, 100, 200]);
     }
-    
+
     // Play sound if supported and enabled
     if (options.sound) {
       this.playNotificationSound();
     }
-    
-    console.log('✅ Mobile in-app notification shown');
+
+    console.warn('✅ Mobile in-app notification shown');
     return true;
   }
 
   // Create mobile-optimized toast notification
-  private createMobileToast(title: string, message: string, options: any): void {
+  private createMobileToast(
+    title: string,
+    message: string,
+    options: any
+  ): void {
     const toast = document.createElement('div');
     toast.className = `
       fixed top-4 left-4 right-4 z-50 bg-white border border-gray-200 rounded-lg shadow-lg
       transform transition-all duration-300 ease-out translate-y-[-100px] opacity-0
       md:max-w-sm md:left-auto md:right-4
     `;
-    
+
     toast.innerHTML = `
       <div class="p-4">
         <div class="flex items-start space-x-3">
@@ -200,10 +220,14 @@ export class MobileNotificationManager {
           <div class="flex-1 min-w-0">
             <h4 class="text-sm font-semibold text-gray-900 mb-1">${title}</h4>
             <p class="text-sm text-gray-600 leading-relaxed">${message}</p>
-            ${options.malayalamTitle ? `
+            ${
+              options.malayalamTitle
+                ? `
               <h5 class="text-xs font-medium text-gray-700 mt-2" lang="ml">${options.malayalamTitle}</h5>
               <p class="text-xs text-gray-500 mt-1" lang="ml">${options.malayalamMessage || ''}</p>
-            ` : ''}
+            `
+                : ''
+            }
           </div>
           <button class="flex-shrink-0 text-gray-400 hover:text-gray-600" onclick="this.parentElement.parentElement.parentElement.remove()">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -213,15 +237,15 @@ export class MobileNotificationManager {
         </div>
       </div>
     `;
-    
+
     document.body.appendChild(toast);
-    
+
     // Animate in
     setTimeout(() => {
       toast.classList.remove('translate-y-[-100px]', 'opacity-0');
       toast.classList.add('translate-y-0', 'opacity-100');
     }, 100);
-    
+
     // Auto-remove
     const autoRemoveTime = options.priority === 'high' ? 8000 : 5000;
     setTimeout(() => {
@@ -239,7 +263,7 @@ export class MobileNotificationManager {
       fixed bottom-4 left-4 right-4 bg-blue-600 text-white rounded-lg shadow-lg z-50
       transform transition-all duration-300 ease-out translate-y-full
     `;
-    
+
     installBanner.innerHTML = `
       <div class="p-4">
         <div class="flex items-center justify-between">
@@ -259,13 +283,13 @@ export class MobileNotificationManager {
         </div>
       </div>
     `;
-    
+
     document.body.appendChild(installBanner);
-    
+
     setTimeout(() => {
       installBanner.classList.remove('translate-y-full');
     }, 100);
-    
+
     // Auto-hide after 10 seconds
     setTimeout(() => {
       if (installBanner.parentElement) {
@@ -279,23 +303,27 @@ export class MobileNotificationManager {
   private playNotificationSound(): void {
     try {
       // Create audio context for mobile
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
+
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
       oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-      
+
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-      
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + 0.2
+      );
+
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.2);
     } catch (error) {
-      console.log('Audio not supported on this device');
+      console.warn('Audio not supported on this device');
     }
   }
 
@@ -312,10 +340,11 @@ export class MobileNotificationManager {
       isAndroid: this.isAndroid,
       isPWA: this.isPWA,
       canNotify: this.canSendNotifications(),
-      strategy: this.getNotificationStrategy()
+      strategy: this.getNotificationStrategy(),
     };
   }
 }
 
 // Export singleton instance
-export const mobileNotificationManager = MobileNotificationManager.getInstance();
+export const mobileNotificationManager =
+  MobileNotificationManager.getInstance();

@@ -10,10 +10,16 @@ const navigationItems = [
     path: '/',
     ariaLabel: 'Navigate to Home page',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
         <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
       </svg>
-    )
+    ),
   },
   {
     id: 'live-class',
@@ -21,10 +27,16 @@ const navigationItems = [
     path: '/live-class',
     ariaLabel: 'Navigate to Live Class page',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
         <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
       </svg>
-    )
+    ),
   },
   {
     id: 'profile',
@@ -32,10 +44,16 @@ const navigationItems = [
     path: '/profile',
     ariaLabel: 'Navigate to Profile page',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
       </svg>
-    )
+    ),
   },
   {
     id: 'settings',
@@ -43,11 +61,17 @@ const navigationItems = [
     path: '/settings',
     ariaLabel: 'Navigate to Settings page',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
         <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
       </svg>
-    )
-  }
+    ),
+  },
 ];
 
 const BottomNavigation = () => {
@@ -76,7 +100,7 @@ const BottomNavigation = () => {
   const handleNavigation = (path, label, index) => {
     setActiveTab(index);
     navigate(path);
-    
+
     // Announce navigation to screen readers
     const announcement = `Navigated to ${label}`;
     const ariaLiveRegion = document.createElement('div');
@@ -90,7 +114,7 @@ const BottomNavigation = () => {
     ariaLiveRegion.style.height = '1px';
     ariaLiveRegion.style.overflow = 'hidden';
     document.body.appendChild(ariaLiveRegion);
-    
+
     setTimeout(() => {
       if (document.body.contains(ariaLiveRegion)) {
         document.body.removeChild(ariaLiveRegion);
@@ -126,9 +150,13 @@ const BottomNavigation = () => {
   };
 
   // Focus navigation item with wrapping
-  const focusNavigationItem = (index) => {
-    const adjustedIndex = ((index % navigationItems.length) + navigationItems.length) % navigationItems.length;
-    const button = document.querySelector(`[data-nav-index="${adjustedIndex}"]`);
+  const focusNavigationItem = index => {
+    const adjustedIndex =
+      ((index % navigationItems.length) + navigationItems.length) %
+      navigationItems.length;
+    const button = document.querySelector(
+      `[data-nav-index="${adjustedIndex}"]`
+    );
     if (button) {
       button.focus();
     }
@@ -143,19 +171,17 @@ const BottomNavigation = () => {
             data-nav-index={index}
             className={`tab_button ${activeTab === index ? 'active' : ''}`}
             onClick={() => handleNavigation(item.path, item.label, index)}
-            onKeyDown={(e) => handleKeyDown(e, item.path, item.label, index)}
+            onKeyDown={e => handleKeyDown(e, item.path, item.label, index)}
             aria-label={item.ariaLabel}
             aria-current={activeTab === index ? 'page' : undefined}
             type="button"
           >
-            <div className="tab_icon">
-              {item.icon}
-            </div>
+            <div className="tab_icon">{item.icon}</div>
             <span>{item.label}</span>
           </button>
         ))}
-        <div 
-          className="indicator" 
+        <div
+          className="indicator"
           style={{ left: `calc(${activeTab * 25}% + 4px)` }}
           aria-hidden="true"
         />
@@ -188,7 +214,7 @@ const StyledWrapper = styled.nav`
   }
 
   .indicator {
-    content: "";
+    content: '';
     width: calc(25% - 4px);
     height: 56px;
     background: #3b82f6;
@@ -242,7 +268,7 @@ const StyledWrapper = styled.nav`
     &.active {
       color: #ffffff;
       font-weight: 600;
-      
+
       .tab_icon svg {
         transform: scale(1.1);
       }
@@ -261,7 +287,7 @@ const StyledWrapper = styled.nav`
     align-items: center;
     justify-content: center;
     margin-bottom: 2px;
-    
+
     svg {
       width: 20px;
       height: 20px;
@@ -285,26 +311,26 @@ const StyledWrapper = styled.nav`
   /* Responsive design */
   @media (max-width: 768px) {
     padding: 12px 16px;
-    
+
     .tab-container {
       padding: 6px;
     }
-    
+
     .indicator {
       height: 60px;
     }
-    
+
     .tab_button {
       min-height: 60px;
       min-width: 48px; /* Larger touch target on mobile */
       font-size: 12px;
       padding: 10px 4px;
-      
+
       span {
         font-size: 12px;
       }
     }
-    
+
     .tab_icon svg {
       width: 22px;
       height: 22px;
@@ -315,18 +341,18 @@ const StyledWrapper = styled.nav`
   @media (prefers-color-scheme: dark) {
     background: #1f2937;
     border-top-color: #374151;
-    
+
     .tab-container {
       background-color: #374151;
     }
-    
+
     .indicator {
       background: #60a5fa;
     }
-    
+
     .tab_button {
       color: #9ca3af;
-      
+
       &:hover:not(.active) {
         color: #d1d5db;
         background-color: rgba(156, 163, 175, 0.1);
@@ -340,7 +366,7 @@ const StyledWrapper = styled.nav`
         outline-color: #60a5fa;
         box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.1);
       }
-      
+
       &.active {
         color: #ffffff;
       }
@@ -350,14 +376,14 @@ const StyledWrapper = styled.nav`
   /* High contrast mode */
   @media (prefers-contrast: high) {
     border-top: 2px solid #000000;
-    
+
     .indicator {
       background: #000000;
     }
-    
+
     .tab_button {
       color: #000000;
-      
+
       &:focus {
         outline: 3px solid #000000;
         outline-offset: 2px;
@@ -368,7 +394,7 @@ const StyledWrapper = styled.nav`
         outline-offset: 2px;
         box-shadow: none;
       }
-      
+
       &.active {
         color: #ffffff;
       }
@@ -378,15 +404,15 @@ const StyledWrapper = styled.nav`
       .indicator {
         background: #ffffff;
       }
-      
+
       .tab_button {
         color: #ffffff;
-        
+
         &:focus,
         &:focus-visible {
           outline-color: #ffffff;
         }
-        
+
         &.active {
           color: #000000;
         }
@@ -408,12 +434,12 @@ const StyledWrapper = styled.nav`
     .tab_button {
       min-height: 60px;
       min-width: 48px;
-      
+
       &:hover {
         background-color: transparent;
         color: inherit;
       }
-      
+
       &:active:not(.active) {
         background-color: rgba(148, 163, 184, 0.2);
         transform: scale(0.98);

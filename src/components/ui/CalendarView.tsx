@@ -23,7 +23,10 @@ interface AttendanceSummary {
 interface CalendarViewProps {
   month: number; // 1-12
   year: number;
-  attendanceData: Record<string, { status: AttendanceStatus; duration?: number; notes?: string }>;
+  attendanceData: Record<
+    string,
+    { status: AttendanceStatus; duration?: number; notes?: string }
+  >;
   attendanceStats?: AttendanceStats;
   onDateSelect?: (date: Date) => void;
   onMonthChange?: (month: number, year: number) => void;
@@ -43,7 +46,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   onWeekChange,
   onViewChange,
   initialView = 'month',
-  className = ''
+  className = '',
 }) => {
   const [currentMonth, setCurrentMonth] = useState(month);
   const [currentYear, setCurrentYear] = useState(year);
@@ -54,19 +57,39 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     startOfWeek.setDate(today.getDate() - today.getDay());
     return startOfWeek;
   });
-  
+
   // Refs for accessibility
   const calendarRef = useRef<HTMLDivElement>(null);
   const announcementRef = useRef<HTMLDivElement>(null);
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   const malayalamMonths = [
-    'ജനുവരി', 'ഫെബ്രുവരി', 'മാർച്ച്', 'ഏപ്രിൽ', 'മേയ്', 'ജൂൺ',
-    'ജൂലൈ', 'ഓഗസ്റ്റ്', 'സെപ്റ്റംബർ', 'ഒക്ടോബർ', 'നവംബർ', 'ഡിസംബർ'
+    'ജനുവരി',
+    'ഫെബ്രുവരി',
+    'മാർച്ച്',
+    'ഏപ്രിൽ',
+    'മേയ്',
+    'ജൂൺ',
+    'ജൂലൈ',
+    'ഓഗസ്റ്റ്',
+    'സെപ്റ്റംബർ',
+    'ഒക്ടോബർ',
+    'നവംബർ',
+    'ഡിസംബർ',
   ];
 
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -76,19 +99,23 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const calculateAttendanceSummary = (): AttendanceSummary => {
     const entries = Object.entries(attendanceData);
     const totalDays = entries.length;
-    
-    const statusCounts = entries.reduce((acc, [_, data]) => {
-      const status = data.status as AttendanceStatus;
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    }, {} as Record<AttendanceStatus, number>);
+
+    const statusCounts = entries.reduce(
+      (acc, [_, data]) => {
+        const status = data.status as AttendanceStatus;
+        acc[status] = (acc[status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<AttendanceStatus, number>
+    );
 
     const presentDays = statusCounts.present || 0;
     const absentDays = statusCounts.absent || 0;
     const lateDays = statusCounts.late || 0;
     const excusedDays = statusCounts.excused || 0;
-    
-    const attendancePercentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
+
+    const attendancePercentage =
+      totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
 
     return {
       totalDays,
@@ -96,7 +123,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       absentDays,
       lateDays,
       excusedDays,
-      attendancePercentage
+      attendancePercentage,
     };
   };
 
@@ -106,20 +133,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const weekEnd = new Date(currentWeekStart);
     weekEnd.setDate(currentWeekStart.getDate() + 6);
 
-    for (let i = 0; i < 7; i++) {
+    for (const i = 0; i < 7; i++) {
       const date = new Date(currentWeekStart);
       date.setDate(currentWeekStart.getDate() + i);
-      
+
       const dateKey = date.toISOString().split('T')[0];
       const attendanceInfo = attendanceData[dateKey];
-      
+
       days.push({
         date: new Date(date),
         status: attendanceInfo?.status,
         isCurrentMonth: date.getMonth() === currentMonth - 1,
         isCurrentWeek: true,
         duration: attendanceInfo?.duration,
-        notes: attendanceInfo?.notes
+        notes: attendanceInfo?.notes,
       });
     }
 
@@ -137,16 +164,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 41); // 6 weeks
 
-    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+    for (
+      const date = new Date(startDate);
+      date <= endDate;
+      date.setDate(date.getDate() + 1)
+    ) {
       const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD format
       const attendanceInfo = attendanceData[dateKey];
-      
+
       days.push({
         date: new Date(date),
         status: attendanceInfo?.status,
         isCurrentMonth: date.getMonth() === currentMonth - 1,
         duration: attendanceInfo?.duration,
-        notes: attendanceInfo?.notes
+        notes: attendanceInfo?.notes,
       });
     }
 
@@ -154,28 +185,28 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const handlePrevMonth = () => {
-    let newMonth = currentMonth - 1;
-    let newYear = currentYear;
-    
+    const newMonth = currentMonth - 1;
+    const newYear = currentYear;
+
     if (newMonth < 1) {
       newMonth = 12;
       newYear--;
     }
-    
+
     setCurrentMonth(newMonth);
     setCurrentYear(newYear);
     onMonthChange?.(newMonth, newYear);
   };
 
   const handleNextMonth = () => {
-    let newMonth = currentMonth + 1;
-    let newYear = currentYear;
-    
+    const newMonth = currentMonth + 1;
+    const newYear = currentYear;
+
     if (newMonth > 12) {
       newMonth = 1;
       newYear++;
     }
-    
+
     setCurrentMonth(newMonth);
     setCurrentYear(newYear);
     onMonthChange?.(newMonth, newYear);
@@ -185,7 +216,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const newWeekStart = new Date(currentWeekStart);
     newWeekStart.setDate(currentWeekStart.getDate() - 7);
     setCurrentWeekStart(newWeekStart);
-    
+
     const weekEnd = new Date(newWeekStart);
     weekEnd.setDate(newWeekStart.getDate() + 6);
     onWeekChange?.(newWeekStart, weekEnd);
@@ -195,7 +226,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const newWeekStart = new Date(currentWeekStart);
     newWeekStart.setDate(currentWeekStart.getDate() + 7);
     setCurrentWeekStart(newWeekStart);
-    
+
     const weekEnd = new Date(newWeekStart);
     weekEnd.setDate(newWeekStart.getDate() + 6);
     onWeekChange?.(newWeekStart, weekEnd);
@@ -204,7 +235,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const handleViewChange = (view: 'month' | 'week') => {
     setCurrentView(view);
     onViewChange?.(view);
-    
+
     // Announce view change for screen readers
     if (announcementRef.current) {
       announcementRef.current.textContent = `Switched to ${view} view`;
@@ -213,7 +244,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   const handleKeyDown = (event: React.KeyboardEvent, date: Date) => {
     let newDate: Date | null = null;
-    
+
     switch (event.key) {
       case 'ArrowLeft':
         newDate = new Date(date);
@@ -240,11 +271,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       default:
         return;
     }
-    
+
     if (newDate) {
       event.preventDefault();
       onDateSelect?.(newDate);
-      
+
       // Focus the new date if it's visible
       const dateButton = calendarRef.current?.querySelector(
         `[data-date="${newDate.toISOString().split('T')[0]}"]`
@@ -290,22 +321,30 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     return `${hours}h ${minutes}m`;
   };
 
-  const calendarDays = currentView === 'month' ? generateCalendarDays() : generateWeekDays();
+  const calendarDays =
+    currentView === 'month' ? generateCalendarDays() : generateWeekDays();
   const attendanceSummary = calculateAttendanceSummary();
 
   return (
-    <div className={`bg-white rounded-lg shadow-md p-4 ${className}`} ref={calendarRef}>
+    <div
+      className={`bg-white rounded-lg shadow-md p-4 ${className}`}
+      ref={calendarRef}
+    >
       {/* Screen reader announcements */}
-      <div 
+      <div
         ref={announcementRef}
-        className="sr-only" 
-        aria-live="polite" 
+        className="sr-only"
+        aria-live="polite"
         aria-atomic="true"
       />
 
       {/* View switcher */}
       <div className="flex justify-center mb-4">
-        <div className="bg-gray-100 rounded-lg p-1 flex" role="tablist" aria-label="Calendar view options">
+        <div
+          className="bg-gray-100 rounded-lg p-1 flex"
+          role="tablist"
+          aria-label="Calendar view options"
+        >
           <AccessibleButton
             variant={currentView === 'month' ? 'primary' : 'secondary'}
             size="sm"
@@ -339,39 +378,57 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       <div className="bg-gray-50 rounded-lg p-4 mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-3">
           Attendance Summary
-          <span className="text-sm text-gray-600 ml-2" lang="ml">ഹാജർ സംഗ്രഹം</span>
+          <span className="text-sm text-gray-600 ml-2" lang="ml">
+            ഹാജർ സംഗ്രഹം
+          </span>
         </h3>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-primary-600">{attendanceSummary.totalDays}</div>
+            <div className="text-2xl font-bold text-primary-600">
+              {attendanceSummary.totalDays}
+            </div>
             <div className="text-sm text-gray-600">
               Total Days
-              <div className="text-xs" lang="ml">മൊത്തം ദിവസങ്ങൾ</div>
+              <div className="text-xs" lang="ml">
+                മൊത്തം ദിവസങ്ങൾ
+              </div>
             </div>
           </div>
-          
+
           <div className="text-center">
-            <div className="text-2xl font-bold text-success-600">{attendanceSummary.presentDays}</div>
+            <div className="text-2xl font-bold text-success-600">
+              {attendanceSummary.presentDays}
+            </div>
             <div className="text-sm text-gray-600">
               Present
-              <div className="text-xs" lang="ml">ഹാജർ</div>
+              <div className="text-xs" lang="ml">
+                ഹാജർ
+              </div>
             </div>
           </div>
-          
+
           <div className="text-center">
-            <div className="text-2xl font-bold text-error-600">{attendanceSummary.absentDays}</div>
+            <div className="text-2xl font-bold text-error-600">
+              {attendanceSummary.absentDays}
+            </div>
             <div className="text-sm text-gray-600">
               Absent
-              <div className="text-xs" lang="ml">ഹാജരല്ല</div>
+              <div className="text-xs" lang="ml">
+                ഹാജരല്ല
+              </div>
             </div>
           </div>
-          
+
           <div className="text-center">
-            <div className="text-2xl font-bold text-primary-600">{attendanceSummary.attendancePercentage}%</div>
+            <div className="text-2xl font-bold text-primary-600">
+              {attendanceSummary.attendancePercentage}%
+            </div>
             <div className="text-sm text-gray-600">
               Percentage
-              <div className="text-xs" lang="ml">ശതമാനം</div>
+              <div className="text-xs" lang="ml">
+                ശതമാനം
+              </div>
             </div>
           </div>
         </div>
@@ -403,11 +460,24 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           variant="secondary"
           size="sm"
           onClick={currentView === 'month' ? handlePrevMonth : handlePrevWeek}
-          ariaLabel={currentView === 'month' ? "Previous month" : "Previous week"}
+          ariaLabel={
+            currentView === 'month' ? 'Previous month' : 'Previous week'
+          }
           className="!min-w-[44px] !min-h-[44px]"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </AccessibleButton>
 
@@ -424,8 +494,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           ) : (
             <>
               <h2 className="text-xl font-semibold text-gray-900">
-                {currentWeekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {' '}
-                {new Date(currentWeekStart.getTime() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                {currentWeekStart.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                })}{' '}
+                -{' '}
+                {new Date(
+                  currentWeekStart.getTime() + 6 * 24 * 60 * 60 * 1000
+                ).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
               </h2>
               <p className="text-sm text-gray-600" lang="ml">
                 ആഴ്ച കാഴ്ച
@@ -438,11 +518,22 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           variant="secondary"
           size="sm"
           onClick={currentView === 'month' ? handleNextMonth : handleNextWeek}
-          ariaLabel={currentView === 'month' ? "Next month" : "Next week"}
+          ariaLabel={currentView === 'month' ? 'Next month' : 'Next week'}
           className="!min-w-[44px] !min-h-[44px]"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </AccessibleButton>
       </div>
@@ -452,18 +543,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         {weekDays.map((day, index) => (
           <div key={day} className="text-center py-2">
             <div className="text-sm font-medium text-gray-700">{day}</div>
-            <div className="text-xs text-gray-500" lang="ml">{malayalamWeekDays[index]}</div>
+            <div className="text-xs text-gray-500" lang="ml">
+              {malayalamWeekDays[index]}
+            </div>
           </div>
         ))}
       </div>
 
       {/* Calendar grid */}
-      <div 
+      <div
         className={`grid gap-1 ${currentView === 'month' ? 'grid-cols-7' : 'grid-cols-7'}`}
         id="calendar-grid"
         role="grid"
         aria-label={`${currentView === 'month' ? 'Monthly' : 'Weekly'} attendance calendar`}
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           // Handle grid navigation
           const focusedElement = document.activeElement as HTMLButtonElement;
           const dateAttr = focusedElement?.getAttribute('data-date');
@@ -477,8 +570,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           const isToday = day.date.toDateString() === new Date().toDateString();
           const hasAttendance = day.status !== undefined;
           const dateKey = day.date.toISOString().split('T')[0];
-          const isCurrentPeriod = currentView === 'month' ? day.isCurrentMonth : day.isCurrentWeek;
-          
+          const isCurrentPeriod =
+            currentView === 'month' ? day.isCurrentMonth : day.isCurrentWeek;
+
           return (
             <button
               key={index}
@@ -488,11 +582,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 relative p-2 min-h-[44px] rounded-lg border transition-all duration-200
                 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1
                 focus-visible:ring-2 focus-visible:ring-primary-500
-                ${isCurrentPeriod
-                  ? hasAttendance 
-                    ? getStatusColor(day.status)
-                    : 'bg-white border-gray-200 hover:bg-gray-50'
-                  : 'bg-gray-50 text-gray-400 border-gray-100'
+                ${
+                  isCurrentPeriod
+                    ? hasAttendance
+                      ? getStatusColor(day.status)
+                      : 'bg-white border-gray-200 hover:bg-gray-50'
+                    : 'bg-gray-50 text-gray-400 border-gray-100'
                 }
                 ${isToday ? 'ring-2 ring-primary-400' : ''}
                 ${currentView === 'week' ? 'min-h-[80px]' : ''}
@@ -501,11 +596,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               role="gridcell"
               tabIndex={isToday ? 0 : -1}
               aria-label={`
-                ${day.date.toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                ${day.date.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
                 })}
                 ${hasAttendance ? `, Status: ${day.status}` : ', No class scheduled'}
                 ${day.duration ? `, Duration: ${formatDuration(day.duration)}` : ''}
@@ -513,7 +608,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 ${isToday ? ', Today' : ''}
               `}
               aria-selected={hasAttendance}
-              aria-describedby={hasAttendance ? `status-${day.status}` : undefined}
+              aria-describedby={
+                hasAttendance ? `status-${day.status}` : undefined
+              }
             >
               <div className="flex flex-col items-center">
                 {currentView === 'week' && (
@@ -521,14 +618,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     {day.date.toLocaleDateString('en-US', { weekday: 'short' })}
                   </div>
                 )}
-                
-                <span className={`text-sm font-medium ${isToday ? 'font-bold' : ''}`}>
-                  {currentView === 'week' 
+
+                <span
+                  className={`text-sm font-medium ${isToday ? 'font-bold' : ''}`}
+                >
+                  {currentView === 'week'
                     ? day.date.getDate()
-                    : day.date.getDate()
-                  }
+                    : day.date.getDate()}
                 </span>
-                
+
                 {hasAttendance && (
                   <div className="flex flex-col items-center mt-1">
                     <span className="text-xs" aria-hidden="true">
@@ -541,7 +639,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     )}
                   </div>
                 )}
-                
+
                 {day.duration && currentView === 'week' && (
                   <span className="text-xs text-gray-600 mt-1">
                     {formatDuration(day.duration)}
@@ -550,7 +648,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               </div>
 
               {isToday && (
-                <div 
+                <div
                   className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary-600 rounded-full"
                   aria-hidden="true"
                 />
@@ -564,34 +662,44 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       <div className="mt-6 pt-4 border-t border-gray-200">
         <h3 className="text-sm font-medium text-gray-700 mb-3">
           Attendance Legend
-          <span className="text-xs text-gray-500 ml-2" lang="ml">ഹാജർ വിവരണം</span>
+          <span className="text-xs text-gray-500 ml-2" lang="ml">
+            ഹാജർ വിവരണം
+          </span>
         </h3>
-        
+
         <div className="grid grid-cols-2 gap-2 text-xs mb-4">
           <div className="flex items-center" id="status-present">
             <div className="w-4 h-4 bg-success-100 border border-success-300 rounded mr-2 flex items-center justify-center">
-              <span className="text-success-800" aria-hidden="true">✓</span>
+              <span className="text-success-800" aria-hidden="true">
+                ✓
+              </span>
             </div>
             <span>Present / ഹാജർ</span>
           </div>
-          
+
           <div className="flex items-center" id="status-absent">
             <div className="w-4 h-4 bg-error-100 border border-error-300 rounded mr-2 flex items-center justify-center">
-              <span className="text-error-800" aria-hidden="true">✗</span>
+              <span className="text-error-800" aria-hidden="true">
+                ✗
+              </span>
             </div>
             <span>Absent / ഹാജരല്ല</span>
           </div>
-          
+
           <div className="flex items-center" id="status-late">
             <div className="w-4 h-4 bg-warning-100 border border-warning-300 rounded mr-2 flex items-center justify-center">
-              <span className="text-warning-800" aria-hidden="true">⏰</span>
+              <span className="text-warning-800" aria-hidden="true">
+                ⏰
+              </span>
             </div>
             <span>Late / വൈകി</span>
           </div>
-          
+
           <div className="flex items-center" id="status-excused">
             <div className="w-4 h-4 bg-primary-100 border border-primary-300 rounded mr-2 flex items-center justify-center">
-              <span className="text-primary-800" aria-hidden="true">📝</span>
+              <span className="text-primary-800" aria-hidden="true">
+                📝
+              </span>
             </div>
             <span>Excused / അനുവാദം</span>
           </div>
@@ -600,8 +708,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         {/* Keyboard navigation instructions */}
         <div className="text-xs text-gray-500 bg-gray-50 rounded p-2">
           <p className="font-medium mb-1">Keyboard Navigation:</p>
-          <p>Use arrow keys to navigate dates, Home/End for first/last day of month, Enter/Space to select</p>
-          <p lang="ml" className="mt-1">കീബോർഡ് നാവിഗേഷൻ: ആരോ കീകൾ ഉപയോഗിച്ച് തീയതികൾ നാവിഗേറ്റ് ചെയ്യുക</p>
+          <p>
+            Use arrow keys to navigate dates, Home/End for first/last day of
+            month, Enter/Space to select
+          </p>
+          <p lang="ml" className="mt-1">
+            കീബോർഡ് നാവിഗേഷൻ: ആരോ കീകൾ ഉപയോഗിച്ച് തീയതികൾ നാവിഗേറ്റ് ചെയ്യുക
+          </p>
         </div>
       </div>
     </div>

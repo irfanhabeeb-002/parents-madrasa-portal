@@ -9,11 +9,13 @@ This guide provides solutions to common integration issues, performance problems
 ### 1. Navigation Not Working
 
 #### Symptoms
+
 - Clicking navigation items doesn't change routes
 - URL doesn't update when navigation items are clicked
 - Page content doesn't change
 
 #### Diagnosis
+
 ```jsx
 // Check if React Router is properly configured
 console.log('Current location:', window.location.pathname);
@@ -23,6 +25,7 @@ console.log('React Router location:', useLocation().pathname);
 #### Solutions
 
 **Missing Router Wrapper**
+
 ```jsx
 // ❌ Incorrect - Missing Router
 function App() {
@@ -48,6 +51,7 @@ function App() {
 ```
 
 **Route Configuration Mismatch**
+
 ```jsx
 // ❌ Incorrect - Routes don't match navigation paths
 <Routes>
@@ -65,6 +69,7 @@ function App() {
 ```
 
 **Missing Route Components**
+
 ```jsx
 // ❌ Missing route components
 <Route path="/profile" element={null} />
@@ -76,20 +81,22 @@ function App() {
 ### 2. Active State Not Updating
 
 #### Symptoms
+
 - Active indicator doesn't move when navigating
 - Wrong navigation item appears active
 - Active state is stuck on one item
 
 #### Diagnosis
+
 ```jsx
 // Add debugging to component
 const BottomNavigation = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(0);
-  
+
   console.log('Current pathname:', location.pathname);
   console.log('Active tab index:', activeTab);
-  
+
   // ... rest of component
 };
 ```
@@ -97,6 +104,7 @@ const BottomNavigation = () => {
 #### Solutions
 
 **Incorrect Path Matching Logic**
+
 ```jsx
 // ❌ Incorrect - Simple string comparison
 const getActiveTabIndex = () => {
@@ -118,6 +126,7 @@ const getActiveTabIndex = useCallback(() => {
 ```
 
 **State Not Updating on Route Change**
+
 ```jsx
 // ❌ Missing useEffect dependency
 useEffect(() => {
@@ -133,20 +142,29 @@ useEffect(() => {
 ### 3. Styling Issues
 
 #### Symptoms
+
 - Navigation appears broken or unstyled
 - Styles conflict with other components
 - Layout is incorrect
 
 #### Diagnosis
+
 ```jsx
 // Check for CSS conflicts
-console.log('Navigation element:', document.querySelector('.bottom-navigation'));
-console.log('Computed styles:', getComputedStyle(document.querySelector('.bottom-navigation')));
+console.log(
+  'Navigation element:',
+  document.querySelector('.bottom-navigation')
+);
+console.log(
+  'Computed styles:',
+  getComputedStyle(document.querySelector('.bottom-navigation'))
+);
 ```
 
 #### Solutions
 
 **CSS Conflicts**
+
 ```css
 /* ❌ Global styles affecting navigation */
 button {
@@ -167,6 +185,7 @@ button {
 ```
 
 **Z-Index Issues**
+
 ```css
 /* ❌ Navigation hidden behind other elements */
 .some-modal {
@@ -192,6 +211,7 @@ button {
 ```
 
 **Styled Components Not Loading**
+
 ```jsx
 // ❌ Missing styled-components import
 import BottomNavigation from './BottomNavigation';
@@ -201,20 +221,25 @@ import styled from 'styled-components';
 import BottomNavigation from './BottomNavigation';
 
 // Check if styled-components is installed
-console.log('Styled components version:', require('styled-components/package.json').version);
+console.log(
+  'Styled components version:',
+  require('styled-components/package.json').version
+);
 ```
 
 ### 4. Accessibility Issues
 
 #### Symptoms
+
 - Screen readers not announcing navigation
 - Keyboard navigation not working
 - Focus indicators not visible
 
 #### Diagnosis
+
 ```jsx
 // Test keyboard navigation
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', e => {
   console.log('Key pressed:', e.key, 'Target:', e.target);
 });
 
@@ -226,6 +251,7 @@ console.log('ARIA live regions:', ariaLiveRegions);
 #### Solutions
 
 **Missing ARIA Attributes**
+
 ```jsx
 // ❌ Missing accessibility attributes
 <div onClick={handleClick}>
@@ -245,6 +271,7 @@ console.log('ARIA live regions:', ariaLiveRegions);
 ```
 
 **Keyboard Navigation Not Working**
+
 ```jsx
 // ❌ Missing keyboard event handlers
 <button onClick={handleClick}>Home</button>
@@ -259,6 +286,7 @@ console.log('ARIA live regions:', ariaLiveRegions);
 ```
 
 **Focus Indicators Not Visible**
+
 ```css
 /* ❌ Focus outline removed without replacement */
 .tab_button:focus {
@@ -283,15 +311,17 @@ console.log('ARIA live regions:', ariaLiveRegions);
 ### 1. Slow Animations
 
 #### Symptoms
+
 - Navigation transitions are choppy
 - Indicator movement is laggy
 - Poor performance on mobile devices
 
 #### Diagnosis
+
 ```jsx
 // Monitor performance
-const observer = new PerformanceObserver((list) => {
-  list.getEntries().forEach((entry) => {
+const observer = new PerformanceObserver(list => {
+  list.getEntries().forEach(entry => {
     console.log('Performance entry:', entry);
   });
 });
@@ -309,6 +339,7 @@ const checkLayoutThrashing = () => {
 #### Solutions
 
 **Use Hardware Acceleration**
+
 ```css
 /* ❌ CPU-based animations */
 .indicator {
@@ -325,19 +356,26 @@ const checkLayoutThrashing = () => {
 ```
 
 **Avoid Expensive CSS Properties**
+
 ```css
 /* ❌ Expensive properties that cause reflow */
 .tab_button {
-  transition: width 0.3s, height 0.3s, padding 0.3s;
+  transition:
+    width 0.3s,
+    height 0.3s,
+    padding 0.3s;
 }
 
 /* ✅ Cheap properties that only affect compositing */
 .tab_button {
-  transition: transform 0.3s, opacity 0.3s;
+  transition:
+    transform 0.3s,
+    opacity 0.3s;
 }
 ```
 
 **Optimize Event Handlers**
+
 ```jsx
 // ❌ Creating new functions on every render
 <button onClick={() => handleNavigation(path, label, index)}>
@@ -353,11 +391,13 @@ const handleClick = useCallback(() => {
 ### 2. Memory Leaks
 
 #### Symptoms
+
 - Performance degrades over time
 - Memory usage increases continuously
 - Browser becomes unresponsive
 
 #### Diagnosis
+
 ```jsx
 // Monitor memory usage
 const checkMemory = () => {
@@ -365,7 +405,7 @@ const checkMemory = () => {
     console.log('Memory usage:', {
       used: performance.memory.usedJSHeapSize,
       total: performance.memory.totalJSHeapSize,
-      limit: performance.memory.jsHeapSizeLimit
+      limit: performance.memory.jsHeapSizeLimit,
     });
   }
 };
@@ -376,13 +416,14 @@ setInterval(checkMemory, 5000);
 #### Solutions
 
 **Clean Up Event Listeners**
+
 ```jsx
 // ❌ Event listeners not cleaned up
 useEffect(() => {
   const handleResize = () => {
     // Handle resize
   };
-  
+
   window.addEventListener('resize', handleResize);
   // Missing cleanup
 }, []);
@@ -392,9 +433,9 @@ useEffect(() => {
   const handleResize = () => {
     // Handle resize
   };
-  
+
   window.addEventListener('resize', handleResize);
-  
+
   return () => {
     window.removeEventListener('resize', handleResize);
   };
@@ -402,6 +443,7 @@ useEffect(() => {
 ```
 
 **Clean Up ARIA Live Regions**
+
 ```jsx
 // ❌ ARIA live regions accumulating
 const announcement = `Navigated to ${label}`;
@@ -430,11 +472,13 @@ setTimeout(() => {
 ### 1. Touch Targets Too Small
 
 #### Symptoms
+
 - Difficult to tap navigation items on mobile
 - Users miss taps frequently
 - Poor user experience on touch devices
 
 #### Diagnosis
+
 ```jsx
 // Check touch target sizes
 const checkTouchTargets = () => {
@@ -444,7 +488,7 @@ const checkTouchTargets = () => {
     console.log(`Button ${index} size:`, {
       width: rect.width,
       height: rect.height,
-      meetsWCAG: rect.width >= 44 && rect.height >= 44
+      meetsWCAG: rect.width >= 44 && rect.height >= 44,
     });
   });
 };
@@ -453,6 +497,7 @@ const checkTouchTargets = () => {
 #### Solutions
 
 **Increase Touch Target Sizes**
+
 ```css
 /* ❌ Touch targets too small */
 .tab_button {
@@ -464,7 +509,7 @@ const checkTouchTargets = () => {
 .tab_button {
   min-height: 44px;
   min-width: 44px;
-  
+
   @media (max-width: 768px) {
     min-height: 48px;
     min-width: 48px;
@@ -475,6 +520,7 @@ const checkTouchTargets = () => {
 ### 2. Navigation Hidden by Mobile Browsers
 
 #### Symptoms
+
 - Navigation covered by browser UI
 - Navigation not visible in landscape mode
 - Issues with iPhone home indicator
@@ -482,6 +528,7 @@ const checkTouchTargets = () => {
 #### Solutions
 
 **Use Safe Area Insets**
+
 ```css
 /* ✅ Account for safe areas */
 .bottom-navigation {
@@ -492,6 +539,7 @@ const checkTouchTargets = () => {
 ```
 
 **Handle Viewport Changes**
+
 ```jsx
 // Handle viewport height changes on mobile
 useEffect(() => {
@@ -499,10 +547,10 @@ useEffect(() => {
     const vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
   };
-  
+
   window.addEventListener('resize', handleViewportChange);
   handleViewportChange();
-  
+
   return () => {
     window.removeEventListener('resize', handleViewportChange);
   };
@@ -522,6 +570,7 @@ useEffect(() => {
 ### 1. Safari Issues
 
 #### Symptoms
+
 - Animations not working in Safari
 - Touch events not firing correctly
 - Styling differences in Safari
@@ -529,6 +578,7 @@ useEffect(() => {
 #### Solutions
 
 **Safari Animation Support**
+
 ```css
 /* ✅ Safari-compatible animations */
 .indicator {
@@ -540,24 +590,23 @@ useEffect(() => {
 ```
 
 **Safari Touch Event Handling**
+
 ```jsx
 // ✅ Safari-compatible touch handling
-const handleTouchStart = (e) => {
+const handleTouchStart = e => {
   // Prevent default to ensure touch events work
   e.preventDefault();
 };
 
-<button
-  onTouchStart={handleTouchStart}
-  onClick={handleClick}
->
+<button onTouchStart={handleTouchStart} onClick={handleClick}>
   Home
-</button>
+</button>;
 ```
 
 ### 2. Internet Explorer Issues
 
 #### Symptoms
+
 - Component not rendering in IE
 - CSS Grid not working
 - Modern JavaScript features failing
@@ -565,6 +614,7 @@ const handleTouchStart = (e) => {
 #### Solutions
 
 **CSS Grid Fallback**
+
 ```css
 /* ✅ Flexbox fallback for IE */
 .tab-container {
@@ -578,7 +628,7 @@ const handleTouchStart = (e) => {
   .tab-container {
     display: flex;
   }
-  
+
   .tab_button {
     flex: 1;
   }
@@ -586,6 +636,7 @@ const handleTouchStart = (e) => {
 ```
 
 **JavaScript Polyfills**
+
 ```jsx
 // Add polyfills for IE support
 import 'core-js/stable';
@@ -601,7 +652,7 @@ import 'regenerator-runtime/runtime';
 const BottomNavigation = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(0);
-  
+
   // Debug information for React DevTools
   const debugInfo = {
     currentPath: location.pathname,
@@ -612,10 +663,10 @@ const BottomNavigation = () => {
       isActive: navigationItems.indexOf(item) === activeTab
     }))
   };
-  
+
   // Make debug info available in DevTools
   useDebugValue(debugInfo);
-  
+
   return (
     // Component JSX
   );
@@ -629,7 +680,7 @@ const BottomNavigation = () => {
 const BottomNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Log navigation events
   const handleNavigation = (path, label, index) => {
     console.group('Navigation Event');
@@ -639,16 +690,16 @@ const BottomNavigation = () => {
     console.log('Index:', index);
     console.log('Timestamp:', new Date().toISOString());
     console.groupEnd();
-    
+
     setActiveTab(index);
     navigate(path);
   };
-  
+
   // Log route changes
   useEffect(() => {
     console.log('Route changed:', location.pathname);
   }, [location.pathname]);
-  
+
   return (
     // Component JSX
   );
@@ -661,25 +712,25 @@ const BottomNavigation = () => {
 // Monitor component performance
 const BottomNavigation = () => {
   const renderStart = performance.now();
-  
+
   useEffect(() => {
     const renderEnd = performance.now();
     console.log(`BottomNavigation render time: ${renderEnd - renderStart}ms`);
   });
-  
+
   // Monitor navigation performance
   const handleNavigation = (path, label, index) => {
     const navStart = performance.now();
-    
+
     setActiveTab(index);
     navigate(path);
-    
+
     requestAnimationFrame(() => {
       const navEnd = performance.now();
       console.log(`Navigation time: ${navEnd - navStart}ms`);
     });
   };
-  
+
   return (
     // Component JSX
   );
@@ -693,32 +744,32 @@ const BottomNavigation = () => {
 const testAccessibility = () => {
   const navigation = document.querySelector('[role="navigation"]');
   const buttons = navigation.querySelectorAll('button');
-  
+
   console.group('Accessibility Test Results');
-  
+
   // Check ARIA labels
   buttons.forEach((button, index) => {
     const ariaLabel = button.getAttribute('aria-label');
     const ariaCurrent = button.getAttribute('aria-current');
-    
+
     console.log(`Button ${index}:`, {
       hasAriaLabel: !!ariaLabel,
       ariaLabel,
       ariaCurrent,
-      isActive: ariaCurrent === 'page'
+      isActive: ariaCurrent === 'page',
     });
   });
-  
+
   // Check keyboard navigation
   const firstButton = buttons[0];
   const lastButton = buttons[buttons.length - 1];
-  
+
   console.log('Keyboard navigation:', {
     firstButtonFocusable: firstButton.tabIndex >= 0,
     lastButtonFocusable: lastButton.tabIndex >= 0,
-    totalFocusableElements: buttons.length
+    totalFocusableElements: buttons.length,
   });
-  
+
   console.groupEnd();
 };
 
@@ -738,32 +789,34 @@ import { BrowserRouter } from 'react-router-dom';
 import BottomNavigation from './BottomNavigation';
 
 describe('BottomNavigation', () => {
-  const renderWithRouter = (component) => {
-    return render(
-      <BrowserRouter>
-        {component}
-      </BrowserRouter>
-    );
+  const renderWithRouter = component => {
+    return render(<BrowserRouter>{component}</BrowserRouter>);
   };
-  
+
   test('renders all navigation items', () => {
     renderWithRouter(<BottomNavigation />);
-    
+
     expect(screen.getByLabelText('Navigate to Home page')).toBeInTheDocument();
-    expect(screen.getByLabelText('Navigate to Live Class page')).toBeInTheDocument();
-    expect(screen.getByLabelText('Navigate to Profile page')).toBeInTheDocument();
-    expect(screen.getByLabelText('Navigate to Settings page')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Navigate to Live Class page')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Navigate to Profile page')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Navigate to Settings page')
+    ).toBeInTheDocument();
   });
-  
+
   test('handles navigation correctly', () => {
     const mockNavigate = jest.fn();
     jest.mock('react-router-dom', () => ({
       ...jest.requireActual('react-router-dom'),
-      useNavigate: () => mockNavigate
+      useNavigate: () => mockNavigate,
     }));
-    
+
     renderWithRouter(<BottomNavigation />);
-    
+
     fireEvent.click(screen.getByLabelText('Navigate to Profile page'));
     expect(mockNavigate).toHaveBeenCalledWith('/profile');
   });
@@ -783,14 +836,14 @@ test('navigation integrates correctly with routing', () => {
       <App />
     </MemoryRouter>
   );
-  
+
   // Test that home is active initially
   const homeButton = screen.getByLabelText('Navigate to Home page');
   expect(homeButton).toHaveAttribute('aria-current', 'page');
-  
+
   // Navigate to profile
   fireEvent.click(screen.getByLabelText('Navigate to Profile page'));
-  
+
   // Test that profile is now active
   const profileButton = screen.getByLabelText('Navigate to Profile page');
   expect(profileButton).toHaveAttribute('aria-current', 'page');
@@ -810,7 +863,7 @@ test('matches visual snapshot', () => {
       <BottomNavigation />
     </BrowserRouter>
   );
-  
+
   expect(container.firstChild).toMatchSnapshot();
 });
 
@@ -826,13 +879,13 @@ test('matches visual snapshot in dark mode', () => {
       removeListener: jest.fn(),
     })),
   });
-  
+
   const { container } = render(
     <BrowserRouter>
       <BottomNavigation />
     </BrowserRouter>
   );
-  
+
   expect(container.firstChild).toMatchSnapshot();
 });
 ```
@@ -841,12 +894,12 @@ test('matches visual snapshot in dark mode', () => {
 
 ### Common Error Messages
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| "useNavigate() may be used only in the context of a <Router> component" | Missing Router wrapper | Wrap app in BrowserRouter |
-| "Cannot read property 'pathname' of undefined" | Missing location context | Ensure component is inside Router |
-| "Element is not focusable" | Missing tabindex or button element | Use proper button elements |
-| "ARIA attribute is not allowed" | Invalid ARIA usage | Check ARIA specification |
+| Error                                                                   | Cause                              | Solution                          |
+| ----------------------------------------------------------------------- | ---------------------------------- | --------------------------------- |
+| "useNavigate() may be used only in the context of a <Router> component" | Missing Router wrapper             | Wrap app in BrowserRouter         |
+| "Cannot read property 'pathname' of undefined"                          | Missing location context           | Ensure component is inside Router |
+| "Element is not focusable"                                              | Missing tabindex or button element | Use proper button elements        |
+| "ARIA attribute is not allowed"                                         | Invalid ARIA usage                 | Check ARIA specification          |
 
 ### Performance Checklist
 
@@ -868,4 +921,4 @@ test('matches visual snapshot in dark mode', () => {
 
 ---
 
-*This troubleshooting guide should help you quickly identify and resolve common issues with the BottomNavigation component. For additional support, refer to the main documentation and accessibility guidelines.*
+_This troubleshooting guide should help you quickly identify and resolve common issues with the BottomNavigation component. For additional support, refer to the main documentation and accessibility guidelines._

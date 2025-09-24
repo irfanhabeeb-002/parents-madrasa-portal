@@ -1,18 +1,28 @@
-import { 
-  Attendance, 
-  AttendanceRecord, 
-  DailyAttendance, 
-  AttendanceStats, 
+import {
+  Attendance,
+  AttendanceRecord,
+  DailyAttendance,
+  AttendanceStats,
   MonthlyAttendanceStats,
-  AttendanceType,
+  _AttendanceType,
   AttendanceStatus,
-  VerificationMethod
+  _VerificationMethod,
 } from '../types/attendance';
-import { ApiResponse, PaginationOptions, FilterOptions, Timestamp } from '../types/common';
+import {
+  ApiResponse,
+  PaginationOptions,
+  FilterOptions,
+  Timestamp,
+} from '../types/common';
 import { FirebaseAttendance, FIREBASE_COLLECTIONS } from '../types/firebase';
 import { FirebaseService } from './firebaseService';
 import { StorageService } from './storageService';
-import { where, orderBy, limit as firestoreLimit, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
+import {
+  _where,
+  _orderBy,
+  limit as _firestoreLimit,
+  Timestamp as FirestoreTimestamp,
+} from 'firebase/firestore';
 
 export class AttendanceService extends FirebaseService {
   private static instance: AttendanceService;
@@ -37,7 +47,9 @@ export class AttendanceService extends FirebaseService {
     }
     // Handle Firestore Timestamp
     if (dateValue && typeof dateValue === 'object' && 'seconds' in dateValue) {
-      return new Date(dateValue.seconds * 1000 + (dateValue.nanoseconds || 0) / 1000000);
+      return new Date(
+        dateValue.seconds * 1000 + (dateValue.nanoseconds || 0) / 1000000
+      );
     }
     return new Date(dateValue);
   }
@@ -54,17 +66,18 @@ export class AttendanceService extends FirebaseService {
       isPresent: true,
       attendanceType: 'zoom_integration',
       deviceInfo: {
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         platform: 'Win32',
         browser: 'Chrome',
         screenResolution: '1920x1080',
-        timezone: 'Asia/Kolkata'
+        timezone: 'Asia/Kolkata',
       },
       ipAddress: '192.168.1.100',
       notes: 'Attended full session, participated actively',
       verificationMethod: 'zoom_join',
       createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-01-15')
+      updatedAt: new Date('2024-01-15'),
     },
     {
       id: 'att-2',
@@ -80,13 +93,13 @@ export class AttendanceService extends FirebaseService {
         platform: 'iPhone',
         browser: 'Safari',
         screenResolution: '375x812',
-        timezone: 'Asia/Kolkata'
+        timezone: 'Asia/Kolkata',
       },
       ipAddress: '192.168.1.101',
       notes: 'Joined from mobile device',
       verificationMethod: 'zoom_join',
       createdAt: new Date('2024-01-20'),
-      updatedAt: new Date('2024-01-20')
+      updatedAt: new Date('2024-01-20'),
     },
     {
       id: 'att-3',
@@ -99,35 +112,39 @@ export class AttendanceService extends FirebaseService {
       notes: 'Marked absent - no show',
       verificationMethod: 'manual_checkin',
       createdAt: new Date('2024-01-22'),
-      updatedAt: new Date('2024-01-22')
-    }
+      updatedAt: new Date('2024-01-22'),
+    },
   ];
 
   // Record attendance
-  static async recordAttendance(attendance: Omit<Attendance, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Attendance>> {
+  static async recordAttendance(
+    attendance: Omit<Attendance, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<ApiResponse<Attendance>> {
     try {
       const service = AttendanceService.getInstance();
-      
+
       // Prepare Firestore data
       const firestoreAttendance: Omit<FirebaseAttendance, 'id'> = {
         userId: attendance.userId,
         classSessionId: attendance.classSessionId,
         joinedAt: FirestoreTimestamp.fromDate(this.toDate(attendance.joinedAt)),
-        leftAt: attendance.leftAt ? FirestoreTimestamp.fromDate(this.toDate(attendance.leftAt)) : undefined,
+        leftAt: attendance.leftAt
+          ? FirestoreTimestamp.fromDate(this.toDate(attendance.leftAt))
+          : undefined,
         duration: attendance.duration,
         status: attendance.isPresent ? 'present' : 'absent',
         autoTracked: attendance.attendanceType === 'zoom_integration',
-        createdAt: FirestoreTimestamp.now()
+        createdAt: FirestoreTimestamp.now(),
       };
 
       // Create in Firestore
       const attendanceId = await service.create(firestoreAttendance);
-      
+
       const newAttendance: Attendance = {
         ...attendance,
         id: attendanceId,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       // Also add to mock data for fallback
@@ -137,17 +154,17 @@ export class AttendanceService extends FirebaseService {
       return {
         data: newAttendance,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       console.error('Error recording attendance:', error);
-      
+
       // Fallback to mock data
       const newAttendance: Attendance = {
         ...attendance,
         id: `att-${Date.now()}`,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       await StorageService.appendToArray(this.STORAGE_KEY, newAttendance);
@@ -156,7 +173,7 @@ export class AttendanceService extends FirebaseService {
       return {
         data: newAttendance,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -169,26 +186,34 @@ export class AttendanceService extends FirebaseService {
     try {
       await new Promise(resolve => setTimeout(resolve, 200));
 
-      let userAttendance = this.mockAttendance.filter(att => att.userId === userId);
+      const userAttendance = this.mockAttendance.filter(
+        att => att.userId === userId
+      );
 
       // Apply filters
       if (options?.classSessionId) {
-        userAttendance = userAttendance.filter(att => att.classSessionId === options.classSessionId);
+        userAttendance = userAttendance.filter(
+          att => att.classSessionId === options.classSessionId
+        );
       }
       if (options?.isPresent !== undefined) {
-        userAttendance = userAttendance.filter(att => att.isPresent === options.isPresent);
+        userAttendance = userAttendance.filter(
+          att => att.isPresent === options.isPresent
+        );
       }
       if (options?.attendanceType) {
-        userAttendance = userAttendance.filter(att => att.attendanceType === options.attendanceType);
+        userAttendance = userAttendance.filter(
+          att => att.attendanceType === options.attendanceType
+        );
       }
       if (options?.startDate) {
-        userAttendance = userAttendance.filter(att => 
-          this.toDate(att.joinedAt) >= new Date(options.startDate!)
+        userAttendance = userAttendance.filter(
+          att => this.toDate(att.joinedAt) >= new Date(options.startDate!)
         );
       }
       if (options?.endDate) {
-        userAttendance = userAttendance.filter(att => 
-          this.toDate(att.joinedAt) <= new Date(options.endDate!)
+        userAttendance = userAttendance.filter(
+          att => this.toDate(att.joinedAt) <= new Date(options.endDate!)
         );
       }
 
@@ -198,14 +223,18 @@ export class AttendanceService extends FirebaseService {
           const aValue = a[options.orderBy as keyof Attendance];
           const bValue = b[options.orderBy as keyof Attendance];
           const direction = options.orderDirection === 'desc' ? -1 : 1;
-          
+
           if (aValue < bValue) return -1 * direction;
           if (aValue > bValue) return 1 * direction;
           return 0;
         });
       } else {
         // Default sort by joinedAt descending
-        userAttendance.sort((a, b) => this.toDate(b.joinedAt).getTime() - this.toDate(a.joinedAt).getTime());
+        userAttendance.sort(
+          (a, b) =>
+            this.toDate(b.joinedAt).getTime() -
+            this.toDate(a.joinedAt).getTime()
+        );
       }
 
       // Apply pagination
@@ -216,43 +245,62 @@ export class AttendanceService extends FirebaseService {
       return {
         data: paginatedAttendance,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch user attendance',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch user attendance',
+        timestamp: new Date(),
       };
     }
   }
 
   // Get attendance statistics for a user
-  static async getUserAttendanceStats(userId: string): Promise<ApiResponse<AttendanceStats>> {
+  static async getUserAttendanceStats(
+    userId: string
+  ): Promise<ApiResponse<AttendanceStats>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      const userAttendance = this.mockAttendance.filter(att => att.userId === userId);
+      const userAttendance = this.mockAttendance.filter(
+        att => att.userId === userId
+      );
       const totalClasses = userAttendance.length;
-      const attendedClasses = userAttendance.filter(att => att.isPresent).length;
-      const attendancePercentage = totalClasses > 0 ? Math.round((attendedClasses / totalClasses) * 100) : 0;
+      const attendedClasses = userAttendance.filter(
+        att => att.isPresent
+      ).length;
+      const attendancePercentage =
+        totalClasses > 0
+          ? Math.round((attendedClasses / totalClasses) * 100)
+          : 0;
 
       // Calculate consecutive days present
       const sortedAttendance = userAttendance
         .filter(att => att.isPresent)
-        .sort((a, b) => this.toDate(a.joinedAt).getTime() - this.toDate(b.joinedAt).getTime());
+        .sort(
+          (a, b) =>
+            this.toDate(a.joinedAt).getTime() -
+            this.toDate(b.joinedAt).getTime()
+        );
 
-      let consecutiveDaysPresent = 0;
-      let longestStreak = 0;
-      let currentStreak = 0;
+      const consecutiveDaysPresent = 0;
+      const longestStreak = 0;
+      const currentStreak = 0;
 
-      for (let i = 0; i < sortedAttendance.length; i++) {
+      for (const i = 0; i < sortedAttendance.length; i++) {
         const currentDate = this.toDate(sortedAttendance[i].joinedAt);
-        const prevDate = i > 0 ? this.toDate(sortedAttendance[i - 1].joinedAt) : null;
+        const prevDate =
+          i > 0 ? this.toDate(sortedAttendance[i - 1].joinedAt) : null;
 
         if (prevDate) {
-          const daysDiff = Math.floor((currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+          const daysDiff = Math.floor(
+            (currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
+          );
           if (daysDiff === 1) {
             currentStreak++;
           } else {
@@ -271,12 +319,14 @@ export class AttendanceService extends FirebaseService {
       const totalDuration = userAttendance
         .filter(att => att.isPresent)
         .reduce((sum, att) => sum + att.duration, 0);
-      const averageDuration = attendedClasses > 0 ? Math.round(totalDuration / attendedClasses) : 0;
+      const averageDuration =
+        attendedClasses > 0 ? Math.round(totalDuration / attendedClasses) : 0;
 
       // Get last attended class
-      const lastAttendedClass = sortedAttendance.length > 0 
-        ? sortedAttendance[sortedAttendance.length - 1].joinedAt 
-        : undefined;
+      const lastAttendedClass =
+        sortedAttendance.length > 0
+          ? sortedAttendance[sortedAttendance.length - 1].joinedAt
+          : undefined;
 
       // Calculate monthly stats
       const monthlyStats = this.calculateMonthlyStats(userAttendance);
@@ -290,65 +340,73 @@ export class AttendanceService extends FirebaseService {
         longestStreak,
         averageDuration,
         lastAttendedClass,
-        monthlyStats
+        monthlyStats,
       };
 
       return {
         data: stats,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: {} as AttendanceStats,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to calculate attendance stats',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to calculate attendance stats',
+        timestamp: new Date(),
       };
     }
   }
 
   // Calculate monthly attendance statistics
-  private static calculateMonthlyStats(attendance: Attendance[]): MonthlyAttendanceStats[] {
+  private static calculateMonthlyStats(
+    attendance: Attendance[]
+  ): MonthlyAttendanceStats[] {
     const monthlyData: Record<string, { total: number; attended: number }> = {};
 
     attendance.forEach(att => {
       const date = this.toDate(att.joinedAt);
       const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
-      
+
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = { total: 0, attended: 0 };
       }
-      
+
       monthlyData[monthKey].total++;
       if (att.isPresent) {
         monthlyData[monthKey].attended++;
       }
     });
 
-    return Object.entries(monthlyData).map(([monthKey, data]) => {
-      const [year, month] = monthKey.split('-').map(Number);
-      const attendancePercentage = data.total > 0 ? Math.round((data.attended / data.total) * 100) : 0;
-      
-      return {
-        month: month + 1, // Convert from 0-based to 1-based
-        year,
-        totalClasses: data.total,
-        attendedClasses: data.attended,
-        attendancePercentage,
-        daysPresent: data.attended,
-        daysAbsent: data.total - data.attended
-      };
-    }).sort((a, b) => {
-      if (a.year !== b.year) return a.year - b.year;
-      return a.month - b.month;
-    });
+    return Object.entries(monthlyData)
+      .map(([monthKey, data]) => {
+        const [year, month] = monthKey.split('-').map(Number);
+        const attendancePercentage =
+          data.total > 0 ? Math.round((data.attended / data.total) * 100) : 0;
+
+        return {
+          month: month + 1, // Convert from 0-based to 1-based
+          year,
+          totalClasses: data.total,
+          attendedClasses: data.attended,
+          attendancePercentage,
+          daysPresent: data.attended,
+          daysAbsent: data.total - data.attended,
+        };
+      })
+      .sort((a, b) => {
+        if (a.year !== b.year) return a.year - b.year;
+        return a.month - b.month;
+      });
   }
 
   // Get attendance record for a specific month
   static async getMonthlyAttendanceRecord(
-    userId: string, 
-    month: number, 
+    userId: string,
+    month: number,
     year: number
   ): Promise<ApiResponse<AttendanceRecord>> {
     try {
@@ -356,14 +414,21 @@ export class AttendanceService extends FirebaseService {
 
       const userAttendance = this.mockAttendance.filter(att => {
         const attDate = this.toDate(att.joinedAt);
-        return att.userId === userId && 
-               attDate.getMonth() === month - 1 && // Convert to 0-based month
-               attDate.getFullYear() === year;
+        return (
+          att.userId === userId &&
+          attDate.getMonth() === month - 1 && // Convert to 0-based month
+          attDate.getFullYear() === year
+        );
       });
 
       const totalClasses = userAttendance.length;
-      const attendedClasses = userAttendance.filter(att => att.isPresent).length;
-      const attendancePercentage = totalClasses > 0 ? Math.round((attendedClasses / totalClasses) * 100) : 0;
+      const attendedClasses = userAttendance.filter(
+        att => att.isPresent
+      ).length;
+      const attendancePercentage =
+        totalClasses > 0
+          ? Math.round((attendedClasses / totalClasses) * 100)
+          : 0;
 
       // Create daily attendance details
       const attendanceDetails: DailyAttendance[] = userAttendance.map(att => {
@@ -375,7 +440,7 @@ export class AttendanceService extends FirebaseService {
           duration: att.duration,
           joinedAt: att.joinedAt,
           leftAt: att.leftAt,
-          notes: att.notes
+          notes: att.notes,
         };
       });
 
@@ -389,20 +454,23 @@ export class AttendanceService extends FirebaseService {
         attendancePercentage,
         attendanceDetails,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       return {
         data: record,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: {} as AttendanceRecord,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch monthly attendance record',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch monthly attendance record',
+        timestamp: new Date(),
       };
     }
   }
@@ -423,7 +491,7 @@ export class AttendanceService extends FirebaseService {
         isPresent: status === 'present',
         attendanceType: 'manual',
         notes,
-        verificationMethod: 'manual_checkin'
+        verificationMethod: 'manual_checkin',
       };
 
       return this.recordAttendance(attendance);
@@ -431,38 +499,45 @@ export class AttendanceService extends FirebaseService {
       return {
         data: {} as Attendance,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to mark attendance',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to mark attendance',
+        timestamp: new Date(),
       };
     }
   }
 
   // Update attendance record
   static async updateAttendance(
-    attendanceId: string, 
+    attendanceId: string,
     updates: Partial<Attendance>
   ): Promise<ApiResponse<Attendance | null>> {
     try {
-      const attendanceIndex = this.mockAttendance.findIndex(att => att.id === attendanceId);
-      
+      const attendanceIndex = this.mockAttendance.findIndex(
+        att => att.id === attendanceId
+      );
+
       if (attendanceIndex === -1) {
         return {
           data: null,
           success: false,
           error: 'Attendance record not found',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
       this.mockAttendance[attendanceIndex] = {
         ...this.mockAttendance[attendanceIndex],
         ...updates,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       // Update in storage
-      const allAttendance = await StorageService.getArray<Attendance>(this.STORAGE_KEY);
-      const storageIndex = allAttendance.findIndex(att => att.id === attendanceId);
+      const allAttendance = await StorageService.getArray<Attendance>(
+        this.STORAGE_KEY
+      );
+      const storageIndex = allAttendance.findIndex(
+        att => att.id === attendanceId
+      );
       if (storageIndex !== -1) {
         allAttendance[storageIndex] = this.mockAttendance[attendanceIndex];
         await StorageService.setArray(this.STORAGE_KEY, allAttendance);
@@ -471,36 +546,46 @@ export class AttendanceService extends FirebaseService {
       return {
         data: this.mockAttendance[attendanceIndex],
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: null,
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to update attendance',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to update attendance',
+        timestamp: new Date(),
       };
     }
   }
 
   // Get attendance by class session
-  static async getAttendanceByClass(classSessionId: string): Promise<ApiResponse<Attendance[]>> {
+  static async getAttendanceByClass(
+    classSessionId: string
+  ): Promise<ApiResponse<Attendance[]>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 200));
 
-      const classAttendance = this.mockAttendance.filter(att => att.classSessionId === classSessionId);
+      const classAttendance = this.mockAttendance.filter(
+        att => att.classSessionId === classSessionId
+      );
 
       return {
         data: classAttendance,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch class attendance',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch class attendance',
+        timestamp: new Date(),
       };
     }
   }
@@ -510,34 +595,48 @@ export class AttendanceService extends FirebaseService {
     userId: string,
     startDate: Date,
     endDate: Date
-  ): Promise<ApiResponse<{ totalClasses: number; attendedClasses: number; attendancePercentage: number }>> {
+  ): Promise<
+    ApiResponse<{
+      totalClasses: number;
+      attendedClasses: number;
+      attendancePercentage: number;
+    }>
+  > {
     try {
       const userAttendance = this.mockAttendance.filter(att => {
         const attDate = this.toDate(att.joinedAt);
-        return att.userId === userId && 
-               attDate >= startDate && 
-               attDate <= endDate;
+        return (
+          att.userId === userId && attDate >= startDate && attDate <= endDate
+        );
       });
 
       const totalClasses = userAttendance.length;
-      const attendedClasses = userAttendance.filter(att => att.isPresent).length;
-      const attendancePercentage = totalClasses > 0 ? Math.round((attendedClasses / totalClasses) * 100) : 0;
+      const attendedClasses = userAttendance.filter(
+        att => att.isPresent
+      ).length;
+      const attendancePercentage =
+        totalClasses > 0
+          ? Math.round((attendedClasses / totalClasses) * 100)
+          : 0;
 
       return {
         data: {
           totalClasses,
           attendedClasses,
-          attendancePercentage
+          attendancePercentage,
         },
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: { totalClasses: 0, attendedClasses: 0, attendancePercentage: 0 },
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch attendance summary',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch attendance summary',
+        timestamp: new Date(),
       };
     }
   }

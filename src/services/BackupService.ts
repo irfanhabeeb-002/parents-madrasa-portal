@@ -52,7 +52,7 @@ class BackupService {
   async createBackup(options: Partial<BackupOptions> = {}): Promise<string> {
     try {
       logger.log('Creating data backup...');
-      
+
       const defaultOptions: BackupOptions = {
         includeUserPreferences: true,
         includeOfflineData: true,
@@ -61,9 +61,9 @@ class BackupService {
         includeNotifications: false, // Notifications are transient
         compress: true,
       };
-      
+
       const backupOptions = { ...defaultOptions, ...options };
-      
+
       // Collect data based on options
       const backupData: BackupData = {
         version: this.BACKUP_VERSION,
@@ -76,52 +76,52 @@ class BackupService {
           backupSize: 0,
         },
       };
-      
+
       // Collect user preferences
       if (backupOptions.includeUserPreferences) {
         backupData.data.userPreferences = this.collectUserPreferences();
       }
-      
+
       // Collect offline data
       if (backupOptions.includeOfflineData) {
         backupData.data.offlineData = await this.collectOfflineData();
       }
-      
+
       // Collect exam results
       if (backupOptions.includeExamResults) {
         backupData.data.examResults = this.collectExamResults();
       }
-      
+
       // Collect attendance data
       if (backupOptions.includeAttendance) {
         backupData.data.attendance = this.collectAttendanceData();
       }
-      
+
       // Collect notifications
       if (backupOptions.includeNotifications) {
         backupData.data.notifications = this.collectNotifications();
       }
-      
+
       // Collect custom settings
       backupData.data.customSettings = this.collectCustomSettings();
-      
+
       // Calculate backup size
       const backupString = JSON.stringify(backupData);
       backupData.metadata.backupSize = new Blob([backupString]).size;
-      
+
       // Compress if requested
-      let finalBackupData = backupString;
+      const finalBackupData = backupString;
       if (backupOptions.compress) {
         finalBackupData = await this.compressData(backupString);
       }
-      
+
       // Store backup
       const backupId = this.generateBackupId();
       await this.storeBackup(backupId, finalBackupData, backupOptions.compress);
-      
+
       // Clean up old backups
       await this.cleanupOldBackups();
-      
+
       // Track backup creation
       analyticsService.trackEvent({
         action: 'backup_created',
@@ -132,10 +132,9 @@ class BackupService {
           data_types: Object.keys(backupData.data).join(','),
         },
       });
-      
+
       logger.success(`Backup created successfully: ${backupId}`);
       return backupId;
-      
     } catch (error) {
       logger.error('Failed to create backup:', error);
       analyticsService.trackError(error as Error, 'backup_creation');
@@ -146,36 +145,46 @@ class BackupService {
   /**
    * Restore data from backup
    */
-  async restoreBackup(backupId: string, options: Partial<RestoreOptions> = {}): Promise<void> {
+  async restoreBackup(
+    backupId: string,
+    options: Partial<RestoreOptions> = {}
+  ): Promise<void> {
     try {
       logger.log(`Restoring backup: ${backupId}`);
-      
+
       const defaultOptions: RestoreOptions = {
         overwriteExisting: false,
         selectiveRestore: [],
         validateData: true,
       };
-      
+
       const restoreOptions = { ...defaultOptions, ...options };
-      
+
       // Retrieve backup data
       const backupData = await this.retrieveBackup(backupId);
       if (!backupData) {
         throw new Error(`Backup not found: ${backupId}`);
       }
-      
+
       // Validate backup data
       if (restoreOptions.validateData) {
         this.validateBackupData(backupData);
       }
-      
+
       // Restore data selectively or completely
       if (restoreOptions.selectiveRestore.length > 0) {
-        await this.restoreSelective(backupData, restoreOptions.selectiveRestore, restoreOptions.overwriteExisting);
+        await this.restoreSelective(
+          backupData,
+          restoreOptions.selectiveRestore,
+          restoreOptions.overwriteExisting
+        );
       } else {
-        await this.restoreComplete(backupData, restoreOptions.overwriteExisting);
+        await this.restoreComplete(
+          backupData,
+          restoreOptions.overwriteExisting
+        );
       }
-      
+
       // Track restore operation
       analyticsService.trackEvent({
         action: 'backup_restored',
@@ -187,9 +196,8 @@ class BackupService {
           overwrite: restoreOptions.overwriteExisting,
         },
       });
-      
+
       logger.success('Backup restored successfully');
-      
     } catch (error) {
       logger.error('Failed to restore backup:', error);
       analyticsService.trackError(error as Error, 'backup_restoration');
@@ -200,17 +208,24 @@ class BackupService {
   /**
    * List available backups
    */
-  async listBackups(): Promise<Array<{ id: string; timestamp: number; size: number; version: string }>> {
+  async listBackups(): Promise<
+    Array<{ id: string; timestamp: number; size: number; version: string }>
+  > {
     try {
-      const backups: Array<{ id: string; timestamp: number; size: number; version: string }> = [];
-      
+      const backups: Array<{
+        id: string;
+        timestamp: number;
+        size: number;
+        version: string;
+      }> = [];
+
       // Get all backup keys from localStorage
-      for (let i = 0; i < localStorage.length; i++) {
+      for (const i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key?.startsWith(this.BACKUP_KEY_PREFIX)) {
           const backupId = key.replace(this.BACKUP_KEY_PREFIX, '');
           const backupData = await this.retrieveBackup(backupId);
-          
+
           if (backupData) {
             backups.push({
               id: backupId,
@@ -221,10 +236,9 @@ class BackupService {
           }
         }
       }
-      
+
       // Sort by timestamp (newest first)
       return backups.sort((a, b) => b.timestamp - a.timestamp);
-      
     } catch (error) {
       logger.error('Failed to list backups:', error);
       return [];
@@ -238,7 +252,7 @@ class BackupService {
     try {
       const key = this.BACKUP_KEY_PREFIX + backupId;
       localStorage.removeItem(key);
-      
+
       analyticsService.trackEvent({
         action: 'backup_deleted',
         category: 'data_management',
@@ -246,9 +260,8 @@ class BackupService {
           backup_id: backupId,
         },
       });
-      
+
       logger.log(`Backup deleted: ${backupId}`);
-      
     } catch (error) {
       logger.error('Failed to delete backup:', error);
       throw error;
@@ -264,24 +277,24 @@ class BackupService {
       if (!backupData) {
         throw new Error(`Backup not found: ${backupId}`);
       }
-      
+
       const backupString = JSON.stringify(backupData, null, 2);
       const blob = new Blob([backupString], { type: 'application/json' });
-      
+
       // Create download link
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = `madrasa-backup-${backupId}.json`;
-      
+
       // Trigger download
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       // Clean up
       URL.revokeObjectURL(url);
-      
+
       analyticsService.trackEvent({
         action: 'backup_exported',
         category: 'data_management',
@@ -289,9 +302,8 @@ class BackupService {
           backup_id: backupId,
         },
       });
-      
+
       logger.success('Backup exported successfully');
-      
     } catch (error) {
       logger.error('Failed to export backup:', error);
       throw error;
@@ -304,19 +316,19 @@ class BackupService {
   async importBackup(file: File): Promise<string> {
     try {
       logger.log('Importing backup from file...');
-      
+
       const fileContent = await this.readFileAsText(file);
       const backupData: BackupData = JSON.parse(fileContent);
-      
+
       // Validate imported data
       this.validateBackupData(backupData);
-      
+
       // Generate new backup ID
       const backupId = this.generateBackupId();
-      
+
       // Store imported backup
       await this.storeBackup(backupId, JSON.stringify(backupData), false);
-      
+
       analyticsService.trackEvent({
         action: 'backup_imported',
         category: 'data_management',
@@ -325,10 +337,9 @@ class BackupService {
           file_size: file.size,
         },
       });
-      
+
       logger.success(`Backup imported successfully: ${backupId}`);
       return backupId;
-      
     } catch (error) {
       logger.error('Failed to import backup:', error);
       throw error;
@@ -347,7 +358,7 @@ class BackupService {
         accessibility: localStorage.getItem('accessibility'),
         notifications: localStorage.getItem('notificationPreferences'),
       };
-      
+
       return Object.fromEntries(
         Object.entries(preferences).filter(([_, value]) => value !== null)
       );
@@ -369,7 +380,7 @@ class BackupService {
         cachedNotes: localStorage.getItem('cachedNotes'),
         offlineQueue: localStorage.getItem('offlineQueue'),
       };
-      
+
       return Object.fromEntries(
         Object.entries(offlineData).filter(([_, value]) => value !== null)
       );
@@ -424,15 +435,15 @@ class BackupService {
   private collectCustomSettings(): any {
     try {
       const customSettings: Record<string, any> = {};
-      
+
       // Collect any custom app settings
-      for (let i = 0; i < localStorage.length; i++) {
+      for (const i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key?.startsWith('custom_') || key?.startsWith('app_')) {
           customSettings[key] = localStorage.getItem(key);
         }
       }
-      
+
       return customSettings;
     } catch (error) {
       logger.error('Failed to collect custom settings:', error);
@@ -453,7 +464,7 @@ class BackupService {
    * Get device ID
    */
   private getDeviceId(): string {
-    let deviceId = localStorage.getItem('deviceId');
+    const deviceId = localStorage.getItem('deviceId');
     if (!deviceId) {
       deviceId = 'device_' + Math.random().toString(36).substring(2, 15);
       localStorage.setItem('deviceId', deviceId);
@@ -492,7 +503,11 @@ class BackupService {
   /**
    * Store backup in localStorage
    */
-  private async storeBackup(backupId: string, data: string, compressed: boolean): Promise<void> {
+  private async storeBackup(
+    backupId: string,
+    data: string,
+    compressed: boolean
+  ): Promise<void> {
     try {
       const key = this.BACKUP_KEY_PREFIX + backupId;
       const backupEntry = {
@@ -500,13 +515,19 @@ class BackupService {
         compressed,
         timestamp: Date.now(),
       };
-      
+
       localStorage.setItem(key, JSON.stringify(backupEntry));
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+      if (
+        error instanceof DOMException &&
+        error.name === 'QuotaExceededError'
+      ) {
         // Storage quota exceeded, clean up old backups and try again
         await this.cleanupOldBackups();
-        localStorage.setItem(this.BACKUP_KEY_PREFIX + backupId, JSON.stringify({ data, compressed, timestamp: Date.now() }));
+        localStorage.setItem(
+          this.BACKUP_KEY_PREFIX + backupId,
+          JSON.stringify({ data, compressed, timestamp: Date.now() })
+        );
       } else {
         throw error;
       }
@@ -520,14 +541,14 @@ class BackupService {
     try {
       const key = this.BACKUP_KEY_PREFIX + backupId;
       const backupEntry = localStorage.getItem(key);
-      
+
       if (!backupEntry) {
         return null;
       }
-      
+
       const { data, compressed } = JSON.parse(backupEntry);
       const backupString = compressed ? await this.decompressData(data) : data;
-      
+
       return JSON.parse(backupString);
     } catch (error) {
       logger.error(`Failed to retrieve backup ${backupId}:`, error);
@@ -541,14 +562,14 @@ class BackupService {
   private async cleanupOldBackups(): Promise<void> {
     try {
       const backups = await this.listBackups();
-      
+
       if (backups.length > this.MAX_BACKUPS) {
         const backupsToDelete = backups.slice(this.MAX_BACKUPS);
-        
+
         for (const backup of backupsToDelete) {
           await this.deleteBackup(backup.id);
         }
-        
+
         logger.log(`Cleaned up ${backupsToDelete.length} old backups`);
       }
     } catch (error) {
@@ -563,43 +584,48 @@ class BackupService {
     if (!backupData.version || !backupData.timestamp || !backupData.data) {
       throw new Error('Invalid backup data structure');
     }
-    
+
     if (backupData.version !== this.BACKUP_VERSION) {
-      logger.warning(`Backup version mismatch: ${backupData.version} vs ${this.BACKUP_VERSION}`);
+      logger.warning(
+        `Backup version mismatch: ${backupData.version} vs ${this.BACKUP_VERSION}`
+      );
     }
   }
 
   /**
    * Restore complete backup
    */
-  private async restoreComplete(backupData: BackupData, overwrite: boolean): Promise<void> {
+  private async restoreComplete(
+    backupData: BackupData,
+    overwrite: boolean
+  ): Promise<void> {
     const { data } = backupData;
-    
+
     // Restore user preferences
     if (data.userPreferences) {
       await this.restoreUserPreferences(data.userPreferences, overwrite);
     }
-    
+
     // Restore offline data
     if (data.offlineData) {
       await this.restoreOfflineData(data.offlineData, overwrite);
     }
-    
+
     // Restore exam results
     if (data.examResults) {
       await this.restoreExamResults(data.examResults, overwrite);
     }
-    
+
     // Restore attendance data
     if (data.attendance) {
       await this.restoreAttendanceData(data.attendance, overwrite);
     }
-    
+
     // Restore notifications
     if (data.notifications) {
       await this.restoreNotifications(data.notifications, overwrite);
     }
-    
+
     // Restore custom settings
     if (data.customSettings) {
       await this.restoreCustomSettings(data.customSettings, overwrite);
@@ -609,9 +635,13 @@ class BackupService {
   /**
    * Restore selective backup
    */
-  private async restoreSelective(backupData: BackupData, dataTypes: string[], overwrite: boolean): Promise<void> {
+  private async restoreSelective(
+    backupData: BackupData,
+    dataTypes: string[],
+    overwrite: boolean
+  ): Promise<void> {
     const { data } = backupData;
-    
+
     for (const dataType of dataTypes) {
       switch (dataType) {
         case 'userPreferences':
@@ -651,7 +681,10 @@ class BackupService {
   /**
    * Restore user preferences
    */
-  private async restoreUserPreferences(preferences: any, overwrite: boolean): Promise<void> {
+  private async restoreUserPreferences(
+    preferences: any,
+    overwrite: boolean
+  ): Promise<void> {
     for (const [key, value] of Object.entries(preferences)) {
       if (overwrite || !localStorage.getItem(key)) {
         localStorage.setItem(key, value as string);
@@ -662,7 +695,10 @@ class BackupService {
   /**
    * Restore offline data
    */
-  private async restoreOfflineData(offlineData: any, overwrite: boolean): Promise<void> {
+  private async restoreOfflineData(
+    offlineData: any,
+    overwrite: boolean
+  ): Promise<void> {
     for (const [key, value] of Object.entries(offlineData)) {
       if (overwrite || !localStorage.getItem(key)) {
         localStorage.setItem(key, value as string);
@@ -673,7 +709,10 @@ class BackupService {
   /**
    * Restore exam results
    */
-  private async restoreExamResults(examResults: any, overwrite: boolean): Promise<void> {
+  private async restoreExamResults(
+    examResults: any,
+    overwrite: boolean
+  ): Promise<void> {
     if (overwrite || !localStorage.getItem('examResults')) {
       localStorage.setItem('examResults', JSON.stringify(examResults));
     }
@@ -682,7 +721,10 @@ class BackupService {
   /**
    * Restore attendance data
    */
-  private async restoreAttendanceData(attendance: any, overwrite: boolean): Promise<void> {
+  private async restoreAttendanceData(
+    attendance: any,
+    overwrite: boolean
+  ): Promise<void> {
     if (overwrite || !localStorage.getItem('attendance')) {
       localStorage.setItem('attendance', JSON.stringify(attendance));
     }
@@ -691,7 +733,10 @@ class BackupService {
   /**
    * Restore notifications
    */
-  private async restoreNotifications(notifications: any, overwrite: boolean): Promise<void> {
+  private async restoreNotifications(
+    notifications: any,
+    overwrite: boolean
+  ): Promise<void> {
     if (overwrite || !localStorage.getItem('notifications')) {
       localStorage.setItem('notifications', JSON.stringify(notifications));
     }
@@ -700,7 +745,10 @@ class BackupService {
   /**
    * Restore custom settings
    */
-  private async restoreCustomSettings(customSettings: any, overwrite: boolean): Promise<void> {
+  private async restoreCustomSettings(
+    customSettings: any,
+    overwrite: boolean
+  ): Promise<void> {
     for (const [key, value] of Object.entries(customSettings)) {
       if (overwrite || !localStorage.getItem(key)) {
         localStorage.setItem(key, value as string);

@@ -4,9 +4,9 @@ interface KeyboardNavigationIndicatorProps {
   className?: string;
 }
 
-export const KeyboardNavigationIndicator: React.FC<KeyboardNavigationIndicatorProps> = ({
-  className = ''
-}) => {
+export const KeyboardNavigationIndicator: React.FC<
+  KeyboardNavigationIndicatorProps
+> = ({ className = '' }) => {
   const [isKeyboardUser, setIsKeyboardUser] = useState(false);
   const [showIndicator, setShowIndicator] = useState(false);
 
@@ -15,15 +15,25 @@ export const KeyboardNavigationIndicator: React.FC<KeyboardNavigationIndicatorPr
 
     const handleKeyDown = (event: KeyboardEvent) => {
       // Detect keyboard navigation (Tab, Arrow keys, Enter, Space)
-      if (['Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', ' '].includes(event.key)) {
+      if (
+        [
+          'Tab',
+          'ArrowUp',
+          'ArrowDown',
+          'ArrowLeft',
+          'ArrowRight',
+          'Enter',
+          ' ',
+        ].includes(event.key)
+      ) {
         setIsKeyboardUser(true);
         setShowIndicator(true);
-        
+
         // Clear any existing timeout
         if (keyboardTimeout) {
           window.clearTimeout(keyboardTimeout);
         }
-        
+
         // Hide indicator after 3 seconds of no keyboard activity
         keyboardTimeout = window.setTimeout(() => {
           setShowIndicator(false);

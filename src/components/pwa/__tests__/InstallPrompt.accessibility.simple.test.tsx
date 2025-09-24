@@ -15,13 +15,15 @@ const mockThemeContext = {
 
 vi.mock('../../../contexts/ThemeContext', () => ({
   useTheme: () => mockThemeContext,
-  ThemeProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 describe('InstallPrompt Accessibility - Simple Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Mock sessionStorage
     Object.defineProperty(window, 'sessionStorage', {
       value: {
@@ -57,7 +59,7 @@ describe('InstallPrompt Accessibility - Simple Tests', () => {
 
   test('screen reader announcement element is present', () => {
     render(<InstallPrompt />);
-    
+
     // Check for screen reader announcement element
     const announcement = screen.getByRole('status');
     expect(announcement).toBeInTheDocument();
@@ -68,11 +70,11 @@ describe('InstallPrompt Accessibility - Simple Tests', () => {
 
   test('component has proper accessibility structure when not showing banner', () => {
     render(<InstallPrompt />);
-    
+
     // Should have the announcement element even when banner is not shown
     const announcement = screen.getByRole('status');
     expect(announcement).toBeInTheDocument();
-    
+
     // Should not have banner when conditions are not met
     const banner = screen.queryByRole('banner');
     expect(banner).not.toBeInTheDocument();
@@ -81,12 +83,12 @@ describe('InstallPrompt Accessibility - Simple Tests', () => {
   test('accessibility improvements are implemented in component code', () => {
     // This test verifies that the component code includes accessibility features
     // by checking the component source for key accessibility attributes
-    
+
     const { container } = render(<InstallPrompt />);
-    
+
     // Check that the component renders with proper structure
     expect(container.firstChild).toBeInTheDocument();
-    
+
     // Verify screen reader announcement element exists
     const announcement = screen.getByRole('status');
     expect(announcement).toHaveAttribute('aria-live', 'polite');

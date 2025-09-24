@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Layout } from '../components/layout';
-import { AlertBanner, SkeletonLoader, AccessibleButton } from '../components/ui';
+import {
+  AlertBanner,
+  SkeletonLoader,
+  AccessibleButton,
+} from '../components/ui';
 import { ClassService, AttendanceService } from '../services';
 import { zoomService } from '../services/zoomService';
 import type { ClassSession } from '../types/class';
@@ -36,13 +40,15 @@ export const LiveClass: React.FC = () => {
     loadClassData();
 
     // Set up real-time listeners for class updates
-    const unsubscribeLive = ClassService.subscribeToLiveClasses((liveClasses) => {
+    const unsubscribeLive = ClassService.subscribeToLiveClasses(liveClasses => {
       setState(prev => ({ ...prev, liveClasses }));
     });
 
-    const unsubscribeToday = ClassService.subscribeToTodaysClasses((todaysClasses) => {
-      setState(prev => ({ ...prev, todaysClasses }));
-    });
+    const unsubscribeToday = ClassService.subscribeToTodaysClasses(
+      todaysClasses => {
+        setState(prev => ({ ...prev, todaysClasses }));
+      }
+    );
 
     // Cleanup listeners on unmount
     return () => {
@@ -80,7 +86,17 @@ export const LiveClass: React.FC = () => {
               disablePreview: false,
               disableSetting: true,
               disableShareAudioVideo: true,
-              meetingInfo: ['topic', 'host', 'mn', 'pwd', 'telPwd', 'invite', 'participant', 'dc', 'enctype'],
+              meetingInfo: [
+                'topic',
+                'host',
+                'mn',
+                'pwd',
+                'telPwd',
+                'invite',
+                'participant',
+                'dc',
+                'enctype',
+              ],
               disableReport: true,
               meetingInfoDescription: '',
               disableVoIP: false,
@@ -91,13 +107,15 @@ export const LiveClass: React.FC = () => {
               // Set auth config for signature generation
               zoomService.setAuthConfig({
                 apiKey: import.meta.env.VITE_ZOOM_API_KEY || 'demo-key',
-                apiSecret: import.meta.env.VITE_ZOOM_API_SECRET || 'demo-secret'
+                apiSecret:
+                  import.meta.env.VITE_ZOOM_API_SECRET || 'demo-secret',
               });
               setState(prev => ({ ...prev, zoomInitialized: true }));
             } else {
               setState(prev => ({
                 ...prev,
-                joinError: result.error?.errorMessage || 'Failed to initialize Zoom'
+                joinError:
+                  result.error?.errorMessage || 'Failed to initialize Zoom',
               }));
             }
           } else {
@@ -107,7 +125,7 @@ export const LiveClass: React.FC = () => {
           console.error('Failed to initialize Zoom:', error);
           setState(prev => ({
             ...prev,
-            joinError: 'Failed to initialize Zoom integration'
+            joinError: 'Failed to initialize Zoom integration',
           }));
         }
       }
@@ -119,20 +137,25 @@ export const LiveClass: React.FC = () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
-      const [todaysResponse, liveResponse, upcomingResponse] = await Promise.all([
-        ClassService.getTodaysClasses(),
-        ClassService.getLiveClasses(),
-        ClassService.getUpcomingClasses(3)
-      ]);
+      const [todaysResponse, liveResponse, upcomingResponse] =
+        await Promise.all([
+          ClassService.getTodaysClasses(),
+          ClassService.getLiveClasses(),
+          ClassService.getUpcomingClasses(3),
+        ]);
 
       if (!todaysResponse.success) {
-        throw new Error(todaysResponse.error || 'Failed to load today\'s classes');
+        throw new Error(
+          todaysResponse.error || "Failed to load today's classes"
+        );
       }
       if (!liveResponse.success) {
         throw new Error(liveResponse.error || 'Failed to load live classes');
       }
       if (!upcomingResponse.success) {
-        throw new Error(upcomingResponse.error || 'Failed to load upcoming classes');
+        throw new Error(
+          upcomingResponse.error || 'Failed to load upcoming classes'
+        );
       }
 
       setState(prev => ({
@@ -145,86 +168,104 @@ export const LiveClass: React.FC = () => {
     } catch (error) {
       setState(prev => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Failed to load class data',
+        error:
+          error instanceof Error ? error.message : 'Failed to load class data',
         loading: false,
       }));
     }
   };
 
   // Zoom integration methods
-  const handleJoinZoomMeeting = useCallback(async (classSession: ClassSession) => {
-    if (!state.zoomEnabled) {
-      setState(prev => ({
-        ...prev,
-        joinError: 'Zoom integration is currently disabled. Please contact your administrator.'
-      }));
-      return;
-    }
-
-    if (!user) return;
-
-    setState(prev => ({
-      ...prev,
-      joiningClass: classSession.id,
-      joinError: null
-    }));
-
-    try {
-      // Record attendance start
-      const joinTime = new Date();
-      await AttendanceService.recordAttendance({
-        userId: user.uid,
-        classSessionId: classSession.id,
-        joinedAt: joinTime,
-        duration: 0,
-        isPresent: true,
-        attendanceType: 'zoom_integration',
-        verificationMethod: 'zoom_join'
-      });
-
-      // Generate signature for meeting
-      const signature = zoomService.generateSignature(classSession.zoomMeetingId, 0); // 0 = attendee role
-
-      // Join meeting via Zoom service
-      const joinResult = await zoomService.joinMeeting({
-        meetingNumber: classSession.zoomMeetingId,
-        password: classSession.zoomPassword,
-        userName: user.displayName || user.email || 'Student',
-        userEmail: user.email,
-        signature: signature,
-        apiKey: import.meta.env.VITE_ZOOM_API_KEY || 'demo-key',
-        role: 0, // attendee
-        leaveUrl: window.location.origin + '/live-class'
-      });
-
-      if (joinResult.success) {
-        // Track attendance with Zoom service
-        await zoomService.trackAttendance(classSession.zoomMeetingId, user.uid, 'join');
-        console.log('Successfully joined Zoom meeting:', classSession.title);
-      } else {
-        throw new Error(joinResult.error?.errorMessage || 'Failed to join meeting');
+  const handleJoinZoomMeeting = useCallback(
+    async (classSession: ClassSession) => {
+      if (!state.zoomEnabled) {
+        setState(prev => ({
+          ...prev,
+          joinError:
+            'Zoom integration is currently disabled. Please contact your administrator.',
+        }));
+        return;
       }
 
-    } catch (error) {
+      if (!user) return;
+
       setState(prev => ({
         ...prev,
-        joinError: error instanceof Error ? error.message : 'Failed to join class',
+        joiningClass: classSession.id,
+        joinError: null,
       }));
-    } finally {
-      setState(prev => ({ ...prev, joiningClass: null }));
-    }
-  }, [state.zoomEnabled, user]);
+
+      try {
+        // Record attendance start
+        const joinTime = new Date();
+        await AttendanceService.recordAttendance({
+          userId: user.uid,
+          classSessionId: classSession.id,
+          joinedAt: joinTime,
+          duration: 0,
+          isPresent: true,
+          attendanceType: 'zoom_integration',
+          verificationMethod: 'zoom_join',
+        });
+
+        // Generate signature for meeting
+        const signature = zoomService.generateSignature(
+          classSession.zoomMeetingId,
+          0
+        ); // 0 = attendee role
+
+        // Join meeting via Zoom service
+        const joinResult = await zoomService.joinMeeting({
+          meetingNumber: classSession.zoomMeetingId,
+          password: classSession.zoomPassword,
+          userName: user.displayName || user.email || 'Student',
+          userEmail: user.email,
+          signature: signature,
+          apiKey: import.meta.env.VITE_ZOOM_API_KEY || 'demo-key',
+          role: 0, // attendee
+          leaveUrl: window.location.origin + '/live-class',
+        });
+
+        if (joinResult.success) {
+          // Track attendance with Zoom service
+          await zoomService.trackAttendance(
+            classSession.zoomMeetingId,
+            user.uid,
+            'join'
+          );
+          console.warn('Successfully joined Zoom meeting:', classSession.title);
+        } else {
+          throw new Error(
+            joinResult.error?.errorMessage || 'Failed to join meeting'
+          );
+        }
+      } catch (error) {
+        setState(prev => ({
+          ...prev,
+          joinError:
+            error instanceof Error ? error.message : 'Failed to join class',
+        }));
+      } finally {
+        setState(prev => ({ ...prev, joiningClass: null }));
+      }
+    },
+    [state.zoomEnabled, user]
+  );
 
   const handleJoinClass = async (classSession: ClassSession) => {
     if (!user) return;
 
     // Check if user can join
-    const canJoinResponse = await ClassService.canJoinClass(classSession.id, user.uid);
+    const canJoinResponse = await ClassService.canJoinClass(
+      classSession.id,
+      user.uid
+    );
 
     if (!canJoinResponse.success || !canJoinResponse.data.canJoin) {
       setState(prev => ({
         ...prev,
-        joinError: canJoinResponse.data.reason || 'Cannot join class at this time'
+        joinError:
+          canJoinResponse.data.reason || 'Cannot join class at this time',
       }));
       return;
     }
@@ -237,11 +278,14 @@ export const LiveClass: React.FC = () => {
       setState(prev => ({
         ...prev,
         joiningClass: classSession.id,
-        joinError: null
+        joinError: null,
       }));
 
       try {
-        const joinResponse = await ClassService.joinClass(classSession.id, user.uid);
+        const joinResponse = await ClassService.joinClass(
+          classSession.id,
+          user.uid
+        );
 
         if (joinResponse.success) {
           // Record attendance for non-Zoom join
@@ -252,7 +296,7 @@ export const LiveClass: React.FC = () => {
             duration: 0,
             isPresent: true,
             attendanceType: 'manual',
-            verificationMethod: 'manual_checkin'
+            verificationMethod: 'manual_checkin',
           });
 
           // Open meeting URL in new window
@@ -260,13 +304,14 @@ export const LiveClass: React.FC = () => {
         } else {
           setState(prev => ({
             ...prev,
-            joinError: joinResponse.error || 'Failed to join class'
+            joinError: joinResponse.error || 'Failed to join class',
           }));
         }
       } catch (error) {
         setState(prev => ({
           ...prev,
-          joinError: error instanceof Error ? error.message : 'Failed to join class'
+          joinError:
+            error instanceof Error ? error.message : 'Failed to join class',
         }));
       } finally {
         setState(prev => ({ ...prev, joiningClass: null }));
@@ -280,7 +325,9 @@ export const LiveClass: React.FC = () => {
     }
     // Handle Firestore Timestamp or string
     if (dateValue && typeof dateValue === 'object' && dateValue.seconds) {
-      return new Date(dateValue.seconds * 1000 + (dateValue.nanoseconds || 0) / 1000000);
+      return new Date(
+        dateValue.seconds * 1000 + (dateValue.nanoseconds || 0) / 1000000
+      );
     }
     return new Date(dateValue);
   };
@@ -289,7 +336,7 @@ export const LiveClass: React.FC = () => {
     return toDate(date).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     });
   };
 
@@ -297,7 +344,7 @@ export const LiveClass: React.FC = () => {
     return toDate(date).toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -308,16 +355,26 @@ export const LiveClass: React.FC = () => {
         text: 'LIVE',
         icon: (
           <div className="w-2 h-2 bg-current rounded-full mr-2 animate-pulse"></div>
-        )
+        ),
       },
       scheduled: {
         color: 'bg-blue-100 text-blue-800',
         text: 'Scheduled',
         icon: (
-          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-3 h-3 mr-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
-        )
+        ),
       },
       completed: {
         color: 'bg-gray-100 text-gray-800',
@@ -325,9 +382,13 @@ export const LiveClass: React.FC = () => {
         malayalam: 'പൂർത്തിയായി',
         icon: (
           <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clipRule="evenodd"
+            />
           </svg>
-        )
+        ),
       },
       cancelled: {
         color: 'bg-red-100 text-red-800',
@@ -335,18 +396,26 @@ export const LiveClass: React.FC = () => {
         malayalam: 'റദ്ദാക്കി',
         icon: (
           <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
           </svg>
-        )
-      }
+        ),
+      },
     };
 
     const config = statusConfig[classSession.status];
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}
+      >
         {config.icon}
         {config.text}
-        <span className="ml-1 text-xs opacity-75" lang="ml">{config.malayalam}</span>
+        <span className="ml-1 text-xs opacity-75" lang="ml">
+          {config.malayalam}
+        </span>
       </span>
     );
   };
@@ -408,11 +477,16 @@ export const LiveClass: React.FC = () => {
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Live Now
-              <span className="ml-2 text-sm text-gray-500" lang="ml">ഇപ്പോൾ ലൈവ്</span>
+              <span className="ml-2 text-sm text-gray-500" lang="ml">
+                ഇപ്പോൾ ലൈവ്
+              </span>
             </h2>
             <div className="space-y-4">
-              {state.liveClasses.map((classSession) => (
-                <div key={classSession.id} className="bg-red-50 border border-red-200 rounded-lg p-4">
+              {state.liveClasses.map(classSession => (
+                <div
+                  key={classSession.id}
+                  className="bg-red-50 border border-red-200 rounded-lg p-4"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -444,13 +518,18 @@ export const LiveClass: React.FC = () => {
                     >
                       {state.joiningClass === classSession.id ? (
                         <>
-                          <SkeletonLoader variant="custom" className="w-4 h-4 mr-2" />
+                          <SkeletonLoader
+                            variant="custom"
+                            className="w-4 h-4 mr-2"
+                          />
                           Joining...
                         </>
                       ) : (
                         <>
                           Join Now
-                          <span className="ml-1 text-xs" lang="ml">ചേരുക</span>
+                          <span className="ml-1 text-xs" lang="ml">
+                            ചേരുക
+                          </span>
                         </>
                       )}
                     </AccessibleButton>
@@ -465,23 +544,42 @@ export const LiveClass: React.FC = () => {
         <section>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Today's Classes
-            <span className="ml-2 text-sm text-gray-500" lang="ml">ഇന്നത്തെ ക്ലാസുകൾ</span>
+            <span className="ml-2 text-sm text-gray-500" lang="ml">
+              ഇന്നത്തെ ക്ലാസുകൾ
+            </span>
           </h2>
 
           {state.todaysClasses.length === 0 ? (
             <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
               <div className="text-gray-500">
-                <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-12 h-12 mx-auto mb-4 text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
-                <p className="text-lg font-medium text-gray-900 mb-1">No classes scheduled for today</p>
-                <p className="text-sm text-gray-500" lang="ml">ഇന്ന് ക്ലാസുകൾ ഷെഡ്യൂൾ ചെയ്തിട്ടില്ല</p>
+                <p className="text-lg font-medium text-gray-900 mb-1">
+                  No classes scheduled for today
+                </p>
+                <p className="text-sm text-gray-500" lang="ml">
+                  ഇന്ന് ക്ലാസുകൾ ഷെഡ്യൂൾ ചെയ്തിട്ടില്ല
+                </p>
               </div>
             </div>
           ) : (
             <div className="space-y-4">
-              {state.todaysClasses.map((classSession) => (
-                <div key={classSession.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              {state.todaysClasses.map(classSession => (
+                <div
+                  key={classSession.id}
+                  className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -500,7 +598,8 @@ export const LiveClass: React.FC = () => {
                         Duration: {classSession.duration} minutes
                       </p>
                     </div>
-                    {(classSession.status === 'scheduled' || classSession.status === 'live') && (
+                    {(classSession.status === 'scheduled' ||
+                      classSession.status === 'live') && (
                       <AccessibleButton
                         variant="secondary"
                         size="sm"
@@ -511,13 +610,18 @@ export const LiveClass: React.FC = () => {
                       >
                         {state.joiningClass === classSession.id ? (
                           <>
-                            <SkeletonLoader variant="custom" className="w-4 h-4 mr-2" />
+                            <SkeletonLoader
+                              variant="custom"
+                              className="w-4 h-4 mr-2"
+                            />
                             Joining...
                           </>
                         ) : (
                           <>
                             Join
-                            <span className="ml-1 text-xs" lang="ml">ചേരുക</span>
+                            <span className="ml-1 text-xs" lang="ml">
+                              ചേരുക
+                            </span>
                           </>
                         )}
                       </AccessibleButton>
@@ -534,17 +638,23 @@ export const LiveClass: React.FC = () => {
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Upcoming Classes
-              <span className="ml-2 text-sm text-gray-500" lang="ml">വരാനിരിക്കുന്ന ക്ലാസുകൾ</span>
+              <span className="ml-2 text-sm text-gray-500" lang="ml">
+                വരാനിരിക്കുന്ന ക്ലാസുകൾ
+              </span>
             </h2>
             <div className="space-y-4">
-              {state.upcomingClasses.map((classSession) => (
-                <div key={classSession.id} className="bg-white rounded-lg border border-gray-200 p-4">
+              {state.upcomingClasses.map(classSession => (
+                <div
+                  key={classSession.id}
+                  className="bg-white rounded-lg border border-gray-200 p-4"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         {getStatusBadge(classSession)}
                         <span className="text-sm text-gray-500">
-                          {formatDate(classSession.scheduledAt)} at {formatTime(classSession.scheduledAt)}
+                          {formatDate(classSession.scheduledAt)} at{' '}
+                          {formatTime(classSession.scheduledAt)}
                         </span>
                       </div>
                       <h3 className="font-semibold text-gray-900 mb-1">
@@ -579,11 +689,23 @@ export const LiveClass: React.FC = () => {
               </>
             ) : (
               <>
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
                 Refresh
-                <span className="ml-1 text-xs" lang="ml">പുതുക്കുക</span>
+                <span className="ml-1 text-xs" lang="ml">
+                  പുതുക്കുക
+                </span>
               </>
             )}
           </AccessibleButton>

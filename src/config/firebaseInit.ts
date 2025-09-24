@@ -8,8 +8,8 @@ export async function initializeFirebase(): Promise<void> {
   try {
     // Enable offline persistence for Firestore
     await enableIndexedDbPersistence(db);
-    
-    console.log('Firebase initialized with offline persistence');
+
+    console.warn('Firebase initialized with offline persistence');
   } catch (error: any) {
     if (error.code === 'failed-precondition') {
       // Multiple tabs open, persistence can only be enabled in one tab at a time
@@ -37,7 +37,7 @@ export function validateFirebaseConfig(): boolean {
   ];
 
   const missingVars = requiredEnvVars.filter(
-    (envVar) => !import.meta.env[envVar]
+    envVar => !import.meta.env[envVar]
   );
 
   if (missingVars.length > 0) {

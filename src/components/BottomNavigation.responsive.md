@@ -31,38 +31,40 @@ The component uses a mobile-first responsive design strategy:
 
 ### Breakpoint Definitions
 
-| Breakpoint | Range | Target Devices | Key Changes |
-|------------|-------|----------------|-------------|
-| **Mobile** | < 768px | Phones, small tablets | Larger touch targets, increased padding |
-| **Tablet** | 768px - 1024px | Tablets, small laptops | Standard sizing, hover effects |
-| **Desktop** | > 1024px | Laptops, desktops | Max-width container, full hover support |
+| Breakpoint  | Range          | Target Devices         | Key Changes                             |
+| ----------- | -------------- | ---------------------- | --------------------------------------- |
+| **Mobile**  | < 768px        | Phones, small tablets  | Larger touch targets, increased padding |
+| **Tablet**  | 768px - 1024px | Tablets, small laptops | Standard sizing, hover effects          |
+| **Desktop** | > 1024px       | Laptops, desktops      | Max-width container, full hover support |
 
 ## Device-Specific Adaptations
 
 ### Mobile Devices (< 768px)
 
 #### Touch Target Optimization
+
 ```css
 @media (max-width: 768px) {
   .tab_button {
-    min-height: 60px;      /* Increased from 56px */
-    min-width: 48px;       /* Increased from 44px */
-    font-size: 12px;       /* Increased from 11px */
-    padding: 10px 4px;     /* Increased padding */
+    min-height: 60px; /* Increased from 56px */
+    min-width: 48px; /* Increased from 44px */
+    font-size: 12px; /* Increased from 11px */
+    padding: 10px 4px; /* Increased padding */
   }
-  
+
   .tab_icon svg {
-    width: 22px;           /* Increased from 20px */
+    width: 22px; /* Increased from 20px */
     height: 22px;
   }
-  
+
   .indicator {
-    height: 60px;          /* Matches button height */
+    height: 60px; /* Matches button height */
   }
 }
 ```
 
 #### Enhanced Touch Feedback
+
 ```css
 @media (hover: none) and (pointer: coarse) {
   .tab_button {
@@ -71,7 +73,7 @@ The component uses a mobile-first responsive design strategy:
       background-color: transparent;
       color: inherit;
     }
-    
+
     /* Add touch feedback */
     &:active:not(.active) {
       background-color: rgba(148, 163, 184, 0.2);
@@ -82,14 +84,15 @@ The component uses a mobile-first responsive design strategy:
 ```
 
 #### Mobile Container Adjustments
+
 ```css
 @media (max-width: 768px) {
   .bottom-navigation {
-    padding: 12px 16px;    /* Increased padding */
+    padding: 12px 16px; /* Increased padding */
   }
-  
+
   .tab-container {
-    padding: 6px;          /* Increased from 4px */
+    padding: 6px; /* Increased from 4px */
   }
 }
 ```
@@ -97,20 +100,21 @@ The component uses a mobile-first responsive design strategy:
 ### Tablet Devices (768px - 1024px)
 
 #### Balanced Design
+
 ```css
 @media (min-width: 768px) and (max-width: 1024px) {
   .tab_button {
     min-height: 56px;
     min-width: 44px;
     font-size: 11px;
-    
+
     /* Enable hover effects */
     &:hover:not(.active) {
       color: #475569;
       background-color: rgba(148, 163, 184, 0.1);
     }
   }
-  
+
   .tab_icon svg {
     width: 20px;
     height: 20px;
@@ -121,23 +125,24 @@ The component uses a mobile-first responsive design strategy:
 ### Desktop Devices (> 1024px)
 
 #### Centered Layout with Max Width
+
 ```css
 @media (min-width: 1024px) {
   .tab-container {
-    max-width: 500px;      /* Prevent excessive width */
-    margin: 0 auto;        /* Center the navigation */
+    max-width: 500px; /* Prevent excessive width */
+    margin: 0 auto; /* Center the navigation */
   }
-  
+
   .tab_button {
-    cursor: pointer;       /* Show pointer cursor */
-    
+    cursor: pointer; /* Show pointer cursor */
+
     /* Enhanced hover effects */
     &:hover:not(.active) {
       color: #475569;
       background-color: rgba(148, 163, 184, 0.1);
       transform: translateY(-1px);
     }
-    
+
     /* Enhanced focus indicators */
     &:focus-visible {
       outline: 2px solid #3b82f6;
@@ -204,10 +209,10 @@ The component uses a mobile-first responsive design strategy:
     --nav-hover-bg: #f0f0f0;
     --nav-hover-text: #000000;
   }
-  
+
   .tab_button {
     border: 2px solid #000000;
-    
+
     &:focus,
     &:focus-visible {
       outline: 3px solid #000000;
@@ -215,7 +220,7 @@ The component uses a mobile-first responsive design strategy:
       box-shadow: none;
     }
   }
-  
+
   @media (prefers-color-scheme: dark) {
     :root {
       --nav-background: #000000;
@@ -227,10 +232,10 @@ The component uses a mobile-first responsive design strategy:
       --nav-hover-bg: #333333;
       --nav-hover-text: #ffffff;
     }
-    
+
     .tab_button {
       border-color: #ffffff;
-      
+
       &:focus,
       &:focus-visible {
         outline-color: #ffffff;
@@ -275,15 +280,15 @@ const customTheme = {
     text: {
       active: '#ffffff',
       inactive: '#64748b',
-      hover: '#475569'
+      hover: '#475569',
     },
     spacing: {
       padding: '8px',
-      gap: '2px'
+      gap: '2px',
     },
     borderRadius: '12px',
-    shadow: '0 -2px 10px rgba(0, 0, 0, 0.1)'
-  }
+    shadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
+  },
 };
 
 function App() {
@@ -301,19 +306,20 @@ function App() {
 const StyledWrapper = styled.nav`
   background: ${props => props.theme.navigation?.background || '#ffffff'};
   border-radius: ${props => props.theme.navigation?.borderRadius || '12px'};
-  box-shadow: ${props => props.theme.navigation?.shadow || '0 -2px 10px rgba(0, 0, 0, 0.1)'};
-  
+  box-shadow: ${props =>
+    props.theme.navigation?.shadow || '0 -2px 10px rgba(0, 0, 0, 0.1)'};
+
   .indicator {
     background: ${props => props.theme.navigation?.primary || '#3b82f6'};
   }
-  
+
   .tab_button {
     color: ${props => props.theme.navigation?.text?.inactive || '#64748b'};
-    
+
     &.active {
       color: ${props => props.theme.navigation?.text?.active || '#ffffff'};
     }
-    
+
     &:hover:not(.active) {
       color: ${props => props.theme.navigation?.text?.hover || '#475569'};
     }
@@ -331,7 +337,7 @@ const StyledWrapper = styled.nav`
   .tab_button span {
     display: none; /* Hide labels on very small containers */
   }
-  
+
   .tab_button {
     min-height: 48px;
   }
@@ -352,7 +358,7 @@ const StyledWrapper = styled.nav`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 2px;
-  
+
   @media (max-width: 320px) {
     /* Very small screens - stack vertically if needed */
     grid-template-columns: repeat(2, 1fr);
@@ -368,7 +374,7 @@ const StyledWrapper = styled.nav`
 ```css
 .indicator {
   transform: translateX(0); /* Enable hardware acceleration */
-  will-change: transform;   /* Hint to browser for optimization */
+  will-change: transform; /* Hint to browser for optimization */
 }
 
 .tab_button {
@@ -381,8 +387,10 @@ const StyledWrapper = styled.nav`
 ```css
 .tab_button {
   /* Use transform and opacity for smooth animations */
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+
   /* Avoid expensive properties */
   /* transition: width 0.2s, height 0.2s; ❌ */
 }
@@ -398,7 +406,7 @@ const StyledWrapper = styled.nav`
     transition: none;
     animation: none;
   }
-  
+
   .tab_button:hover {
     transform: none;
   }
@@ -413,7 +421,7 @@ const StyledWrapper = styled.nav`
 .bottom-navigation {
   /* Account for home indicator */
   padding-bottom: env(safe-area-inset-bottom, 8px);
-  
+
   /* Ensure navigation is above safe area */
   bottom: env(safe-area-inset-bottom, 0);
 }
@@ -422,7 +430,7 @@ const StyledWrapper = styled.nav`
 .bottom-navigation {
   display: grid;
   grid-template-rows: 1fr env(safe-area-inset-bottom, 0);
-  
+
   .tab-container {
     grid-row: 1;
   }
@@ -437,9 +445,9 @@ Test across common viewport sizes:
 
 ```javascript
 const viewports = [
-  { width: 320, height: 568 },  // iPhone SE
-  { width: 375, height: 667 },  // iPhone 8
-  { width: 414, height: 896 },  // iPhone 11
+  { width: 320, height: 568 }, // iPhone SE
+  { width: 375, height: 667 }, // iPhone 8
+  { width: 414, height: 896 }, // iPhone 11
   { width: 768, height: 1024 }, // iPad
   { width: 1024, height: 768 }, // iPad Landscape
   { width: 1440, height: 900 }, // Desktop
@@ -456,6 +464,7 @@ viewports.forEach(viewport => {
 ### Device Testing Checklist
 
 #### Mobile Devices
+
 - [ ] iPhone SE (320px width)
 - [ ] iPhone 8/X/11/12 (375px-414px width)
 - [ ] Android phones (360px-412px width)
@@ -464,6 +473,7 @@ viewports.forEach(viewport => {
 - [ ] Navigation doesn't overlap content
 
 #### Tablet Devices
+
 - [ ] iPad (768px width)
 - [ ] iPad Pro (834px-1024px width)
 - [ ] Android tablets (800px-1280px width)
@@ -471,6 +481,7 @@ viewports.forEach(viewport => {
 - [ ] Layout adapts to orientation changes
 
 #### Desktop Devices
+
 - [ ] Small laptops (1024px-1366px width)
 - [ ] Standard desktops (1440px-1920px width)
 - [ ] Large displays (2560px+ width)
@@ -492,20 +503,21 @@ const devices = [
   'iPad Pro',
   'Surface Pro 7',
   'Nest Hub',
-  'Nest Hub Max'
+  'Nest Hub Max',
 ];
 ```
 
 ## Common Responsive Issues and Solutions
 
 ### Issue: Navigation Overlaps Content
+
 **Problem**: Fixed navigation covers page content
 **Solution**: Add bottom padding to main content
 
 ```css
 .main-content {
   padding-bottom: 80px; /* Height of navigation + margin */
-  
+
   @media (max-width: 768px) {
     padding-bottom: 88px; /* Larger on mobile */
   }
@@ -513,6 +525,7 @@ const devices = [
 ```
 
 ### Issue: Touch Targets Too Small on Mobile
+
 **Problem**: Difficult to tap navigation items on mobile
 **Solution**: Increase touch target sizes for mobile
 
@@ -527,6 +540,7 @@ const devices = [
 ```
 
 ### Issue: Text Too Small on Small Screens
+
 **Problem**: Navigation labels are hard to read
 **Solution**: Increase font size on mobile
 
@@ -535,7 +549,7 @@ const devices = [
   .tab_button {
     font-size: 12px; /* Increased from 11px */
   }
-  
+
   .tab_button span {
     font-size: 12px;
   }
@@ -543,6 +557,7 @@ const devices = [
 ```
 
 ### Issue: Navigation Too Wide on Large Screens
+
 **Problem**: Navigation stretches across entire screen on desktop
 **Solution**: Apply max-width and center the navigation
 
@@ -556,6 +571,7 @@ const devices = [
 ```
 
 ### Issue: Poor Performance on Low-End Devices
+
 **Problem**: Animations are choppy on older devices
 **Solution**: Use hardware acceleration and efficient transitions
 
@@ -574,24 +590,28 @@ const devices = [
 ## Best Practices
 
 ### Mobile-First Development
+
 1. **Start with mobile styles** as the base
 2. **Use min-width media queries** to enhance for larger screens
 3. **Test on real devices** regularly
 4. **Consider touch interactions** first
 
 ### Performance Considerations
+
 1. **Use hardware acceleration** for animations
 2. **Minimize repaints and reflows**
 3. **Test on low-end devices**
 4. **Respect user preferences** (reduced motion, high contrast)
 
 ### Accessibility in Responsive Design
+
 1. **Maintain touch target sizes** across all breakpoints
 2. **Ensure text remains readable** at all sizes
 3. **Test with screen readers** on different devices
 4. **Verify keyboard navigation** works on all screen sizes
 
 ### Theme Consistency
+
 1. **Use CSS custom properties** for easy theme switching
 2. **Test all themes** across all breakpoints
 3. **Maintain contrast ratios** in all themes
@@ -599,4 +619,4 @@ const devices = [
 
 ---
 
-*This responsive design guide ensures the BottomNavigation component provides an optimal experience across all devices and screen sizes while maintaining performance and accessibility standards.*
+_This responsive design guide ensures the BottomNavigation component provides an optimal experience across all devices and screen sizes while maintaining performance and accessibility standards._

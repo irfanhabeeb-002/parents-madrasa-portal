@@ -20,8 +20,6 @@ export interface UserPreferences {
   theme: 'light' | 'dark' | 'auto';
 }
 
-
-
 export interface AuthState {
   user: User | null;
   loading: boolean;

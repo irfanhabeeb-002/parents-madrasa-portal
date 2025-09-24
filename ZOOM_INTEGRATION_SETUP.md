@@ -60,7 +60,7 @@ export async function initializeZoomSDK() {
   try {
     // Import Zoom SDK dynamically
     const ZoomMtgEmbedded = await import('@zoom/meetingsdk/embedded');
-    
+
     // Initialize with actual SDK
     const client = ZoomMtgEmbedded.createClient();
     await client.init({
@@ -70,15 +70,15 @@ export async function initializeZoomSDK() {
     });
 
     return {
-      status: "success",
-      message: "Zoom SDK initialized successfully",
-      data: { initialized: true }
+      status: 'success',
+      message: 'Zoom SDK initialized successfully',
+      data: { initialized: true },
     };
   } catch (error) {
     return {
-      status: "error",
-      message: "Failed to initialize Zoom SDK",
-      error: error.message
+      status: 'error',
+      message: 'Failed to initialize Zoom SDK',
+      error: error.message,
     };
   }
 }
@@ -95,6 +95,7 @@ export async function initializeZoomSDK() {
 ## Features Available When Enabled
 
 ### Live Class Integration
+
 - Direct Zoom meeting join functionality
 - Real-time meeting status updates
 - Automatic attendance tracking
@@ -102,6 +103,7 @@ export async function initializeZoomSDK() {
 - Error handling for meeting join failures
 
 ### Recordings Page
+
 - Fetch and display Zoom cloud recordings
 - Play recordings directly in browser
 - Download recordings
@@ -109,6 +111,7 @@ export async function initializeZoomSDK() {
 - Automatic sync with Zoom cloud storage
 
 ### Attendance Tracking
+
 - Automatic attendance logging to Firestore
 - Join time and leave time tracking
 - Duration calculation
@@ -170,6 +173,7 @@ Enable debug mode by setting `debug: true` in the Zoom SDK initialization to get
 ## Support
 
 For Zoom SDK specific issues, refer to:
+
 - [Zoom Meeting SDK Documentation](https://marketplace.zoom.us/docs/sdk/native-sdks/web)
 - [Zoom Developer Forum](https://devforum.zoom.us/)
 

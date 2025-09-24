@@ -19,7 +19,7 @@ export default [
       '.cache/**',
       '.eslintcache',
       'public/sw.js',
-      'public/workbox-*.js'
+      'public/workbox-*.js',
     ],
   },
   {
@@ -84,7 +84,7 @@ export default [
       // TypeScript rules (enhanced)
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { 
+        {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
           ignoreRestSiblings: true,
@@ -102,8 +102,8 @@ export default [
       'no-var': 'error',
       'no-duplicate-imports': 'error',
       'no-unused-expressions': 'error',
-      'eqeqeq': ['error', 'always'],
-      'curly': ['warn', 'all'],
+      eqeqeq: ['error', 'always'],
+      curly: ['warn', 'all'],
 
       // React Refresh
       'react-refresh/only-export-components': [
@@ -114,7 +114,11 @@ export default [
   },
   // Configuration for test files
   {
-    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/test/**/*.{ts,tsx}'],
+    files: [
+      '**/*.test.{ts,tsx}',
+      '**/*.spec.{ts,tsx}',
+      '**/test/**/*.{ts,tsx}',
+    ],
     languageOptions: {
       globals: {
         ...globals.browser,

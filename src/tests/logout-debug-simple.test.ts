@@ -1,13 +1,13 @@
 /**
  * Simple Debug Test for Logout Functionality
- * 
+ *
  * This test verifies the current logout functionality step by step
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import React from 'react';
+import { _render, _screen, _fireEvent, _waitFor } from '@testing-library/react';
+import { _BrowserRouter } from 'react-router-dom';
+import _React from 'react';
 
 // Mock console methods
 const consoleSpy = {
@@ -54,41 +54,41 @@ describe('Logout Functionality Debug', () => {
     // Test localStorage mock setup
     localStorageMock.setItem('test', 'value');
     expect(localStorageMock.setItem).toHaveBeenCalledWith('test', 'value');
-    
+
     localStorageMock.getItem.mockReturnValue('value');
     const result = localStorageMock.getItem('test');
     expect(result).toBe('value');
-    
+
     localStorageMock.removeItem('test');
     expect(localStorageMock.removeItem).toHaveBeenCalledWith('test');
-    
-    console.log('✓ localStorage operations verified');
+
+    console.warn('✓ localStorage operations verified');
   });
 
   it('should verify console logging works', () => {
-    console.log('Test log message');
+    console.warn('Test log message');
     console.error('Test error message');
-    
+
     expect(consoleSpy.log).toHaveBeenCalledWith('Test log message');
     expect(consoleSpy.error).toHaveBeenCalledWith('Test error message');
-    
-    console.log('✓ Console logging verified');
+
+    console.warn('✓ Console logging verified');
   });
 
   it('should verify navigation mock works', () => {
     mockNavigate('/test-route');
     expect(mockNavigate).toHaveBeenCalledWith('/test-route');
-    
-    console.log('✓ Navigation mock verified');
+
+    console.warn('✓ Navigation mock verified');
   });
 
   it('should verify confirm dialog mock works', () => {
     confirmSpy.mockReturnValue(true);
     const result = window.confirm('Test confirmation');
-    
+
     expect(confirmSpy).toHaveBeenCalledWith('Test confirmation');
     expect(result).toBe(true);
-    
-    console.log('✓ Confirm dialog mock verified');
+
+    console.warn('✓ Confirm dialog mock verified');
   });
 });

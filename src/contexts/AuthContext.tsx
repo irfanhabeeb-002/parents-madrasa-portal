@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react';
 // Firebase imports - COMMENTED OUT FOR MANUAL LOGIN
 // TODO: Uncomment these imports when ready to enable Firebase Auth
 /*
@@ -69,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize manual authentication
   useEffect(() => {
-    console.log('Using manual phone-number login (Firebase disabled)');
+    console.warn('Using manual phone-number login (Firebase disabled)');
     initializeManualAuth();
   }, []);
 
@@ -81,7 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const userData = JSON.parse(storedUser);
         setUser(userData);
-        console.log('Restored user session:', userData.displayName);
+        console.warn('Restored user session:', userData.displayName);
       } catch (error) {
         console.error('Error parsing stored user:', error);
         localStorage.removeItem('manualAuthUser');
@@ -100,7 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Listen to Firebase auth state changes (only if Firebase is configured)
   useEffect(() => {
     if (!firebaseConfigured || !auth) {
-      console.log('Firebase not configured, using manual authentication');
+      console.warn('Firebase not configured, using manual authentication');
       initializeManualAuth();
       return;
     }
@@ -148,7 +154,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
           
           setUser(userData);
-          console.log('User authenticated:', userData.displayName);
+          console.warn('User authenticated:', userData.displayName);
         } catch (error) {
           console.error('Error loading user profile:', error);
           setError('Failed to load user profile');
@@ -182,7 +188,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Find user in allowed users list
-      const foundUser = allowedUsers.find(user => user.phoneNumber === cleanPhone);
+      const foundUser = allowedUsers.find(
+        user => user.phoneNumber === cleanPhone
+      );
 
       if (!foundUser) {
         throw new Error('User not registered. Please contact administrator.');
@@ -201,7 +209,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem('manualAuthUser', JSON.stringify(userData));
       setUser(userData);
 
-      console.log('Manual login successful:', userData.displayName);
+      console.warn('Manual login successful:', userData.displayName);
     } catch (error: any) {
       console.error('Phone login error:', error);
       setError(error.message);
@@ -217,7 +225,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      console.log(`Starting logout process... (attempt ${retryCount + 1}/${maxRetries + 1})`);
+      console.warn(
+        `Starting logout process... (attempt ${retryCount + 1}/${maxRetries + 1})`
+      );
 
       // Simulate network delay for realistic UX
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -226,11 +236,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         // Primary cleanup: Remove main auth user data
         localStorage.removeItem('manualAuthUser');
-        
+
         // Comprehensive cleanup: Remove all potential auth-related data
         const authRelatedKeys = [
           'manualAuthUser',
-          'authUser', 
+          'authUser',
           'user',
           'userSession',
           'sessionData',
@@ -240,9 +250,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           'loginTime',
           'lastActivity',
           'userPreferences',
-          'authState'
+          'authState',
         ];
-        
+
         // Remove known auth keys
         authRelatedKeys.forEach(key => {
           try {
@@ -252,55 +262,67 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.warn(`Failed to remove ${key}:`, e);
           }
         });
-        
+
         // Scan and remove any keys that might contain user data
         const allLocalStorageKeys = [];
-        for (let i = 0; i < localStorage.length; i++) {
+        for (const i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
           if (key) allLocalStorageKeys.push(key);
         }
-        
+
         allLocalStorageKeys.forEach(key => {
-          if (key.toLowerCase().includes('auth') || 
-              key.toLowerCase().includes('user') || 
-              key.toLowerCase().includes('session') ||
-              key.toLowerCase().includes('login') ||
-              key.toLowerCase().includes('token')) {
+          if (
+            key.toLowerCase().includes('auth') ||
+            key.toLowerCase().includes('user') ||
+            key.toLowerCase().includes('session') ||
+            key.toLowerCase().includes('login') ||
+            key.toLowerCase().includes('token')
+          ) {
             try {
               localStorage.removeItem(key);
-              console.log(`Removed potential auth key: ${key}`);
+              console.warn(`Removed potential auth key: ${key}`);
             } catch (e) {
               console.warn(`Failed to remove potential auth key ${key}:`, e);
             }
           }
         });
-        
+
         // Also clean sessionStorage
         const allSessionStorageKeys = [];
-        for (let i = 0; i < sessionStorage.length; i++) {
+        for (const i = 0; i < sessionStorage.length; i++) {
           const key = sessionStorage.key(i);
           if (key) allSessionStorageKeys.push(key);
         }
-        
+
         allSessionStorageKeys.forEach(key => {
-          if (key.toLowerCase().includes('auth') || 
-              key.toLowerCase().includes('user') || 
-              key.toLowerCase().includes('session') ||
-              key.toLowerCase().includes('login') ||
-              key.toLowerCase().includes('token')) {
+          if (
+            key.toLowerCase().includes('auth') ||
+            key.toLowerCase().includes('user') ||
+            key.toLowerCase().includes('session') ||
+            key.toLowerCase().includes('login') ||
+            key.toLowerCase().includes('token')
+          ) {
             try {
               sessionStorage.removeItem(key);
-              console.log(`Removed potential session auth key: ${key}`);
+              console.warn(`Removed potential session auth key: ${key}`);
             } catch (e) {
-              console.warn(`Failed to remove potential session auth key ${key}:`, e);
+              console.warn(
+                `Failed to remove potential session auth key ${key}:`,
+                e
+              );
             }
           }
         });
-        
-        console.log('Comprehensive localStorage and sessionStorage cleanup successful');
+
+        console.warn(
+          'Comprehensive localStorage and sessionStorage cleanup successful'
+        );
       } catch (storageError) {
-        console.warn('Storage cleanup failed, attempting fallback:', storageError);
-        
+        console.warn(
+          'Storage cleanup failed, attempting fallback:',
+          storageError
+        );
+
         // Fallback cleanup mechanisms
         try {
           // Nuclear option: clear all localStorage and sessionStorage
@@ -308,7 +330,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.warn('Attempting nuclear cleanup of all storage');
           localStorage.clear();
           sessionStorage.clear();
-          console.log('Nuclear storage cleanup completed');
+          console.warn('Nuclear storage cleanup completed');
         } catch (fallbackError) {
           console.error('All cleanup methods failed:', fallbackError);
           // Continue with logout even if storage cleanup fails
@@ -319,28 +341,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // This is critical for security and proper state management
       setUser(null);
       setError(null);
-      
+
       // Force a state update to ensure components re-render
       // This helps prevent any cached user state from persisting
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       // Verify user state is actually null
       if (user !== null) {
         console.warn('User state not properly cleared, forcing null');
         setUser(null);
       }
 
-      console.log('Manual logout successful - complete session cleanup performed');
+      console.warn(
+        'Manual logout successful - complete session cleanup performed'
+      );
     } catch (error: any) {
       console.error(`Logout error (attempt ${retryCount + 1}):`, error);
-      
+
       // Implement retry logic for failed logout attempts
       if (retryCount < maxRetries) {
-        console.log(`Retrying logout... (${retryCount + 1}/${maxRetries})`);
+        console.warn(`Retrying logout... (${retryCount + 1}/${maxRetries})`);
         // Exponential backoff: wait longer between retries
         const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
         await new Promise(resolve => setTimeout(resolve, delay));
-        
+
         try {
           return await logout(retryCount + 1);
         } catch (retryError) {
@@ -348,35 +372,45 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.error('Retry failed:', retryError);
         }
       }
-      
+
       // Create user-friendly error messages with actionable guidance
-      let userFriendlyMessage = 'Failed to logout completely.';
-      let actionableGuidance = 'Please try again or refresh the page.';
-      
-      if (error.message?.includes('localStorage') || error.message?.includes('storage')) {
+      const userFriendlyMessage = 'Failed to logout completely.';
+      const actionableGuidance = 'Please try again or refresh the page.';
+
+      if (
+        error.message?.includes('localStorage') ||
+        error.message?.includes('storage')
+      ) {
         userFriendlyMessage = 'Unable to clear session data from your browser.';
-        actionableGuidance = 'Try refreshing the page or clearing your browser cache, then attempt logout again.';
-      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        actionableGuidance =
+          'Try refreshing the page or clearing your browser cache, then attempt logout again.';
+      } else if (
+        error.message?.includes('network') ||
+        error.message?.includes('fetch')
+      ) {
         userFriendlyMessage = 'Network error during logout.';
         actionableGuidance = 'Check your internet connection and try again.';
       } else if (retryCount >= maxRetries) {
         userFriendlyMessage = 'Logout failed after multiple attempts.';
-        actionableGuidance = 'Please refresh the page or close your browser to ensure you are logged out securely.';
+        actionableGuidance =
+          'Please refresh the page or close your browser to ensure you are logged out securely.';
       }
-      
-      const enhancedError = new Error(`${userFriendlyMessage} ${actionableGuidance}`);
+
+      const enhancedError = new Error(
+        `${userFriendlyMessage} ${actionableGuidance}`
+      );
       enhancedError.name = 'LogoutError';
       (enhancedError as any).originalError = error;
       (enhancedError as any).retryCount = retryCount;
       (enhancedError as any).actionableGuidance = actionableGuidance;
-      
+
       setError(enhancedError.message);
-      
+
       // Force cleanup even if logout failed - critical for security
       try {
         setUser(null);
         setError(null);
-        
+
         // Emergency cleanup: try to clear storage even on error
         try {
           localStorage.removeItem('manualAuthUser');
@@ -384,12 +418,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } catch (emergencyCleanupError) {
           console.error('Emergency cleanup failed:', emergencyCleanupError);
         }
-        
-        console.log('Forced user state cleanup completed');
+
+        console.warn('Forced user state cleanup completed');
       } catch (cleanupError) {
         console.error('Failed to cleanup user state:', cleanupError);
       }
-      
+
       throw enhancedError;
     } finally {
       setLoading(false);
@@ -410,10 +444,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return new RecaptchaVerifier(auth, elementId, {
       size: 'invisible',
       callback: () => {
-        console.log('reCAPTCHA solved');
+        console.warn('reCAPTCHA solved');
       },
       'expired-callback': () => {
-        console.log('reCAPTCHA expired');
+        console.warn('reCAPTCHA expired');
         setError('reCAPTCHA expired. Please try again.');
       },
       'error-callback': (error: any) => {
@@ -445,7 +479,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Send OTP
       const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, recaptchaVerifier);
       
-      console.log('OTP sent to:', formattedPhone);
+      console.warn('OTP sent to:', formattedPhone);
       return confirmationResult;
     } catch (error: any) {
       console.error('Phone login error:', error);
@@ -462,7 +496,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       await confirmationResult.confirm(otp);
-      console.log('Phone number verified successfully');
+      console.warn('Phone number verified successfully');
     } catch (error: any) {
       console.error('OTP verification error:', error);
       setError(getErrorMessage(error.code));
@@ -478,7 +512,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      console.log('Email login successful');
+      console.warn('Email login successful');
     } catch (error: any) {
       console.error('Email login error:', error);
       setError(getErrorMessage(error.code));
@@ -498,7 +532,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Update profile with display name
       await updateProfile(userCredential.user, { displayName });
       
-      console.log('Email registration successful');
+      console.warn('Email registration successful');
     } catch (error: any) {
       console.error('Email registration error:', error);
       setError(getErrorMessage(error.code));
@@ -514,7 +548,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       await signOut(auth);
-      console.log('User logged out');
+      console.warn('User logged out');
     } catch (error: any) {
       console.error('Logout error:', error);
       setError(getErrorMessage(error.code));
@@ -538,11 +572,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     clearError,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = (): AuthContextType => {
@@ -552,8 +582,6 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-
-
 
 /* 
 // FIREBASE ERROR HELPER - COMMENTED OUT FOR MANUAL LOGIN

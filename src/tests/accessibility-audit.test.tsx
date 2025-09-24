@@ -9,7 +9,7 @@ import { BrowserRouter } from 'react-router-dom';
 expect.extend(toHaveNoViolations);
 
 // Import components for testing
-import App from '../App';
+import _App from '../_App';
 import { Dashboard } from '../pages/Dashboard';
 import { Profile } from '../pages/Profile';
 import { AuthPage } from '../pages/AuthPage';
@@ -27,70 +27,79 @@ vi.mock('../contexts/AuthContext', () => ({
       uid: 'test-uid',
       displayName: 'Test User',
       email: 'test@example.com',
-      phone: '+1234567890'
+      phone: '+1234567890',
     },
     loading: false,
     logout: vi.fn(),
-    login: vi.fn()
+    login: vi.fn(),
   }),
-  AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  AuthProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 vi.mock('../contexts/NotificationContext', () => ({
   useNotifications: () => ({
     notifications: [],
-    unreadCount: 0
+    unreadCount: 0,
   }),
   useNotificationBadge: () => ({
     visible: false,
-    count: 0
+    count: 0,
   }),
-  NotificationProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  NotificationProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 vi.mock('../contexts/ThemeContext', () => ({
   useTheme: () => ({
     theme: 'light',
     isHighContrast: false,
-    prefersReducedMotion: false
+    prefersReducedMotion: false,
   }),
-  ThemeProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 vi.mock('../hooks/useDashboard', () => ({
   useDashboard: () => ({
     announcements: [
-      { id: '1', title: 'Test Announcement', content: 'Test content', date: new Date() }
+      {
+        id: '1',
+        title: 'Test Announcement',
+        content: 'Test content',
+        date: new Date(),
+      },
     ],
     notifications: [],
     todaysClass: null,
     loading: {
       announcements: false,
       notifications: false,
-      todaysClass: false
+      todaysClass: false,
     },
     error: {
       announcements: null,
       notifications: null,
-      todaysClass: null
+      todaysClass: null,
     },
     refreshAnnouncements: vi.fn(),
     refreshNotifications: vi.fn(),
     refreshTodaysClass: vi.fn(),
-    clearError: vi.fn()
-  })
+    clearError: vi.fn(),
+  }),
 }));
 
 vi.mock('../hooks/useNotificationListener', () => ({
   useNotificationListener: () => {},
-  useClassReminderListener: () => {}
+  useClassReminderListener: () => {},
 }));
 
 // Test wrapper
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <BrowserRouter>
-    {children}
-  </BrowserRouter>
+  <BrowserRouter>{children}</BrowserRouter>
 );
 
 describe('Comprehensive Accessibility Audit', () => {
@@ -106,7 +115,7 @@ describe('Comprehensive Accessibility Audit', () => {
           <Dashboard />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -117,7 +126,7 @@ describe('Comprehensive Accessibility Audit', () => {
           <Profile />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -128,7 +137,7 @@ describe('Comprehensive Accessibility Audit', () => {
           <AuthPage />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -139,7 +148,7 @@ describe('Comprehensive Accessibility Audit', () => {
           <LiveClass />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -150,7 +159,7 @@ describe('Comprehensive Accessibility Audit', () => {
           <Recordings />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -161,7 +170,7 @@ describe('Comprehensive Accessibility Audit', () => {
           <NotesExercises />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -172,7 +181,7 @@ describe('Comprehensive Accessibility Audit', () => {
           <ExamsAttendance />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -183,7 +192,7 @@ describe('Comprehensive Accessibility Audit', () => {
           <BottomNavigation />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -194,7 +203,7 @@ describe('Comprehensive Accessibility Audit', () => {
           <Header title="Test Page" />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -211,7 +220,7 @@ describe('Comprehensive Accessibility Audit', () => {
       // Check for text elements with proper contrast
       const headings = screen.getAllByRole('heading');
       headings.forEach(heading => {
-        const styles = window.getComputedStyle(heading);
+        const _styles = window.getComputedStyle(heading);
         // Verify text is not using low contrast colors
         expect(styles.color).not.toBe('rgb(128, 128, 128)'); // Avoid gray text
         expect(styles.color).not.toBe('#888888'); // Avoid light gray
@@ -227,7 +236,7 @@ describe('Comprehensive Accessibility Audit', () => {
 
       const buttons = screen.getAllByRole('tab');
       buttons.forEach(button => {
-        const styles = window.getComputedStyle(button);
+        const _styles = window.getComputedStyle(button);
         // Verify buttons have sufficient contrast
         expect(button).toHaveAttribute('aria-label');
         // Button should be focusable
@@ -243,10 +252,11 @@ describe('Comprehensive Accessibility Audit', () => {
       );
 
       const links = screen.getAllByRole('button');
-      const navigationLinks = links.filter(link => 
-        link.getAttribute('aria-label')?.includes('navigate') ||
-        link.textContent?.includes('Live Class') ||
-        link.textContent?.includes('Recordings')
+      const navigationLinks = links.filter(
+        link =>
+          link.getAttribute('aria-label')?.includes('navigate') ||
+          link.textContent?.includes('Live Class') ||
+          link.textContent?.includes('Recordings')
       );
 
       navigationLinks.forEach(link => {
@@ -265,7 +275,7 @@ describe('Comprehensive Accessibility Audit', () => {
       // Check for input elements
       const inputs = screen.getAllByRole('textbox');
       inputs.forEach(input => {
-        const styles = window.getComputedStyle(input);
+        const _styles = window.getComputedStyle(input);
         // Verify inputs have visible borders and backgrounds
         expect(styles.borderWidth).not.toBe('0px');
         expect(input).toHaveAttribute('aria-label');
@@ -280,9 +290,11 @@ describe('Comprehensive Accessibility Audit', () => {
       );
 
       // Look for error message elements
-      const errorElements = document.querySelectorAll('[role="alert"], .error, .text-red-500');
+      const errorElements = document.querySelectorAll(
+        '[role="alert"], .error, .text-red-500'
+      );
       errorElements.forEach(element => {
-        const styles = window.getComputedStyle(element);
+        const _styles = window.getComputedStyle(element);
         // Error messages should have high contrast
         expect(styles.color).not.toBe('rgb(255, 192, 203)'); // Avoid light pink
       });
@@ -292,7 +304,7 @@ describe('Comprehensive Accessibility Audit', () => {
   describe('Keyboard Navigation Testing', () => {
     it('should support full keyboard navigation in BottomNavigation', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <BottomNavigation />
@@ -300,7 +312,7 @@ describe('Comprehensive Accessibility Audit', () => {
       );
 
       const navButtons = screen.getAllByRole('tab');
-      
+
       // Test Tab navigation
       await user.tab();
       expect(navButtons[0]).toHaveFocus();
@@ -319,7 +331,7 @@ describe('Comprehensive Accessibility Audit', () => {
 
     it('should support keyboard navigation in Dashboard cards', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <Dashboard />
@@ -327,11 +339,12 @@ describe('Comprehensive Accessibility Audit', () => {
       );
 
       const cards = screen.getAllByRole('button');
-      const navigationCards = cards.filter(card => 
-        card.textContent?.includes('Live Class') ||
-        card.textContent?.includes('Recordings') ||
-        card.textContent?.includes('Notes/Exercises') ||
-        card.textContent?.includes('Exams/Attendance')
+      const navigationCards = cards.filter(
+        card =>
+          card.textContent?.includes('Live Class') ||
+          card.textContent?.includes('Recordings') ||
+          card.textContent?.includes('Notes/Exercises') ||
+          card.textContent?.includes('Exams/Attendance')
       );
 
       // Test that cards are keyboard accessible
@@ -339,7 +352,7 @@ describe('Comprehensive Accessibility Audit', () => {
         await user.tab();
         if (document.activeElement === card) {
           expect(card).toHaveFocus();
-          
+
           // Test Enter key activation
           await user.keyboard('{Enter}');
           // Card should be activated
@@ -349,7 +362,7 @@ describe('Comprehensive Accessibility Audit', () => {
 
     it('should support keyboard navigation in forms', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <AuthPage />
@@ -369,10 +382,11 @@ describe('Comprehensive Accessibility Audit', () => {
 
       // Test button navigation
       const buttons = screen.getAllByRole('button');
-      const submitButtons = buttons.filter(button => 
-        button.textContent?.includes('Submit') ||
-        button.textContent?.includes('Login') ||
-        button.textContent?.includes('Send')
+      const submitButtons = buttons.filter(
+        button =>
+          button.textContent?.includes('Submit') ||
+          button.textContent?.includes('Login') ||
+          button.textContent?.includes('Send')
       );
 
       for (const button of submitButtons) {
@@ -395,14 +409,14 @@ describe('Comprehensive Accessibility Audit', () => {
       const skipLink = screen.getByText(/skip to main content/i);
       expect(skipLink).toBeInTheDocument();
       expect(skipLink).toHaveAttribute('href', '#main-content');
-      
+
       // Skip link should be keyboard accessible
       expect(skipLink.tagName.toLowerCase()).toBe('a');
     });
 
     it('should handle focus management correctly', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <Dashboard />
@@ -410,13 +424,14 @@ describe('Comprehensive Accessibility Audit', () => {
       );
 
       // Test that focus is visible
-      const focusableElements = screen.getAllByRole('button');
-      
-      for (const element of focusableElements.slice(0, 3)) { // Test first 3 elements
+      const _focusableElements = screen.getAllByRole('button');
+
+      for (const element of focusableElements.slice(0, 3)) {
+        // Test first 3 elements
         await user.tab();
         if (document.activeElement === element) {
           // Verify focus styles are applied
-          const styles = window.getComputedStyle(element);
+          const _styles = window.getComputedStyle(element);
           // Element should have focus styles (outline or ring)
           expect(element).toHaveClass(/focus:/);
         }
@@ -447,7 +462,7 @@ describe('Comprehensive Accessibility Audit', () => {
       );
 
       const headings = screen.getAllByRole('heading');
-      
+
       // Should have at least one h1
       const h1Elements = headings.filter(h => h.tagName === 'H1');
       expect(h1Elements.length).toBeGreaterThan(0);
@@ -534,10 +549,10 @@ describe('Comprehensive Accessibility Audit', () => {
 
       const buttons = screen.getAllByRole('tab');
       buttons.forEach(button => {
-        const styles = window.getComputedStyle(button);
+        const _styles = window.getComputedStyle(button);
         // Touch targets should be at least 44px (iOS) or 48px (Android)
-        const minSize = 44;
-        
+        const _minSize = 44;
+
         // Note: In test environment, we can't get actual computed sizes
         // but we can verify the button has proper classes
         expect(button).toHaveClass(/p-|h-|w-/); // Has padding/height/width classes
@@ -548,7 +563,7 @@ describe('Comprehensive Accessibility Audit', () => {
       // Mock viewport for zoom testing
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
-        value: 375 // iPhone width
+        value: 375, // iPhone width
       });
 
       render(
@@ -574,7 +589,7 @@ describe('Comprehensive Accessibility Audit', () => {
       // Verify layout adapts to different orientations
       const mainContent = document.querySelector('main, .main, [role="main"]');
       if (mainContent) {
-        const styles = window.getComputedStyle(mainContent);
+        const _styles = window.getComputedStyle(mainContent);
         // Should have responsive layout
         expect(mainContent).toHaveClass(/flex|grid|block/);
       }
@@ -590,44 +605,46 @@ describe('Comprehensive Accessibility Audit', () => {
       );
 
       // Check DOM depth (shouldn't be too deeply nested)
-      const deepestElement = container.querySelector('div div div div div div div div div div');
+      const deepestElement = container.querySelector(
+        'div div div div div div div div div div'
+      );
       expect(deepestElement).toBeNull(); // No more than 10 levels deep
     });
 
     it('should have efficient focus management', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <BottomNavigation />
         </TestWrapper>
       );
 
-      const focusableElements = screen.getAllByRole('tab');
-      
+      const _focusableElements = screen.getAllByRole('tab');
+
       // Test that focus moves efficiently
       const startTime = performance.now();
       await user.tab();
       const endTime = performance.now();
-      
+
       // Focus should happen quickly (under 100ms)
       expect(endTime - startTime).toBeLessThan(100);
     });
 
     it('should not have accessibility performance bottlenecks', async () => {
       const startTime = performance.now();
-      
+
       const { container } = render(
         <TestWrapper>
           <Dashboard />
         </TestWrapper>
       );
-      
+
       // Run axe audit
       await axe(container);
-      
+
       const endTime = performance.now();
-      
+
       // Accessibility audit should complete in reasonable time
       expect(endTime - startTime).toBeLessThan(5000); // Under 5 seconds
     });

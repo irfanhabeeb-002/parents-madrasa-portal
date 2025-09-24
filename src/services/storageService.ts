@@ -16,7 +16,9 @@ export class StorageService {
       localStorage.removeItem(test);
       return true;
     } catch {
-      console.warn('localStorage is not available, falling back to memory storage');
+      console.warn(
+        'localStorage is not available, falling back to memory storage'
+      );
       return false;
     }
   }
@@ -105,7 +107,10 @@ export class StorageService {
   }
 
   // Remove from array by predicate
-  static removeFromArray<T>(key: string, predicate: (item: T) => boolean): boolean {
+  static removeFromArray<T>(
+    key: string,
+    predicate: (item: T) => boolean
+  ): boolean {
     try {
       const currentArray = this.getArray<T>(key);
       const filteredArray = currentArray.filter(item => !predicate(item));
@@ -117,10 +122,16 @@ export class StorageService {
   }
 
   // Update item in array
-  static updateInArray<T>(key: string, predicate: (item: T) => boolean, updater: (item: T) => T): boolean {
+  static updateInArray<T>(
+    key: string,
+    predicate: (item: T) => boolean,
+    updater: (item: T) => T
+  ): boolean {
     try {
       const currentArray = this.getArray<T>(key);
-      const updatedArray = currentArray.map(item => predicate(item) ? updater(item) : item);
+      const updatedArray = currentArray.map(item =>
+        predicate(item) ? updater(item) : item
+      );
       return this.setArray(key, updatedArray);
     } catch (error) {
       console.error(`Error updating array item: ${key}`, error);
@@ -131,13 +142,13 @@ export class StorageService {
   // Get with cache options
   static getWithCache<T>(options: CacheOptions): T | null {
     const { key, ttl, forceRefresh } = options;
-    
+
     if (forceRefresh) {
       return null;
     }
 
     const cachedData = this.get<{ data: T; timestamp: number }>(key);
-    
+
     if (!cachedData) {
       return null;
     }
@@ -155,9 +166,9 @@ export class StorageService {
   static setWithCache<T>(key: string, data: T, ttl?: number): boolean {
     const cacheData = {
       data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
+
     return this.set(key, cacheData);
   }
 
@@ -179,9 +190,9 @@ export class StorageService {
   static getStorageSize(): number {
     try {
       if (this.isLocalStorageAvailable) {
-        let total = 0;
+        const total = 0;
         for (const key in localStorage) {
-          if (localStorage.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
             total += localStorage[key].length + key.length;
           }
         }
@@ -231,7 +242,7 @@ export class StorageService {
     try {
       if (this.isLocalStorageAvailable) {
         const data: Record<string, any> = {};
-        for (let i = 0; i < localStorage.length; i++) {
+        for (const i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
           if (key) {
             data[key] = JSON.parse(localStorage.getItem(key) || 'null');
@@ -262,7 +273,7 @@ export class StorageService {
 
   // Clean expired cache entries
   static cleanExpiredCache(): number {
-    let cleanedCount = 0;
+    const cleanedCount = 0;
     try {
       const keys = this.getAllKeys();
       keys.forEach(key => {

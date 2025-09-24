@@ -3,20 +3,23 @@
 import { notificationService } from '../services/notificationService';
 
 export class NotificationCustomizer {
-  
   // Schedule class reminder with custom timing (instead of default 15 minutes)
   static scheduleCustomClassReminder(
-    classId: string, 
-    classTitle: string, 
-    classTime: Date, 
+    classId: string,
+    classTitle: string,
+    classTime: Date,
     reminderMinutes: number = 15
   ): void {
-    const reminderTime = new Date(classTime.getTime() - reminderMinutes * 60 * 1000);
-    
-    console.log(`⏰ Scheduling reminder ${reminderMinutes} minutes before class`);
-    console.log(`Class time: ${classTime.toLocaleString()}`);
-    console.log(`Reminder time: ${reminderTime.toLocaleString()}`);
-    
+    const reminderTime = new Date(
+      classTime.getTime() - reminderMinutes * 60 * 1000
+    );
+
+    console.warn(
+      `⏰ Scheduling reminder ${reminderMinutes} minutes before class`
+    );
+    console.warn(`Class time: ${classTime.toLocaleString()}`);
+    console.warn(`Reminder time: ${reminderTime.toLocaleString()}`);
+
     // Create custom notification
     const notification = {
       id: `custom_reminder_${classId}`,
@@ -32,10 +35,10 @@ export class NotificationCustomizer {
       data: {
         classId,
         action: 'join_class',
-        url: '/live-class'
-      }
+        url: '/live-class',
+      },
     };
-    
+
     // Schedule it
     const timeUntilReminder = reminderTime.getTime() - Date.now();
     if (timeUntilReminder > 0) {
@@ -43,11 +46,13 @@ export class NotificationCustomizer {
         notificationService.sendPushNotification(notification);
         notificationService.addNotification(notification);
       }, timeUntilReminder);
-      
-      console.log(`✅ Custom reminder scheduled for ${timeUntilReminder}ms from now`);
+
+      console.warn(
+        `✅ Custom reminder scheduled for ${timeUntilReminder}ms from now`
+      );
     }
   }
-  
+
   // Create notification with custom sound/vibration
   static sendCustomNotification(
     title: string,
@@ -70,9 +75,9 @@ export class NotificationCustomizer {
       timestamp: new Date(),
       read: false,
       priority: options.priority || 'medium',
-      data: {}
+      data: {},
     };
-    
+
     // Custom browser notification with specific options
     if (Notification.permission === 'granted') {
       const browserNotif = new Notification(title, {
@@ -82,26 +87,26 @@ export class NotificationCustomizer {
         tag: notification.id,
         requireInteraction: options.priority === 'high',
         silent: !options.sound,
-        vibrate: options.vibration ? [200, 100, 200] : undefined
+        vibrate: options.vibration ? [200, 100, 200] : undefined,
       });
-      
+
       // Auto-close if specified
       if (options.autoClose && options.priority !== 'high') {
         setTimeout(() => {
           browserNotif.close();
         }, options.autoClose * 1000);
       }
-      
+
       browserNotif.onclick = () => {
-        console.log('Custom notification clicked!');
+        console.warn('Custom notification clicked!');
         browserNotif.close();
       };
     }
-    
+
     // Add to app notifications
     notificationService.addNotification(notification);
   }
-  
+
   // Batch schedule multiple reminders
   static scheduleMultipleReminders(
     classId: string,
@@ -109,8 +114,10 @@ export class NotificationCustomizer {
     classTime: Date,
     reminderTimes: number[] = [30, 15, 5] // minutes before
   ): void {
-    console.log(`📅 Scheduling ${reminderTimes.length} reminders for: ${classTitle}`);
-    
+    console.warn(
+      `📅 Scheduling ${reminderTimes.length} reminders for: ${classTitle}`
+    );
+
     reminderTimes.forEach((minutes, index) => {
       setTimeout(() => {
         this.scheduleCustomClassReminder(
@@ -122,11 +129,11 @@ export class NotificationCustomizer {
       }, index * 1000); // Stagger by 1 second to avoid conflicts
     });
   }
-  
+
   // Test different notification styles
   static testNotificationStyles(): void {
-    console.log('🎨 Testing different notification styles...');
-    
+    console.warn('🎨 Testing different notification styles...');
+
     // Urgent notification (red, persistent)
     this.sendCustomNotification(
       '🚨 Urgent: Class Starting Now!',
@@ -137,11 +144,11 @@ export class NotificationCustomizer {
         vibration: true,
         malayalam: {
           title: '🚨 അടിയന്തിരം: ക്ലാസ് ഇപ്പോൾ ആരംഭിക്കുന്നു!',
-          message: 'നിങ്ങളുടെ അറബിക് ക്ലാസ് ആരംഭിക്കുന്നു. ഉടൻ ചേരുക.'
-        }
+          message: 'നിങ്ങളുടെ അറബിക് ക്ലാസ് ആരംഭിക്കുന്നു. ഉടൻ ചേരുക.',
+        },
       }
     );
-    
+
     setTimeout(() => {
       // Info notification (blue, auto-close)
       this.sendCustomNotification(
@@ -154,12 +161,12 @@ export class NotificationCustomizer {
           autoClose: 5,
           malayalam: {
             title: 'ℹ️ പുതിയ പഠന സാമഗ്രി ലഭ്യമാണ്',
-            message: 'ഏറ്റവും പുതിയ ഖുർആൻ പാരായണ ഗൈഡ് പരിശോധിക്കുക.'
-          }
+            message: 'ഏറ്റവും പുതിയ ഖുർആൻ പാരായണ ഗൈഡ് പരിശോധിക്കുക.',
+          },
         }
       );
     }, 2000);
-    
+
     setTimeout(() => {
       // Success notification (green, quiet)
       this.sendCustomNotification(
@@ -172,8 +179,8 @@ export class NotificationCustomizer {
           autoClose: 3,
           malayalam: {
             title: '✅ അസൈൻമെന്റ് വിജയകരമായി സമർപ്പിച്ചു',
-            message: 'നിങ്ങളുടെ ഗൃഹപാഠം ലഭിച്ചു, അവലോകനം ചെയ്യും.'
-          }
+            message: 'നിങ്ങളുടെ ഗൃഹപാഠം ലഭിച്ചു, അവലോകനം ചെയ്യും.',
+          },
         }
       );
     }, 4000);

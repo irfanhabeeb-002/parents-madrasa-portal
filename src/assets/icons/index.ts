@@ -9,11 +9,11 @@ export const AppIcons = {
   // Main app icon (192x192) with WebP support
   main: appIconJpg,
   mainWebP: '/src/assets/icons/app-icon.webp',
-  
+
   // Large app icon (512x512) with WebP support
   large: appIcon512Jpg,
   largeWebP: '/src/assets/icons/app-icon-512.webp',
-  
+
   // Icon paths for components with format options
   paths: {
     main: {
@@ -25,7 +25,7 @@ export const AppIcons = {
       jpg: '/src/assets/icons/app-icon-512.jpg',
     },
   },
-  
+
   // Public assets (used by PWA manifest and HTML) with WebP support
   favicon: '/icons/favicon.ico',
   appleTouchIcon: {
@@ -48,7 +48,10 @@ export type IconSize = '192' | '512';
 export type IconFormat = 'webp' | 'jpg' | 'png' | 'ico' | 'svg';
 
 // Helper function to get icon by size with WebP support
-export const getAppIcon = (size: IconSize = '192', preferWebP: boolean = true): string => {
+export const getAppIcon = (
+  size: IconSize = '192',
+  preferWebP: boolean = true
+): string => {
   if (size === '512') {
     return preferWebP ? AppIcons.largeWebP : AppIcons.large;
   }
@@ -56,18 +59,23 @@ export const getAppIcon = (size: IconSize = '192', preferWebP: boolean = true): 
 };
 
 // Helper function for PWA manifest icons with format preference
-export const getManifestIcon = (size: IconSize = '192', format: IconFormat = 'webp'): string => {
+export const getManifestIcon = (
+  size: IconSize = '192',
+  format: IconFormat = 'webp'
+): string => {
   const iconSet = size === '512' ? AppIcons.pwa512 : AppIcons.pwa192;
-  
+
   if (typeof iconSet === 'string') {
     return iconSet;
   }
-  
+
   return iconSet[format] || iconSet.jpg || iconSet.png || '';
 };
 
 // Helper function to check WebP support and return appropriate format
-export const getOptimizedIcon = (size: IconSize = '192'): { webp: string; fallback: string } => {
+export const getOptimizedIcon = (
+  size: IconSize = '192'
+): { webp: string; fallback: string } => {
   const paths = AppIcons.paths[size === '512' ? 'large' : 'main'];
   return {
     webp: paths.webp,

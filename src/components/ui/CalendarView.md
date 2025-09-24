@@ -44,10 +44,9 @@ import { CalendarView } from '../components/ui/CalendarView';
 import { useAttendance } from '../hooks/useAttendance';
 
 function AttendancePage() {
-  const { 
-    attendanceStats, 
-    getAttendanceDataForCalendar 
-  } = useAttendance({ userId: 'user-123' });
+  const { attendanceStats, getAttendanceDataForCalendar } = useAttendance({
+    userId: 'user-123',
+  });
 
   const attendanceData = getAttendanceDataForCalendar();
 
@@ -57,10 +56,12 @@ function AttendancePage() {
       year={new Date().getFullYear()}
       attendanceData={attendanceData}
       attendanceStats={attendanceStats}
-      onDateSelect={(date) => console.log('Selected:', date)}
-      onMonthChange={(month, year) => console.log('Month changed:', month, year)}
+      onDateSelect={date => console.log('Selected:', date)}
+      onMonthChange={(month, year) =>
+        console.log('Month changed:', month, year)
+      }
       onWeekChange={(start, end) => console.log('Week changed:', start, end)}
-      onViewChange={(view) => console.log('View changed:', view)}
+      onViewChange={view => console.log('View changed:', view)}
       initialView="month"
     />
   );
@@ -73,12 +74,7 @@ function AttendancePage() {
 import { CalendarExample } from '../components/examples/CalendarExample';
 
 function MyPage() {
-  return (
-    <CalendarExample 
-      userId="user-123" 
-      className="max-w-4xl mx-auto"
-    />
-  );
+  return <CalendarExample userId="user-123" className="max-w-4xl mx-auto" />;
 }
 ```
 
@@ -86,18 +82,18 @@ function MyPage() {
 
 ### CalendarViewProps
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `month` | `number` | ✅ | Current month (1-12) |
-| `year` | `number` | ✅ | Current year |
-| `attendanceData` | `Record<string, AttendanceInfo>` | ✅ | Attendance data keyed by date (YYYY-MM-DD) |
-| `attendanceStats` | `AttendanceStats` | ❌ | Overall attendance statistics |
-| `onDateSelect` | `(date: Date) => void` | ❌ | Called when a date is selected |
-| `onMonthChange` | `(month: number, year: number) => void` | ❌ | Called when month changes |
-| `onWeekChange` | `(start: Date, end: Date) => void` | ❌ | Called when week changes |
-| `onViewChange` | `(view: 'month' \| 'week') => void` | ❌ | Called when view changes |
-| `initialView` | `'month' \| 'week'` | ❌ | Initial view mode (default: 'month') |
-| `className` | `string` | ❌ | Additional CSS classes |
+| Prop              | Type                                    | Required | Description                                |
+| ----------------- | --------------------------------------- | -------- | ------------------------------------------ |
+| `month`           | `number`                                | ✅       | Current month (1-12)                       |
+| `year`            | `number`                                | ✅       | Current year                               |
+| `attendanceData`  | `Record<string, AttendanceInfo>`        | ✅       | Attendance data keyed by date (YYYY-MM-DD) |
+| `attendanceStats` | `AttendanceStats`                       | ❌       | Overall attendance statistics              |
+| `onDateSelect`    | `(date: Date) => void`                  | ❌       | Called when a date is selected             |
+| `onMonthChange`   | `(month: number, year: number) => void` | ❌       | Called when month changes                  |
+| `onWeekChange`    | `(start: Date, end: Date) => void`      | ❌       | Called when week changes                   |
+| `onViewChange`    | `(view: 'month' \| 'week') => void`     | ❌       | Called when view changes                   |
+| `initialView`     | `'month' \| 'week'`                     | ❌       | Initial view mode (default: 'month')       |
+| `className`       | `string`                                | ❌       | Additional CSS classes                     |
 
 ### AttendanceInfo
 
@@ -128,18 +124,21 @@ interface AttendanceStats {
 ## Accessibility Features
 
 ### Keyboard Navigation
+
 - **Arrow Keys**: Navigate between dates
 - **Home/End**: Jump to first/last day of month
 - **Enter/Space**: Select a date
 - **Tab**: Navigate between interactive elements
 
 ### Screen Reader Support
+
 - Comprehensive ARIA labels for all interactive elements
 - Live regions for dynamic content announcements
 - Proper role attributes (grid, gridcell, tab, tablist)
 - Descriptive date information including attendance status
 
 ### Visual Accessibility
+
 - High contrast color coding for attendance status
 - Minimum 44px touch targets for mobile
 - Clear focus indicators
@@ -159,11 +158,8 @@ The component uses TailwindCSS classes and follows the project's design system:
 The component integrates with the `AttendanceService` through the `useAttendance` hook:
 
 ```tsx
-const {
-  attendanceStats,
-  getAttendanceDataForCalendar,
-  fetchMonthlyRecord
-} = useAttendance({ userId });
+const { attendanceStats, getAttendanceDataForCalendar, fetchMonthlyRecord } =
+  useAttendance({ userId });
 
 // Use in CalendarView
 const attendanceData = getAttendanceDataForCalendar();
@@ -172,6 +168,7 @@ const attendanceData = getAttendanceDataForCalendar();
 ## Testing
 
 The component includes comprehensive tests covering:
+
 - Rendering in different view modes
 - User interactions (clicking, keyboard navigation)
 - Accessibility compliance
@@ -179,6 +176,7 @@ The component includes comprehensive tests covering:
 - Event handler calls
 
 Run tests with:
+
 ```bash
 npm test CalendarView.test.tsx
 ```
@@ -197,6 +195,7 @@ This implementation fulfills all requirements from task 9.4:
 ## Future Enhancements
 
 Potential improvements for future iterations:
+
 - Export calendar data to PDF/CSV
 - Custom date range selection
 - Attendance goal tracking

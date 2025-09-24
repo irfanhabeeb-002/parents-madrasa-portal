@@ -47,7 +47,11 @@ export interface DeviceInfo {
 
 export type AttendanceType = 'manual' | 'automatic' | 'zoom_integration';
 export type AttendanceStatus = 'present' | 'absent' | 'late' | 'excused';
-export type VerificationMethod = 'zoom_join' | 'manual_checkin' | 'qr_code' | 'geolocation';
+export type VerificationMethod =
+  | 'zoom_join'
+  | 'manual_checkin'
+  | 'qr_code'
+  | 'geolocation';
 
 export interface AttendanceStats {
   userId: string;

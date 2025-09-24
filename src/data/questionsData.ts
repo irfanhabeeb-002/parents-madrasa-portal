@@ -26,64 +26,69 @@ export interface QuestionsDatabase {
 // Supported subjects
 export const SUPPORTED_SUBJECTS = [
   'Kithabu Thawheed',
-  'Swiffathul Swalathu Nabi', 
+  'Swiffathul Swalathu Nabi',
   'Tajweed',
   'Hifz',
-  'Tafseer'
+  'Tafseer',
 ] as const;
 
-export type SupportedSubject = typeof SUPPORTED_SUBJECTS[number];
+export type SupportedSubject = (typeof SUPPORTED_SUBJECTS)[number];
 
 // Subject information with Malayalam names and descriptions
-export const SUBJECT_INFO: Record<string, {
-  malayalamName: string;
-  description: string;
-  malayalamDescription: string;
-  icon: string;
-  difficulty: string;
-}> = {
+export const SUBJECT_INFO: Record<
+  string,
+  {
+    malayalamName: string;
+    description: string;
+    malayalamDescription: string;
+    icon: string;
+    difficulty: string;
+  }
+> = {
   'Kithabu Thawheed': {
     malayalamName: 'കിതാബുത്തൗഹീദ്',
     description: 'Learn about Islamic monotheism and the oneness of Allah',
-    malayalamDescription: 'ഇസ്ലാമിക ഏകദൈവവിശ്വാസവും അല്ലാഹുവിന്റെ ഏകത്വവും പഠിക്കുക',
+    malayalamDescription:
+      'ഇസ്ലാമിക ഏകദൈവവിശ്വാസവും അല്ലാഹുവിന്റെ ഏകത്വവും പഠിക്കുക',
     icon: '☪️',
-    difficulty: 'Medium'
+    difficulty: 'Medium',
   },
   'Swiffathul Swalathu Nabi': {
     malayalamName: 'സ്വിഫത്തുസ്സലാത്തുന്നബി',
-    description: 'Study the description of Prophet\'s prayer method',
+    description: "Study the description of Prophet's prayer method",
     malayalamDescription: 'നബിയുടെ നമസ്കാര രീതിയുടെ വിവരണം പഠിക്കുക',
     icon: '🕌',
-    difficulty: 'Easy'
+    difficulty: 'Easy',
   },
-  'Tajweed': {
+  Tajweed: {
     malayalamName: 'തജ്വീദ്',
-    description: 'Master the art of Quranic recitation with proper pronunciation',
+    description:
+      'Master the art of Quranic recitation with proper pronunciation',
     malayalamDescription: 'ശരിയായ ഉച്ചാരണത്തോടെ ഖുർആൻ പാരായണ കല പഠിക്കുക',
     icon: '📖',
-    difficulty: 'Hard'
+    difficulty: 'Hard',
   },
-  'Hifz': {
+  Hifz: {
     malayalamName: 'ഹിഫ്സ്',
     description: 'Memorization techniques and Quranic verses',
     malayalamDescription: 'മനഃപാഠ രീതികളും ഖുർആൻ വാക്യങ്ങളും',
     icon: '🧠',
-    difficulty: 'Medium'
+    difficulty: 'Medium',
   },
-  'Tafseer': {
+  Tafseer: {
     malayalamName: 'തഫ്സീർ',
     description: 'Understanding and interpretation of the Quran',
     malayalamDescription: 'ഖുർആനിന്റെ മനസ്സിലാക്കലും വ്യാഖ്യാനവും',
     icon: '💡',
-    difficulty: 'Hard'
-  }
+    difficulty: 'Hard',
+  },
 };
 
 // Difficulty levels with point values
 export const DIFFICULTY_POINTS = {
   easy: 10,
   medium: 15,
-  hard: 20
+  hard: 20,
 } as const;
 
 // Validation function for question data
@@ -94,9 +99,8 @@ export function validateQuestion(question: any): question is QuestionData {
     typeof question.question === 'string' &&
     Array.isArray(question.options) &&
     question.options.length === 4 &&
-    question.options.every((opt: any) => 
-      typeof opt.id === 'string' && 
-      typeof opt.text === 'string'
+    question.options.every(
+      (opt: any) => typeof opt.id === 'string' && typeof opt.text === 'string'
     ) &&
     typeof question.answer === 'string' &&
     ['easy', 'medium', 'hard'].includes(question.difficulty) &&
@@ -106,7 +110,7 @@ export function validateQuestion(question: any): question is QuestionData {
 
 // Utility function to get questions by subject
 export function getQuestionsBySubject(
-  questions: QuestionData[], 
+  questions: QuestionData[],
   subject: string
 ): QuestionData[] {
   return questions.filter(q => q.subject === subject);
@@ -115,7 +119,7 @@ export function getQuestionsBySubject(
 // Utility function to shuffle array
 export function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
+  for (const i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
@@ -128,10 +132,10 @@ export function getRandomQuestions(
   count: number,
   subject?: string
 ): QuestionData[] {
-  const filteredQuestions = subject 
+  const filteredQuestions = subject
     ? getQuestionsBySubject(questions, subject)
     : questions;
-  
+
   const shuffled = shuffleArray(filteredQuestions);
   return shuffled.slice(0, Math.min(count, shuffled.length));
 }

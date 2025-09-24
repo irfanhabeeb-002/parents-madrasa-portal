@@ -1,6 +1,6 @@
 /**
  * AuthContext Logout Function Test
- * 
+ *
  * This test verifies the AuthContext logout function behavior
  */
 
@@ -50,7 +50,7 @@ describe('AuthContext Logout Function', () => {
       email: testUser.email,
       role: testUser.role,
     });
-    
+
     localStorageMock.getItem.mockReturnValue(userDataString);
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -76,7 +76,7 @@ describe('AuthContext Logout Function', () => {
     expect(result.current.error).toBeNull();
     expect(consoleSpy.log).toHaveBeenCalledWith('Manual logout successful');
 
-    console.log('✅ AuthContext logout function works correctly');
+    console.warn('✅ AuthContext logout function works correctly');
   });
 
   it('should handle logout errors properly', async () => {
@@ -97,11 +97,14 @@ describe('AuthContext Logout Function', () => {
     });
 
     // Verify error handling
-    expect(consoleSpy.error).toHaveBeenCalledWith('Logout error:', expect.any(Error));
+    expect(consoleSpy.error).toHaveBeenCalledWith(
+      'Logout error:',
+      expect.any(Error)
+    );
     expect(result.current.error).toBe('Failed to logout');
     expect(result.current.loading).toBe(false);
 
-    console.log('✅ AuthContext logout error handling works correctly');
+    console.warn('✅ AuthContext logout error handling works correctly');
   });
 
   it('should manage loading states during logout', async () => {
@@ -124,6 +127,6 @@ describe('AuthContext Logout Function', () => {
     // After logout, loading should be false
     expect(result.current.loading).toBe(false);
 
-    console.log('✅ AuthContext loading states work correctly during logout');
+    console.warn('✅ AuthContext loading states work correctly during logout');
   });
 });

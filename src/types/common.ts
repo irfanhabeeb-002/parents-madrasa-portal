@@ -41,7 +41,6 @@ export interface CacheOptions {
   forceRefresh?: boolean;
 }
 
-
 export type AnnouncementType = 'general' | 'class' | 'exam' | 'holiday';
 export type UserRole = 'student' | 'parent' | 'admin';
 export type QuestionType = 'mcq' | 'text' | 'boolean';

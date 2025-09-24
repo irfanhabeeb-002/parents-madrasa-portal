@@ -30,7 +30,7 @@ const importPatterns = new Set();
 function scanFileForImports(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    
+
     // Patterns to match imports
     const importRegexes = [
       // ES6 imports: import ... from 'package'
@@ -48,7 +48,7 @@ function scanFileForImports(filePath) {
       while ((match = regex.exec(content)) !== null) {
         const importPath = match[1];
         importPatterns.add(importPath);
-        
+
         // Extract package name (handle scoped packages)
         let packageName = importPath;
         if (importPath.startsWith('@')) {
@@ -61,7 +61,7 @@ function scanFileForImports(filePath) {
           // Regular package: package or package/subpath
           packageName = importPath.split('/')[0];
         }
-        
+
         if (allDependencies.includes(packageName)) {
           foundImports.add(packageName);
         }
@@ -76,14 +76,16 @@ function scanFileForImports(filePath) {
 function scanDirectory(dirPath) {
   try {
     const items = fs.readdirSync(dirPath);
-    
+
     for (const item of items) {
       const fullPath = path.join(dirPath, item);
       const stat = fs.statSync(fullPath);
-      
+
       if (stat.isDirectory()) {
         // Skip node_modules and other common directories
-        if (!['node_modules', '.git', 'dist', 'build', 'coverage'].includes(item)) {
+        if (
+          !['node_modules', '.git', 'dist', 'build', 'coverage'].includes(item)
+        ) {
           scanDirectory(fullPath);
         }
       } else if (stat.isFile()) {
@@ -109,31 +111,38 @@ scanDirectories.forEach(dir => {
 });
 
 // Analyze results
-const usedDependencies = Array.from(foundImports).filter(dep => dependencies.includes(dep));
-const usedDevDependencies = Array.from(foundImports).filter(dep => devDependencies.includes(dep));
+const usedDependencies = Array.from(foundImports).filter(dep =>
+  dependencies.includes(dep)
+);
+const usedDevDependencies = Array.from(foundImports).filter(dep =>
+  devDependencies.includes(dep)
+);
 const unusedDependencies = dependencies.filter(dep => !foundImports.has(dep));
-const unusedDevDependencies = devDependencies.filter(dep => !foundImports.has(dep));
+const unusedDevDependencies = devDependencies.filter(
+  dep => !foundImports.has(dep)
+);
 
 // Special cases - dependencies that might be used indirectly
 const specialCases = {
   // Build tools and configs that might not show up in imports
-  'vite': 'Build tool - used in package.json scripts',
-  'typescript': 'TypeScript compiler - used in build process',
-  'eslint': 'Linting tool - used in package.json scripts',
-  'prettier': 'Code formatter - used in package.json scripts',
-  'husky': 'Git hooks - used in package.json prepare script',
+  vite: 'Build tool - used in package.json scripts',
+  typescript: 'TypeScript compiler - used in build process',
+  eslint: 'Linting tool - used in package.json scripts',
+  prettier: 'Code formatter - used in package.json scripts',
+  husky: 'Git hooks - used in package.json prepare script',
   'lint-staged': 'Pre-commit tool - used with husky',
-  'vitest': 'Testing framework - used in package.json scripts',
-  'jsdom': 'DOM implementation for testing - used by vitest',
-  'tailwindcss': 'CSS framework - used in build process',
+  vitest: 'Testing framework - used in package.json scripts',
+  jsdom: 'DOM implementation for testing - used by vitest',
+  tailwindcss: 'CSS framework - used in build process',
   '@vitejs/plugin-react': 'Vite React plugin - used in vite.config.ts',
   'vite-plugin-pwa': 'PWA plugin - used in vite.config.ts',
   'vite-tsconfig-paths': 'TypeScript paths plugin - used in vite.config.ts',
   '@tailwindcss/vite': 'Tailwind Vite plugin - used in vite.config.ts',
-  'globals': 'Global variables for ESLint - used in eslint.config.js',
+  globals: 'Global variables for ESLint - used in eslint.config.js',
   '@lhci/cli': 'Lighthouse CI - used in package.json scripts',
   'audit-ci': 'Security audit tool - used in package.json scripts',
-  'workbox-webpack-plugin': 'Service worker plugin - might be used by vite-plugin-pwa'
+  'workbox-webpack-plugin':
+    'Service worker plugin - might be used by vite-plugin-pwa',
 };
 
 // Report results
@@ -179,7 +188,7 @@ if (unusedDevDependencies.length === 0) {
 console.log('\n🔧 RECOMMENDATIONS:');
 const trulyUnused = [
   ...unusedDependencies.filter(dep => !specialCases[dep]),
-  ...unusedDevDependencies.filter(dep => !specialCases[dep])
+  ...unusedDevDependencies.filter(dep => !specialCases[dep]),
 ];
 
 if (trulyUnused.length === 0) {
@@ -205,5 +214,5 @@ export const analysisResults = {
   unusedDependencies,
   unusedDevDependencies,
   trulyUnused,
-  specialCases
+  specialCases,
 };

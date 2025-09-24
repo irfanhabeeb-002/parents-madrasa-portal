@@ -47,7 +47,11 @@ export interface RecordingMetadata {
 
 export type VideoQuality = 'low' | 'medium' | 'high' | 'hd';
 export type VideoFormat = 'mp4' | 'webm' | 'mov';
-export type ProcessingStatus = 'pending' | 'processing' | 'completed' | 'failed';
+export type ProcessingStatus =
+  | 'pending'
+  | 'processing'
+  | 'completed'
+  | 'failed';
 
 export interface RecordingView {
   id: string;

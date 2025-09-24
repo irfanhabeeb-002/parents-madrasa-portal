@@ -19,34 +19,40 @@ vi.mock('../contexts/AuthContext', () => ({
       uid: 'test-uid',
       displayName: 'Test User',
       email: 'test@example.com',
-      phone: '+1234567890'
+      phone: '+1234567890',
     },
     loading: false,
     logout: vi.fn(),
-    login: vi.fn()
+    login: vi.fn(),
   }),
-  AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  AuthProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 vi.mock('../contexts/NotificationContext', () => ({
   useNotifications: () => ({
     notifications: [],
-    unreadCount: 0
+    unreadCount: 0,
   }),
   useNotificationBadge: () => ({
     visible: false,
-    count: 0
+    count: 0,
   }),
-  NotificationProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  NotificationProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 vi.mock('../contexts/ThemeContext', () => ({
   useTheme: () => ({
     theme: 'light',
     isHighContrast: false,
-    prefersReducedMotion: false
+    prefersReducedMotion: false,
   }),
-  ThemeProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 vi.mock('../hooks/useDashboard', () => ({
@@ -57,36 +63,34 @@ vi.mock('../hooks/useDashboard', () => ({
     loading: {
       announcements: false,
       notifications: false,
-      todaysClass: false
+      todaysClass: false,
     },
     error: {
       announcements: null,
       notifications: null,
-      todaysClass: null
+      todaysClass: null,
     },
     refreshAnnouncements: vi.fn(),
     refreshNotifications: vi.fn(),
     refreshTodaysClass: vi.fn(),
-    clearError: vi.fn()
-  })
+    clearError: vi.fn(),
+  }),
 }));
 
 vi.mock('../hooks/useNotificationListener', () => ({
   useNotificationListener: () => {},
-  useClassReminderListener: () => {}
+  useClassReminderListener: () => {},
 }));
 
 vi.mock('../assets/icons', () => ({
   AppIcons: {
-    main: '/test-icon.png'
-  }
+    main: '/test-icon.png',
+  },
 }));
 
 // Test wrapper
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <BrowserRouter>
-    {children}
-  </BrowserRouter>
+  <BrowserRouter>{children}</BrowserRouter>
 );
 
 describe('Accessibility Tests', () => {
@@ -97,7 +101,7 @@ describe('Accessibility Tests', () => {
           <Header />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -111,9 +115,11 @@ describe('Accessibility Tests', () => {
 
       // Check for proper banner role
       expect(screen.getByRole('banner')).toBeInTheDocument();
-      
+
       // Check back button accessibility (if present)
-      const backButtons = screen.queryAllByLabelText(/go back to previous page/i);
+      const backButtons = screen.queryAllByLabelText(
+        /go back to previous page/i
+      );
       if (backButtons.length > 0) {
         expect(backButtons[0]).toBeInTheDocument();
         expect(backButtons[0]).toHaveAttribute('aria-label');
@@ -127,7 +133,7 @@ describe('Accessibility Tests', () => {
         </TestWrapper>
       );
 
-      const hamburgerButtons = screen.getAllByLabelText(/menu \(disabled\)/i);
+      const hamburgerButtons = screen.getAllByLabelText(/menu (disabled)/i);
       expect(hamburgerButtons[0]).toBeDisabled();
       expect(hamburgerButtons[0]).toHaveClass('cursor-not-allowed');
     });
@@ -140,7 +146,7 @@ describe('Accessibility Tests', () => {
           <BottomNavigation />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -155,11 +161,11 @@ describe('Accessibility Tests', () => {
       // Check for proper navigation role and label
       const nav = screen.getByRole('navigation');
       expect(nav).toHaveAttribute('aria-label');
-      
+
       // Check for tablist structure
       const tablist = screen.getByRole('tablist');
       expect(tablist).toBeInTheDocument();
-      
+
       // Check all navigation buttons have proper labels
       const navButtons = screen.getAllByRole('tab');
       navButtons.forEach(button => {
@@ -182,7 +188,12 @@ describe('Accessibility Tests', () => {
       expect(screen.getByText('Settings')).toBeInTheDocument();
 
       // Verify no Malayalam UI labels are present (Malayalam should only be in educational content)
-      const malayalamUILabels = ['ഹോം', 'ലൈവ് ക്ലാസ്', 'പ്രൊഫൈൽ', 'ക്രമീകരണങ്ങൾ'];
+      const malayalamUILabels = [
+        'ഹോം',
+        'ലൈവ് ക്ലാസ്',
+        'പ്രൊഫൈൽ',
+        'ക്രമീകരണങ്ങൾ',
+      ];
       malayalamUILabels.forEach(label => {
         expect(screen.queryByText(label)).not.toBeInTheDocument();
       });
@@ -196,7 +207,7 @@ describe('Accessibility Tests', () => {
           <Profile />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -231,7 +242,7 @@ describe('Accessibility Tests', () => {
       const logoutButton = screen.getByLabelText(/logout from application/i);
       expect(logoutButton).toBeInTheDocument();
       expect(logoutButton).toHaveAttribute('aria-label');
-      
+
       // Check that logout section doesn't have unnecessary containers
       expect(screen.queryByText('Account Actions')).not.toBeInTheDocument();
     });
@@ -244,7 +255,7 @@ describe('Accessibility Tests', () => {
           <Dashboard />
         </TestWrapper>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -257,7 +268,9 @@ describe('Accessibility Tests', () => {
       );
 
       // Check for personalized welcome with emoji
-      expect(screen.getAllByText(/welcome test user 👋/i)[0]).toBeInTheDocument();
+      expect(
+        screen.getAllByText(/welcome test user 👋/i)[0]
+      ).toBeInTheDocument();
     });
 
     it('should have English-only navigation cards', () => {
@@ -274,7 +287,12 @@ describe('Accessibility Tests', () => {
       expect(screen.getAllByText('Exams/Attendance')[0]).toBeInTheDocument();
 
       // Verify no Malayalam UI subtitles (Malayalam should only be in educational content)
-      const malayalamUISubtitles = ['ലൈവ് ക്ലാസ്', 'റെക്കോർഡിംഗുകൾ', 'കുറിപ്പുകളും അഭ്യാസങ്ങളും', 'പരീക്ഷകളും ഹാജരും'];
+      const malayalamUISubtitles = [
+        'ലൈവ് ക്ലാസ്',
+        'റെക്കോർഡിംഗുകൾ',
+        'കുറിപ്പുകളും അഭ്യാസങ്ങളും',
+        'പരീക്ഷകളും ഹാജരും',
+      ];
       malayalamUISubtitles.forEach(subtitle => {
         expect(screen.queryByText(subtitle)).not.toBeInTheDocument();
       });
@@ -295,20 +313,16 @@ describe('Accessibility Tests', () => {
   describe('AccessibleButton Component', () => {
     it('should not have accessibility violations', async () => {
       const { container } = render(
-        <AccessibleButton ariaLabel="Test button">
-          Click me
-        </AccessibleButton>
+        <AccessibleButton ariaLabel="Test button">Click me</AccessibleButton>
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
     it('should have proper focus management', () => {
       render(
-        <AccessibleButton ariaLabel="Test button">
-          Click me
-        </AccessibleButton>
+        <AccessibleButton ariaLabel="Test button">Click me</AccessibleButton>
       );
 
       const button = screen.getByRole('button');
@@ -333,14 +347,14 @@ describe('Accessibility Tests', () => {
   describe('Card Component', () => {
     it('should not have accessibility violations', async () => {
       const { container } = render(
-        <Card 
-          title="Test Card" 
+        <Card
+          title="Test Card"
           subtitle="Test subtitle"
           onClick={() => {}}
           ariaLabel="Test card button"
         />
       );
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -348,8 +362,8 @@ describe('Accessibility Tests', () => {
     it('should have proper interactive behavior', () => {
       const mockClick = vi.fn();
       render(
-        <Card 
-          title="Interactive Card" 
+        <Card
+          title="Interactive Card"
           onClick={mockClick}
           ariaLabel="Interactive card"
         />
@@ -384,15 +398,16 @@ describe('Accessibility Tests', () => {
 
       // Verify that navigation cards have content
       const cards = screen.getAllByRole('button');
-      const navigationCards = cards.filter(card => 
-        card.getAttribute('aria-label')?.includes('class') ||
-        card.getAttribute('aria-label')?.includes('recordings') ||
-        card.getAttribute('aria-label')?.includes('notes') ||
-        card.getAttribute('aria-label')?.includes('exams') ||
-        card.textContent?.includes('Live Class') ||
-        card.textContent?.includes('Recordings') ||
-        card.textContent?.includes('Notes/Exercises') ||
-        card.textContent?.includes('Exams/Attendance')
+      const navigationCards = cards.filter(
+        card =>
+          card.getAttribute('aria-label')?.includes('class') ||
+          card.getAttribute('aria-label')?.includes('recordings') ||
+          card.getAttribute('aria-label')?.includes('notes') ||
+          card.getAttribute('aria-label')?.includes('exams') ||
+          card.textContent?.includes('Live Class') ||
+          card.textContent?.includes('Recordings') ||
+          card.textContent?.includes('Notes/Exercises') ||
+          card.textContent?.includes('Exams/Attendance')
       );
       navigationCards.forEach(card => {
         expect(card).toHaveTextContent(/\S/); // Has non-whitespace content
@@ -409,7 +424,7 @@ describe('Accessibility Tests', () => {
       );
 
       const navButtons = screen.getAllByRole('tab');
-      
+
       // Check that buttons are keyboard accessible
       navButtons.forEach(button => {
         expect(button).toHaveAttribute('tabIndex');

@@ -8,9 +8,9 @@ interface SyncStatusProps {
   showDetails?: boolean;
 }
 
-export const SyncStatus: React.FC<SyncStatusProps> = ({ 
-  className = '', 
-  showDetails = false 
+export const SyncStatus: React.FC<SyncStatusProps> = ({
+  className = '',
+  showDetails = false,
 }) => {
   const { queueStats, isOnline, processQueue, clearQueue } = useOfflineQueue();
   const [showModal, setShowModal] = useState(false);
@@ -18,7 +18,7 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
 
   const handleSync = async () => {
     if (!isOnline) return;
-    
+
     setIsProcessing(true);
     try {
       await processQueue();
@@ -53,7 +53,8 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
 
   const getStatusTextMalayalam = () => {
     if (!isOnline) return 'ഓഫ്‌ലൈൻ';
-    if (queueStats.totalItems > 0) return `${queueStats.totalItems} കാത്തിരിക്കുന്നു`;
+    if (queueStats.totalItems > 0)
+      return `${queueStats.totalItems} കാത്തിരിക്കുന്നു`;
     return 'സിങ്ക് ചെയ്തു';
   };
 
@@ -68,10 +69,10 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
         <div className="flex items-center space-x-1">
           <div
             className={`w-2 h-2 rounded-full ${
-              !isOnline 
-                ? 'bg-red-500' 
-                : queueStats.totalItems > 0 
-                  ? 'bg-yellow-500 animate-pulse' 
+              !isOnline
+                ? 'bg-red-500'
+                : queueStats.totalItems > 0
+                  ? 'bg-yellow-500 animate-pulse'
                   : 'bg-green-500'
             }`}
             aria-hidden="true"
@@ -136,14 +137,18 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
               {isOnline ? 'Connected to internet' : 'No internet connection'}
             </p>
             <p className="text-xs text-gray-500 mt-1" lang="ml">
-              {isOnline ? 'ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്തു' : 'ഇന്റർനെറ്റ് കണക്ഷൻ ഇല്ല'}
+              {isOnline
+                ? 'ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്തു'
+                : 'ഇന്റർനെറ്റ് കണക്ഷൻ ഇല്ല'}
             </p>
           </div>
 
           {/* Queue Statistics */}
           {queueStats.totalItems > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h3 className="font-medium text-yellow-900 mb-3">Pending Items</h3>
+              <h3 className="font-medium text-yellow-900 mb-3">
+                Pending Items
+              </h3>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-yellow-800">Total items:</span>
@@ -166,16 +171,23 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
               {/* Items by Type */}
               {Object.keys(queueStats.itemsByType).length > 0 && (
                 <div className="mt-3 pt-3 border-t border-yellow-200">
-                  <h4 className="text-sm font-medium text-yellow-900 mb-2">By Type:</h4>
+                  <h4 className="text-sm font-medium text-yellow-900 mb-2">
+                    By Type:
+                  </h4>
                   <div className="space-y-1">
-                    {Object.entries(queueStats.itemsByType).map(([type, count]) => (
-                      <div key={type} className="flex justify-between text-sm">
-                        <span className="text-yellow-800 capitalize">
-                          {type.replace('-', ' ')}:
-                        </span>
-                        <span className="font-medium">{count}</span>
-                      </div>
-                    ))}
+                    {Object.entries(queueStats.itemsByType).map(
+                      ([type, count]) => (
+                        <div
+                          key={type}
+                          className="flex justify-between text-sm"
+                        >
+                          <span className="text-yellow-800 capitalize">
+                            {type.replace('-', ' ')}:
+                          </span>
+                          <span className="font-medium">{count}</span>
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
               )}
@@ -186,8 +198,18 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
           {queueStats.totalItems === 0 && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
               <div className="text-green-600 mb-2">
-                <svg className="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-8 h-8 mx-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
               <h3 className="font-medium text-green-900 mb-1">All Synced</h3>
@@ -219,7 +241,7 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
                 )}
               </AccessibleButton>
             )}
-            
+
             {queueStats.totalItems > 0 && (
               <AccessibleButton
                 variant="secondary"
@@ -229,7 +251,7 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
                 Clear Queue
               </AccessibleButton>
             )}
-            
+
             <AccessibleButton
               variant="ghost"
               onClick={() => setShowModal(false)}
@@ -242,11 +264,13 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
           {/* Help Text */}
           <div className="text-xs text-gray-500 p-3 bg-gray-50 rounded-lg">
             <p>
-              <strong>Note:</strong> Data will be automatically synced when you're back online.
-              Pending items are stored locally and will not be lost.
+              <strong>Note:</strong> Data will be automatically synced when
+              you're back online. Pending items are stored locally and will not
+              be lost.
             </p>
             <p lang="ml" className="mt-1">
-              <strong>കുറിപ്പ്:</strong> നിങ്ങൾ വീണ്ടും ഓൺലൈനിൽ വരുമ്പോൾ ഡാറ്റ സ്വയമേവ സിങ്ക് ചെയ്യപ്പെടും.
+              <strong>കുറിപ്പ്:</strong> നിങ്ങൾ വീണ്ടും ഓൺലൈനിൽ വരുമ്പോൾ ഡാറ്റ
+              സ്വയമേവ സിങ്ക് ചെയ്യപ്പെടും.
             </p>
           </div>
         </div>
@@ -256,7 +280,9 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
 };
 
 // Compact sync status for header/footer
-export const CompactSyncStatus: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const CompactSyncStatus: React.FC<{ className?: string }> = ({
+  className = '',
+}) => {
   const { queueStats, isOnline } = useOfflineQueue();
 
   if (queueStats.totalItems === 0 && isOnline) {
@@ -267,18 +293,16 @@ export const CompactSyncStatus: React.FC<{ className?: string }> = ({ className 
     <div className={`flex items-center space-x-1 ${className}`}>
       <div
         className={`w-1.5 h-1.5 rounded-full ${
-          !isOnline 
-            ? 'bg-red-500' 
-            : queueStats.totalItems > 0 
-              ? 'bg-yellow-500 animate-pulse' 
+          !isOnline
+            ? 'bg-red-500'
+            : queueStats.totalItems > 0
+              ? 'bg-yellow-500 animate-pulse'
               : 'bg-green-500'
         }`}
         aria-hidden="true"
       />
       {queueStats.totalItems > 0 && (
-        <span className="text-xs text-gray-600">
-          {queueStats.totalItems}
-        </span>
+        <span className="text-xs text-gray-600">{queueStats.totalItems}</span>
       )}
     </div>
   );

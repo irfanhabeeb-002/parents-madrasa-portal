@@ -44,7 +44,7 @@ class PerformanceService {
       this.trackWebVitals();
       this.trackNavigationTiming();
       this.trackResourceTiming();
-      
+
       this.initialized = true;
       logger.log('Performance monitoring initialized');
     } catch (error) {
@@ -62,20 +62,30 @@ class PerformanceService {
     }
 
     try {
-      this.observer = new PerformanceObserver((list) => {
+      this.observer = new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
           this.processPerformanceEntry(entry);
         }
       });
 
       // Observe different types of performance entries
-      const entryTypes = ['navigation', 'resource', 'paint', 'largest-contentful-paint', 'first-input', 'layout-shift'];
-      
+      const entryTypes = [
+        'navigation',
+        'resource',
+        'paint',
+        'largest-contentful-paint',
+        'first-input',
+        'layout-shift',
+      ];
+
       entryTypes.forEach(type => {
         try {
           this.observer?.observe({ type, buffered: true });
         } catch (error) {
-          logger.debug(`Performance observer type '${type}' not supported:`, error);
+          logger.debug(
+            `Performance observer type '${type}' not supported:`,
+            error
+          );
         }
       });
     } catch (error) {
@@ -108,8 +118,10 @@ class PerformanceService {
    */
   private trackWebVitals(): void {
     // First Contentful Paint (FCP)
-    this.observeMetric('paint', (entries) => {
-      const fcpEntry = entries.find(entry => entry.name === 'first-contentful-paint');
+    this.observeMetric('paint', entries => {
+      const fcpEntry = entries.find(
+        entry => entry.name === 'first-contentful-paint'
+      );
       if (fcpEntry) {
         const fcp = fcpEntry.startTime;
         this.recordWebVital('FCP', fcp);
@@ -117,7 +129,7 @@ class PerformanceService {
     });
 
     // Largest Contentful Paint (LCP)
-    this.observeMetric('largest-contentful-paint', (entries) => {
+    this.observeMetric('largest-contentful-paint', entries => {
       const lcpEntry = entries[entries.length - 1];
       if (lcpEntry) {
         const lcp = lcpEntry.startTime;
@@ -126,7 +138,7 @@ class PerformanceService {
     });
 
     // First Input Delay (FID)
-    this.observeMetric('first-input', (entries) => {
+    this.observeMetric('first-input', entries => {
       const fidEntry = entries[0];
       if (fidEntry) {
         const fid = (fidEntry as any).processingStart - fidEntry.startTime;
@@ -135,8 +147,8 @@ class PerformanceService {
     });
 
     // Cumulative Layout Shift (CLS)
-    this.observeMetric('layout-shift', (entries) => {
-      let clsValue = 0;
+    this.observeMetric('layout-shift', entries => {
+      const clsValue = 0;
       for (const entry of entries) {
         if (!(entry as any).hadRecentInput) {
           clsValue += (entry as any).value;
@@ -149,11 +161,14 @@ class PerformanceService {
   /**
    * Observe specific performance metrics
    */
-  private observeMetric(type: string, callback: (entries: PerformanceEntry[]) => void): void {
+  private observeMetric(
+    type: string,
+    callback: (entries: PerformanceEntry[]) => void
+  ): void {
     if (!('PerformanceObserver' in window)) return;
 
     try {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         callback(list.getEntries());
       });
       observer.observe({ type, buffered: true });
@@ -167,7 +182,7 @@ class PerformanceService {
    */
   private recordWebVital(name: WebVitalsMetric['name'], value: number): void {
     const rating = this.getWebVitalRating(name, value);
-    
+
     const metric: PerformanceMetric = {
       name: `web_vital_${name.toLowerCase()}`,
       value,
@@ -177,7 +192,7 @@ class PerformanceService {
     };
 
     this.recordMetric(metric);
-    
+
     // Report to analytics with rating
     analyticsService.trackPerformance(`web_vital_${name}`, value, metric.unit);
     analyticsService.trackEvent({
@@ -196,7 +211,10 @@ class PerformanceService {
   /**
    * Get Web Vital rating based on thresholds
    */
-  private getWebVitalRating(name: WebVitalsMetric['name'], value: number): WebVitalsMetric['rating'] {
+  private getWebVitalRating(
+    name: WebVitalsMetric['name'],
+    value: number
+  ): WebVitalsMetric['rating'] {
     const thresholds = {
       FCP: { good: 1800, poor: 3000 },
       LCP: { good: 2500, poor: 4000 },
@@ -219,14 +237,19 @@ class PerformanceService {
   private trackNavigationTiming(): void {
     if (!('performance' in window) || !performance.getEntriesByType) return;
 
-    const navigationEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+    const navigationEntries = performance.getEntriesByType(
+      'navigation'
+    ) as PerformanceNavigationTiming[];
     if (navigationEntries.length === 0) return;
 
     const nav = navigationEntries[0];
-    
+
     // Track key navigation metrics
     const metrics = [
-      { name: 'dns_lookup', value: nav.domainLookupEnd - nav.domainLookupStart },
+      {
+        name: 'dns_lookup',
+        value: nav.domainLookupEnd - nav.domainLookupStart,
+      },
       { name: 'tcp_connection', value: nav.connectEnd - nav.connectStart },
       { name: 'request_response', value: nav.responseEnd - nav.requestStart },
       { name: 'dom_processing', value: nav.domComplete - nav.domLoading },
@@ -252,8 +275,10 @@ class PerformanceService {
   private trackResourceTiming(): void {
     if (!('performance' in window) || !performance.getEntriesByType) return;
 
-    const resourceEntries = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
-    
+    const resourceEntries = performance.getEntriesByType(
+      'resource'
+    ) as PerformanceResourceTiming[];
+
     // Group resources by type
     const resourceTypes = {
       script: [] as PerformanceResourceTiming[],
@@ -265,13 +290,15 @@ class PerformanceService {
     resourceEntries.forEach(entry => {
       const url = new URL(entry.name);
       const extension = url.pathname.split('.').pop()?.toLowerCase();
-      
+
       if (extension) {
         if (['js', 'mjs'].includes(extension)) {
           resourceTypes.script.push(entry);
         } else if (['css'].includes(extension)) {
           resourceTypes.stylesheet.push(entry);
-        } else if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(extension)) {
+        } else if (
+          ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(extension)
+        ) {
           resourceTypes.image.push(entry);
         } else if (['woff', 'woff2', 'ttf', 'otf'].includes(extension)) {
           resourceTypes.font.push(entry);
@@ -282,9 +309,12 @@ class PerformanceService {
     // Report resource loading metrics
     Object.entries(resourceTypes).forEach(([type, entries]) => {
       if (entries.length > 0) {
-        const totalDuration = entries.reduce((sum, entry) => sum + entry.duration, 0);
+        const totalDuration = entries.reduce(
+          (sum, entry) => sum + entry.duration,
+          0
+        );
         const averageDuration = totalDuration / entries.length;
-        
+
         this.recordMetric({
           name: `resource_${type}_avg_load_time`,
           value: averageDuration,
@@ -301,12 +331,12 @@ class PerformanceService {
    */
   recordMetric(metric: PerformanceMetric): void {
     this.metrics.push(metric);
-    
+
     // Keep only recent metrics to prevent memory leaks
     if (this.metrics.length > 1000) {
       this.metrics = this.metrics.slice(-500);
     }
-    
+
     logger.debug('Performance metric recorded:', metric);
   }
 
@@ -331,7 +361,7 @@ class PerformanceService {
   trackTiming(name: string, startTime: number, endTime?: number): void {
     const end = endTime || performance.now();
     const duration = end - startTime;
-    
+
     this.recordMetric({
       name,
       value: duration,
@@ -339,7 +369,7 @@ class PerformanceService {
       timestamp: Date.now(),
       context: 'custom',
     });
-    
+
     // Report to analytics if sampling allows
     if (Math.random() < config.performance.sampleRate) {
       analyticsService.trackPerformance(name, duration);
@@ -351,7 +381,7 @@ class PerformanceService {
    */
   startTiming(name: string): () => void {
     const startTime = performance.now();
-    
+
     return () => {
       this.trackTiming(name, startTime);
     };
@@ -366,8 +396,8 @@ class PerformanceService {
     webVitals: Record<string, number>;
   } {
     const webVitals: Record<string, number> = {};
-    let totalPageLoad = 0;
-    let pageLoadCount = 0;
+    const totalPageLoad = 0;
+    const pageLoadCount = 0;
 
     this.metrics.forEach(metric => {
       if (metric.context === 'web_vitals') {

@@ -7,38 +7,42 @@ interface FontSizeToggleProps {
   showLabels?: boolean;
 }
 
-export const FontSizeToggle: React.FC<FontSizeToggleProps> = ({ 
-  className = '', 
-  showLabels = true 
+export const FontSizeToggle: React.FC<FontSizeToggleProps> = ({
+  className = '',
+  showLabels = true,
 }) => {
   const { fontSize, setFontSize } = useFontSize();
 
   const fontSizeOptions = [
-    { 
-      value: 'small' as const, 
-      label: 'Small', 
-      icon: 'A'
+    {
+      value: 'small' as const,
+      label: 'Small',
+      icon: 'A',
     },
-    { 
-      value: 'medium' as const, 
-      label: 'Medium', 
-      icon: 'A'
+    {
+      value: 'medium' as const,
+      label: 'Medium',
+      icon: 'A',
     },
-    { 
-      value: 'large' as const, 
-      label: 'Large', 
-      icon: 'A'
-    }
+    {
+      value: 'large' as const,
+      label: 'Large',
+      icon: 'A',
+    },
   ];
 
   return (
-    <div className={`flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 lg:space-x-4 ${className}`} role="group" aria-label="Font size options">
+    <div
+      className={`flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 lg:space-x-4 ${className}`}
+      role="group"
+      aria-label="Font size options"
+    >
       {showLabels && (
         <span className="text-xs sm:text-sm lg:text-base font-medium text-gray-700 text-center sm:text-left sm:mr-2 lg:mr-3">
           Font Size:
         </span>
       )}
-      
+
       <div className="flex bg-gray-100 rounded-lg p-1 sm:p-1.5">
         {fontSizeOptions.map((option, index) => (
           <AccessibleButton
@@ -56,26 +60,26 @@ export const FontSizeToggle: React.FC<FontSizeToggleProps> = ({
             ariaLabel={`Set font size to ${option.label}`}
             aria-pressed={fontSize === option.value}
           >
-            <span 
+            <span
               className={`font-bold ${
-                option.value === 'small' ? 'text-sm sm:text-base' : 
-                option.value === 'medium' ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
+                option.value === 'small'
+                  ? 'text-sm sm:text-base'
+                  : option.value === 'medium'
+                    ? 'text-base sm:text-lg'
+                    : 'text-lg sm:text-xl'
               }`}
             >
               {option.icon}
             </span>
-            {showLabels && (
-              <span className="sr-only">
-                {option.label}
-              </span>
-            )}
+            {showLabels && <span className="sr-only">{option.label}</span>}
           </AccessibleButton>
         ))}
       </div>
-      
+
       {/* Current selection indicator for screen readers */}
       <span className="sr-only" aria-live="polite">
-        Current font size: {fontSizeOptions.find(opt => opt.value === fontSize)?.label}
+        Current font size:{' '}
+        {fontSizeOptions.find(opt => opt.value === fontSize)?.label}
       </span>
     </div>
   );

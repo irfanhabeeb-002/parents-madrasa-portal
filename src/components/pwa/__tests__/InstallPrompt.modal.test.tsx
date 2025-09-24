@@ -16,9 +16,7 @@ const mockThemeContext = {
 
 const renderWithTheme = (component: React.ReactElement) => {
   return render(
-    <ThemeProvider value={mockThemeContext}>
-      {component}
-    </ThemeProvider>
+    <ThemeProvider value={mockThemeContext}>{component}</ThemeProvider>
   );
 };
 
@@ -26,7 +24,7 @@ describe('InstallPrompt Modal Enhancements', () => {
   beforeEach(() => {
     // Reset mocks
     vi.clearAllMocks();
-    
+
     // Mock window.matchMedia for standalone mode detection
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
@@ -60,14 +58,17 @@ describe('InstallPrompt Modal Enhancements', () => {
 
   it('should display enhanced modal with gradient icon when Learn More is clicked', async () => {
     const { container, getByText } = renderWithTheme(<InstallPrompt />);
-    
+
     // Simulate beforeinstallprompt event to trigger banner display
     const mockEvent = new Event('beforeinstallprompt') as any;
     mockEvent.preventDefault = vi.fn();
     mockEvent.prompt = vi.fn().mockResolvedValue(undefined);
-    mockEvent.userChoice = Promise.resolve({ outcome: 'accepted', platform: 'web' });
+    mockEvent.userChoice = Promise.resolve({
+      outcome: 'accepted',
+      platform: 'web',
+    });
     mockEvent.platforms = ['web'];
-    
+
     await act(async () => {
       window.dispatchEvent(mockEvent);
       await new Promise(resolve => setTimeout(resolve, 0));
@@ -119,14 +120,17 @@ describe('InstallPrompt Modal Enhancements', () => {
 
   it('should have proper button styling and spacing in modal footer', async () => {
     const { container, getByText } = renderWithTheme(<InstallPrompt />);
-    
+
     // Simulate beforeinstallprompt event and open modal
     const mockEvent = new Event('beforeinstallprompt') as any;
     mockEvent.preventDefault = vi.fn();
     mockEvent.prompt = vi.fn().mockResolvedValue(undefined);
-    mockEvent.userChoice = Promise.resolve({ outcome: 'accepted', platform: 'web' });
+    mockEvent.userChoice = Promise.resolve({
+      outcome: 'accepted',
+      platform: 'web',
+    });
     mockEvent.platforms = ['web'];
-    
+
     await act(async () => {
       window.dispatchEvent(mockEvent);
       await new Promise(resolve => setTimeout(resolve, 0));
@@ -163,14 +167,17 @@ describe('InstallPrompt Modal Enhancements', () => {
 
   it('should display benefits in improved grid layout with consistent icons', async () => {
     const { container, getByText } = renderWithTheme(<InstallPrompt />);
-    
+
     // Simulate beforeinstallprompt event and open modal
     const mockEvent = new Event('beforeinstallprompt') as any;
     mockEvent.preventDefault = vi.fn();
     mockEvent.prompt = vi.fn().mockResolvedValue(undefined);
-    mockEvent.userChoice = Promise.resolve({ outcome: 'accepted', platform: 'web' });
+    mockEvent.userChoice = Promise.resolve({
+      outcome: 'accepted',
+      platform: 'web',
+    });
     mockEvent.platforms = ['web'];
-    
+
     await act(async () => {
       window.dispatchEvent(mockEvent);
       await new Promise(resolve => setTimeout(resolve, 0));
@@ -193,7 +200,7 @@ describe('InstallPrompt Modal Enhancements', () => {
     expect(modalHTML).toContain('bg-green-100');
     expect(modalHTML).toContain('rounded-full');
     expect(modalHTML).toContain('text-green-600');
-    
+
     // Count the number of benefit items by counting checkmark icons
     const greenIconMatches = modalHTML.match(/bg-green-100/g);
     expect(greenIconMatches).toBeTruthy();

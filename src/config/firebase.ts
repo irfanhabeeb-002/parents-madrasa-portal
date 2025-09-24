@@ -5,7 +5,7 @@ import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getMessaging, isSupported } from 'firebase/messaging';
 
 // Firebase configuration from environment variables
-let firebaseConfig = {
+const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
@@ -27,18 +27,22 @@ export const isFirebaseConfigured = (): boolean => {
   ];
 
   const isPlaceholder = (value: string | undefined): boolean => {
-    return !value || 
-           value === 'your_api_key_here' || 
-           value.includes('your_') || 
-           value === 'your_project.firebaseapp.com' ||
-           value === 'your_project_id' ||
-           value === 'your_project.appspot.com' ||
-           value === 'your_sender_id' ||
-           value === 'your_app_id' ||
-           value === 'your_measurement_id';
+    return (
+      !value ||
+      value === 'your_api_key_here' ||
+      value.includes('your_') ||
+      value === 'your_project.firebaseapp.com' ||
+      value === 'your_project_id' ||
+      value === 'your_project.appspot.com' ||
+      value === 'your_sender_id' ||
+      value === 'your_app_id' ||
+      value === 'your_measurement_id'
+    );
   };
 
-  return requiredEnvVars.every(envVar => !isPlaceholder(import.meta.env[envVar]));
+  return requiredEnvVars.every(
+    envVar => !isPlaceholder(import.meta.env[envVar])
+  );
 };
 
 // Only initialize Firebase if properly configured
@@ -49,9 +53,7 @@ if (!isFirebaseConfigured()) {
   console.warn(
     '📝 To use Firebase Authentication, update the .env file with your Firebase configuration'
   );
-  console.warn(
-    '📖 See FIREBASE_SETUP.md for detailed setup instructions'
-  );
+  console.warn('📖 See FIREBASE_SETUP.md for detailed setup instructions');
 }
 
 // Initialize Firebase only if configured
@@ -73,27 +75,35 @@ export { auth, db, storage };
 let messaging: ReturnType<typeof getMessaging> | null = null;
 
 if (isFirebaseConfigured() && app) {
-  isSupported().then((supported) => {
-    if (supported) {
-      messaging = getMessaging(app);
-    }
-  }).catch((error) => {
-    console.warn('Firebase Messaging not supported:', error);
-  });
+  isSupported()
+    .then(supported => {
+      if (supported) {
+        messaging = getMessaging(app);
+      }
+    })
+    .catch(error => {
+      console.warn('Firebase Messaging not supported:', error);
+    });
 }
 
 export { messaging };
 
 // Connect to emulators in development (only if Firebase is configured)
-if (import.meta.env.DEV && isFirebaseConfigured() && import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true') {
+if (
+  import.meta.env.DEV &&
+  isFirebaseConfigured() &&
+  import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true'
+) {
   // Only connect to emulators if not already connected
   try {
     if (auth) {
-      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+      connectAuthEmulator(auth, 'http://localhost:9099', {
+        disableWarnings: true,
+      });
     }
   } catch (error) {
     // Emulator already connected or not available
-    console.log('Auth emulator connection skipped:', error);
+    console.warn('Auth emulator connection skipped:', error);
   }
 
   try {
@@ -102,7 +112,7 @@ if (import.meta.env.DEV && isFirebaseConfigured() && import.meta.env.VITE_USE_FI
     }
   } catch (error) {
     // Emulator already connected or not available
-    console.log('Firestore emulator connection skipped:', error);
+    console.warn('Firestore emulator connection skipped:', error);
   }
 
   try {
@@ -111,7 +121,7 @@ if (import.meta.env.DEV && isFirebaseConfigured() && import.meta.env.VITE_USE_FI
     }
   } catch (error) {
     // Emulator already connected or not available
-    console.log('Storage emulator connection skipped:', error);
+    console.warn('Storage emulator connection skipped:', error);
   }
 }
 

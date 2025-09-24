@@ -13,7 +13,7 @@ import {
   Cog6ToothIcon,
   XMarkIcon,
   ForwardIcon,
-  BackwardIcon
+  BackwardIcon,
 } from '@heroicons/react/24/outline';
 
 interface VideoPlayerProps {
@@ -118,12 +118,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }, []);
 
   // Skip forward/backward
-  const skip = useCallback((seconds: number) => {
-    if (!videoRef.current) return;
+  const skip = useCallback(
+    (seconds: number) => {
+      if (!videoRef.current) return;
 
-    const newTime = Math.max(0, Math.min(state.duration, state.currentTime + seconds));
-    handleSeek(newTime);
-  }, [state.currentTime, state.duration, handleSeek]);
+      const newTime = Math.max(
+        0,
+        Math.min(state.duration, state.currentTime + seconds)
+      );
+      handleSeek(newTime);
+    },
+    [state.currentTime, state.duration, handleSeek]
+  );
 
   // Handle playback rate change
   const handlePlaybackRateChange = useCallback((rate: number) => {
@@ -149,22 +155,25 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }, [state.isFullscreen]);
 
   // Handle chapter selection
-  const handleChapterSelect = useCallback((chapterIndex: number) => {
-    const chapter = recording.chapters[chapterIndex];
-    if (chapter) {
-      handleSeek(chapter.startTime);
-      setState(prev => ({ ...prev, selectedChapter: chapterIndex }));
-    }
-  }, [recording.chapters, handleSeek]);
+  const handleChapterSelect = useCallback(
+    (chapterIndex: number) => {
+      const chapter = recording.chapters[chapterIndex];
+      if (chapter) {
+        handleSeek(chapter.startTime);
+        setState(prev => ({ ...prev, selectedChapter: chapterIndex }));
+      }
+    },
+    [recording.chapters, handleSeek]
+  );
 
   // Show/hide controls
   const showControls = useCallback(() => {
     setState(prev => ({ ...prev, showControls: true }));
-    
+
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
     }
-    
+
     controlsTimeoutRef.current = setTimeout(() => {
       setState(prev => ({ ...prev, showControls: false }));
     }, 3000);
@@ -176,7 +185,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     const currentTime = videoRef.current.currentTime;
     const duration = videoRef.current.duration;
-    
+
     if (currentTime > 0 && duration > 0) {
       await RecordingService.trackView(recording.id, user.uid, currentTime);
     }
@@ -204,10 +213,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       // Update selected chapter based on current time
       const currentChapter = recording.chapters.findIndex((chapter, index) => {
         const nextChapter = recording.chapters[index + 1];
-        return video.currentTime >= chapter.startTime && 
-               (!nextChapter || video.currentTime < nextChapter.startTime);
+        return (
+          video.currentTime >= chapter.startTime &&
+          (!nextChapter || video.currentTime < nextChapter.startTime)
+        );
       });
-      
+
       if (currentChapter !== -1 && currentChapter !== state.selectedChapter) {
         setState(prev => ({ ...prev, selectedChapter: currentChapter }));
       }
@@ -324,7 +335,16 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, togglePlayPause, skip, handleVolumeChange, state.volume, toggleMute, toggleFullscreen, state.isFullscreen]);
+  }, [
+    isOpen,
+    togglePlayPause,
+    skip,
+    handleVolumeChange,
+    state.volume,
+    toggleMute,
+    toggleFullscreen,
+    state.isFullscreen,
+  ]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -338,17 +358,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={recording.title}
-      size="2xl"
-    >
-      <div 
+    <Modal isOpen={isOpen} onClose={onClose} title={recording.title} size="2xl">
+      <div
         ref={containerRef}
         className="relative bg-black rounded-lg overflow-hidden"
         onMouseMove={showControls}
-        onMouseLeave={() => setState(prev => ({ ...prev, showControls: false }))}
+        onMouseLeave={() =>
+          setState(prev => ({ ...prev, showControls: false }))
+        }
       >
         {/* Video Element */}
         <video
@@ -360,7 +377,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           onClick={togglePlayPause}
         >
           {/* Captions */}
-          {recording.captions?.map((caption) => (
+          {recording.captions?.map(caption => (
             <track
               key={caption.id}
               kind="subtitles"
@@ -388,7 +405,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <div className="text-white text-center">
               <p className="text-lg mb-4">{state.error}</p>
               <button
-                onClick={() => setState(prev => ({ ...prev, error: null, isLoading: true }))}
+                onClick={() =>
+                  setState(prev => ({ ...prev, error: null, isLoading: true }))
+                }
                 className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
               >
                 Retry
@@ -402,7 +421,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent">
             {/* Top Controls */}
             <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center">
-              <h3 className="text-white font-semibold truncate">{recording.title}</h3>
+              <h3 className="text-white font-semibold truncate">
+                {recording.title}
+              </h3>
               <button
                 onClick={onClose}
                 className="text-white hover:text-gray-300 p-2"
@@ -434,7 +455,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   min="0"
                   max={state.duration || 0}
                   value={state.currentTime}
-                  onChange={(e) => handleSeek(Number(e.target.value))}
+                  onChange={e => handleSeek(Number(e.target.value))}
                   className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
                   aria-label="Video progress"
                 />
@@ -493,7 +514,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                       max="1"
                       step="0.1"
                       value={state.isMuted ? 0 : state.volume}
-                      onChange={(e) => handleVolumeChange(Number(e.target.value))}
+                      onChange={e => handleVolumeChange(Number(e.target.value))}
                       className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
                       aria-label="Volume"
                     />
@@ -501,7 +522,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
                   {/* Time Display */}
                   <span className="text-white text-sm">
-                    {formatTime(state.currentTime)} / {formatTime(state.duration)}
+                    {formatTime(state.currentTime)} /{' '}
+                    {formatTime(state.duration)}
                   </span>
                 </div>
 
@@ -509,7 +531,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   {/* Settings */}
                   <div className="relative">
                     <button
-                      onClick={() => setState(prev => ({ ...prev, showSettings: !prev.showSettings }))}
+                      onClick={() =>
+                        setState(prev => ({
+                          ...prev,
+                          showSettings: !prev.showSettings,
+                        }))
+                      }
                       className="text-white hover:text-gray-300 p-1"
                       aria-label="Settings"
                     >
@@ -524,10 +551,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                             <label className="block mb-1">Playback Speed</label>
                             <select
                               value={state.playbackRate}
-                              onChange={(e) => handlePlaybackRateChange(Number(e.target.value))}
+                              onChange={e =>
+                                handlePlaybackRateChange(Number(e.target.value))
+                              }
                               className="w-full bg-gray-700 text-white rounded px-2 py-1 text-sm"
                             >
-                              {playbackRates.map((rate) => (
+                              {playbackRates.map(rate => (
                                 <option key={rate} value={rate}>
                                   {rate}x
                                 </option>
@@ -543,7 +572,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   <button
                     onClick={toggleFullscreen}
                     className="text-white hover:text-gray-300 p-1"
-                    aria-label={state.isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                    aria-label={
+                      state.isFullscreen
+                        ? 'Exit fullscreen'
+                        : 'Enter fullscreen'
+                    }
                   >
                     {state.isFullscreen ? (
                       <ArrowsPointingInIcon className="w-5 h-5" />
@@ -575,9 +608,13 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h5 className="font-medium text-gray-900">{chapter.title}</h5>
+                    <h5 className="font-medium text-gray-900">
+                      {chapter.title}
+                    </h5>
                     {chapter.description && (
-                      <p className="text-sm text-gray-600 mt-1">{chapter.description}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {chapter.description}
+                      </p>
                     )}
                   </div>
                   <span className="text-sm text-gray-500 ml-2">

@@ -11,7 +11,7 @@ export const FocusTrap: React.FC<FocusTrapProps> = ({
   children,
   isActive,
   restoreFocus = true,
-  initialFocus
+  initialFocus,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
@@ -49,7 +49,7 @@ export const FocusTrap: React.FC<FocusTrapProps> = ({
 
     return () => {
       clearTimeout(timeoutId);
-      
+
       // Restore focus to previously focused element
       if (restoreFocus && previousActiveElement.current) {
         previousActiveElement.current.focus();
@@ -64,7 +64,7 @@ export const FocusTrap: React.FC<FocusTrapProps> = ({
       if (event.key !== 'Tab' || !containerRef.current) return;
 
       const focusableElements = getFocusableElements(containerRef.current);
-      
+
       if (focusableElements.length === 0) return;
 
       const firstElement = focusableElements[0];
@@ -105,11 +105,13 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
     'select:not([disabled])',
     'textarea:not([disabled])',
     '[tabindex]:not([tabindex="-1"])',
-    '[contenteditable="true"]'
+    '[contenteditable="true"]',
   ].join(', ');
 
-  const elements = Array.from(container.querySelectorAll(focusableSelectors)) as HTMLElement[];
-  
+  const elements = Array.from(
+    container.querySelectorAll(focusableSelectors)
+  ) as HTMLElement[];
+
   return elements.filter(element => {
     // Check if element is visible and not hidden
     const style = window.getComputedStyle(element);

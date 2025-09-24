@@ -1,13 +1,13 @@
 // Comprehensive notification service for the Parents Madrasa Portal
-import { 
-  AppNotification, 
-  NotificationType, 
-  NotificationPreferences, 
+import {
+  AppNotification,
+  _NotificationType,
+  NotificationPreferences,
   PushNotificationPayload,
   NotificationPermissionState,
   ScheduledNotification,
-  NotificationData,
-  NOTIFICATION_TRANSLATIONS
+  _NotificationData,
+  NOTIFICATION_TRANSLATIONS,
 } from '../types/notification';
 import { mobileNotificationManager } from '../utils/mobileNotificationManager';
 
@@ -27,10 +27,12 @@ class NotificationService {
     examReminders: true,
     announcements: true,
     vibration: true,
-    sound: true
+    sound: true,
   };
   private listeners: Array<(notifications: AppNotification[]) => void> = [];
-  private permissionListeners: Array<(permission: NotificationPermissionState) => void> = [];
+  private permissionListeners: Array<
+    (permission: NotificationPermissionState) => void
+  > = [];
 
   constructor() {
     this.loadPreferences();
@@ -43,7 +45,7 @@ class NotificationService {
     if ('serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('Service Worker registered:', registration);
+        console.warn('Service Worker registered:', registration);
       } catch (error) {
         console.error('Service Worker registration failed:', error);
       }
@@ -60,16 +62,16 @@ class NotificationService {
     try {
       const permission = await Notification.requestPermission();
       const permissionState = this.getPermissionState();
-      
+
       // Notify listeners about permission change
       this.permissionListeners.forEach(listener => listener(permissionState));
-      
+
       if (permission === 'granted') {
-        console.log('Notification permission granted');
+        console.warn('Notification permission granted');
         await this.initializeFirebaseMessaging();
         return true;
       } else {
-        console.log('Notification permission denied');
+        console.warn('Notification permission denied');
         return false;
       }
     } catch (error) {
@@ -82,12 +84,12 @@ class NotificationService {
   getPermissionState(): NotificationPermissionState {
     const supported = 'Notification' in window;
     const permission = supported ? Notification.permission : 'denied';
-    
+
     return {
       granted: permission === 'granted',
       denied: permission === 'denied',
       default: permission === 'default',
-      supported
+      supported,
     };
   }
 
@@ -104,21 +106,23 @@ class NotificationService {
       });
       
       if (token) {
-        console.log('FCM token:', token);
+        console.warn('FCM token:', token);
         // Store token for server-side notifications
         localStorage.setItem('fcm_token', token);
       }
       
       // Listen for foreground messages
       onMessage(messaging, (payload) => {
-        console.log('Foreground message received:', payload);
+        console.warn('Foreground message received:', payload);
         this.handleForegroundMessage(payload);
       });
     } catch (error) {
       console.error('Error initializing Firebase messaging:', error);
     }
     */
-    console.log('Firebase messaging disabled - using browser notifications only');
+    console.warn(
+      'Firebase messaging disabled - using browser notifications only'
+    );
   }
 
   // Handle foreground FCM messages
@@ -133,7 +137,7 @@ class NotificationService {
       timestamp: new Date(),
       read: false,
       priority: payload.data?.priority || 'medium',
-      data: payload.data
+      data: payload.data,
     };
 
     this.addNotification(notification);
@@ -141,7 +145,11 @@ class NotificationService {
   }
 
   // Schedule class reminder notification (15 minutes before)
-  scheduleClassReminder(classId: string, classTitle: string, scheduledTime: Date): void {
+  scheduleClassReminder(
+    classId: string,
+    classTitle: string,
+    scheduledTime: Date
+  ): void {
     if (!this.preferences.classReminders) return;
 
     const reminderTime = new Date(scheduledTime.getTime() - 15 * 60 * 1000); // 15 minutes before
@@ -163,8 +171,8 @@ class NotificationService {
       data: {
         classId,
         action: 'join_class',
-        url: '/live-class'
-      }
+        url: '/live-class',
+      },
     };
 
     const timeoutId = window.setTimeout(() => {
@@ -177,7 +185,7 @@ class NotificationService {
       id: notification.id,
       notification,
       scheduledTime: reminderTime,
-      timeoutId
+      timeoutId,
     };
 
     this.scheduledNotifications.push(scheduledNotification);
@@ -201,8 +209,8 @@ class NotificationService {
       data: {
         recordingId,
         action: 'view_recording',
-        url: '/recordings'
-      }
+        url: '/recordings',
+      },
     };
 
     this.sendPushNotification(notification);
@@ -226,8 +234,8 @@ class NotificationService {
       data: {
         noteId,
         action: 'view_notes',
-        url: '/notes-exercises'
-      }
+        url: '/notes-exercises',
+      },
     };
 
     this.sendPushNotification(notification);
@@ -251,8 +259,8 @@ class NotificationService {
       data: {
         examId,
         action: 'view_exam',
-        url: '/exams-attendance'
-      }
+        url: '/exams-attendance',
+      },
     };
 
     this.sendPushNotification(notification);
@@ -260,7 +268,12 @@ class NotificationService {
   }
 
   // Send general announcement notification
-  notifyAnnouncement(title: string, message: string, malayalamTitle?: string, malayalamMessage?: string): void {
+  notifyAnnouncement(
+    title: string,
+    message: string,
+    malayalamTitle?: string,
+    malayalamMessage?: string
+  ): void {
     if (!this.preferences.announcements) return;
 
     const notification: AppNotification = {
@@ -268,11 +281,14 @@ class NotificationService {
       type: 'announcement',
       title: title || NOTIFICATION_TRANSLATIONS.announcement.title,
       message: message || NOTIFICATION_TRANSLATIONS.announcement.template,
-      malayalamTitle: malayalamTitle || NOTIFICATION_TRANSLATIONS.announcement.malayalamTitle,
-      malayalamMessage: malayalamMessage || NOTIFICATION_TRANSLATIONS.announcement.malayalamTemplate,
+      malayalamTitle:
+        malayalamTitle || NOTIFICATION_TRANSLATIONS.announcement.malayalamTitle,
+      malayalamMessage:
+        malayalamMessage ||
+        NOTIFICATION_TRANSLATIONS.announcement.malayalamTemplate,
       timestamp: new Date(),
       read: false,
-      priority: 'medium'
+      priority: 'medium',
     };
 
     this.sendPushNotification(notification);
@@ -280,9 +296,11 @@ class NotificationService {
   }
 
   // Send push notification using mobile-optimized approach
-  private async sendPushNotification(notification: AppNotification): Promise<void> {
+  private async sendPushNotification(
+    notification: AppNotification
+  ): Promise<void> {
     const permissionState = this.getPermissionState();
-    
+
     if (!permissionState.granted) {
       console.warn('Cannot send push notification: permission not granted');
       // Still show in-app notification for mobile users
@@ -295,7 +313,7 @@ class NotificationService {
           priority: notification.priority,
           vibrate: this.preferences.vibration,
           sound: this.preferences.sound,
-          persistent: notification.priority === 'high'
+          persistent: notification.priority === 'high',
         }
       );
       return;
@@ -304,7 +322,7 @@ class NotificationService {
     try {
       // Check if mobile device and use appropriate method
       const mobileInfo = mobileNotificationManager.getMobileInfo();
-      
+
       if (mobileInfo.isIOS || mobileInfo.isAndroid) {
         // Use mobile-optimized notification
         const success = await mobileNotificationManager.sendMobileNotification(
@@ -316,12 +334,12 @@ class NotificationService {
             priority: notification.priority,
             vibrate: this.preferences.vibration,
             sound: this.preferences.sound,
-            persistent: notification.priority === 'high'
+            persistent: notification.priority === 'high',
           }
         );
-        
+
         if (success) {
-          console.log('✅ Mobile notification sent successfully');
+          console.warn('✅ Mobile notification sent successfully');
           return;
         }
       }
@@ -336,7 +354,7 @@ class NotificationService {
         tag: notification.type,
         requireInteraction: notification.priority === 'high',
         vibrate: this.preferences.vibration ? [200, 100, 200] : undefined,
-        silent: !this.preferences.sound
+        silent: !this.preferences.sound,
       };
 
       const browserNotification = new Notification(payload.title, {
@@ -347,7 +365,7 @@ class NotificationService {
         tag: payload.tag,
         requireInteraction: payload.requireInteraction,
         vibrate: payload.vibrate,
-        silent: payload.silent
+        silent: payload.silent,
       });
 
       // Handle notification click
@@ -362,7 +380,6 @@ class NotificationService {
           browserNotification.close();
         }, 5000);
       }
-
     } catch (error) {
       console.error('Error sending push notification:', error);
       // Fallback to in-app notification
@@ -374,7 +391,7 @@ class NotificationService {
           malayalamMessage: notification.malayalamMessage,
           priority: notification.priority,
           vibrate: this.preferences.vibration,
-          sound: this.preferences.sound
+          sound: this.preferences.sound,
         }
       );
     }
@@ -404,7 +421,7 @@ class NotificationService {
   // Add notification to local storage and notify listeners
   private addNotification(notification: AppNotification): void {
     this.notifications.unshift(notification);
-    
+
     // Keep only last 50 notifications
     if (this.notifications.length > 50) {
       this.notifications = this.notifications.slice(0, 50);
@@ -436,7 +453,7 @@ class NotificationService {
 
   // Mark all notifications as read
   markAllAsRead(): void {
-    this.notifications.forEach(n => n.read = true);
+    this.notifications.forEach(n => (n.read = true));
     this.saveNotifications();
     this.notifyListeners();
   }
@@ -450,7 +467,9 @@ class NotificationService {
 
   // Remove specific notification
   removeNotification(notificationId: string): void {
-    this.notifications = this.notifications.filter(n => n.id !== notificationId);
+    this.notifications = this.notifications.filter(
+      n => n.id !== notificationId
+    );
     this.saveNotifications();
     this.notifyListeners();
   }
@@ -469,7 +488,7 @@ class NotificationService {
   // Subscribe to notification updates
   subscribe(listener: (notifications: AppNotification[]) => void): () => void {
     this.listeners.push(listener);
-    
+
     // Return unsubscribe function
     return () => {
       this.listeners = this.listeners.filter(l => l !== listener);
@@ -477,12 +496,16 @@ class NotificationService {
   }
 
   // Subscribe to permission updates
-  subscribeToPermission(listener: (permission: NotificationPermissionState) => void): () => void {
+  subscribeToPermission(
+    listener: (permission: NotificationPermissionState) => void
+  ): () => void {
     this.permissionListeners.push(listener);
-    
+
     // Return unsubscribe function
     return () => {
-      this.permissionListeners = this.permissionListeners.filter(l => l !== listener);
+      this.permissionListeners = this.permissionListeners.filter(
+        l => l !== listener
+      );
     };
   }
 
@@ -492,7 +515,9 @@ class NotificationService {
   }
 
   private removeScheduledNotification(notificationId: string): void {
-    const index = this.scheduledNotifications.findIndex(sn => sn.id === notificationId);
+    const index = this.scheduledNotifications.findIndex(
+      sn => sn.id === notificationId
+    );
     if (index !== -1) {
       const scheduledNotification = this.scheduledNotifications[index];
       if (scheduledNotification.timeoutId) {
@@ -520,7 +545,7 @@ class NotificationService {
           ...n,
           timestamp: new Date(n.timestamp),
           scheduledFor: n.scheduledFor ? new Date(n.scheduledFor) : undefined,
-          expiresAt: n.expiresAt ? new Date(n.expiresAt) : undefined
+          expiresAt: n.expiresAt ? new Date(n.expiresAt) : undefined,
         }));
       }
     } catch (error) {
@@ -531,7 +556,10 @@ class NotificationService {
 
   private savePreferences(): void {
     try {
-      localStorage.setItem('notification_preferences', JSON.stringify(this.preferences));
+      localStorage.setItem(
+        'notification_preferences',
+        JSON.stringify(this.preferences)
+      );
     } catch (error) {
       console.error('Error saving notification preferences:', error);
     }
@@ -553,7 +581,7 @@ class NotificationService {
       const toSave = this.scheduledNotifications.map(sn => ({
         id: sn.id,
         notification: sn.notification,
-        scheduledTime: sn.scheduledTime
+        scheduledTime: sn.scheduledTime,
       }));
       localStorage.setItem('scheduled_notifications', JSON.stringify(toSave));
     } catch (error) {

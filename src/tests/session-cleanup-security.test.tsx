@@ -1,6 +1,6 @@
 /**
  * Session Cleanup and Security Measures Test
- * 
+ *
  * This test verifies task 6 requirements:
  * - Ensure complete removal of all user data from localStorage
  * - Verify AuthContext state is properly reset to null
@@ -45,7 +45,7 @@ const locationMock = {
   href: '',
   pathname: '/',
 };
-Object.defineProperty(window, 'location', { 
+Object.defineProperty(window, 'location', {
   value: locationMock,
   writable: true,
 });
@@ -60,7 +60,7 @@ const consoleSpy = {
 // Test components
 const TestAuthComponent: React.FC = () => {
   const { user, logout, loading, error } = useAuth();
-  
+
   return (
     <div>
       <div data-testid="user-state">{user ? JSON.stringify(user) : 'null'}</div>
@@ -123,7 +123,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('Session Cleanup and Security Measures', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Reset mocks
     localStorageMock.getItem.mockClear();
     localStorageMock.setItem.mockClear();
@@ -131,21 +131,21 @@ describe('Session Cleanup and Security Measures', () => {
     localStorageMock.clear.mockClear();
     localStorageMock.key.mockClear();
     localStorageMock.length = 0;
-    
+
     sessionStorageMock.getItem.mockClear();
     sessionStorageMock.setItem.mockClear();
     sessionStorageMock.removeItem.mockClear();
     sessionStorageMock.clear.mockClear();
     sessionStorageMock.key.mockClear();
     sessionStorageMock.length = 0;
-    
+
     historyMock.replaceState.mockClear();
     historyMock.pushState.mockClear();
-    
+
     consoleSpy.log.mockClear();
     consoleSpy.warn.mockClear();
     consoleSpy.error.mockClear();
-    
+
     locationMock.href = '';
     locationMock.pathname = '/';
   });
@@ -165,9 +165,9 @@ describe('Session Cleanup and Security Measures', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
-      
+
       // Mock localStorage with various auth-related keys
       const mockKeys = [
         'manualAuthUser',
@@ -178,9 +178,9 @@ describe('Session Cleanup and Security Measures', () => {
         'userPreferences',
         'sessionData',
       ];
-      
+
       localStorageMock.length = mockKeys.length;
-      localStorageMock.key.mockImplementation((index) => mockKeys[index] || null);
+      localStorageMock.key.mockImplementation(index => mockKeys[index] || null);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -195,18 +195,26 @@ describe('Session Cleanup and Security Measures', () => {
       });
 
       // Verify comprehensive cleanup
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('authUser');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('userSession');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('authToken');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('userPreferences');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'userPreferences'
+      );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('sessionData');
-      
+
       // Verify sessionStorage cleanup
-      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('authUser');
-      
-      console.log('✅ Complete localStorage and sessionStorage cleanup verified');
+
+      console.warn(
+        '✅ Complete localStorage and sessionStorage cleanup verified'
+      );
     });
 
     it('should use nuclear cleanup when individual key removal fails', async () => {
@@ -229,9 +237,11 @@ describe('Session Cleanup and Security Measures', () => {
       // Verify nuclear cleanup was attempted
       expect(localStorageMock.clear).toHaveBeenCalled();
       expect(sessionStorageMock.clear).toHaveBeenCalled();
-      expect(consoleSpy.warn).toHaveBeenCalledWith('Attempting nuclear cleanup of all storage');
+      expect(consoleSpy.warn).toHaveBeenCalledWith(
+        'Attempting nuclear cleanup of all storage'
+      );
 
-      console.log('✅ Nuclear cleanup fallback mechanism verified');
+      console.warn('✅ Nuclear cleanup fallback mechanism verified');
     });
 
     it('should scan and remove keys containing auth-related terms', async () => {
@@ -244,9 +254,9 @@ describe('Session Cleanup and Security Measures', () => {
         'authentication_state',
         'user_profile_cache',
       ];
-      
+
       localStorageMock.length = mockKeys.length;
-      localStorageMock.key.mockImplementation((index) => mockKeys[index] || null);
+      localStorageMock.key.mockImplementation(index => mockKeys[index] || null);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -255,16 +265,28 @@ describe('Session Cleanup and Security Measures', () => {
       });
 
       // Verify auth-related keys were identified and removed
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('app_auth_token');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('user_session_data');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('login_timestamp');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('authentication_state');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('user_profile_cache');
-      
-      // Verify non-auth key was not removed
-      expect(localStorageMock.removeItem).not.toHaveBeenCalledWith('some_random_key');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'app_auth_token'
+      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'user_session_data'
+      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'login_timestamp'
+      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'authentication_state'
+      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'user_profile_cache'
+      );
 
-      console.log('✅ Auth-related key scanning and removal verified');
+      // Verify non-auth key was not removed
+      expect(localStorageMock.removeItem).not.toHaveBeenCalledWith(
+        'some_random_key'
+      );
+
+      console.warn('✅ Auth-related key scanning and removal verified');
     });
   });
 
@@ -279,7 +301,7 @@ describe('Session Cleanup and Security Measures', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -303,7 +325,7 @@ describe('Session Cleanup and Security Measures', () => {
       expect(result.current.error).toBeNull();
       expect(result.current.loading).toBe(false);
 
-      console.log('✅ AuthContext state properly reset to null verified');
+      console.warn('✅ AuthContext state properly reset to null verified');
     });
 
     it('should force user state to null even if logout fails', async () => {
@@ -325,9 +347,11 @@ describe('Session Cleanup and Security Measures', () => {
 
       // Verify user state is still reset to null for security
       expect(result.current.user).toBeNull();
-      expect(consoleSpy.log).toHaveBeenCalledWith('Forced user state cleanup completed');
+      expect(consoleSpy.log).toHaveBeenCalledWith(
+        'Forced user state cleanup completed'
+      );
 
-      console.log('✅ Forced user state reset on logout failure verified');
+      console.warn('✅ Forced user state reset on logout failure verified');
     });
 
     it('should verify user state consistency and force logout if corrupted', async () => {
@@ -336,7 +360,7 @@ describe('Session Cleanup and Security Measures', () => {
         uid: '', // Missing required property
         displayName: 'Test User',
       };
-      
+
       localStorageMock.getItem.mockReturnValue(JSON.stringify(corruptedUser));
 
       render(<TestApp />);
@@ -344,10 +368,14 @@ describe('Session Cleanup and Security Measures', () => {
       await waitFor(() => {
         // Should redirect to auth due to corrupted user data
         expect(locationMock.href).toBe('/auth');
-        expect(consoleSpy.warn).toHaveBeenCalledWith('User object missing required properties, forcing logout');
+        expect(consoleSpy.warn).toHaveBeenCalledWith(
+          'User object missing required properties, forcing logout'
+        );
       });
 
-      console.log('✅ User data integrity verification and forced logout verified');
+      console.warn(
+        '✅ User data integrity verification and forced logout verified'
+      );
     });
   });
 
@@ -364,7 +392,7 @@ describe('Session Cleanup and Security Measures', () => {
         expect(screen.queryByTestId('protected-page')).not.toBeInTheDocument();
       });
 
-      console.log('✅ Protected route redirect to auth verified');
+      console.warn('✅ Protected route redirect to auth verified');
     });
 
     it('should redirect to auth after successful logout from protected route', async () => {
@@ -377,7 +405,7 @@ describe('Session Cleanup and Security Measures', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
 
       render(<TestApp initialPath="/test-auth" />);
@@ -397,7 +425,9 @@ describe('Session Cleanup and Security Measures', () => {
         expect(screen.queryByTestId('protected-page')).not.toBeInTheDocument();
       });
 
-      console.log('✅ Redirect to auth after logout from protected route verified');
+      console.warn(
+        '✅ Redirect to auth after logout from protected route verified'
+      );
     });
 
     it('should clear session data before redirecting to auth', async () => {
@@ -408,12 +438,16 @@ describe('Session Cleanup and Security Measures', () => {
 
       await waitFor(() => {
         // Should clear any remaining session data
-        expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
-        expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+        expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+          'manualAuthUser'
+        );
+        expect(sessionStorageMock.removeItem).toHaveBeenCalledWith(
+          'manualAuthUser'
+        );
         expect(screen.getByTestId('auth-page')).toBeInTheDocument();
       });
 
-      console.log('✅ Session data cleanup before auth redirect verified');
+      console.warn('✅ Session data cleanup before auth redirect verified');
     });
   });
 
@@ -421,7 +455,7 @@ describe('Session Cleanup and Security Measures', () => {
     it('should set up popstate listener to prevent back-button access', async () => {
       // Setup: Mock addEventListener
       const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
-      
+
       // No authenticated user
       localStorageMock.getItem.mockReturnValue(null);
 
@@ -429,10 +463,15 @@ describe('Session Cleanup and Security Measures', () => {
 
       await waitFor(() => {
         // Should set up popstate listener
-        expect(addEventListenerSpy).toHaveBeenCalledWith('popstate', expect.any(Function));
+        expect(addEventListenerSpy).toHaveBeenCalledWith(
+          'popstate',
+          expect.any(Function)
+        );
       });
 
-      console.log('✅ Popstate listener setup for back-button protection verified');
+      console.warn(
+        '✅ Popstate listener setup for back-button protection verified'
+      );
     });
 
     it('should replace history state to prevent back navigation', async () => {
@@ -443,21 +482,29 @@ describe('Session Cleanup and Security Measures', () => {
 
       await waitFor(() => {
         // Should replace history state
-        expect(historyMock.replaceState).toHaveBeenCalledWith(null, '', '/auth');
+        expect(historyMock.replaceState).toHaveBeenCalledWith(
+          null,
+          '',
+          '/auth'
+        );
       });
 
-      console.log('✅ History state replacement for back-button protection verified');
+      console.warn(
+        '✅ History state replacement for back-button protection verified'
+      );
     });
 
     it('should handle popstate events and redirect to auth', async () => {
       // Setup: Mock popstate event
       let popstateHandler: ((event: PopStateEvent) => void) | null = null;
-      
-      vi.spyOn(window, 'addEventListener').mockImplementation((event, handler) => {
-        if (event === 'popstate') {
-          popstateHandler = handler as (event: PopStateEvent) => void;
+
+      vi.spyOn(window, 'addEventListener').mockImplementation(
+        (event, handler) => {
+          if (event === 'popstate') {
+            popstateHandler = handler as (event: PopStateEvent) => void;
+          }
         }
-      });
+      );
 
       // No authenticated user
       localStorageMock.getItem.mockReturnValue(null);
@@ -478,21 +525,23 @@ describe('Session Cleanup and Security Measures', () => {
       // Should redirect to auth
       expect(locationMock.href).toBe('/auth');
 
-      console.log('✅ Popstate event handling and auth redirect verified');
+      console.warn('✅ Popstate event handling and auth redirect verified');
     });
 
     it('should verify localStorage consistency and force logout on mismatch', async () => {
       // Setup: User in context but different user in localStorage
-      const contextUser = allowedUsers[0];
+      const _contextUser = allowedUsers[0];
       const storageUser = allowedUsers[1]; // Different user
-      
-      localStorageMock.getItem.mockReturnValue(JSON.stringify({
-        uid: storageUser.uid,
-        displayName: storageUser.displayName,
-        phone: storageUser.phoneNumber,
-        email: storageUser.email,
-        role: storageUser.role,
-      }));
+
+      localStorageMock.getItem.mockReturnValue(
+        JSON.stringify({
+          uid: storageUser.uid,
+          displayName: storageUser.displayName,
+          phone: storageUser.phoneNumber,
+          email: storageUser.email,
+          role: storageUser.role,
+        })
+      );
 
       // Mock the auth context to return the first user
       const TestComponentWithMismatch: React.FC = () => {
@@ -503,7 +552,7 @@ describe('Session Cleanup and Security Measures', () => {
             // This should trigger the mismatch detection
           }
         }, [auth.user]);
-        
+
         return <div data-testid="test-component">Test</div>;
       };
 
@@ -524,7 +573,9 @@ describe('Session Cleanup and Security Measures', () => {
         );
       });
 
-      console.log('✅ User data consistency verification and forced logout verified');
+      console.warn(
+        '✅ User data consistency verification and forced logout verified'
+      );
     });
   });
 
@@ -539,13 +590,13 @@ describe('Session Cleanup and Security Measures', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
-      
+
       // Mock various auth-related keys
       const mockKeys = ['manualAuthUser', 'authToken', 'userSession'];
       localStorageMock.length = mockKeys.length;
-      localStorageMock.key.mockImplementation((index) => mockKeys[index] || null);
+      localStorageMock.key.mockImplementation(index => mockKeys[index] || null);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -565,18 +616,24 @@ describe('Session Cleanup and Security Measures', () => {
       // Verify complete security cleanup
       expect(result.current.user).toBeNull();
       expect(result.current.error).toBeNull();
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('authToken');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('userSession');
-      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
-      expect(consoleSpy.log).toHaveBeenCalledWith('Manual logout successful - complete session cleanup performed');
+      expect(sessionStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
+      expect(consoleSpy.log).toHaveBeenCalledWith(
+        'Manual logout successful - complete session cleanup performed'
+      );
 
-      console.log('✅ Complete security cleanup flow verified');
+      console.warn('✅ Complete security cleanup flow verified');
     });
 
     it('should handle edge cases and maintain security', async () => {
       // Setup: Various edge cases
-      localStorageMock.getItem.mockImplementation((key) => {
+      localStorageMock.getItem.mockImplementation(key => {
         if (key === 'manualAuthUser') {
           return 'invalid-json'; // Corrupted data
         }
@@ -588,10 +645,12 @@ describe('Session Cleanup and Security Measures', () => {
       await waitFor(() => {
         // Should handle corrupted data gracefully and redirect to auth
         expect(screen.getByTestId('auth-page')).toBeInTheDocument();
-        expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+        expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+          'manualAuthUser'
+        );
       });
 
-      console.log('✅ Edge case handling and security maintenance verified');
+      console.warn('✅ Edge case handling and security maintenance verified');
     });
   });
 });

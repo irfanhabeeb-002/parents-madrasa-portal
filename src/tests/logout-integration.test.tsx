@@ -1,14 +1,14 @@
 /**
  * Logout Integration Tests
- * 
+ *
  * End-to-end integration tests for the complete logout flow
  * Testing the interaction between Profile component and AuthContext
- * 
+ *
  * Requirements covered: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 3.1, 3.2, 3.3, 3.4
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, _fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
@@ -91,17 +91,23 @@ describe('Logout Integration Tests', () => {
       renderProfile();
 
       // Step 1: Click logout button
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       expect(logoutButton).toBeInTheDocument();
       await user.click(logoutButton);
 
       // Step 2: Verify confirmation dialog appears
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('Confirm Logout')).toBeInTheDocument();
-      expect(screen.getByText(/are you sure you want to logout/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/are you sure you want to logout/i)
+      ).toBeInTheDocument();
 
       // Step 3: Confirm logout
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Step 4: Verify logout function is called
@@ -113,23 +119,30 @@ describe('Logout Integration Tests', () => {
       });
 
       // Step 6: Verify navigation occurs
-      await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/auth');
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(mockNavigate).toHaveBeenCalledWith('/auth');
+        },
+        { timeout: 2000 }
+      );
     });
 
     it('should handle logout cancellation properly', async () => {
       renderProfile();
 
       // Click logout button
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
       // Verify dialog is open
       expect(screen.getByRole('dialog')).toBeInTheDocument();
 
       // Cancel logout
-      const cancelButton = screen.getByRole('button', { name: /cancel logout/i });
+      const cancelButton = screen.getByRole('button', {
+        name: /cancel logout/i,
+      });
       await user.click(cancelButton);
 
       // Verify dialog is closed and logout was not called
@@ -140,15 +153,19 @@ describe('Logout Integration Tests', () => {
 
     it('should show loading states during logout process', async () => {
       // Mock logout with delay
-      mockLogout.mockImplementation(() => 
-        new Promise(resolve => setTimeout(resolve, 200))
+      mockLogout.mockImplementation(
+        () => new Promise(resolve => setTimeout(resolve, 200))
       );
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Verify loading state
@@ -157,7 +174,9 @@ describe('Logout Integration Tests', () => {
       });
 
       // Verify loading button state
-      const loadingButton = screen.getByRole('button', { name: /logging out, please wait/i });
+      const loadingButton = screen.getByRole('button', {
+        name: /logging out, please wait/i,
+      });
       expect(loadingButton).toBeDisabled();
 
       // Wait for completion
@@ -173,10 +192,14 @@ describe('Logout Integration Tests', () => {
       mockLogout.mockRejectedValue(new Error(errorMessage));
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Verify error message appears
@@ -186,8 +209,12 @@ describe('Logout Integration Tests', () => {
       });
 
       // Verify recovery options are available
-      expect(screen.getByRole('button', { name: /retry logout/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /force logout/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /retry logout/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /force logout/i })
+      ).toBeInTheDocument();
     });
 
     it('should handle retry functionality', async () => {
@@ -195,13 +222,17 @@ describe('Logout Integration Tests', () => {
       mockLogout
         .mockRejectedValueOnce(new Error('Temporary network error'))
         .mockResolvedValueOnce(undefined);
-      
+
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Wait for error
@@ -225,10 +256,14 @@ describe('Logout Integration Tests', () => {
       mockLogout.mockRejectedValue(new Error('Persistent error'));
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Wait for error
@@ -252,25 +287,38 @@ describe('Logout Integration Tests', () => {
     });
 
     it('should display enhanced error messages with actionable guidance', async () => {
-      const enhancedError = new Error('Unable to clear session data from your browser. Try refreshing the page or clearing your browser cache, then attempt logout again.');
+      const enhancedError = new Error(
+        'Unable to clear session data from your browser. Try refreshing the page or clearing your browser cache, then attempt logout again.'
+      );
       enhancedError.name = 'LogoutError';
-      (enhancedError as any).actionableGuidance = 'Try refreshing the page or clearing your browser cache, then attempt logout again.';
+      (enhancedError as any).actionableGuidance =
+        'Try refreshing the page or clearing your browser cache, then attempt logout again.';
       (enhancedError as any).retryCount = 2;
 
       mockLogout.mockRejectedValue(enhancedError);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Verify enhanced error display
       await waitFor(() => {
-        expect(screen.getByText('Logout Failed (3 attempts)')).toBeInTheDocument();
-        expect(screen.getByText(/unable to clear session data/i)).toBeInTheDocument();
-        expect(screen.getByText(/try refreshing the page/i)).toBeInTheDocument();
+        expect(
+          screen.getByText('Logout Failed (3 attempts)')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/unable to clear session data/i)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/try refreshing the page/i)
+        ).toBeInTheDocument();
       });
 
       // Verify help section
@@ -283,26 +331,40 @@ describe('Logout Integration Tests', () => {
     it('should provide proper confirmation dialog messaging', async () => {
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
       // Verify comprehensive dialog content
       expect(screen.getByText('Confirm Logout')).toBeInTheDocument();
-      expect(screen.getByText(/are you sure you want to logout/i)).toBeInTheDocument();
-      expect(screen.getByText(/you will be signed out of your account/i)).toBeInTheDocument();
-      expect(screen.getByText(/you'll need to enter your credentials again/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/are you sure you want to logout/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/you will be signed out of your account/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/you'll need to enter your credentials again/i)
+      ).toBeInTheDocument();
 
       // Verify button labels
-      expect(screen.getByRole('button', { name: /yes, logout/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /yes, logout/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /cancel/i })
+      ).toBeInTheDocument();
     });
 
     it('should handle multiple rapid clicks gracefully', async () => {
       mockLogout.mockResolvedValue(undefined);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Rapid clicks
       await user.click(logoutButton);
       await user.click(logoutButton);
@@ -312,8 +374,10 @@ describe('Logout Integration Tests', () => {
       const dialogs = screen.getAllByRole('dialog');
       expect(dialogs).toHaveLength(1);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
-      
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
+
       // Rapid confirm clicks
       await user.click(confirmButton);
       await user.click(confirmButton);
@@ -326,31 +390,39 @@ describe('Logout Integration Tests', () => {
     });
 
     it('should maintain proper button states throughout the flow', async () => {
-      mockLogout.mockImplementation(() => 
-        new Promise(resolve => setTimeout(resolve, 100))
+      mockLogout.mockImplementation(
+        () => new Promise(resolve => setTimeout(resolve, 100))
       );
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Initial state
       expect(logoutButton).not.toBeDisabled();
       expect(logoutButton).toHaveTextContent('Logout');
 
       await user.click(logoutButton);
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // During logout
       await waitFor(() => {
-        const loadingButton = screen.getByRole('button', { name: /logging out, please wait/i });
+        const loadingButton = screen.getByRole('button', {
+          name: /logging out, please wait/i,
+        });
         expect(loadingButton).toBeDisabled();
         expect(loadingButton).toHaveTextContent('Logging out...');
       });
 
       // After success
       await waitFor(() => {
-        const successButton = screen.getByRole('button', { name: /logout successful/i });
+        const successButton = screen.getByRole('button', {
+          name: /logout successful/i,
+        });
         expect(successButton).toBeDisabled();
         expect(successButton).toHaveTextContent('Success!');
       });
@@ -362,26 +434,37 @@ describe('Logout Integration Tests', () => {
       mockLogout.mockResolvedValue(undefined);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Wait for navigation
-      await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/auth');
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(mockNavigate).toHaveBeenCalledWith('/auth');
+        },
+        { timeout: 2000 }
+      );
     });
 
     it('should not navigate when logout fails', async () => {
       mockLogout.mockRejectedValue(new Error('Logout failed'));
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Wait for error
@@ -397,10 +480,14 @@ describe('Logout Integration Tests', () => {
       mockLogout.mockRejectedValue(new Error('Force logout needed'));
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       await waitFor(() => {
@@ -422,23 +509,33 @@ describe('Logout Integration Tests', () => {
       mockLogout.mockResolvedValue(undefined);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
       // Check for confirmation announcement
-      expect(screen.getByText(/logout confirmation dialog opened/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/logout confirmation dialog opened/i)
+      ).toBeInTheDocument();
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Check for logout progress announcement
       await waitFor(() => {
-        expect(screen.getByText(/logging out, please wait/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/logging out, please wait/i)
+        ).toBeInTheDocument();
       });
 
       // Check for success announcement
       await waitFor(() => {
-        expect(screen.getByText(/logout successful.*redirecting/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/logout successful.*redirecting/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -446,29 +543,43 @@ describe('Logout Integration Tests', () => {
       mockLogout.mockRejectedValue(new Error('Network error'));
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Check for error announcement
       await waitFor(() => {
-        expect(screen.getByText(/logout failed.*retry and force logout options are available/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /logout failed.*retry and force logout options are available/i
+          )
+        ).toBeInTheDocument();
       });
     });
 
     it('should announce cancellation to screen readers', async () => {
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const cancelButton = screen.getByRole('button', { name: /cancel logout/i });
+      const cancelButton = screen.getByRole('button', {
+        name: /cancel logout/i,
+      });
       await user.click(cancelButton);
 
       // Check for cancellation announcement
-      expect(screen.getByText(/logout cancelled.*you remain logged in/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/logout cancelled.*you remain logged in/i)
+      ).toBeInTheDocument();
     });
   });
 });

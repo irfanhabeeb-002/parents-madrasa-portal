@@ -6,11 +6,9 @@ interface ScreenReaderAnnouncementProps {
   clearAfter?: number;
 }
 
-export const ScreenReaderAnnouncement: React.FC<ScreenReaderAnnouncementProps> = ({
-  message,
-  priority = 'polite',
-  clearAfter = 5000,
-}) => {
+export const ScreenReaderAnnouncement: React.FC<
+  ScreenReaderAnnouncementProps
+> = ({ message, priority = 'polite', clearAfter = 5000 }) => {
   const announcementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

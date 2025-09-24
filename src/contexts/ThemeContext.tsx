@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 
 type Theme = 'light' | 'dark' | 'auto';
 type EffectiveTheme = 'light' | 'dark';
@@ -25,7 +31,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   });
 
   const [systemTheme, setSystemTheme] = useState<EffectiveTheme>(() => {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
   });
 
   const [isHighContrast, setIsHighContrast] = useState(() => {
@@ -72,11 +80,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Apply theme to document
   useEffect(() => {
     const effectiveTheme = userTheme === 'auto' ? systemTheme : userTheme;
-    
+
     // Update document class for theme
     document.documentElement.classList.remove('light', 'dark');
     document.documentElement.classList.add(effectiveTheme);
-    
+
     // Update high contrast class
     if (isHighContrast) {
       document.documentElement.classList.add('high-contrast');
@@ -115,9 +123,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 };
 

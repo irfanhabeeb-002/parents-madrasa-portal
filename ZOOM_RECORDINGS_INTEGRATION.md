@@ -45,15 +45,24 @@ The `ZoomRecordingService` class handles all Zoom cloud recordings integration:
 ```typescript
 class ZoomRecordingService {
   // Core Methods
-  syncZoomRecordings(options?: SyncOptions): Promise<ApiResponse<Recording[]>>
-  getZoomRecordings(options?: PaginationOptions): Promise<ApiResponse<Recording[]>>
-  searchZoomRecordings(searchOptions: SearchOptions): Promise<ApiResponse<Recording[]>>
-  getZoomRecordingById(zoomRecordingId: string): Promise<ApiResponse<Recording | null>>
-  uploadManualRecording(file: File, metadata: RecordingMetadata): Promise<ApiResponse<Recording>>
-  
+  syncZoomRecordings(options?: SyncOptions): Promise<ApiResponse<Recording[]>>;
+  getZoomRecordings(
+    options?: PaginationOptions
+  ): Promise<ApiResponse<Recording[]>>;
+  searchZoomRecordings(
+    searchOptions: SearchOptions
+  ): Promise<ApiResponse<Recording[]>>;
+  getZoomRecordingById(
+    zoomRecordingId: string
+  ): Promise<ApiResponse<Recording | null>>;
+  uploadManualRecording(
+    file: File,
+    metadata: RecordingMetadata
+  ): Promise<ApiResponse<Recording>>;
+
   // Utility Methods
-  clearCache(): void
-  getSyncStatus(): SyncStatus
+  clearCache(): void;
+  getSyncStatus(): SyncStatus;
 }
 ```
 
@@ -68,20 +77,32 @@ class RecordingService {
     includeZoom?: boolean;
     zoomOnly?: boolean;
     // ... other options
-  }): Promise<ApiResponse<Recording[]>>
-  
-  static searchRecordings(searchOptions: SearchOptions, paginationOptions?: {
-    includeZoom?: boolean;
-    zoomOnly?: boolean;
-  }): Promise<ApiResponse<Recording[]>>
-  
+  }): Promise<ApiResponse<Recording[]>>;
+
+  static searchRecordings(
+    searchOptions: SearchOptions,
+    paginationOptions?: {
+      includeZoom?: boolean;
+      zoomOnly?: boolean;
+    }
+  ): Promise<ApiResponse<Recording[]>>;
+
   // New Zoom-specific Methods
-  static syncZoomRecordings(options?: SyncOptions): Promise<ApiResponse<Recording[]>>
-  static getZoomRecordings(options?: PaginationOptions): Promise<ApiResponse<Recording[]>>
-  static uploadManualRecording(file: File, metadata: RecordingMetadata): Promise<ApiResponse<Recording>>
-  static getZoomRecordingById(zoomRecordingId: string): Promise<ApiResponse<Recording | null>>
-  static clearZoomCache(): void
-  static getZoomSyncStatus(): SyncStatus
+  static syncZoomRecordings(
+    options?: SyncOptions
+  ): Promise<ApiResponse<Recording[]>>;
+  static getZoomRecordings(
+    options?: PaginationOptions
+  ): Promise<ApiResponse<Recording[]>>;
+  static uploadManualRecording(
+    file: File,
+    metadata: RecordingMetadata
+  ): Promise<ApiResponse<Recording>>;
+  static getZoomRecordingById(
+    zoomRecordingId: string
+  ): Promise<ApiResponse<Recording | null>>;
+  static clearZoomCache(): void;
+  static getZoomSyncStatus(): SyncStatus;
 }
 ```
 
@@ -95,7 +116,7 @@ graph TD
     D --> E[Cache in StorageService]
     E --> F[RecordingService.getRecordings()]
     F --> G[Recordings Page]
-    
+
     H[Manual Upload] --> I[ManualUpload Component]
     I --> J[ZoomRecordingService.uploadManualRecording()]
     J --> K[Firebase Storage Upload]
@@ -116,7 +137,7 @@ graph TD
 // Example usage
 const response = await RecordingService.syncZoomRecordings({
   from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
-  forceSync: true
+  forceSync: true,
 });
 ```
 
@@ -148,22 +169,22 @@ Zoom recordings are automatically converted to the application's Recording forma
 
 ```typescript
 interface Recording {
-  id: string;                    // Prefixed with 'zoom-' for Zoom recordings
-  classSessionId: string;        // Zoom meeting ID
-  title: string;                 // Zoom meeting topic
-  description: string;           // Auto-generated description
-  thumbnailUrl: string;          // Generated thumbnail URL
-  videoUrl: string;              // Zoom play URL or share URL
-  duration: number;              // Duration in seconds
-  fileSize: number;              // Total file size in bytes
-  quality: VideoQuality;         // Determined from file size and duration
-  format: VideoFormat;           // Extracted from recording files
-  tags: string[];                // Auto-extracted from meeting topic
+  id: string; // Prefixed with 'zoom-' for Zoom recordings
+  classSessionId: string; // Zoom meeting ID
+  title: string; // Zoom meeting topic
+  description: string; // Auto-generated description
+  thumbnailUrl: string; // Generated thumbnail URL
+  videoUrl: string; // Zoom play URL or share URL
+  duration: number; // Duration in seconds
+  fileSize: number; // Total file size in bytes
+  quality: VideoQuality; // Determined from file size and duration
+  format: VideoFormat; // Extracted from recording files
+  tags: string[]; // Auto-extracted from meeting topic
   metadata: {
-    zoomRecordingId: string;     // Original Zoom recording ID
-    zoomMeetingId: string;       // Zoom meeting ID
-    zoomMeetingUuid: string;     // Zoom meeting UUID
-    zoomShareUrl: string;        // Zoom share URL
+    zoomRecordingId: string; // Original Zoom recording ID
+    zoomMeetingId: string; // Zoom meeting ID
+    zoomMeetingUuid: string; // Zoom meeting UUID
+    zoomShareUrl: string; // Zoom share URL
     // ... other metadata
   };
 }
@@ -229,7 +250,7 @@ All UI elements include Malayalam translations:
 const sourceOptions = [
   { value: 'all', label: 'All Sources', malayalamLabel: 'എല്ലാ ഉറവിടങ്ങളും' },
   { value: 'zoom', label: 'Zoom Cloud', malayalamLabel: 'സൂം ക്ലൗഡ്' },
-  { value: 'local', label: 'Manual Upload', malayalamLabel: 'മാനുവൽ അപ്‌ലോഡ്' }
+  { value: 'local', label: 'Manual Upload', malayalamLabel: 'മാനുവൽ അപ്‌ലോഡ്' },
 ];
 ```
 
@@ -259,13 +280,13 @@ The integration includes methods for Zoom's REST API (currently mocked):
 const recordings = await zoomService.getRecordings(meetingId, {
   from: new Date('2024-01-01'),
   to: new Date(),
-  pageSize: 50
+  pageSize: 50,
 });
 
 // Search recordings
 const searchResults = await zoomService.searchRecordings('Arabic Grammar', {
   from: new Date('2024-01-01'),
-  pageSize: 20
+  pageSize: 20,
 });
 
 // Get specific recording

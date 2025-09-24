@@ -13,10 +13,10 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   lines = 1,
   className = '',
   width,
-  height
+  height,
 }) => {
   const baseClasses = 'animate-pulse bg-gray-200 rounded';
-  
+
   if (variant === 'text') {
     return (
       <div className={`space-y-2 ${className}`}>
@@ -25,7 +25,7 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
             key={index}
             className={`${baseClasses} h-4`}
             style={{
-              width: width || (index === lines - 1 ? '75%' : '100%')
+              width: width || (index === lines - 1 ? '75%' : '100%'),
             }}
           />
         ))}
@@ -39,7 +39,7 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
         className={`${baseClasses} rounded-full ${className}`}
         style={{
           width: width || '40px',
-          height: height || width || '40px'
+          height: height || width || '40px',
         }}
       />
     );
@@ -65,7 +65,7 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
         className={`${baseClasses} ${className}`}
         style={{
           width: width || '100px',
-          height: height || '100px'
+          height: height || '100px',
         }}
       />
     );
@@ -77,7 +77,7 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
         className={`${baseClasses} ${className}`}
         style={{
           width: width,
-          height: height
+          height: height,
         }}
       />
     );
@@ -89,41 +89,56 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
       className={`${baseClasses} ${className}`}
       style={{
         width: width || '100%',
-        height: height || '20px'
+        height: height || '20px',
       }}
     />
   );
 };
 
 // Additional skeleton components for convenience
-export const SkeletonCard: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <SkeletonLoader variant="card" className={className} />
+export const SkeletonCard: React.FC<{ className?: string }> = ({
+  className = '',
+}) => <SkeletonLoader variant="card" className={className} />;
+
+export const SkeletonText: React.FC<{ lines?: number; className?: string }> = ({
+  lines = 1,
+  className = '',
+}) => <SkeletonLoader variant="text" lines={lines} className={className} />;
+
+export const SkeletonCircle: React.FC<{
+  size?: string;
+  className?: string;
+}> = ({ size = '40px', className = '' }) => (
+  <SkeletonLoader
+    variant="circle"
+    width={size}
+    height={size}
+    className={className}
+  />
 );
 
-export const SkeletonText: React.FC<{ lines?: number; className?: string }> = ({ 
-  lines = 1, 
-  className = '' 
+export const SkeletonImage: React.FC<{
+  width?: string;
+  height?: string;
+  className?: string;
+}> = ({ width = '100px', height = '100px', className = '' }) => (
+  <SkeletonLoader
+    variant="image"
+    width={width}
+    height={height}
+    className={className}
+  />
+);
+
+export const SkeletonButton: React.FC<{ className?: string }> = ({
+  className = '',
 }) => (
-  <SkeletonLoader variant="text" lines={lines} className={className} />
-);
-
-export const SkeletonCircle: React.FC<{ size?: string; className?: string }> = ({ 
-  size = '40px', 
-  className = '' 
-}) => (
-  <SkeletonLoader variant="circle" width={size} height={size} className={className} />
-);
-
-export const SkeletonImage: React.FC<{ width?: string; height?: string; className?: string }> = ({ 
-  width = '100px', 
-  height = '100px', 
-  className = '' 
-}) => (
-  <SkeletonLoader variant="image" width={width} height={height} className={className} />
-);
-
-export const SkeletonButton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <SkeletonLoader variant="rectangle" width="120px" height="44px" className={`rounded-lg ${className}`} />
+  <SkeletonLoader
+    variant="rectangle"
+    width="120px"
+    height="44px"
+    className={`rounded-lg ${className}`}
+  />
 );
 
 export const DashboardSkeleton: React.FC = () => (
@@ -133,14 +148,14 @@ export const DashboardSkeleton: React.FC = () => (
       <SkeletonLoader variant="text" lines={1} width="200px" />
       <SkeletonLoader variant="text" lines={1} width="150px" />
     </div>
-    
+
     {/* Cards grid skeleton */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {Array.from({ length: 4 }, (_, index) => (
         <SkeletonCard key={index} />
       ))}
     </div>
-    
+
     {/* Content skeleton */}
     <div className="space-y-4">
       <SkeletonLoader variant="text" lines={3} />

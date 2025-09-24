@@ -2,7 +2,11 @@
 // This service handles background synchronization of data when the app comes back online
 
 interface SyncData {
-  type: 'attendance' | 'exam-result' | 'exercise-result' | 'notification-preference';
+  type:
+    | 'attendance'
+    | 'exam-result'
+    | 'exercise-result'
+    | 'notification-preference';
   data: any;
   timestamp: number;
   userId: string;
@@ -13,15 +17,22 @@ class BackgroundSyncService {
   private readonly SYNC_STORAGE_KEY = 'background-sync-data';
 
   // Register background sync
-  async registerSync(type: SyncData['type'], data: any, userId: string): Promise<void> {
-    if (!('serviceWorker' in navigator) || !('sync' in window.ServiceWorkerRegistration.prototype)) {
+  async registerSync(
+    type: SyncData['type'],
+    data: any,
+    userId: string
+  ): Promise<void> {
+    if (
+      !('serviceWorker' in navigator) ||
+      !('sync' in window.ServiceWorkerRegistration.prototype)
+    ) {
       console.warn('Background sync not supported');
       return;
     }
 
     try {
-      const registration = await navigator.serviceWorker.ready;
-      
+      const _registration = await navigator.serviceWorker.ready;
+
       // Store data for sync
       const syncData: SyncData = {
         type,
@@ -29,14 +40,14 @@ class BackgroundSyncService {
         timestamp: Date.now(),
         userId,
       };
-      
+
       await this.storeSyncData(syncData);
-      
+
       // Register sync event
       const syncTag = `${this.SYNC_TAG_PREFIX}-${type}-${Date.now()}`;
       await registration.sync.register(syncTag);
-      
-      console.log(`Background sync registered: ${syncTag}`);
+
+      console.warn(`Background sync registered: ${syncTag}`);
     } catch (error) {
       console.error('Failed to register background sync:', error);
       throw error;
@@ -50,12 +61,12 @@ class BackgroundSyncService {
       const db = await this.openDatabase();
       const transaction = db.transaction(['syncData'], 'readwrite');
       const store = transaction.objectStore('syncData');
-      
+
       await store.add({
         ...syncData,
         id: `${syncData.type}-${syncData.timestamp}`,
       });
-      
+
       await transaction.complete;
     } catch (error) {
       console.error('Failed to store sync data:', error);
@@ -80,13 +91,13 @@ class BackgroundSyncService {
   private openDatabase(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open('MadrasaPortalDB', 1);
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
-      
-      request.onupgradeneeded = (event) => {
+
+      request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
-        
+
         // Create object store for sync data
         if (!db.objectStoreNames.contains('syncData')) {
           const store = db.createObjectStore('syncData', { keyPath: 'id' });
@@ -105,7 +116,7 @@ class BackgroundSyncService {
       const transaction = db.transaction(['syncData'], 'readonly');
       const store = transaction.objectStore('syncData');
       const request = store.getAll();
-      
+
       return new Promise((resolve, reject) => {
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
@@ -149,7 +160,9 @@ class BackgroundSyncService {
       const stored = localStorage.getItem(this.SYNC_STORAGE_KEY);
       if (stored) {
         const data = JSON.parse(stored);
-        const filtered = data.filter((item: SyncData & { id: string }) => item.id !== id);
+        const filtered = data.filter(
+          (item: SyncData & { id: string }) => item.id !== id
+        );
         localStorage.setItem(this.SYNC_STORAGE_KEY, JSON.stringify(filtered));
       }
     } catch (error) {
@@ -165,13 +178,13 @@ class BackgroundSyncService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await this.getAuthToken()}`,
+          Authorization: `Bearer ${await this.getAuthToken()}`,
         },
         body: JSON.stringify(syncData.data),
       });
 
       if (response.ok) {
-        console.log(`Successfully synced ${syncData.type} data`);
+        console.warn(`Successfully synced ${syncData.type} data`);
         return true;
       } else {
         console.error(`Failed to sync ${syncData.type} data:`, response.status);
@@ -186,7 +199,7 @@ class BackgroundSyncService {
   // Get API endpoint for sync type
   private getEndpointForType(type: SyncData['type']): string {
     const endpoints = {
-      'attendance': '/api/attendance',
+      attendance: '/api/attendance',
       'exam-result': '/api/exam-results',
       'exercise-result': '/api/exercise-results',
       'notification-preference': '/api/user/preferences',
@@ -219,17 +232,19 @@ class BackgroundSyncService {
     try {
       // Register service worker if not already registered
       if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('Service worker registered for background sync');
-        
+        const _registration = await navigator.serviceWorker.register('/sw.js');
+        console.warn('Service worker registered for background sync');
+
         // Listen for sync events
-        navigator.serviceWorker.addEventListener('message', (event) => {
+        navigator.serviceWorker.addEventListener('message', event => {
           if (event.data && event.data.type === 'SYNC_COMPLETE') {
-            console.log('Background sync completed:', event.data.syncTag);
+            console.warn('Background sync completed:', event.data.syncTag);
             // Dispatch custom event for UI updates
-            window.dispatchEvent(new CustomEvent('background-sync-complete', {
-              detail: event.data
-            }));
+            window.dispatchEvent(
+              new CustomEvent('background-sync-complete', {
+                detail: event.data,
+              })
+            );
           }
         });
       }
@@ -255,6 +270,13 @@ export const syncExerciseResult = (exerciseData: any, userId: string) => {
   return backgroundSync.registerSync('exercise-result', exerciseData, userId);
 };
 
-export const syncNotificationPreference = (preferenceData: any, userId: string) => {
-  return backgroundSync.registerSync('notification-preference', preferenceData, userId);
+export const syncNotificationPreference = (
+  preferenceData: any,
+  userId: string
+) => {
+  return backgroundSync.registerSync(
+    'notification-preference',
+    preferenceData,
+    userId
+  );
 };

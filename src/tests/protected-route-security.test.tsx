@@ -1,6 +1,6 @@
 /**
  * Protected Route Security Test
- * 
+ *
  * This test verifies that protected routes properly redirect to auth after logout
  * and implement security measures to prevent unauthorized access.
  */
@@ -77,17 +77,17 @@ const TestApp: React.FC = () => {
 describe('Protected Route Security', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     localStorageMock.getItem.mockClear();
     localStorageMock.setItem.mockClear();
     localStorageMock.removeItem.mockClear();
     localStorageMock.clear.mockClear();
-    
+
     sessionStorageMock.getItem.mockClear();
     sessionStorageMock.setItem.mockClear();
     sessionStorageMock.removeItem.mockClear();
     sessionStorageMock.clear.mockClear();
-    
+
     consoleSpy.log.mockClear();
     consoleSpy.warn.mockClear();
     consoleSpy.error.mockClear();
@@ -106,7 +106,9 @@ describe('Protected Route Security', () => {
         expect(screen.queryByTestId('protected-page')).not.toBeInTheDocument();
       });
 
-      console.log('✅ Protected route redirects to auth when not authenticated');
+      console.warn(
+        '✅ Protected route redirects to auth when not authenticated'
+      );
     });
 
     it('should show protected content when user is authenticated', async () => {
@@ -119,7 +121,7 @@ describe('Protected Route Security', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
 
       render(<TestApp />);
@@ -130,7 +132,7 @@ describe('Protected Route Security', () => {
         expect(screen.queryByTestId('auth-page')).not.toBeInTheDocument();
       });
 
-      console.log('✅ Protected route shows content when authenticated');
+      console.warn('✅ Protected route shows content when authenticated');
     });
 
     it('should clear session data before redirecting to auth', async () => {
@@ -141,12 +143,16 @@ describe('Protected Route Security', () => {
 
       await waitFor(() => {
         // Should attempt to clear session data
-        expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
-        expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+        expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+          'manualAuthUser'
+        );
+        expect(sessionStorageMock.removeItem).toHaveBeenCalledWith(
+          'manualAuthUser'
+        );
         expect(screen.getByTestId('auth-page')).toBeInTheDocument();
       });
 
-      console.log('✅ Session data cleared before auth redirect');
+      console.warn('✅ Session data cleared before auth redirect');
     });
   });
 
@@ -163,7 +169,7 @@ describe('Protected Route Security', () => {
         expect(screen.queryByTestId('protected-page')).not.toBeInTheDocument();
       });
 
-      console.log('✅ Corrupted user data handled gracefully');
+      console.warn('✅ Corrupted user data handled gracefully');
     });
 
     it('should verify user object has required properties', async () => {
@@ -172,7 +178,7 @@ describe('Protected Route Security', () => {
         uid: '', // Missing required uid
         displayName: 'Test User',
       };
-      
+
       localStorageMock.getItem.mockReturnValue(JSON.stringify(incompleteUser));
 
       render(<TestApp />);
@@ -182,7 +188,7 @@ describe('Protected Route Security', () => {
         expect(screen.getByTestId('auth-page')).toBeInTheDocument();
       });
 
-      console.log('✅ Incomplete user data verification works');
+      console.warn('✅ Incomplete user data verification works');
     });
   });
 
@@ -197,7 +203,7 @@ describe('Protected Route Security', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
 
       render(<TestApp />);
@@ -208,7 +214,7 @@ describe('Protected Route Security', () => {
         expect(screen.getByTestId('protected-page')).toBeInTheDocument();
       });
 
-      console.log('✅ Loading state and authentication verification works');
+      console.warn('✅ Loading state and authentication verification works');
     });
 
     it('should handle authentication state changes properly', async () => {
@@ -230,7 +236,7 @@ describe('Protected Route Security', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
 
       // Re-render to trigger auth state change
@@ -240,7 +246,7 @@ describe('Protected Route Security', () => {
         expect(screen.getByTestId('protected-page')).toBeInTheDocument();
       });
 
-      console.log('✅ Authentication state changes handled properly');
+      console.warn('✅ Authentication state changes handled properly');
     });
   });
 
@@ -255,7 +261,7 @@ describe('Protected Route Security', () => {
         email: testUser.email,
         role: testUser.role,
       });
-      
+
       localStorageMock.getItem.mockReturnValue(userDataString);
 
       const { rerender } = render(<TestApp />);
@@ -276,7 +282,7 @@ describe('Protected Route Security', () => {
         expect(screen.queryByTestId('protected-page')).not.toBeInTheDocument();
       });
 
-      console.log('✅ Integration with session cleanup works correctly');
+      console.warn('✅ Integration with session cleanup works correctly');
     });
   });
 });

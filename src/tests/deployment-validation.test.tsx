@@ -4,7 +4,7 @@ import { join } from 'path';
 
 describe('Deployment Validation and Build Process Tests', () => {
   const distPath = join(process.cwd(), 'dist');
-  
+
   beforeEach(() => {
     // Reset any mocks
     vi.clearAllMocks();
@@ -20,7 +20,7 @@ describe('Deployment Validation and Build Process Tests', () => {
         'index.html',
         'manifest.json',
         'sw.js',
-        'registerSW.js'
+        'registerSW.js',
       ];
 
       requiredFiles.forEach(file => {
@@ -40,13 +40,15 @@ describe('Deployment Validation and Build Process Tests', () => {
         /zoom-vendor-.*\.js$/,
         /common-components-.*\.js$/,
         /ui-components-.*\.js$/,
-        /core-services-.*\.js$/
+        /core-services-.*\.js$/,
       ];
 
       const jsFiles = require('fs').readdirSync(jsDir);
-      
+
       expectedChunks.forEach(pattern => {
-        const hasMatchingFile = jsFiles.some((file: string) => pattern.test(file));
+        const hasMatchingFile = jsFiles.some((file: string) =>
+          pattern.test(file)
+        );
         expect(hasMatchingFile).toBe(true);
       });
     });
@@ -80,7 +82,7 @@ describe('Deployment Validation and Build Process Tests', () => {
       imageFiles.forEach((file: string) => {
         const filePath = join(imagesDir, file);
         const stats = statSync(filePath);
-        
+
         // Images should be under 100KB after optimization
         expect(stats.size).toBeLessThan(100 * 1024); // 100KB
       });
@@ -95,7 +97,7 @@ describe('Deployment Validation and Build Process Tests', () => {
       jsFiles.forEach((file: string) => {
         const filePath = join(jsDir, file);
         const stats = statSync(filePath);
-        
+
         // Individual chunks should be under 3MB (except zoom-vendor which is expected to be large)
         if (file.includes('zoom-vendor')) {
           expect(stats.size).toBeLessThan(4 * 1024 * 1024); // 4MB for Zoom SDK
@@ -108,8 +110,8 @@ describe('Deployment Validation and Build Process Tests', () => {
     it('should have total bundle size within reasonable limits', () => {
       const jsDir = join(distPath, 'js');
       const jsFiles = require('fs').readdirSync(jsDir);
-      
-      let totalSize = 0;
+
+      const totalSize = 0;
       jsFiles.forEach((file: string) => {
         const filePath = join(jsDir, file);
         const stats = statSync(filePath);
@@ -125,8 +127,12 @@ describe('Deployment Validation and Build Process Tests', () => {
       const jsFiles = require('fs').readdirSync(jsDir);
 
       // Should have separate vendor chunks
-      const hasReactVendor = jsFiles.some(file => file.includes('react-vendor'));
-      const hasFirebaseVendor = jsFiles.some(file => file.includes('firebase-vendor'));
+      const hasReactVendor = jsFiles.some(file =>
+        file.includes('react-vendor')
+      );
+      const hasFirebaseVendor = jsFiles.some(file =>
+        file.includes('firebase-vendor')
+      );
       const hasZoomVendor = jsFiles.some(file => file.includes('zoom-vendor'));
 
       expect(hasReactVendor).toBe(true);
@@ -170,10 +176,10 @@ describe('Deployment Validation and Build Process Tests', () => {
       expect(existsSync(swPath)).toBe(true);
 
       const swContent = readFileSync(swPath, 'utf-8');
-      
+
       // Service worker should contain workbox references
       expect(swContent).toContain('workbox');
-      
+
       // Should have precaching setup
       expect(swContent).toContain('precacheAndRoute');
     });
@@ -183,7 +189,7 @@ describe('Deployment Validation and Build Process Tests', () => {
       expect(existsSync(registerSWPath)).toBe(true);
 
       const registerSWContent = readFileSync(registerSWPath, 'utf-8');
-      
+
       // Should contain service worker registration logic
       expect(registerSWContent).toContain('serviceWorker');
     });
@@ -261,7 +267,7 @@ describe('Deployment Validation and Build Process Tests', () => {
       jsFiles.forEach((file: string) => {
         const filePath = join(jsDir, file);
         const jsContent = readFileSync(filePath, 'utf-8');
-        
+
         // Production builds should not contain console.log statements
         expect(jsContent).not.toContain('console.log');
         expect(jsContent).not.toContain('debugger');
@@ -275,7 +281,7 @@ describe('Deployment Validation and Build Process Tests', () => {
       expect(existsSync(vercelIgnorePath)).toBe(true);
 
       const vercelIgnoreContent = readFileSync(vercelIgnorePath, 'utf-8');
-      
+
       // Should exclude development files
       expect(vercelIgnoreContent).toContain('node_modules');
       expect(vercelIgnoreContent).toContain('.git');
@@ -284,11 +290,7 @@ describe('Deployment Validation and Build Process Tests', () => {
     });
 
     it('should not have Netlify-specific files', () => {
-      const netlifyFiles = [
-        'netlify.toml',
-        '_headers',
-        '_redirects'
-      ];
+      const netlifyFiles = ['netlify.toml', '_headers', '_redirects'];
 
       netlifyFiles.forEach(file => {
         const filePath = join(process.cwd(), file);
@@ -328,13 +330,13 @@ describe('Deployment Validation and Build Process Tests', () => {
   describe('Icon and Asset Consistency', () => {
     it('should have all required icons in dist', () => {
       // Icons should be copied to dist during build
-      const distIconsPath = join(distPath, 'icons');
-      
+      const _distIconsPath = join(distPath, 'icons');
+
       // Note: Icons might be in different locations after build optimization
       // Check if they exist in the expected locations or are referenced in manifest
       const manifestPath = join(distPath, 'manifest.json');
       const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
-      
+
       // All manifest icons should reference valid paths
       manifest.icons.forEach((icon: any) => {
         expect(icon.src).toMatch(/^icons\//);
@@ -346,12 +348,14 @@ describe('Deployment Validation and Build Process Tests', () => {
     it('should have consistent theme colors across files', () => {
       const indexPath = join(distPath, 'index.html');
       const manifestPath = join(distPath, 'manifest.json');
-      
+
       const htmlContent = readFileSync(indexPath, 'utf-8');
       const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
 
       // Extract theme color from HTML
-      const themeColorMatch = htmlContent.match(/name="theme-color"[^>]*content="([^"]+)"/);
+      const themeColorMatch = htmlContent.match(
+        /name="theme-color"[^>]*content="([^"]+)"/
+      );
       const htmlThemeColor = themeColorMatch ? themeColorMatch[1] : null;
 
       // Compare with manifest theme color
@@ -363,7 +367,7 @@ describe('Deployment Validation and Build Process Tests', () => {
     it('should have proper cache-busting for static assets', () => {
       const jsDir = join(distPath, 'js');
       const cssDir = join(distPath, 'css');
-      
+
       const jsFiles = require('fs').readdirSync(jsDir);
       const cssFiles = require('fs').readdirSync(cssDir);
 
@@ -381,7 +385,7 @@ describe('Deployment Validation and Build Process Tests', () => {
     it('should have reasonable file count for optimal loading', () => {
       const jsDir = join(distPath, 'js');
       const cssDir = join(distPath, 'css');
-      
+
       const jsFiles = require('fs').readdirSync(jsDir);
       const cssFiles = require('fs').readdirSync(cssDir);
 
@@ -398,13 +402,13 @@ describe('Deployment Validation and Build Process Tests', () => {
       jsFiles.forEach((file: string) => {
         const filePath = join(jsDir, file);
         const content = readFileSync(filePath, 'utf-8');
-        
+
         // Minified files should not have excessive line breaks
         const lineCount = content.split('\n').length;
         const fileSize = content.length;
-        
+
         // Ratio of lines to file size should indicate minification
-        const linesPerKB = (lineCount / (fileSize / 1024));
+        const linesPerKB = lineCount / (fileSize / 1024);
         expect(linesPerKB).toBeLessThan(10); // Minified files have fewer lines per KB
       });
     });

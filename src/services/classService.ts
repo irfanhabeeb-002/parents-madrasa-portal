@@ -1,15 +1,24 @@
-
-import type { 
-  ClassSession, 
-  ClassSchedule, 
+import type {
+  ClassSession,
+  ClassSchedule,
   ClassStatus,
-  ClassMaterial 
+  ClassMaterial,
 } from '../types/class';
-import type { ApiResponse, PaginationOptions, FilterOptions, Timestamp } from '../types/common';
+import type {
+  ApiResponse,
+  PaginationOptions,
+  FilterOptions,
+  Timestamp,
+} from '../types/common';
 import { FirebaseClassSession, FIREBASE_COLLECTIONS } from '../types/firebase';
 import { FirebaseService } from './firebaseService';
-import { StorageService } from './storageService';
-import { where, orderBy, limit as firestoreLimit, Timestamp as FirestoreTimestamp } from 'firebase/firestore';
+import { _StorageService } from './storageService';
+import {
+  where,
+  orderBy,
+  limit as firestoreLimit,
+  Timestamp as FirestoreTimestamp,
+} from 'firebase/firestore';
 
 export class ClassService extends FirebaseService {
   private static instance: ClassService;
@@ -41,7 +50,8 @@ export class ClassService extends FirebaseService {
     {
       id: 'class-1',
       title: 'Introduction to Islamic History',
-      description: 'Learn about the early history of Islam and the life of Prophet Muhammad (PBUH)',
+      description:
+        'Learn about the early history of Islam and the life of Prophet Muhammad (PBUH)',
       subject: 'Islamic History',
       instructor: 'Ustadh Ahmed',
       scheduledAt: new Date('2024-01-15T10:00:00'),
@@ -62,17 +72,18 @@ export class ClassService extends FirebaseService {
           type: 'pdf',
           url: 'https://example.com/notes1.pdf',
           size: 2048000,
-          description: 'Comprehensive notes covering the lesson'
-        }
+          description: 'Comprehensive notes covering the lesson',
+        },
       ],
       status: 'completed',
       createdAt: new Date('2024-01-10'),
-      updatedAt: new Date('2024-01-15')
+      updatedAt: new Date('2024-01-15'),
     },
     {
       id: 'class-2',
       title: 'Quran Recitation - Surah Al-Fatiha',
-      description: 'Learn proper pronunciation and tajweed rules for Surah Al-Fatiha',
+      description:
+        'Learn proper pronunciation and tajweed rules for Surah Al-Fatiha',
       subject: 'Quran Recitation',
       instructor: 'Qari Yusuf',
       scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
@@ -91,17 +102,18 @@ export class ClassService extends FirebaseService {
           type: 'pdf',
           url: 'https://example.com/tajweed.pdf',
           size: 1024000,
-          description: 'Basic tajweed rules for beginners'
-        }
+          description: 'Basic tajweed rules for beginners',
+        },
       ],
       status: 'live',
       createdAt: new Date('2024-01-12'),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     },
     {
       id: 'class-3',
       title: 'Islamic Ethics and Morals',
-      description: 'Understanding Islamic principles of ethics and moral conduct',
+      description:
+        'Understanding Islamic principles of ethics and moral conduct',
       subject: 'Islamic Ethics',
       instructor: 'Dr. Fatima',
       scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
@@ -116,20 +128,21 @@ export class ClassService extends FirebaseService {
       materials: [],
       status: 'scheduled',
       createdAt: new Date('2024-01-13'),
-      updatedAt: new Date('2024-01-13')
-    }
+      updatedAt: new Date('2024-01-13'),
+    },
   ];
 
   // Get all classes with filtering and pagination
   static async getClasses(
-    options?: PaginationOptions & FilterOptions & {
-      status?: ClassStatus;
-      subject?: string;
-      instructor?: string;
-      isLive?: boolean;
-      startDate?: Date;
-      endDate?: Date;
-    }
+    options?: PaginationOptions &
+      FilterOptions & {
+        status?: ClassStatus;
+        subject?: string;
+        instructor?: string;
+        isLive?: boolean;
+        startDate?: Date;
+        endDate?: Date;
+      }
   ): Promise<ApiResponse<ClassSession[]>> {
     try {
       const service = ClassService.getInstance();
@@ -149,10 +162,22 @@ export class ClassService extends FirebaseService {
         constraints.push(where('isLive', '==', options.isLive));
       }
       if (options?.startDate) {
-        constraints.push(where('scheduledAt', '>=', FirestoreTimestamp.fromDate(options.startDate)));
+        constraints.push(
+          where(
+            'scheduledAt',
+            '>=',
+            FirestoreTimestamp.fromDate(options.startDate)
+          )
+        );
       }
       if (options?.endDate) {
-        constraints.push(where('scheduledAt', '<=', FirestoreTimestamp.fromDate(options.endDate)));
+        constraints.push(
+          where(
+            'scheduledAt',
+            '<=',
+            FirestoreTimestamp.fromDate(options.endDate)
+          )
+        );
       }
 
       // Add ordering
@@ -165,8 +190,9 @@ export class ClassService extends FirebaseService {
         constraints.push(firestoreLimit(options.limit));
       }
 
-      const firestoreClasses = await service.getAll<FirebaseClassSession>(constraints);
-      
+      const firestoreClasses =
+        await service.getAll<FirebaseClassSession>(constraints);
+
       // Convert Firestore data to ClassSession format
       const classes: ClassSession[] = firestoreClasses.map(cls => ({
         ...cls,
@@ -176,19 +202,20 @@ export class ClassService extends FirebaseService {
         duration: cls.duration || 60,
         maxParticipants: cls.maxParticipants || 50,
         tags: cls.tags || [],
-        materials: cls.materials || []
+        materials: cls.materials || [],
       }));
 
       // Apply client-side search filter if needed (Firestore doesn't support full-text search)
-      let filteredClasses = classes;
+      const filteredClasses = classes;
       if (options?.search) {
         const searchTerm = options.search.toLowerCase();
-        filteredClasses = classes.filter(cls => 
-          cls.title.toLowerCase().includes(searchTerm) ||
-          cls.description.toLowerCase().includes(searchTerm) ||
-          cls.subject.toLowerCase().includes(searchTerm) ||
-          cls.instructor.toLowerCase().includes(searchTerm) ||
-          cls.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+        filteredClasses = classes.filter(
+          cls =>
+            cls.title.toLowerCase().includes(searchTerm) ||
+            cls.description.toLowerCase().includes(searchTerm) ||
+            cls.subject.toLowerCase().includes(searchTerm) ||
+            cls.instructor.toLowerCase().includes(searchTerm) ||
+            cls.tags.some(tag => tag.toLowerCase().includes(searchTerm))
         );
       }
 
@@ -202,11 +229,11 @@ export class ClassService extends FirebaseService {
       return {
         data: filteredClasses,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       console.error('Error fetching classes:', error);
-      
+
       // Fallback to mock data if Firestore fails
       return this.getMockClasses(options);
     }
@@ -214,55 +241,63 @@ export class ClassService extends FirebaseService {
 
   // Fallback method using mock data
   private static async getMockClasses(
-    options?: PaginationOptions & FilterOptions & {
-      status?: ClassStatus;
-      subject?: string;
-      instructor?: string;
-      isLive?: boolean;
-      startDate?: Date;
-      endDate?: Date;
-    }
+    options?: PaginationOptions &
+      FilterOptions & {
+        status?: ClassStatus;
+        subject?: string;
+        instructor?: string;
+        isLive?: boolean;
+        startDate?: Date;
+        endDate?: Date;
+      }
   ): Promise<ApiResponse<ClassSession[]>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      let filteredClasses = [...this.mockClasses];
+      const filteredClasses = [...this.mockClasses];
 
       // Apply filters
       if (options?.status) {
-        filteredClasses = filteredClasses.filter(cls => cls.status === options.status);
+        filteredClasses = filteredClasses.filter(
+          cls => cls.status === options.status
+        );
       }
       if (options?.subject) {
-        filteredClasses = filteredClasses.filter(cls => 
+        filteredClasses = filteredClasses.filter(cls =>
           cls.subject.toLowerCase().includes(options.subject!.toLowerCase())
         );
       }
       if (options?.instructor) {
-        filteredClasses = filteredClasses.filter(cls => 
-          cls.instructor.toLowerCase().includes(options.instructor!.toLowerCase())
+        filteredClasses = filteredClasses.filter(cls =>
+          cls.instructor
+            .toLowerCase()
+            .includes(options.instructor!.toLowerCase())
         );
       }
       if (options?.isLive !== undefined) {
-        filteredClasses = filteredClasses.filter(cls => cls.isLive === options.isLive);
+        filteredClasses = filteredClasses.filter(
+          cls => cls.isLive === options.isLive
+        );
       }
       if (options?.startDate) {
-        filteredClasses = filteredClasses.filter(cls => 
-          this.toDate(cls.scheduledAt) >= options.startDate!
+        filteredClasses = filteredClasses.filter(
+          cls => this.toDate(cls.scheduledAt) >= options.startDate!
         );
       }
       if (options?.endDate) {
-        filteredClasses = filteredClasses.filter(cls => 
-          this.toDate(cls.scheduledAt) <= options.endDate!
+        filteredClasses = filteredClasses.filter(
+          cls => this.toDate(cls.scheduledAt) <= options.endDate!
         );
       }
       if (options?.search) {
         const searchTerm = options.search.toLowerCase();
-        filteredClasses = filteredClasses.filter(cls => 
-          cls.title.toLowerCase().includes(searchTerm) ||
-          cls.description.toLowerCase().includes(searchTerm) ||
-          cls.subject.toLowerCase().includes(searchTerm) ||
-          cls.instructor.toLowerCase().includes(searchTerm) ||
-          cls.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+        filteredClasses = filteredClasses.filter(
+          cls =>
+            cls.title.toLowerCase().includes(searchTerm) ||
+            cls.description.toLowerCase().includes(searchTerm) ||
+            cls.subject.toLowerCase().includes(searchTerm) ||
+            cls.instructor.toLowerCase().includes(searchTerm) ||
+            cls.tags.some(tag => tag.toLowerCase().includes(searchTerm))
         );
       }
 
@@ -272,7 +307,7 @@ export class ClassService extends FirebaseService {
           const aValue = a[options.orderBy as keyof ClassSession];
           const bValue = b[options.orderBy as keyof ClassSession];
           const direction = options.orderDirection === 'desc' ? -1 : 1;
-          
+
           if (aValue && bValue) {
             if (aValue < bValue) return -1 * direction;
             if (aValue > bValue) return 1 * direction;
@@ -281,8 +316,10 @@ export class ClassService extends FirebaseService {
         });
       } else {
         // Default sort by scheduledAt ascending
-        filteredClasses.sort((a, b) => 
-          this.toDate(a.scheduledAt).getTime() - this.toDate(b.scheduledAt).getTime()
+        filteredClasses.sort(
+          (a, b) =>
+            this.toDate(a.scheduledAt).getTime() -
+            this.toDate(b.scheduledAt).getTime()
         );
       }
 
@@ -294,23 +331,27 @@ export class ClassService extends FirebaseService {
       return {
         data: paginatedClasses,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch classes',
-        timestamp: new Date()
+        error:
+          error instanceof Error ? error.message : 'Failed to fetch classes',
+        timestamp: new Date(),
       };
     }
   }
 
   // Get a specific class by ID
-  static async getClassById(classId: string): Promise<ApiResponse<ClassSession | null>> {
+  static async getClassById(
+    classId: string
+  ): Promise<ApiResponse<ClassSession | null>> {
     try {
       const service = ClassService.getInstance();
-      const firestoreClass = await service.getById<FirebaseClassSession>(classId);
+      const firestoreClass =
+        await service.getById<FirebaseClassSession>(classId);
 
       if (!firestoreClass) {
         // Fallback to mock data
@@ -319,7 +360,7 @@ export class ClassService extends FirebaseService {
           data: classSession || null,
           success: !!classSession,
           error: classSession ? undefined : 'Class not found',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -332,24 +373,24 @@ export class ClassService extends FirebaseService {
         duration: firestoreClass.duration || 60,
         maxParticipants: firestoreClass.maxParticipants || 50,
         tags: firestoreClass.tags || [],
-        materials: firestoreClass.materials || []
+        materials: firestoreClass.materials || [],
       };
 
       return {
         data: classSession,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       console.error('Error fetching class by ID:', error);
-      
+
       // Fallback to mock data
       const classSession = this.mockClasses.find(cls => cls.id === classId);
       return {
         data: classSession || null,
         success: !!classSession,
         error: classSession ? undefined : 'Failed to fetch class',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -362,27 +403,40 @@ export class ClassService extends FirebaseService {
   // Get scheduled classes for today
   static async getTodaysClasses(): Promise<ApiResponse<ClassSession[]>> {
     const today = new Date();
-    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const endOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59
+    );
 
     return this.getClasses({
       startDate: startOfDay,
       endDate: endOfDay,
       orderBy: 'scheduledAt',
-      orderDirection: 'asc'
+      orderDirection: 'asc',
     });
   }
 
   // Get upcoming classes
-  static async getUpcomingClasses(limit: number = 5): Promise<ApiResponse<ClassSession[]>> {
+  static async getUpcomingClasses(
+    limit: number = 5
+  ): Promise<ApiResponse<ClassSession[]>> {
     const now = new Date();
-    
+
     return this.getClasses({
       startDate: now,
       status: 'scheduled',
       limit,
       orderBy: 'scheduledAt',
-      orderDirection: 'asc'
+      orderDirection: 'asc',
     });
   }
 
@@ -408,15 +462,27 @@ export class ClassService extends FirebaseService {
         constraints.push(where('isLive', '==', options.isLive));
       }
       if (options?.startDate) {
-        constraints.push(where('scheduledAt', '>=', FirestoreTimestamp.fromDate(options.startDate)));
+        constraints.push(
+          where(
+            'scheduledAt',
+            '>=',
+            FirestoreTimestamp.fromDate(options.startDate)
+          )
+        );
       }
       if (options?.endDate) {
-        constraints.push(where('scheduledAt', '<=', FirestoreTimestamp.fromDate(options.endDate)));
+        constraints.push(
+          where(
+            'scheduledAt',
+            '<=',
+            FirestoreTimestamp.fromDate(options.endDate)
+          )
+        );
       }
 
       constraints.push(orderBy('scheduledAt', 'asc'));
 
-      return service.setupListener<FirebaseClassSession>((firestoreClasses) => {
+      return service.setupListener<FirebaseClassSession>(firestoreClasses => {
         const classes: ClassSession[] = firestoreClasses.map(cls => ({
           ...cls,
           scheduledAt: cls.scheduledAt.toDate(),
@@ -425,7 +491,7 @@ export class ClassService extends FirebaseService {
           duration: cls.duration || 60,
           maxParticipants: cls.maxParticipants || 50,
           tags: cls.tags || [],
-          materials: cls.materials || []
+          materials: cls.materials || [],
         }));
         callback(classes);
       }, constraints);
@@ -437,27 +503,45 @@ export class ClassService extends FirebaseService {
   }
 
   // Subscribe to today's classes with real-time updates
-  static subscribeToTodaysClasses(callback: (classes: ClassSession[]) => void): () => void {
+  static subscribeToTodaysClasses(
+    callback: (classes: ClassSession[]) => void
+  ): () => void {
     const today = new Date();
-    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const endOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59
+    );
 
     return this.subscribeToClasses(callback, {
       startDate: startOfDay,
-      endDate: endOfDay
+      endDate: endOfDay,
     });
   }
 
   // Subscribe to live classes with real-time updates
-  static subscribeToLiveClasses(callback: (classes: ClassSession[]) => void): () => void {
+  static subscribeToLiveClasses(
+    callback: (classes: ClassSession[]) => void
+  ): () => void {
     return this.subscribeToClasses(callback, {
       isLive: true,
-      status: 'live'
+      status: 'live',
     });
   }
 
   // Join a class (simulate Zoom join)
-  static async joinClass(classId: string, userId: string): Promise<ApiResponse<{ joinUrl: string; meetingId: string }>> {
+  static async joinClass(
+    classId: string,
+    _userId: string
+  ): Promise<ApiResponse<{ joinUrl: string; meetingId: string }>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -468,7 +552,7 @@ export class ClassService extends FirebaseService {
           data: { joinUrl: '', meetingId: '' },
           success: false,
           error: 'Class not found',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -477,7 +561,7 @@ export class ClassService extends FirebaseService {
           data: { joinUrl: '', meetingId: '' },
           success: false,
           error: 'Class has been cancelled',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -486,7 +570,7 @@ export class ClassService extends FirebaseService {
           data: { joinUrl: '', meetingId: '' },
           success: false,
           error: 'Class has already ended',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -501,7 +585,7 @@ export class ClassService extends FirebaseService {
           data: { joinUrl: '', meetingId: '' },
           success: false,
           error: `Class starts in ${minutesUntilClass} minutes. You can join 15 minutes before the scheduled time.`,
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -515,23 +599,25 @@ export class ClassService extends FirebaseService {
       return {
         data: {
           joinUrl: classSession.zoomJoinUrl,
-          meetingId: classSession.zoomMeetingId
+          meetingId: classSession.zoomMeetingId,
         },
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: { joinUrl: '', meetingId: '' },
         success: false,
         error: error instanceof Error ? error.message : 'Failed to join class',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
 
   // Get class schedule for a user
-  static async getUserClassSchedule(userId: string): Promise<ApiResponse<ClassSchedule[]>> {
+  static async getUserClassSchedule(
+    _userId: string
+  ): Promise<ApiResponse<ClassSchedule[]>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 250));
 
@@ -542,45 +628,51 @@ export class ClassService extends FirebaseService {
         classSessionId: cls.id,
         isEnrolled: true,
         enrolledAt: this.toDate(cls.createdAt),
-        reminderSent: false
+        reminderSent: false,
       }));
 
       return {
         data: mockSchedules,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch class schedule',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch class schedule',
+        timestamp: new Date(),
       };
     }
   }
 
   // Update class status (for admin/system use)
-  static async updateClassStatus(classId: string, status: ClassStatus): Promise<ApiResponse<ClassSession | null>> {
+  static async updateClassStatus(
+    classId: string,
+    status: ClassStatus
+  ): Promise<ApiResponse<ClassSession | null>> {
     try {
       const service = ClassService.getInstance();
-      
+
       // Update in Firestore
       await service.update<Partial<FirebaseClassSession>>(classId, {
         status,
         isLive: status === 'live',
-        updatedAt: FirestoreTimestamp.now()
+        updatedAt: FirestoreTimestamp.now(),
       });
 
       // Get updated class
       const updatedClass = await service.getById<FirebaseClassSession>(classId);
-      
+
       if (!updatedClass) {
         return {
           data: null,
           success: false,
           error: 'Class not found after update',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -593,7 +685,7 @@ export class ClassService extends FirebaseService {
         duration: updatedClass.duration || 60,
         maxParticipants: updatedClass.maxParticipants || 50,
         tags: updatedClass.tags || [],
-        materials: updatedClass.materials || []
+        materials: updatedClass.materials || [],
       };
 
       // Also update mock data for fallback
@@ -607,20 +699,20 @@ export class ClassService extends FirebaseService {
       return {
         data: classSession,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       console.error('Error updating class status:', error);
-      
+
       // Fallback to mock data update
       const classIndex = this.mockClasses.findIndex(cls => cls.id === classId);
-      
+
       if (classIndex === -1) {
         return {
           data: null,
           success: false,
           error: 'Class not found',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -631,13 +723,15 @@ export class ClassService extends FirebaseService {
       return {
         data: this.mockClasses[classIndex],
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
 
   // Get class materials
-  static async getClassMaterials(classId: string): Promise<ApiResponse<ClassMaterial[]>> {
+  static async getClassMaterials(
+    classId: string
+  ): Promise<ApiResponse<ClassMaterial[]>> {
     try {
       await new Promise(resolve => setTimeout(resolve, 200));
 
@@ -648,27 +742,33 @@ export class ClassService extends FirebaseService {
           data: [],
           success: false,
           error: 'Class not found',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
       return {
         data: classSession.materials,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: [],
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch class materials',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch class materials',
+        timestamp: new Date(),
       };
     }
   }
 
   // Check if user can join class
-  static async canJoinClass(classId: string, userId: string): Promise<ApiResponse<{ canJoin: boolean; reason?: string }>> {
+  static async canJoinClass(
+    classId: string,
+    _userId: string
+  ): Promise<ApiResponse<{ canJoin: boolean; reason?: string }>> {
     try {
       const classSession = this.mockClasses.find(cls => cls.id === classId);
 
@@ -676,7 +776,7 @@ export class ClassService extends FirebaseService {
         return {
           data: { canJoin: false, reason: 'Class not found' },
           success: true,
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -684,7 +784,7 @@ export class ClassService extends FirebaseService {
         return {
           data: { canJoin: false, reason: 'Class has been cancelled' },
           success: true,
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -692,7 +792,7 @@ export class ClassService extends FirebaseService {
         return {
           data: { canJoin: false, reason: 'Class has already ended' },
           success: true,
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
@@ -703,26 +803,29 @@ export class ClassService extends FirebaseService {
 
       if (minutesUntilClass > 15 && classSession.status !== 'live') {
         return {
-          data: { 
-            canJoin: false, 
-            reason: `Class starts in ${minutesUntilClass} minutes. You can join 15 minutes before the scheduled time.` 
+          data: {
+            canJoin: false,
+            reason: `Class starts in ${minutesUntilClass} minutes. You can join 15 minutes before the scheduled time.`,
           },
           success: true,
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
 
       return {
         data: { canJoin: true },
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     } catch (error) {
       return {
         data: { canJoin: false, reason: 'Error checking class availability' },
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to check class availability',
-        timestamp: new Date()
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to check class availability',
+        timestamp: new Date(),
       };
     }
   }

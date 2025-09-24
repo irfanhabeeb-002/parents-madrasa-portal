@@ -27,12 +27,12 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 }) => {
   // If no WebP source provided, try to generate one
   const webpSource = webpSrc || src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-  
+
   return (
     <picture className={className}>
       {/* WebP source for modern browsers */}
       <source srcSet={webpSource} type="image/webp" sizes={sizes} />
-      
+
       {/* Fallback for browsers that don't support WebP */}
       <img
         src={src}

@@ -36,29 +36,29 @@ const navigationItems = [
     label: 'Home',
     path: '/',
     ariaLabel: 'Navigate to Home page',
-    icon: <HomeIcon />
+    icon: <HomeIcon />,
   },
   {
     id: 'live-class',
     label: 'Live Class',
     path: '/live-class',
     ariaLabel: 'Navigate to Live Class page',
-    icon: <VideoIcon />
+    icon: <VideoIcon />,
   },
   {
     id: 'profile',
     label: 'Profile',
     path: '/profile',
     ariaLabel: 'Navigate to Profile page',
-    icon: <UserIcon />
+    icon: <UserIcon />,
   },
   {
     id: 'settings',
     label: 'Settings',
     path: '/settings',
     ariaLabel: 'Navigate to Settings page',
-    icon: <SettingsIcon />
-  }
+    icon: <SettingsIcon />,
+  },
 ];
 ```
 
@@ -76,10 +76,8 @@ function App() {
     <BrowserRouter>
       <div className="app">
         {/* Your main content */}
-        <main>
-          {/* Page content goes here */}
-        </main>
-        
+        <main>{/* Page content goes here */}</main>
+
         {/* Bottom navigation - automatically handles routing */}
         <BottomNavigation />
       </div>
@@ -98,10 +96,8 @@ function Layout({ children }) {
   return (
     <div className="layout">
       {/* Main content with bottom padding to avoid overlap */}
-      <main style={{ paddingBottom: '80px' }}>
-        {children}
-      </main>
-      
+      <main style={{ paddingBottom: '80px' }}>{children}</main>
+
       {/* Fixed bottom navigation */}
       <BottomNavigation />
     </div>
@@ -119,7 +115,7 @@ import BottomNavigation from './components/BottomNavigation';
 const AppContainer = styled.div`
   min-height: 100vh;
   padding-bottom: 80px; /* Space for navigation */
-  
+
   @media (max-width: 768px) {
     padding-bottom: 88px; /* More space on mobile */
   }
@@ -142,22 +138,26 @@ function App() {
 The component meets all WCAG 2.1 AA requirements:
 
 #### Color and Contrast
+
 - **Minimum contrast ratio**: 4.5:1 for normal text
 - **Active state contrast**: High contrast between active and inactive states
 - **High contrast mode**: Automatic adaptation for users with high contrast preferences
 
 #### Touch Targets
+
 - **Minimum size**: 44px × 56px (mobile: 48px × 60px)
 - **Spacing**: Adequate spacing between touch targets
 - **Visual feedback**: Clear hover and active states
 
 #### Keyboard Navigation
+
 - **Tab navigation**: All navigation items are keyboard accessible
 - **Arrow keys**: Left/Right arrows navigate between items
 - **Home/End keys**: Jump to first/last navigation item
 - **Enter/Space**: Activate navigation items
 
 #### Screen Reader Support
+
 - **ARIA labels**: Descriptive labels for each navigation item
 - **ARIA roles**: Proper navigation landmark
 - **Live regions**: Announces navigation changes
@@ -182,12 +182,14 @@ The component meets all WCAG 2.1 AA requirements:
 ### Screen Reader Testing
 
 Test with popular screen readers:
+
 - **NVDA** (Windows)
 - **JAWS** (Windows)
 - **VoiceOver** (macOS/iOS)
 - **TalkBack** (Android)
 
 Expected announcements:
+
 - "Main navigation landmark"
 - "Navigate to Home page, button, current page"
 - "Navigated to Profile" (on navigation)
@@ -199,6 +201,7 @@ Expected announcements:
 The component adapts to different screen sizes:
 
 #### Mobile (< 768px)
+
 - **Touch targets**: 48px × 60px minimum
 - **Font size**: 12px
 - **Icon size**: 22px × 22px
@@ -206,6 +209,7 @@ The component adapts to different screen sizes:
 - **Enhanced touch feedback**: Scale animation on tap
 
 #### Tablet (768px - 1024px)
+
 - **Touch targets**: 44px × 56px
 - **Font size**: 11px
 - **Icon size**: 20px × 20px
@@ -213,6 +217,7 @@ The component adapts to different screen sizes:
 - **Hover effects**: Enabled
 
 #### Desktop (> 1024px)
+
 - **Max width**: 500px (centered)
 - **Hover effects**: Full hover support
 - **Focus indicators**: Enhanced keyboard focus
@@ -268,7 +273,7 @@ Automatic adaptation for high contrast preferences:
   .indicator {
     background: #000000;
   }
-  
+
   .tab_button:focus {
     outline: 3px solid #000000;
   }
@@ -287,8 +292,8 @@ const theme = {
     background: '#ffffff',
     activeColor: '#3b82f6',
     inactiveColor: '#64748b',
-    hoverColor: '#475569'
-  }
+    hoverColor: '#475569',
+  },
 };
 
 function App() {
@@ -333,14 +338,20 @@ Respects user's motion preferences:
 
 ```jsx
 // Memoize navigation items to prevent re-creation
-const navigationItems = useMemo(() => [
-  // ... navigation items
-], []);
+const navigationItems = useMemo(
+  () => [
+    // ... navigation items
+  ],
+  []
+);
 
 // Use callback for navigation handler
-const handleNavigation = useCallback((path, label, index) => {
-  // ... navigation logic
-}, [navigate]);
+const handleNavigation = useCallback(
+  (path, label, index) => {
+    // ... navigation logic
+  },
+  [navigate]
+);
 ```
 
 ## Troubleshooting Guide
@@ -348,6 +359,7 @@ const handleNavigation = useCallback((path, label, index) => {
 ### Common Integration Issues
 
 #### Issue: Navigation not working
+
 **Symptoms**: Clicking navigation items doesn't change routes
 **Solution**: Ensure React Router is properly configured
 
@@ -370,6 +382,7 @@ function App() {
 ```
 
 #### Issue: Active state not updating
+
 **Symptoms**: Active indicator doesn't move when navigating
 **Solution**: Check route configuration matches navigation paths
 
@@ -383,6 +396,7 @@ function App() {
 ```
 
 #### Issue: Styling conflicts
+
 **Symptoms**: Navigation appears broken or unstyled
 **Solution**: Check for CSS conflicts and z-index issues
 
@@ -399,6 +413,7 @@ function App() {
 ```
 
 #### Issue: Accessibility warnings
+
 **Symptoms**: Screen reader or accessibility testing tools report issues
 **Solution**: Verify ARIA attributes and semantic HTML
 
@@ -421,6 +436,7 @@ function App() {
 ### Performance Issues
 
 #### Issue: Slow animations
+
 **Symptoms**: Navigation transitions are choppy
 **Solution**: Check for CSS conflicts and use hardware acceleration
 
@@ -435,13 +451,16 @@ function App() {
 .tab_button {
   /* ❌ Avoid transitioning layout properties */
   /* transition: width 0.3s; */
-  
+
   /* ✅ Use transform and opacity */
-  transition: transform 0.3s, opacity 0.3s;
+  transition:
+    transform 0.3s,
+    opacity 0.3s;
 }
 ```
 
 #### Issue: Memory leaks
+
 **Symptoms**: Performance degrades over time
 **Solution**: Ensure proper cleanup of event listeners
 
@@ -450,9 +469,9 @@ useEffect(() => {
   const handleResize = () => {
     // Handle resize
   };
-  
+
   window.addEventListener('resize', handleResize);
-  
+
   // ✅ Cleanup event listener
   return () => {
     window.removeEventListener('resize', handleResize);
@@ -463,6 +482,7 @@ useEffect(() => {
 ### Mobile-Specific Issues
 
 #### Issue: Touch targets too small
+
 **Symptoms**: Difficult to tap on mobile devices
 **Solution**: Verify minimum touch target sizes
 
@@ -470,7 +490,7 @@ useEffect(() => {
 .tab_button {
   min-height: 44px;
   min-width: 44px;
-  
+
   @media (max-width: 768px) {
     min-height: 48px;
     min-width: 48px;
@@ -479,6 +499,7 @@ useEffect(() => {
 ```
 
 #### Issue: Navigation hidden by mobile browsers
+
 **Symptoms**: Navigation covered by browser UI
 **Solution**: Use proper viewport units and safe areas
 
@@ -493,6 +514,7 @@ useEffect(() => {
 ### Testing Recommendations
 
 #### Unit Testing
+
 ```jsx
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
@@ -504,15 +526,20 @@ test('renders all navigation items', () => {
       <BottomNavigation />
     </BrowserRouter>
   );
-  
+
   expect(screen.getByLabelText('Navigate to Home page')).toBeInTheDocument();
-  expect(screen.getByLabelText('Navigate to Live Class page')).toBeInTheDocument();
+  expect(
+    screen.getByLabelText('Navigate to Live Class page')
+  ).toBeInTheDocument();
   expect(screen.getByLabelText('Navigate to Profile page')).toBeInTheDocument();
-  expect(screen.getByLabelText('Navigate to Settings page')).toBeInTheDocument();
+  expect(
+    screen.getByLabelText('Navigate to Settings page')
+  ).toBeInTheDocument();
 });
 ```
 
 #### Accessibility Testing
+
 ```jsx
 import { axe, toHaveNoViolations } from 'jest-axe';
 
@@ -524,13 +551,14 @@ test('should not have accessibility violations', async () => {
       <BottomNavigation />
     </BrowserRouter>
   );
-  
+
   const results = await axe(container);
   expect(results).toHaveNoViolations();
 });
 ```
 
 #### Visual Regression Testing
+
 ```jsx
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
@@ -542,7 +570,7 @@ test('matches visual snapshot', () => {
       <BottomNavigation />
     </BrowserRouter>
   );
-  
+
   expect(container.firstChild).toMatchSnapshot();
 });
 ```
@@ -560,13 +588,13 @@ test('matches visual snapshot', () => {
 
 ### Feature Compatibility
 
-| Feature | Chrome | Firefox | Safari | Edge | Mobile |
-|---------|--------|---------|--------|------|--------|
-| CSS Grid | ✅ | ✅ | ✅ | ✅ | ✅ |
-| CSS Custom Properties | ✅ | ✅ | ✅ | ✅ | ✅ |
-| CSS Media Queries Level 5 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| ARIA Support | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Touch Events | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Feature                   | Chrome | Firefox | Safari | Edge | Mobile |
+| ------------------------- | ------ | ------- | ------ | ---- | ------ |
+| CSS Grid                  | ✅     | ✅      | ✅     | ✅   | ✅     |
+| CSS Custom Properties     | ✅     | ✅      | ✅     | ✅   | ✅     |
+| CSS Media Queries Level 5 | ✅     | ✅      | ✅     | ✅   | ✅     |
+| ARIA Support              | ✅     | ✅      | ✅     | ✅   | ✅     |
+| Touch Events              | ✅     | ✅      | ✅     | ✅   | ✅     |
 
 ### Polyfills
 
@@ -585,28 +613,33 @@ import 'regenerator-runtime/runtime';
 If migrating from an older navigation component:
 
 1. **Update imports**:
+
    ```jsx
    // ❌ Old import
    import Navigation from './Navigation';
-   
+
    // ✅ New import
    import BottomNavigation from './BottomNavigation';
    ```
 
 2. **Remove custom props** (component is now self-contained):
+
    ```jsx
    // ❌ Old usage with props
    <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-   
+
    // ✅ New usage (no props needed)
    <BottomNavigation />
    ```
 
 3. **Update CSS** (remove custom navigation styles):
+
    ```css
    /* ❌ Remove old navigation styles */
-   .old-navigation { /* ... */ }
-   
+   .old-navigation {
+     /* ... */
+   }
+
    /* ✅ Component is fully styled */
    ```
 
@@ -654,4 +687,4 @@ For issues, questions, or contributions:
 
 ---
 
-*Last updated: December 2024*
+_Last updated: December 2024_

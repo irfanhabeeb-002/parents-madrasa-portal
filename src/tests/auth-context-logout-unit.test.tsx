@@ -1,9 +1,9 @@
 /**
  * AuthContext Logout Function Unit Tests
- * 
+ *
  * Focused unit tests for the AuthContext logout function
  * Testing all edge cases, error scenarios, and retry mechanisms
- * 
+ *
  * Requirements covered: 1.2, 1.5, 3.1, 3.2, 3.4, 4.1, 4.2, 4.3
  */
 
@@ -18,11 +18,19 @@ const createAdvancedStorageMock = () => {
   const storage: Record<string, string> = {};
   return {
     getItem: vi.fn((key: string) => storage[key] || null),
-    setItem: vi.fn((key: string, value: string) => { storage[key] = value; }),
-    removeItem: vi.fn((key: string) => { delete storage[key]; }),
-    clear: vi.fn(() => { Object.keys(storage).forEach(key => delete storage[key]); }),
+    setItem: vi.fn((key: string, value: string) => {
+      storage[key] = value;
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete storage[key];
+    }),
+    clear: vi.fn(() => {
+      Object.keys(storage).forEach(key => delete storage[key]);
+    }),
     key: vi.fn((index: number) => Object.keys(storage)[index] || null),
-    get length() { return Object.keys(storage).length; },
+    get length() {
+      return Object.keys(storage).length;
+    },
   };
 };
 
@@ -91,7 +99,9 @@ describe('AuthContext Logout Function Unit Tests', () => {
       });
 
       // Verify logout results
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
       expect(result.current.user).toBeNull();
       expect(result.current.loading).toBe(false);
       expect(result.current.error).toBeNull();
@@ -152,8 +162,10 @@ describe('AuthContext Logout Function Unit Tests', () => {
       ];
 
       // Mock localStorage.key to return auth keys
-      localStorageMock.key.mockImplementation((index) => authKeys[index] || null);
-      Object.defineProperty(localStorageMock, 'length', { value: authKeys.length });
+      localStorageMock.key.mockImplementation(index => authKeys[index] || null);
+      Object.defineProperty(localStorageMock, 'length', {
+        value: authKeys.length,
+      });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -162,7 +174,9 @@ describe('AuthContext Logout Function Unit Tests', () => {
       });
 
       // Verify primary cleanup
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('manualAuthUser');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'manualAuthUser'
+      );
     });
 
     it('should clean both localStorage and sessionStorage', async () => {
@@ -248,7 +262,7 @@ describe('AuthContext Logout Function Unit Tests', () => {
 
     it('should handle network-related errors specifically', async () => {
       localStorageMock.removeItem.mockImplementation(() => {
-        const error = new Error('Network request failed');
+        const _error = new Error('Network request failed');
         error.name = 'NetworkError';
         throw error;
       });
@@ -260,7 +274,9 @@ describe('AuthContext Logout Function Unit Tests', () => {
           await result.current.logout();
         } catch (error: any) {
           expect(error.message).toContain('Network error during logout');
-          expect(error.actionableGuidance).toContain('Check your internet connection');
+          expect(error.actionableGuidance).toContain(
+            'Check your internet connection'
+          );
         }
       });
     });
@@ -298,7 +314,9 @@ describe('AuthContext Logout Function Unit Tests', () => {
         try {
           await result.current.logout();
         } catch (error: any) {
-          expect(error.message).toContain('Logout failed after multiple attempts');
+          expect(error.message).toContain(
+            'Logout failed after multiple attempts'
+          );
           expect(error.actionableGuidance).toContain('Please refresh the page');
           expect(error.retryCount).toBeGreaterThanOrEqual(3);
         }
@@ -348,7 +366,7 @@ describe('AuthContext Logout Function Unit Tests', () => {
     });
 
     it('should maintain loading state during retry attempts', async () => {
-      let callCount = 0;
+      const callCount = 0;
       localStorageMock.removeItem.mockImplementation(() => {
         callCount++;
         if (callCount <= 2) {

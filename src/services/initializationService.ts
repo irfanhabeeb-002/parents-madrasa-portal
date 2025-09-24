@@ -14,7 +14,7 @@ export class InitializationService {
   private static status: InitializationStatus = {
     firebase: false,
     network: false,
-    offlinePersistence: false
+    offlinePersistence: false,
   };
 
   /**
@@ -26,7 +26,7 @@ export class InitializationService {
     }
 
     try {
-      console.log('🚀 Initializing Parents Madrasa Portal services...');
+      console.warn('🚀 Initializing Parents Madrasa Portal services...');
 
       // Initialize network monitoring first
       await this.initializeNetworkService();
@@ -40,13 +40,14 @@ export class InitializationService {
       }
 
       this.initialized = true;
-      console.log('✅ All services initialized successfully');
+      console.warn('✅ All services initialized successfully');
 
       return this.status;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown initialization error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown initialization error';
       console.error('❌ Service initialization failed:', errorMessage);
-      
+
       this.status.error = errorMessage;
       return this.status;
     }
@@ -59,7 +60,7 @@ export class InitializationService {
     try {
       NetworkService.initialize();
       this.status.network = true;
-      console.log('📡 Network service initialized');
+      console.warn('📡 Network service initialized');
     } catch (error) {
       console.error('Failed to initialize network service:', error);
       throw error;
@@ -74,10 +75,10 @@ export class InitializationService {
       // Initialize offline persistence
       await FirebaseService.initializeOfflinePersistence();
       this.status.offlinePersistence = true;
-      console.log('💾 Firebase offline persistence initialized');
+      console.warn('💾 Firebase offline persistence initialized');
 
       this.status.firebase = true;
-      console.log('🔥 Firebase services initialized');
+      console.warn('🔥 Firebase services initialized');
     } catch (error) {
       console.error('Failed to initialize Firebase services:', error);
       // Don't throw here - app can still work with mock data
@@ -117,9 +118,9 @@ export class InitializationService {
       this.status = {
         firebase: false,
         network: false,
-        offlinePersistence: false
+        offlinePersistence: false,
       };
-      console.log('🧹 Services cleaned up');
+      console.warn('🧹 Services cleaned up');
     } catch (error) {
       console.error('Error during cleanup:', error);
     }

@@ -5,14 +5,11 @@ interface SimpleLoginFormProps {
   onSuccess?: () => void;
 }
 
-export const SimpleLoginForm: React.FC<SimpleLoginFormProps> = ({ onSuccess }) => {
-  const { 
-    loginWithPhone, 
-    loading, 
-    error, 
-    clearError 
-  } = useAuth();
-  
+export const SimpleLoginForm: React.FC<SimpleLoginFormProps> = ({
+  onSuccess,
+}) => {
+  const { loginWithPhone, loading, error, clearError } = useAuth();
+
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneError, setPhoneError] = useState('');
 
@@ -24,24 +21,24 @@ export const SimpleLoginForm: React.FC<SimpleLoginFormProps> = ({ onSuccess }) =
 
   const validatePhone = (): boolean => {
     const cleanPhone = phoneNumber.replace(/\s+/g, '').replace(/[^\d]/g, '');
-    
+
     if (!phoneNumber.trim()) {
       setPhoneError('Phone number is required');
       return false;
     }
-    
+
     if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
       setPhoneError('Please enter a valid 10-digit Indian mobile number');
       return false;
     }
-    
+
     setPhoneError('');
     return true;
   };
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validatePhone()) {
       return;
     }
@@ -58,7 +55,7 @@ export const SimpleLoginForm: React.FC<SimpleLoginFormProps> = ({ onSuccess }) =
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPhoneNumber(value);
-    
+
     // Clear errors when user starts typing
     if (phoneError) {
       setPhoneError('');
@@ -84,16 +81,19 @@ export const SimpleLoginForm: React.FC<SimpleLoginFormProps> = ({ onSuccess }) =
 
       <form onSubmit={handlePhoneSubmit} className="space-y-4">
         <div>
-          <label 
-            htmlFor="phone" 
+          <label
+            htmlFor="phone"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
             Phone Number
-            <span className="block text-sm text-gray-500 font-malayalam" lang="ml">
+            <span
+              className="block text-sm text-gray-500 font-malayalam"
+              lang="ml"
+            >
               ഫോൺ നമ്പർ
             </span>
           </label>
-          
+
           <input
             id="phone"
             type="tel"
@@ -111,13 +111,17 @@ export const SimpleLoginForm: React.FC<SimpleLoginFormProps> = ({ onSuccess }) =
             aria-invalid={!!(phoneError || error)}
             disabled={loading}
           />
-          
+
           {phoneError && (
-            <p id="phone-error" className="mt-2 text-sm text-red-600" role="alert">
+            <p
+              id="phone-error"
+              className="mt-2 text-sm text-red-600"
+              role="alert"
+            >
               {phoneError}
             </p>
           )}
-          
+
           <p className="mt-1 text-xs text-gray-500">
             Enter your 10-digit mobile number (no OTP required)
             <span className="block font-malayalam" lang="ml">
@@ -127,7 +131,7 @@ export const SimpleLoginForm: React.FC<SimpleLoginFormProps> = ({ onSuccess }) =
         </div>
 
         {error && (
-          <div 
+          <div
             className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg"
             role="alert"
             aria-live="polite"
@@ -143,9 +147,10 @@ export const SimpleLoginForm: React.FC<SimpleLoginFormProps> = ({ onSuccess }) =
             w-full py-3 px-4 text-lg font-medium rounded-lg 
             transition-all duration-200 min-h-[48px]
             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-            ${loading 
-              ? 'bg-gray-400 text-gray-700 cursor-not-allowed' 
-              : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800'
+            ${
+              loading
+                ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800'
             }
           `}
           aria-label="Login with phone number"

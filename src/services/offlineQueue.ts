@@ -2,7 +2,11 @@
 
 interface QueueItem {
   id: string;
-  type: 'attendance' | 'exam-result' | 'exercise-result' | 'notification-preference';
+  type:
+    | 'attendance'
+    | 'exam-result'
+    | 'exercise-result'
+    | 'notification-preference';
   data: any;
   timestamp: number;
   retryCount: number;
@@ -43,7 +47,7 @@ class OfflineQueueService {
     };
 
     const queue = this.getQueue();
-    
+
     // Remove oldest items if queue is full
     if (queue.length >= this.MAX_QUEUE_SIZE) {
       queue.splice(0, queue.length - this.MAX_QUEUE_SIZE + 1);
@@ -65,14 +69,14 @@ class OfflineQueueService {
     try {
       const stored = localStorage.getItem(this.QUEUE_KEY);
       if (!stored) return [];
-      
+
       const queue: QueueItem[] = JSON.parse(stored);
-      
+
       // Remove expired items
       const now = Date.now();
       const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-      
-      return queue.filter(item => (now - item.timestamp) < maxAge);
+
+      return queue.filter(item => now - item.timestamp < maxAge);
     } catch (error) {
       console.error('Error reading offline queue:', error);
       return [];
@@ -116,7 +120,7 @@ class OfflineQueueService {
         }
       } catch (error) {
         console.error(`Error processing queue item ${item.id}:`, error);
-        
+
         // Increment retry count
         item.retryCount++;
         if (item.retryCount >= item.maxRetries) {
@@ -129,7 +133,9 @@ class OfflineQueueService {
 
     // Remove processed items from queue
     if (processedIds.length > 0) {
-      const updatedQueue = queue.filter(item => !processedIds.includes(item.id));
+      const updatedQueue = queue.filter(
+        item => !processedIds.includes(item.id)
+      );
       this.saveQueue(updatedQueue);
     }
 
@@ -148,18 +154,22 @@ class OfflineQueueService {
       });
 
       if (response.ok) {
-        console.log(`Successfully processed queue item ${item.id} (${item.type})`);
-        
+        console.warn(
+          `Successfully processed queue item ${item.id} (${item.type})`
+        );
+
         // Dispatch success event
         this.dispatchQueueEvent('item-processed', {
           id: item.id,
           type: item.type,
           success: true,
         });
-        
+
         return true;
       } else {
-        console.warn(`Failed to process queue item ${item.id}: ${response.status}`);
+        console.warn(
+          `Failed to process queue item ${item.id}: ${response.status}`
+        );
         return false;
       }
     } catch (error) {
@@ -171,14 +181,14 @@ class OfflineQueueService {
   // Schedule retry for failed item
   private scheduleRetry(item: QueueItem): void {
     const delay = Math.min(1000 * Math.pow(2, item.retryCount), 30000); // Exponential backoff, max 30s
-    
+
     this.clearRetryTimeout(item.id);
-    
+
     const timeout = setTimeout(() => {
       item.retryCount++;
       this.processQueue();
     }, delay);
-    
+
     this.retryTimeouts.set(item.id, timeout);
   }
 
@@ -224,12 +234,12 @@ class OfflineQueueService {
     queue.forEach(item => {
       // Count by type
       stats.itemsByType[item.type] = (stats.itemsByType[item.type] || 0) + 1;
-      
+
       // Track oldest item
       if (!stats.oldestItem || item.timestamp < stats.oldestItem) {
         stats.oldestItem = item.timestamp;
       }
-      
+
       // Count failed items
       if (item.retryCount > 0) {
         stats.failedItems++;
@@ -243,7 +253,7 @@ class OfflineQueueService {
   initialize(): void {
     // Process queue when coming online
     window.addEventListener('online', () => {
-      console.log('Back online, processing queue...');
+      console.warn('Back online, processing queue...');
       this.processQueue();
     });
 
@@ -309,7 +319,9 @@ export const queueNotificationPreference = (preferenceData: any) => {
 
 // Hook for using offline queue in React components
 export const useOfflineQueue = () => {
-  const [queueStats, setQueueStats] = React.useState(offlineQueue.getQueueStats());
+  const [queueStats, setQueueStats] = React.useState(
+    offlineQueue.getQueueStats()
+  );
   const [isOnline, setIsOnline] = React.useState(navigator.onLine);
 
   React.useEffect(() => {
@@ -335,13 +347,19 @@ export const useOfflineQueue = () => {
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    window.addEventListener('offline-queue-item-processed', handleItemProcessed);
+    window.addEventListener(
+      'offline-queue-item-processed',
+      handleItemProcessed
+    );
 
     return () => {
       clearInterval(interval);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      window.removeEventListener('offline-queue-item-processed', handleItemProcessed);
+      window.removeEventListener(
+        'offline-queue-item-processed',
+        handleItemProcessed
+      );
     };
   }, []);
 

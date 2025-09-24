@@ -1,9 +1,9 @@
 /**
  * Logout Mobile Responsiveness and Touch Interaction Tests
- * 
+ *
  * Tests for mobile-specific functionality including touch targets,
  * responsive design, and mobile user experience
- * 
+ *
  * Requirements covered: 2.1, 2.2, 2.3, 2.4
  */
 
@@ -41,7 +41,7 @@ const mockWindowDimensions = (width: number, height: number) => {
     configurable: true,
     value: height,
   });
-  
+
   // Trigger resize event
   window.dispatchEvent(new Event('resize'));
 };
@@ -111,18 +111,20 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       // Set mobile viewport
       mockWindowDimensions(375, 667);
       mockMatchMedia(true); // Mobile media query matches
-      
+
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Check computed styles for minimum touch target
-      const styles = window.getComputedStyle(logoutButton);
+      const _styles = window.getComputedStyle(logoutButton);
       const rect = logoutButton.getBoundingClientRect();
-      
+
       // Should meet minimum 48px requirement
       expect(rect.height).toBeGreaterThanOrEqual(48);
-      
+
       // Check for proper padding that contributes to touch target
       expect(logoutButton).toHaveClass(/py-3|py-4|py-5/);
     });
@@ -131,21 +133,28 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
-      const cancelButton = screen.getByRole('button', { name: /cancel logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
+      const cancelButton = screen.getByRole('button', {
+        name: /cancel logout/i,
+      });
 
       const confirmRect = confirmButton.getBoundingClientRect();
       const cancelRect = cancelButton.getBoundingClientRect();
 
       // Buttons should have adequate spacing (at least 8px gap)
-      const gap = Math.abs(confirmRect.bottom - cancelRect.top) || 
-                  Math.abs(cancelRect.bottom - confirmRect.top) ||
-                  Math.abs(confirmRect.right - cancelRect.left) ||
-                  Math.abs(cancelRect.right - confirmRect.left);
-      
+      const gap =
+        Math.abs(confirmRect.bottom - cancelRect.top) ||
+        Math.abs(cancelRect.bottom - confirmRect.top) ||
+        Math.abs(confirmRect.right - cancelRect.left) ||
+        Math.abs(cancelRect.right - confirmRect.left);
+
       expect(gap).toBeGreaterThanOrEqual(8);
     });
 
@@ -154,10 +163,14 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockLogout.mockRejectedValue(new Error('Network error'));
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       await waitFor(() => {
@@ -181,17 +194,19 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Simulate touch sequence
       fireEvent.touchStart(logoutButton, {
-        touches: [{ clientX: 100, clientY: 100 }]
+        touches: [{ clientX: 100, clientY: 100 }],
       });
-      
+
       fireEvent.touchEnd(logoutButton, {
-        changedTouches: [{ clientX: 100, clientY: 100 }]
+        changedTouches: [{ clientX: 100, clientY: 100 }],
       });
-      
+
       fireEvent.click(logoutButton);
 
       // Should open confirmation dialog
@@ -204,11 +219,15 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
-      
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
+
       // Simulate touch on confirm button
       fireEvent.touchStart(confirmButton);
       fireEvent.touchEnd(confirmButton);
@@ -221,10 +240,12 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Check for touch-action CSS property (would be set to manipulation)
-      const styles = window.getComputedStyle(logoutButton);
+      const _styles = window.getComputedStyle(logoutButton);
       // In a real implementation, this would check for touch-action: manipulation
       expect(logoutButton).toBeInTheDocument(); // Placeholder assertion
     });
@@ -233,19 +254,21 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Simulate swipe gesture (touch start, move, end)
       fireEvent.touchStart(logoutButton, {
-        touches: [{ clientX: 100, clientY: 100 }]
+        touches: [{ clientX: 100, clientY: 100 }],
       });
-      
+
       fireEvent.touchMove(logoutButton, {
-        touches: [{ clientX: 150, clientY: 100 }]
+        touches: [{ clientX: 150, clientY: 100 }],
       });
-      
+
       fireEvent.touchEnd(logoutButton, {
-        changedTouches: [{ clientX: 150, clientY: 100 }]
+        changedTouches: [{ clientX: 150, clientY: 100 }],
       });
 
       // Should not trigger logout (swipe should be ignored)
@@ -284,11 +307,15 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const buttonContainer = screen.getByRole('button', { name: /confirm logout/i }).parentElement;
-      
+      const buttonContainer = screen.getByRole('button', {
+        name: /confirm logout/i,
+      }).parentElement;
+
       // Should have flex-col class for mobile stacking
       expect(buttonContainer).toHaveClass(/flex-col|sm:flex-row/);
     });
@@ -297,11 +324,15 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(768, 1024);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const buttonContainer = screen.getByRole('button', { name: /confirm logout/i }).parentElement;
-      
+      const buttonContainer = screen.getByRole('button', {
+        name: /confirm logout/i,
+      }).parentElement;
+
       // Should use horizontal layout on larger screens
       expect(buttonContainer).toHaveClass(/sm:flex-row/);
     });
@@ -310,12 +341,14 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
       const dialog = screen.getByRole('dialog');
       const dialogContainer = dialog.parentElement;
-      
+
       // Should have mobile-appropriate padding
       expect(dialogContainer).toHaveClass('p-4');
     });
@@ -324,34 +357,44 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(320, 568);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Should still be usable on very small screens
       expect(logoutButton).toBeVisible();
-      expect(logoutButton.getBoundingClientRect().width).toBeLessThanOrEqual(320);
+      expect(logoutButton.getBoundingClientRect().width).toBeLessThanOrEqual(
+        320
+      );
     });
   });
 
   describe('Mobile User Experience', () => {
     it('should provide appropriate feedback for touch interactions', async () => {
       mockWindowDimensions(375, 667);
-      mockLogout.mockImplementation(() => 
-        new Promise(resolve => setTimeout(resolve, 100))
+      mockLogout.mockImplementation(
+        () => new Promise(resolve => setTimeout(resolve, 100))
       );
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Simulate touch feedback
       fireEvent.touchStart(logoutButton);
-      
+
       await user.click(logoutButton);
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Should show loading state appropriate for mobile
       await waitFor(() => {
-        const loadingButton = screen.getByRole('button', { name: /logging out, please wait/i });
+        const loadingButton = screen.getByRole('button', {
+          name: /logging out, please wait/i,
+        });
         expect(loadingButton).toBeInTheDocument();
         expect(loadingButton).toHaveClass(/px-4|py-3/); // Mobile-appropriate padding
       });
@@ -362,7 +405,9 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -380,8 +425,10 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Button should have proper visual styling for mobile
       expect(logoutButton).toHaveClass(/text-sm|sm:text-base|lg:text-lg/);
       expect(logoutButton).toHaveClass(/px-4|py-3|sm:px-6|sm:py-4/);
@@ -392,10 +439,14 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockLogout.mockRejectedValue(new Error('Network error'));
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       await waitFor(() => {
@@ -420,17 +471,19 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Simulate rapid touch events
-      for (let i = 0; i < 10; i++) {
+      for (const i = 0; i < 10; i++) {
         fireEvent.touchStart(logoutButton);
         fireEvent.touchEnd(logoutButton);
       }
-      
+
       // Final click should still work
       await user.click(logoutButton);
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
@@ -438,8 +491,10 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Rapid clicks
       await user.click(logoutButton);
       await user.click(logoutButton);
@@ -452,20 +507,25 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
 
     it('should maintain smooth animations on mobile', async () => {
       mockWindowDimensions(375, 667);
-      mockLogout.mockImplementation(() => 
-        new Promise(resolve => setTimeout(resolve, 100))
+      mockLogout.mockImplementation(
+        () => new Promise(resolve => setTimeout(resolve, 100))
       );
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
-      const confirmButton = screen.getByRole('button', { name: /confirm logout/i });
+      const confirmButton = screen.getByRole('button', {
+        name: /confirm logout/i,
+      });
       await user.click(confirmButton);
 
       // Loading spinner should be present and properly styled
       await waitFor(() => {
-        const spinner = screen.getByRole('button', { name: /logging out, please wait/i })
+        const spinner = screen
+          .getByRole('button', { name: /logging out, please wait/i })
           .querySelector('svg[class*="animate-spin"]');
         expect(spinner).toBeInTheDocument();
       });
@@ -477,8 +537,10 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Should maintain ARIA attributes on mobile
       expect(logoutButton).toHaveAttribute('aria-label');
       expect(logoutButton).toHaveAttribute('aria-describedby');
@@ -488,8 +550,10 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
-      
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
+
       // Should have proper role and accessible name for voice control
       expect(logoutButton).toHaveAttribute('role', 'button');
       expect(logoutButton).toHaveAccessibleName();
@@ -499,11 +563,15 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       mockWindowDimensions(375, 667);
       renderProfile();
 
-      const logoutButton = screen.getByRole('button', { name: /logout from application/i });
+      const logoutButton = screen.getByRole('button', {
+        name: /logout from application/i,
+      });
       await user.click(logoutButton);
 
       // Screen reader announcements should be present
-      expect(screen.getByText(/logout confirmation dialog opened/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/logout confirmation dialog opened/i)
+      ).toBeInTheDocument();
     });
   });
 });

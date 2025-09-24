@@ -10,15 +10,20 @@ export { CalendarView } from './CalendarView';
 export { ExamTimer } from './ExamTimer';
 export { WhatsAppButton } from './WhatsAppButton';
 export { WhatsAppButtonDemo } from './WhatsAppButtonDemo';
-export { 
-  SkeletonLoader, 
-  SkeletonCard, 
-  SkeletonText, 
+export {
+  SkeletonLoader,
+  SkeletonCard,
+  SkeletonText,
   SkeletonCircle,
   SkeletonImage,
   SkeletonButton,
-  DashboardSkeleton
+  DashboardSkeleton,
 } from './SkeletonLoader';
-export { LazyImage, useImagePreloader, supportsWebP, generateWebPSource } from './LazyImage';
+export {
+  LazyImage,
+  useImagePreloader,
+  supportsWebP,
+  generateWebPSource,
+} from './LazyImage';
 
 // Re-export types (interfaces are exported automatically with the components)

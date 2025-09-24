@@ -13,22 +13,25 @@ class PerformanceMonitor {
   private startTimes: Partial<PerformanceMetrics> = {};
 
   startMeasurement(metric: keyof PerformanceMetrics): void {
-    if (process.env.NODE_ENV === 'development') {
+    if (typeof process !== "undefined" ? process.env.NODE_ENV === 'development') {
       this.startTimes[metric] = performance.now();
     }
   }
 
-  endMeasurement(metric: keyof PerformanceMetrics, warningThreshold: number = 16): void {
-    if (process.env.NODE_ENV === 'development' && this.startTimes[metric]) {
+  endMeasurement(
+    metric: keyof PerformanceMetrics,
+    warningThreshold: number = 16
+  ): void {
+    if (typeof process !== "undefined" ? process.env.NODE_ENV === 'development' && this.startTimes[metric]) {
       const duration = performance.now() - this.startTimes[metric]!;
       this.metrics[metric] = duration;
-      
+
       if (duration > warningThreshold) {
         console.warn(
           `InstallPrompt ${metric} took ${duration.toFixed(2)}ms (threshold: ${warningThreshold}ms) - consider optimization`
         );
       }
-      
+
       delete this.startTimes[metric];
     }
   }
@@ -54,12 +57,12 @@ class PerformanceMonitor {
   ): T {
     this.startMeasurement(metric);
     const result = fn();
-    
+
     // Use requestAnimationFrame to measure after DOM updates
     requestAnimationFrame(() => {
       this.endMeasurement(metric, warningThreshold);
     });
-    
+
     return result;
   }
 
@@ -81,11 +84,11 @@ export const installPromptPerformanceMonitor = new PerformanceMonitor();
 export const useInstallPromptPerformance = () => {
   return {
     monitor: installPromptPerformanceMonitor,
-    measureThemeChange: (fn: () => void) => 
+    measureThemeChange: (fn: () => void) =>
       installPromptPerformanceMonitor.measureSync('themeChange', fn, 16),
-    measurePositioning: (fn: () => void) => 
+    measurePositioning: (fn: () => void) =>
       installPromptPerformanceMonitor.measureSync('positioning', fn, 100),
-    measureAnimation: (fn: () => void) => 
-      installPromptPerformanceMonitor.measureSync('animation', fn, 300)
+    measureAnimation: (fn: () => void) =>
+      installPromptPerformanceMonitor.measureSync('animation', fn, 300),
   };
 };

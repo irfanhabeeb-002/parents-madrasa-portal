@@ -27,12 +27,14 @@ A comprehensive mobile-first Progressive Web Application (PWA) for Islamic educa
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd parents-madrasa-portal
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -46,11 +48,13 @@ A comprehensive mobile-first Progressive Web Application (PWA) for Islamic educa
 ### Development
 
 **Start development server:**
+
 ```bash
 npm run dev
 ```
 
 **Run with type checking:**
+
 ```bash
 npm run build:with-types
 ```
@@ -58,45 +62,53 @@ npm run build:with-types
 ### Building & Deployment
 
 **Build for production:**
+
 ```bash
 npm run build
 ```
 
 **Preview production build:**
+
 ```bash
 npm run preview
 ```
 
 **Deploy to environments:**
+
 ```bash
 npm run deploy:development
-npm run deploy:staging  
+npm run deploy:staging
 npm run deploy:production
 ```
 
 ### Testing
 
 **Run all tests:**
+
 ```bash
 npm test
 ```
 
 **Watch mode:**
+
 ```bash
 npm run test:watch
 ```
 
 **Test with UI:**
+
 ```bash
 npm run test:ui
 ```
 
 **Coverage report:**
+
 ```bash
 npm run test:coverage
 ```
 
 **Accessibility tests:**
+
 ```bash
 npm run test:accessibility
 ```
@@ -104,23 +116,27 @@ npm run test:accessibility
 ### Code Quality
 
 **Linting:**
+
 ```bash
 npm run lint
 npm run lint:fix
 ```
 
 **Formatting:**
+
 ```bash
 npm run format
 npm run format:check
 ```
 
 **Type checking:**
+
 ```bash
 npm run typecheck
 ```
 
 **Security audit:**
+
 ```bash
 npm run security:audit
 npm run security:check
@@ -129,12 +145,14 @@ npm run security:check
 ### Performance & Analysis
 
 **Bundle analysis:**
+
 ```bash
 npm run build:analyze
 npm run analyze
 ```
 
 **Lighthouse CI:**
+
 ```bash
 npm run lighthouse
 ```
@@ -221,12 +239,14 @@ public/
 ## 🛠️ Tech Stack
 
 ### Core Technologies
+
 - **Frontend**: React 19 + TypeScript 5.8
 - **Styling**: TailwindCSS v4 with custom utilities
 - **Build Tool**: Vite 6.3 with optimized configuration
 - **Router**: React Router DOM v6.30
 
 ### Integration & Services
+
 - **Authentication**: Firebase Auth 12.2 (optional) + Manual login system
 - **Video Conferencing**: Zoom Meeting SDK 4.0
 - **Database**: Firestore with security rules
@@ -234,6 +254,7 @@ public/
 - **PWA**: Vite PWA Plugin + Workbox
 
 ### Development & Quality
+
 - **Testing**: Vitest 3.2 + Testing Library + Jest-Axe
 - **Code Quality**: ESLint 9 + Prettier 3.6 + Husky 9.1
 - **Accessibility**: Axe-core + ARIA testing
@@ -241,6 +262,7 @@ public/
 - **Security**: Audit CI + Security rules
 
 ### UI & UX
+
 - **Icons**: Heroicons 2.2
 - **Accessibility**: Custom accessibility context and utilities
 - **Theming**: Multi-theme support with high contrast mode
@@ -249,6 +271,7 @@ public/
 ## 🎯 Core Features
 
 ### 📚 Educational Management
+
 - **Live Classes** with Zoom Meeting SDK integration
 - **Recorded Sessions** with playback and management
 - **Notes System** for class materials and resources
@@ -257,6 +280,7 @@ public/
 - **Progress Tracking** with detailed analytics
 
 ### 🔐 Authentication & Security
+
 - **Flexible Login System** supporting manual and Firebase authentication
 - **Session Management** with secure logout and cleanup
 - **Route Protection** with authentication guards
@@ -264,6 +288,7 @@ public/
 - **Privacy Controls** with user preference management
 
 ### 📱 Mobile Experience
+
 - **Touch-Optimized Interface** with 44px minimum touch targets
 - **Responsive Design** adapting to all screen sizes
 - **PWA Installation** with custom install prompts
@@ -271,6 +296,7 @@ public/
 - **Push Notifications** for important updates
 
 ### ♿ Accessibility Excellence
+
 - **WCAG 2.1 AA Compliance** with comprehensive testing
 - **Screen Reader Support** with proper ARIA implementation
 - **Keyboard Navigation** with logical focus management
@@ -287,15 +313,15 @@ The application supports both **manual login** (for development) and **Firebase 
 
 For easier development and testing, use these demo accounts:
 
-| Phone Number | User Name | Role |
-|--------------|-----------|------|
-| `8078769771` | Abdul Shukkoor | Parent |
-| `9400095648` | Muneer Jabbar | Parent |
-| `9388839617` | Sageer Manath | Parent |
-| `9387110300` | Rafeek M I | Parent |
-| `9895820756` | Yousuf B S | Parent |
-| `7025021695` | Irfan Habeeb | Student |
-| `9447183133` | Abdul Rasheed | Parent |
+| Phone Number | User Name      | Role    |
+| ------------ | -------------- | ------- |
+| `8078769771` | Abdul Shukkoor | Parent  |
+| `9400095648` | Muneer Jabbar  | Parent  |
+| `9388839617` | Sageer Manath  | Parent  |
+| `9387110300` | Rafeek M I     | Parent  |
+| `9895820756` | Yousuf B S     | Parent  |
+| `7025021695` | Irfan Habeeb   | Student |
+| `9447183133` | Abdul Rasheed  | Parent  |
 
 #### Firebase Authentication (Production Ready)
 
@@ -317,6 +343,7 @@ Complete Firebase integration is implemented and ready:
 4. **Test Integration**: Verify phone auth and data sync
 
 **Configuration Files:**
+
 - `src/config/firebase.ts` - Firebase configuration
 - `src/contexts/AuthContext.tsx` - Authentication logic
 - `src/components/auth/` - Login components
@@ -389,6 +416,49 @@ Comprehensive notification system with Firebase Cloud Messaging:
 - **Staging**: Pre-production testing environment
 - **Production**: Optimized build with CDN deployment
 
+### Multi-Platform Deployment
+
+The application supports deployment to both **Vercel** and **Netlify** with a unified CLI interface:
+
+```bash
+# Interactive deployment wizard (recommended)
+npm run deploy
+
+# Quick deployments
+npm run deploy:staging
+npm run deploy:production
+
+# Platform-specific deployments
+npm run deploy:vercel
+npm run deploy:netlify
+
+# Preview deployment (dry run)
+npm run deploy:dry-run
+```
+
+#### First-Time Setup
+
+```bash
+# Run the setup wizard to configure deployment preferences
+npm run deploy -- --setup
+```
+
+#### CLI Features
+
+- **🎯 Interactive Mode**: Guided deployment with platform selection
+- **⚡ Quick Deployments**: One-command deployment to any environment
+- **🔍 Auto-Detection**: Automatic platform detection based on configuration
+- **📊 Progress Monitoring**: Real-time deployment progress and validation
+- **🛡️ Safety Checks**: Pre-deployment validation and health checks
+- **📚 Documentation Generation**: Automated deployment guide creation
+
+#### Platform Support
+
+| Platform    | Features                                      | Best For               |
+| ----------- | --------------------------------------------- | ---------------------- |
+| **Vercel**  | Edge Functions, Image Optimization, Analytics | React/Next.js apps     |
+| **Netlify** | Build Plugins, Forms, Functions               | Static sites, JAMstack |
+
 ### Deployment Scripts
 
 ```bash
@@ -396,6 +466,9 @@ Comprehensive notification system with Firebase Cloud Messaging:
 npm run deploy:development
 npm run deploy:staging
 npm run deploy:production
+
+# Generate deployment documentation
+npm run docs:generate
 ```
 
 ### Production Optimizations
@@ -405,16 +478,40 @@ npm run deploy:production
 - ✅ **Service Worker** for offline functionality
 - ✅ **CDN Integration** for static asset delivery
 - ✅ **Performance Monitoring** with analytics integration
+- ✅ **Multi-Platform Support** with unified deployment interface
 
 ## 📚 Documentation
 
 ### Available Guides
 
+- [Multi-Platform Deployment Guide](DEPLOYMENT.md) - Complete deployment instructions
 - [Firebase Setup Guide](FIREBASE_SETUP.md) - Complete Firebase configuration
 - [Zoom Integration Guide](ZOOM_INTEGRATION_GUIDE.md) - Zoom SDK implementation
 - [Accessibility Improvements](ACCESSIBILITY_IMPROVEMENTS_SUMMARY.md) - WCAG compliance details
 - [Deployment Checklist](DEPLOYMENT_CHECKLIST.md) - Production deployment guide
 - [Mobile Notifications Guide](MOBILE_NOTIFICATIONS_GUIDE.md) - Push notification setup
+
+### Generated Documentation
+
+Use the documentation generator to create comprehensive deployment guides:
+
+```bash
+# Generate all deployment documentation
+npm run docs:generate
+
+# Quick generation with defaults
+npm run docs:generate-quick
+```
+
+**Generated Files:**
+
+- `docs/README.md` - Main deployment guide
+- `docs/vercel-deployment-guide.md` - Vercel-specific instructions
+- `docs/netlify-deployment-guide.md` - Netlify-specific instructions
+- `docs/troubleshooting.md` - Common issues and solutions
+- `docs/configuration-examples.md` - Configuration examples
+- `docs/best-practices.md` - Deployment best practices
+- `docs/cicd-integration.md` - CI/CD setup guide
 
 ## 🤝 Contributing
 

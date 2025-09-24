@@ -8,7 +8,10 @@ import { WhatsAppButton } from '../components/ui/WhatsAppButton';
 import { DailyBanner, AnnouncementsBanner } from '../components/notifications';
 import { useDashboard } from '../hooks/useDashboard';
 import { useNotifications } from '../contexts/NotificationContext';
-import { useNotificationListener, useClassReminderListener } from '../hooks/useNotificationListener';
+import {
+  useNotificationListener,
+  useClassReminderListener,
+} from '../hooks/useNotificationListener';
 import { useAuth } from '../contexts/AuthContext';
 import { truncateAnnouncement } from '../utils/textUtils';
 import {
@@ -16,7 +19,7 @@ import {
   PlayIcon,
   DocumentTextIcon,
   AcademicCapIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 
 export const Dashboard: React.FC = () => {
@@ -31,31 +34,40 @@ export const Dashboard: React.FC = () => {
     refreshAnnouncements,
     refreshNotifications,
     refreshTodaysClass,
-    clearError
+    clearError,
   } = useDashboard();
 
   // Notification system
   const { notifications, unreadCount } = useNotifications();
-  
+
   // Set up real-time notification listeners
   useNotificationListener({ enabled: true });
   useClassReminderListener({ enabled: true });
 
   // Get unread notifications for banner display
-  const unreadNotifications = useMemo(() =>
-    notifications.filter(notification => !notification.read),
-    [notifications]);
+  const unreadNotifications = useMemo(
+    () => notifications.filter(notification => !notification.read),
+    [notifications]
+  );
 
   // Convert announcements to the format expected by AnnouncementsBanner
-  const announcementBannerData = useMemo(() =>
-    announcements.map(announcement => ({
-      id: announcement.id,
-      message: announcement.message,
-      malayalamMessage: announcement.malayalamMessage,
-      priority: announcement.priority || 'medium' as const,
-      createdAt: announcement.createdAt instanceof Date ? announcement.createdAt : new Date(announcement.createdAt),
-      expiresAt: announcement.expiresAt ? (announcement.expiresAt instanceof Date ? announcement.expiresAt : new Date(announcement.expiresAt)) : undefined
-    })),
+  const announcementBannerData = useMemo(
+    () =>
+      announcements.map(announcement => ({
+        id: announcement.id,
+        message: announcement.message,
+        malayalamMessage: announcement.malayalamMessage,
+        priority: announcement.priority || ('medium' as const),
+        createdAt:
+          announcement.createdAt instanceof Date
+            ? announcement.createdAt
+            : new Date(announcement.createdAt),
+        expiresAt: announcement.expiresAt
+          ? announcement.expiresAt instanceof Date
+            ? announcement.expiresAt
+            : new Date(announcement.expiresAt)
+          : undefined,
+      })),
     [announcements]
   );
 
@@ -70,7 +82,9 @@ export const Dashboard: React.FC = () => {
       }
       // Handle Firestore Timestamp or string
       if (dateValue && typeof dateValue === 'object' && dateValue.seconds) {
-        return new Date(dateValue.seconds * 1000 + (dateValue.nanoseconds || 0) / 1000000);
+        return new Date(
+          dateValue.seconds * 1000 + (dateValue.nanoseconds || 0) / 1000000
+        );
       }
       return new Date(dateValue);
     };
@@ -78,51 +92,49 @@ export const Dashboard: React.FC = () => {
     return toDate(todaysClass.scheduledAt).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     });
   }, [todaysClass]);
 
   const navigationCards = [
     {
-      title: "Live Class",
+      title: 'Live Class',
       icon: <VideoCameraIcon className="w-8 h-8" />,
       onClick: () => navigate('/live-class'),
-      ariaLabel: "Join live class session"
+      ariaLabel: 'Join live class session',
     },
     {
-      title: "Recordings",
+      title: 'Recordings',
       icon: <PlayIcon className="w-8 h-8" />,
       onClick: () => navigate('/recordings'),
-      ariaLabel: "View recorded class sessions"
+      ariaLabel: 'View recorded class sessions',
     },
     {
-      title: "Notes/Exercises",
+      title: 'Notes/Exercises',
       icon: <DocumentTextIcon className="w-8 h-8" />,
       onClick: () => navigate('/notes-exercises'),
-      ariaLabel: "Access lesson notes and practice exercises"
+      ariaLabel: 'Access lesson notes and practice exercises',
     },
     {
-      title: "Exams/Attendance",
+      title: 'Exams/Attendance',
       icon: <AcademicCapIcon className="w-8 h-8" />,
       onClick: () => navigate('/exams-attendance'),
-      ariaLabel: "View exams and attendance records"
-    }
+      ariaLabel: 'View exams and attendance records',
+    },
   ];
-
-
 
   const getCardDescription = (title: string): string => {
     switch (title) {
-      case "Live Class":
-        return "Join live interactive sessions with your teachers and classmates";
-      case "Recordings":
-        return "Access recorded lessons and review past class sessions";
-      case "Notes/Exercises":
-        return "Study materials, practice exercises, and homework assignments";
-      case "Exams/Attendance":
-        return "View exam schedules, results, and track your attendance";
+      case 'Live Class':
+        return 'Join live interactive sessions with your teachers and classmates';
+      case 'Recordings':
+        return 'Access recorded lessons and review past class sessions';
+      case 'Notes/Exercises':
+        return 'Study materials, practice exercises, and homework assignments';
+      case 'Exams/Attendance':
+        return 'View exam schedules, results, and track your attendance';
       default:
-        return "Access your learning resources";
+        return 'Access your learning resources';
     }
   };
 
@@ -138,16 +150,15 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* ARIA Live Region for Screen Reader Announcements */}
-        <div 
-          aria-live="polite" 
+        <div
+          aria-live="polite"
           className="sr-only"
           id="notification-live-region"
           role="status"
           aria-label="Notification updates"
         >
-          {unreadNotifications.length > 0 && 
-            `You have ${unreadNotifications.length} new notification${unreadNotifications.length > 1 ? 's' : ''}`
-          }
+          {unreadNotifications.length > 0 &&
+            `You have ${unreadNotifications.length} new notification${unreadNotifications.length > 1 ? 's' : ''}`}
         </div>
 
         {/* Announcements Banner - Moved directly below welcome message */}
@@ -175,11 +186,11 @@ export const Dashboard: React.FC = () => {
           />
         ) : (
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-            <p className="text-gray-500 text-sm">No announcements at this time</p>
+            <p className="text-gray-500 text-sm">
+              No announcements at this time
+            </p>
           </div>
         )}
-
-
 
         {/* Main Navigation Cards */}
         <div className="grid grid-cols-2 gap-4">
@@ -196,8 +207,6 @@ export const Dashboard: React.FC = () => {
           ))}
         </div>
 
-
-
         {/* Floating WhatsApp Button */}
         <WhatsAppButton
           teacherNumber="+918078769771"
@@ -212,7 +221,10 @@ export const Dashboard: React.FC = () => {
       <div className="hidden md:block space-y-12 desktop-layout">
         {/* Welcome Section */}
         <div className="text-left desktop-welcome">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4 font-inter" style={{ fontSize: '22px' }}>
+          <h1
+            className="text-2xl font-bold text-gray-900 mb-4 font-inter"
+            style={{ fontSize: '22px' }}
+          >
             Welcome {user?.displayName || 'User'} 👋
           </h1>
         </div>
@@ -225,7 +237,9 @@ export const Dashboard: React.FC = () => {
             <div className="flex items-center">
               <ExclamationTriangleIcon className="w-8 h-8 text-red-400 mr-4" />
               <div>
-                <h3 className="text-xl font-semibold text-red-800">Unable to load today's class</h3>
+                <h3 className="text-xl font-semibold text-red-800">
+                  Unable to load today's class
+                </h3>
                 <p className="text-lg text-red-600 mt-1">{error.todaysClass}</p>
               </div>
             </div>
@@ -233,12 +247,32 @@ export const Dashboard: React.FC = () => {
         ) : todaysClass ? (
           <div className="bg-green-50 border-l-4 border-green-400 p-6 rounded-lg">
             <div className="flex items-center">
-              <svg className="w-8 h-8 text-green-400 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-8 h-8 text-green-400 mr-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <div>
-                <h3 className="text-lg font-bold text-green-800" style={{ fontSize: '18px' }}>Your class starts today at {todaysClassTime}!</h3>
-                <p className="text-base text-green-600 mt-1" style={{ fontSize: '16px' }}>{todaysClass.title}</p>
+                <h3
+                  className="text-lg font-bold text-green-800"
+                  style={{ fontSize: '18px' }}
+                >
+                  Your class starts today at {todaysClassTime}!
+                </h3>
+                <p
+                  className="text-base text-green-600 mt-1"
+                  style={{ fontSize: '16px' }}
+                >
+                  {todaysClass.title}
+                </p>
               </div>
             </div>
           </div>
@@ -254,7 +288,7 @@ export const Dashboard: React.FC = () => {
               role="button"
               tabIndex={0}
               aria-label={card.ariaLabel}
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
                   card.onClick();
@@ -263,16 +297,17 @@ export const Dashboard: React.FC = () => {
             >
               {/* Large Icon at Top */}
               <div className="desktop-card-icon">
-                {React.cloneElement(card.icon as React.ReactElement, {
-                  className: "w-full h-full",
-                  strokeWidth: 1.5
-                } as any)}
+                {React.cloneElement(
+                  card.icon as React.ReactElement,
+                  {
+                    className: 'w-full h-full',
+                    strokeWidth: 1.5,
+                  } as any
+                )}
               </div>
 
               {/* Title */}
-              <h2 className="desktop-card-title font-inter">
-                {card.title}
-              </h2>
+              <h2 className="desktop-card-title font-inter">{card.title}</h2>
 
               {/* Description */}
               <p className="desktop-card-description">
@@ -284,7 +319,10 @@ export const Dashboard: React.FC = () => {
 
         {/* Announcements Section */}
         <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-6 font-inter" style={{ fontSize: '18px' }}>
+          <h2
+            className="text-lg font-bold text-gray-900 mb-6 font-inter"
+            style={{ fontSize: '18px' }}
+          >
             Announcements
           </h2>
 
@@ -313,12 +351,22 @@ export const Dashboard: React.FC = () => {
                     <div className="w-3 h-3 bg-primary-600 rounded-full mt-2"></div>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-700 leading-relaxed" style={{ fontSize: '14px' }}>
+                    <p
+                      className="text-sm text-gray-700 leading-relaxed"
+                      style={{ fontSize: '14px' }}
+                    >
                       {truncateAnnouncement(announcement.message, 'desktop')}
                     </p>
                     {announcement.malayalamMessage && (
-                      <p className="text-sm text-gray-600 mt-2 leading-relaxed" lang="ml" style={{ fontSize: '14px' }}>
-                        {truncateAnnouncement(announcement.malayalamMessage, 'desktop')}
+                      <p
+                        className="text-sm text-gray-600 mt-2 leading-relaxed"
+                        lang="ml"
+                        style={{ fontSize: '14px' }}
+                      >
+                        {truncateAnnouncement(
+                          announcement.malayalamMessage,
+                          'desktop'
+                        )}
                       </p>
                     )}
                   </div>
@@ -326,7 +374,9 @@ export const Dashboard: React.FC = () => {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-500" style={{ fontSize: '14px' }}>No announcements at this time</p>
+            <p className="text-sm text-gray-500" style={{ fontSize: '14px' }}>
+              No announcements at this time
+            </p>
           )}
         </div>
 

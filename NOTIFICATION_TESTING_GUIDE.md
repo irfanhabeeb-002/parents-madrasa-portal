@@ -29,6 +29,7 @@ NotificationTester.checkNotificationStatus();
 ## 📋 Step-by-Step Testing Checklist
 
 ### ✅ **Step 1: Check Browser Support**
+
 ```javascript
 // In browser console:
 console.log('Notifications supported:', 'Notification' in window);
@@ -36,10 +37,12 @@ console.log('Current permission:', Notification.permission);
 ```
 
 **Expected Results:**
+
 - Should show `true` for modern browsers
 - Permission should be `default`, `granted`, or `denied`
 
 ### ✅ **Step 2: Request Permission**
+
 ```javascript
 // In browser console:
 Notification.requestPermission().then(permission => {
@@ -48,19 +51,22 @@ Notification.requestPermission().then(permission => {
 ```
 
 **Expected Results:**
+
 - Browser should show permission dialog
 - Result should be `granted` or `denied`
 
 ### ✅ **Step 3: Test Basic Browser Notification**
+
 ```javascript
 // In browser console (only works if permission granted):
 new Notification('Test', {
   body: 'This is a test notification',
-  icon: '/icons/icon-192x192.png'
+  icon: '/icons/icon-192x192.png',
 });
 ```
 
 **Expected Results:**
+
 - Should see a desktop notification
 - Should hear notification sound (if enabled)
 - Should see notification in system notification center
@@ -71,7 +77,11 @@ Use the debug panel or console:
 
 ```javascript
 // Test class reminder (will trigger in 3 seconds)
-notificationService.scheduleClassReminder('test-123', 'Test Class', new Date(Date.now() + 3000));
+notificationService.scheduleClassReminder(
+  'test-123',
+  'Test Class',
+  new Date(Date.now() + 3000)
+);
 
 // Test new content notification
 notificationService.notifyNewRecording('rec-123', 'New Recording Available');
@@ -81,6 +91,7 @@ notificationService.notifyAnnouncement('Test', 'This is a test announcement');
 ```
 
 **Expected Results:**
+
 - Should see notifications appear in system
 - Should see notifications in app's notification list
 - Should update unread count
@@ -95,6 +106,7 @@ notificationService.notifyAnnouncement('Test', 'This is a test announcement');
 ### ✅ **Step 6: Test In-App Notifications**
 
 Look for these visual indicators:
+
 - **Daily Banner**: "Your class today at [time]" on dashboard
 - **Alert Banners**: Success/error messages with ✅/❌ icons
 - **Scrolling Announcements**: Bottom banner on dashboard
@@ -106,7 +118,7 @@ Look for these visual indicators:
 
 1. **Desktop Notifications**: Should appear in system notification area
 2. **Browser Tab**: May show notification count in title
-3. **App UI**: 
+3. **App UI**:
    - Red badges on navigation items
    - Alert banners with messages
    - Notification list in profile/settings
@@ -114,6 +126,7 @@ Look for these visual indicators:
 ### **Console Logs:**
 
 Open DevTools Console and look for:
+
 ```
 🔔 Testing Notification Permission...
 ✅ Browser supports notifications
@@ -124,6 +137,7 @@ Open DevTools Console and look for:
 ### **Local Storage:**
 
 Check browser DevTools > Application > Local Storage:
+
 - `madrasa-portal-notifications`: Stored notifications
 - `madrasa-portal-notification-preferences`: User preferences
 - `madrasa-portal-scheduled-notifications`: Scheduled notifications
@@ -131,6 +145,7 @@ Check browser DevTools > Application > Local Storage:
 ## 🐛 Troubleshooting Common Issues
 
 ### **Issue: No Permission Dialog**
+
 ```javascript
 // Check if already decided:
 console.log('Permission:', Notification.permission);
@@ -140,11 +155,13 @@ Notification.requestPermission();
 ```
 
 **Solutions:**
+
 - Clear browser data for the site
 - Check browser settings for notification permissions
 - Try in incognito/private mode
 
 ### **Issue: Notifications Not Appearing**
+
 ```javascript
 // Check service status:
 NotificationTester.checkNotificationStatus();
@@ -154,24 +171,28 @@ console.log('Preferences:', notificationService.getPreferences());
 ```
 
 **Solutions:**
+
 - Verify permission is granted
 - Check notification preferences are enabled
 - Verify browser/OS notification settings
 - Check Do Not Disturb mode
 
 ### **Issue: Notifications Appear But No Sound**
+
 - Check browser notification settings
 - Check system volume/notification sounds
 - Check Do Not Disturb mode
 - Test with `payload.silent: false`
 
 ### **Issue: Scheduled Notifications Not Working**
+
 ```javascript
 // Check scheduled notifications:
 console.log('Scheduled:', notificationService.getScheduledNotifications());
 ```
 
 **Solutions:**
+
 - Verify system time is correct
 - Check if browser tab is active (some browsers limit background notifications)
 - Check browser power saving modes
@@ -179,17 +200,20 @@ console.log('Scheduled:', notificationService.getScheduledNotifications());
 ## 📱 Testing on Different Devices
 
 ### **Desktop Browsers:**
+
 - Chrome: Full support
-- Firefox: Full support  
+- Firefox: Full support
 - Safari: Full support
 - Edge: Full support
 
 ### **Mobile Browsers:**
+
 - Chrome Mobile: Limited (requires user interaction)
 - Safari iOS: Limited (requires PWA installation)
 - Firefox Mobile: Limited
 
 ### **PWA (Installed App):**
+
 - Better notification support
 - Background notifications
 - Push notifications (with service worker)
@@ -197,46 +221,53 @@ console.log('Scheduled:', notificationService.getScheduledNotifications());
 ## 🔧 Advanced Testing
 
 ### **Test Service Worker Notifications:**
+
 ```javascript
 // Register service worker notification
 navigator.serviceWorker.ready.then(registration => {
   registration.showNotification('SW Test', {
     body: 'This is from service worker',
-    icon: '/icons/icon-192x192.png'
+    icon: '/icons/icon-192x192.png',
   });
 });
 ```
 
 ### **Test Push Notifications (Future):**
+
 ```javascript
 // This would be for Firebase Cloud Messaging
 // Currently not implemented but prepared for
 ```
 
 ### **Performance Testing:**
+
 ```javascript
 // Test many notifications
-for(let i = 0; i < 10; i++) {
+for (let i = 0; i < 10; i++) {
   notificationService.notifyAnnouncement(`Test ${i}`, `Message ${i}`);
 }
 
 // Check performance
-console.log('Total notifications:', notificationService.getNotifications().length);
+console.log(
+  'Total notifications:',
+  notificationService.getNotifications().length
+);
 ```
 
 ## 📊 Expected Behavior Summary
 
-| Notification Type | Trigger | Expected Result |
-|------------------|---------|-----------------|
-| Class Reminder | 15 min before class | Desktop notification + in-app banner |
-| New Recording | Content uploaded | Desktop notification + badge |
-| New Notes | Notes uploaded | Desktop notification + badge |
-| Exam Reminder | Before exam | Desktop notification + in-app alert |
-| Announcement | Admin posts | Desktop notification + scrolling banner |
+| Notification Type | Trigger             | Expected Result                         |
+| ----------------- | ------------------- | --------------------------------------- |
+| Class Reminder    | 15 min before class | Desktop notification + in-app banner    |
+| New Recording     | Content uploaded    | Desktop notification + badge            |
+| New Notes         | Notes uploaded      | Desktop notification + badge            |
+| Exam Reminder     | Before exam         | Desktop notification + in-app alert     |
+| Announcement      | Admin posts         | Desktop notification + scrolling banner |
 
 ## 🎯 Success Criteria
 
 ✅ **Notifications are working if:**
+
 - Permission dialog appears and can be granted
 - Desktop notifications appear when triggered
 - In-app visual indicators show (banners, badges)
@@ -246,6 +277,7 @@ console.log('Total notifications:', notificationService.getNotifications().lengt
 - Malayalam translations appear correctly
 
 ❌ **Notifications need fixing if:**
+
 - No permission dialog appears
 - Desktop notifications don't show
 - Console shows errors
@@ -269,7 +301,8 @@ localStorage.removeItem('madrasa-portal-scheduled-notifications');
 
 ---
 
-**Need Help?** 
+**Need Help?**
+
 - Check browser console for error messages
 - Use the debug panel for visual testing
 - Test in different browsers/devices

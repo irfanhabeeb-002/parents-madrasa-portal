@@ -16,15 +16,24 @@ export const useKeyboardNavigation = () => {
   // Track keyboard usage
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const navigationKeys = ['Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', ' ', 'Escape'];
-      
+      const navigationKeys = [
+        'Tab',
+        'ArrowUp',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+        'Enter',
+        ' ',
+        'Escape',
+      ];
+
       if (navigationKeys.includes(event.key)) {
         setState(prev => ({
           ...prev,
           isKeyboardUser: true,
           lastKeyPressed: event.key,
         }));
-        
+
         // Add keyboard navigation class to body
         document.body.classList.add('keyboard-navigation-active');
       }
@@ -36,7 +45,7 @@ export const useKeyboardNavigation = () => {
         isKeyboardUser: false,
         lastKeyPressed: null,
       }));
-      
+
       // Remove keyboard navigation class from body
       document.body.classList.remove('keyboard-navigation-active');
     };
@@ -83,7 +92,7 @@ export const useKeyboardNavigation = () => {
     const focusableElements = root.querySelectorAll(
       'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
     );
-    
+
     const firstElement = focusableElements[0] as HTMLElement;
     if (firstElement) {
       firstElement.focus();
@@ -97,8 +106,10 @@ export const useKeyboardNavigation = () => {
     const focusableElements = root.querySelectorAll(
       'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
     );
-    
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
     if (lastElement) {
       lastElement.focus();
       return true;
@@ -106,32 +117,37 @@ export const useKeyboardNavigation = () => {
     return false;
   }, []);
 
-  const trapFocus = useCallback((container: HTMLElement, event: KeyboardEvent): void => {
-    if (event.key !== 'Tab') return;
+  const trapFocus = useCallback(
+    (container: HTMLElement, event: KeyboardEvent): void => {
+      if (event.key !== 'Tab') return;
 
-    const focusableElements = container.querySelectorAll(
-      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    );
+      const focusableElements = container.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
 
-    if (focusableElements.length === 0) return;
+      if (focusableElements.length === 0) return;
 
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[
+        focusableElements.length - 1
+      ] as HTMLElement;
 
-    if (event.shiftKey) {
-      // Shift + Tab: moving backwards
-      if (document.activeElement === firstElement) {
-        event.preventDefault();
-        lastElement.focus();
+      if (event.shiftKey) {
+        // Shift + Tab: moving backwards
+        if (document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab: moving forwards
+        if (document.activeElement === lastElement) {
+          event.preventDefault();
+          firstElement.focus();
+        }
       }
-    } else {
-      // Tab: moving forwards
-      if (document.activeElement === lastElement) {
-        event.preventDefault();
-        firstElement.focus();
-      }
-    }
-  }, []);
+    },
+    []
+  );
 
   return {
     ...state,

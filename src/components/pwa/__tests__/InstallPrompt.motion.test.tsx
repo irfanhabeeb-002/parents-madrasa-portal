@@ -15,7 +15,10 @@ import { InstallPrompt } from '../InstallPrompt';
 const createMockInstallPromptEvent = () => {
   const mockEvent = new Event('beforeinstallprompt') as any;
   mockEvent.platforms = ['web'];
-  mockEvent.userChoice = Promise.resolve({ outcome: 'accepted', platform: 'web' });
+  mockEvent.userChoice = Promise.resolve({
+    outcome: 'accepted',
+    platform: 'web',
+  });
   mockEvent.prompt = jest.fn().mockResolvedValue(undefined);
   return mockEvent;
 };
@@ -26,12 +29,14 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
   beforeEach(() => {
     // Reset DOM
     document.documentElement.className = '';
-    
+
     // Mock matchMedia for motion preferences
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: jest.fn().mockImplementation(query => ({
-        matches: query.includes('prefers-reduced-motion: reduce') ? false : false,
+        matches: query.includes('prefers-reduced-motion: reduce')
+          ? false
+          : false,
         media: query,
         onchange: null,
         addListener: jest.fn(),
@@ -71,7 +76,7 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
       await waitFor(() => {
         const banner = screen.getByRole('banner');
         expect(banner).toBeInTheDocument();
-        
+
         // Check that animation classes are not applied when motion is reduced
         expect(banner).not.toHaveClass('transition-all');
         expect(banner).not.toHaveClass('animate-slide-up-fade-in');
@@ -97,7 +102,7 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
       await waitFor(() => {
         const banner = screen.getByRole('banner');
         expect(banner).toBeInTheDocument();
-        
+
         // Check that animation classes are applied when motion is allowed
         expect(banner).toHaveClass('transition-all');
         expect(banner).toHaveClass('animate-slide-up-fade-in');
@@ -122,7 +127,9 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
       fireEvent(window, mockEvent);
 
       await waitFor(() => {
-        const installButton = screen.getByRole('button', { name: /install madrasa portal app now/i });
+        const installButton = screen.getByRole('button', {
+          name: /install madrasa portal app now/i,
+        });
         expect(installButton).toHaveClass('hover:scale-105');
         expect(installButton).toHaveClass('active:scale-95');
         expect(installButton).toHaveClass('transition-all');
@@ -145,7 +152,9 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
       fireEvent(window, mockEvent);
 
       await waitFor(() => {
-        const installButton = screen.getByRole('button', { name: /install madrasa portal app now/i });
+        const installButton = screen.getByRole('button', {
+          name: /install madrasa portal app now/i,
+        });
         expect(installButton).not.toHaveClass('hover:scale-105');
         expect(installButton).not.toHaveClass('active:scale-95');
         expect(installButton).not.toHaveClass('transition-all');
@@ -168,7 +177,9 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
       fireEvent(window, mockEvent);
 
       await waitFor(() => {
-        const closeButton = screen.getByRole('button', { name: /dismiss install banner/i });
+        const closeButton = screen.getByRole('button', {
+          name: /dismiss install banner/i,
+        });
         expect(closeButton).toHaveClass('hover:scale-105');
         expect(closeButton).toHaveClass('active:scale-95');
         expect(closeButton).toHaveClass('transition-all');
@@ -193,12 +204,16 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
       fireEvent(window, mockEvent);
 
       await waitFor(() => {
-        const learnMoreButton = screen.getByRole('button', { name: /learn more about installing/i });
+        const learnMoreButton = screen.getByRole('button', {
+          name: /learn more about installing/i,
+        });
         fireEvent.click(learnMoreButton);
       });
 
       await waitFor(() => {
-        const modalInstallButton = screen.getByRole('button', { name: /install madrasa portal app now on your device/i });
+        const modalInstallButton = screen.getByRole('button', {
+          name: /install madrasa portal app now on your device/i,
+        });
         expect(modalInstallButton).toHaveClass('hover:scale-105');
         expect(modalInstallButton).toHaveClass('active:scale-95');
         expect(modalInstallButton).toHaveClass('transition-all');
@@ -221,12 +236,16 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
       fireEvent(window, mockEvent);
 
       await waitFor(() => {
-        const learnMoreButton = screen.getByRole('button', { name: /learn more about installing/i });
+        const learnMoreButton = screen.getByRole('button', {
+          name: /learn more about installing/i,
+        });
         fireEvent.click(learnMoreButton);
       });
 
       await waitFor(() => {
-        const modalInstallButton = screen.getByRole('button', { name: /install madrasa portal app now on your device/i });
+        const modalInstallButton = screen.getByRole('button', {
+          name: /install madrasa portal app now on your device/i,
+        });
         expect(modalInstallButton).not.toHaveClass('hover:scale-105');
         expect(modalInstallButton).not.toHaveClass('active:scale-95');
         expect(modalInstallButton).not.toHaveClass('transition-all');
@@ -249,7 +268,9 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
       fireEvent(window, mockEvent);
 
       await waitFor(() => {
-        const learnMoreButton = screen.getByRole('button', { name: /learn more about installing/i });
+        const learnMoreButton = screen.getByRole('button', {
+          name: /learn more about installing/i,
+        });
         fireEvent.click(learnMoreButton);
       });
 
@@ -280,7 +301,7 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
 
       await waitFor(() => {
         const banner = screen.getByRole('banner');
-        
+
         // Verify that the component respects the theme context motion preference
         expect(banner).not.toHaveClass('transition-all');
         expect(banner).not.toHaveClass('animate-slide-up-fade-in');
@@ -304,7 +325,7 @@ describe('InstallPrompt Motion and Animation Preferences', () => {
 
       await waitFor(() => {
         const banner = screen.getByRole('banner');
-        
+
         // Verify that animations are applied when motion is allowed
         expect(banner).toHaveClass('transition-all');
         expect(banner).toHaveClass('animate-slide-up-fade-in');

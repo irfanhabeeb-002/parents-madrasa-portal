@@ -1,9 +1,9 @@
 /**
  * Browser Compatibility Check Script
- * 
+ *
  * This script can be run in the browser console to validate
  * cross-platform compatibility features for the PWA install popup.
- * 
+ *
  * Usage:
  * 1. Open browser developer tools
  * 2. Navigate to Console tab
@@ -12,32 +12,32 @@
  * 5. Review the compatibility report
  */
 
-(function() {
+(function () {
   'use strict';
 
-  console.log('🔍 PWA Install Popup - Browser Compatibility Check');
-  console.log('================================================');
+  console.warn('🔍 PWA Install Popup - Browser Compatibility Check');
+  console.warn('================================================');
 
   const results = {
     browser: {},
     features: {},
     css: {},
     pwa: {},
-    issues: []
+    issues: [],
   };
 
   // Browser Detection
   function detectBrowser() {
     const userAgent = navigator.userAgent;
     const platform = navigator.platform;
-    
+
     results.browser = {
       userAgent,
       platform,
       vendor: navigator.vendor,
       language: navigator.language,
       cookieEnabled: navigator.cookieEnabled,
-      onLine: navigator.onLine
+      onLine: navigator.onLine,
     };
 
     // Detect specific browsers
@@ -58,7 +58,9 @@
       results.browser.mobile = userAgent.includes('Mobile');
     }
 
-    console.log(`📱 Browser: ${results.browser.name} (${results.browser.mobile ? 'Mobile' : 'Desktop'})`);
+    console.warn(
+      `📱 Browser: ${results.browser.name} (${results.browser.mobile ? 'Mobile' : 'Desktop'})`
+    );
   }
 
   // Feature Detection
@@ -72,15 +74,19 @@
       touchEvents: 'ontouchstart' in window,
       pointerEvents: 'onpointerdown' in window,
       customElements: 'customElements' in window,
-      webComponents: 'customElements' in window && 'attachShadow' in Element.prototype,
+      webComponents:
+        'customElements' in window && 'attachShadow' in Element.prototype,
       intersectionObserver: 'IntersectionObserver' in window,
-      resizeObserver: 'ResizeObserver' in window
+      resizeObserver: 'ResizeObserver' in window,
     };
 
-    console.log('🔧 Feature Support:');
+    console.warn('🔧 Feature Support:');
     Object.entries(results.features).forEach(([feature, supported]) => {
-      console.log(`  ${supported ? '✅' : '❌'} ${feature}: ${supported}`);
-      if (!supported && ['serviceWorker', 'matchMedia', 'localStorage'].includes(feature)) {
+      console.warn(`  ${supported ? '✅' : '❌'} ${feature}: ${supported}`);
+      if (
+        !supported &&
+        ['serviceWorker', 'matchMedia', 'localStorage'].includes(feature)
+      ) {
         results.issues.push(`Critical feature missing: ${feature}`);
       }
     });
@@ -100,31 +106,48 @@
       transitions: CSS.supports('transition', 'all 0.3s'),
       backdropFilter: CSS.supports('backdrop-filter', 'blur(10px)'),
       safeAreaInsets: CSS.supports('padding', 'env(safe-area-inset-bottom)'),
-      displayModeStandalone: window.matchMedia('(display-mode: standalone)').matches,
-      prefersReducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-      prefersColorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches
+      displayModeStandalone: window.matchMedia('(display-mode: standalone)')
+        .matches,
+      prefersReducedMotion: window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches,
+      prefersColorScheme: window.matchMedia('(prefers-color-scheme: dark)')
+        .matches,
     };
 
     // Test specific Tailwind classes
     const tailwindClasses = [
-      'z-60', 'bottom-22', 'fixed', 'bg-primary-700', 'text-white',
-      'shadow-2xl', 'rounded-lg', 'p-4', 'md:p-5', 'max-w-md', 'mx-auto'
+      'z-60',
+      'bottom-22',
+      'fixed',
+      'bg-primary-700',
+      'text-white',
+      'shadow-2xl',
+      'rounded-lg',
+      'p-4',
+      'md:p-5',
+      'max-w-md',
+      'mx-auto',
     ];
 
     results.css.tailwindSupport = {};
     tailwindClasses.forEach(className => {
       testElement.className = className;
       const computedStyle = window.getComputedStyle(testElement);
-      results.css.tailwindSupport[className] = computedStyle.getPropertyValue('display') !== '';
+      results.css.tailwindSupport[className] =
+        computedStyle.getPropertyValue('display') !== '';
     });
 
     document.body.removeChild(testElement);
 
-    console.log('🎨 CSS Support:');
+    console.warn('🎨 CSS Support:');
     Object.entries(results.css).forEach(([feature, supported]) => {
       if (typeof supported === 'boolean') {
-        console.log(`  ${supported ? '✅' : '❌'} ${feature}: ${supported}`);
-        if (!supported && ['flexbox', 'customProperties', 'transforms'].includes(feature)) {
+        console.warn(`  ${supported ? '✅' : '❌'} ${feature}: ${supported}`);
+        if (
+          !supported &&
+          ['flexbox', 'customProperties', 'transforms'].includes(feature)
+        ) {
           results.issues.push(`Important CSS feature missing: ${feature}`);
         }
       }
@@ -140,20 +163,22 @@
       standalone: window.matchMedia('(display-mode: standalone)').matches,
       fullscreen: window.matchMedia('(display-mode: fullscreen)').matches,
       minimalUI: window.matchMedia('(display-mode: minimal-ui)').matches,
-      browser: window.matchMedia('(display-mode: browser)').matches
+      browser: window.matchMedia('(display-mode: browser)').matches,
     };
 
     // Check if service worker is registered
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(registrations => {
         results.pwa.serviceWorkerRegistered = registrations.length > 0;
-        console.log(`🔧 Service Worker: ${results.pwa.serviceWorkerRegistered ? 'Registered' : 'Not Registered'}`);
+        console.warn(
+          `🔧 Service Worker: ${results.pwa.serviceWorkerRegistered ? 'Registered' : 'Not Registered'}`
+        );
       });
     }
 
     // Check for install prompt capability
-    let installPromptAvailable = false;
-    const beforeInstallPromptHandler = (e) => {
+    const installPromptAvailable = false;
+    const beforeInstallPromptHandler = e => {
       installPromptAvailable = true;
       results.pwa.installable = true;
     };
@@ -166,20 +191,23 @@
       results.pwa.iosInstallable = !results.pwa.iosStandalone;
     }
 
-    console.log('📱 PWA Support:');
+    console.warn('📱 PWA Support:');
     Object.entries(results.pwa).forEach(([feature, value]) => {
-      console.log(`  ${value ? '✅' : '❌'} ${feature}: ${value}`);
+      console.warn(`  ${value ? '✅' : '❌'} ${feature}: ${value}`);
     });
 
     // Clean up event listener
     setTimeout(() => {
-      window.removeEventListener('beforeinstallprompt', beforeInstallPromptHandler);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        beforeInstallPromptHandler
+      );
     }, 1000);
   }
 
   // Z-Index and Positioning Tests
   function checkPositioning() {
-    console.log('📐 Testing Banner Positioning...');
+    console.warn('📐 Testing Banner Positioning...');
 
     // Create test banner
     const testBanner = document.createElement('div');
@@ -216,21 +244,22 @@
     // Test positioning
     setTimeout(() => {
       testBanner.style.opacity = '1';
-      
+
       const rect = testBanner.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
       const bottomNavHeight = 64; // Assumed bottom nav height
-      
+
       const positioning = {
         visible: rect.top >= 0 && rect.bottom <= viewportHeight,
-        aboveBottomNav: rect.bottom <= (viewportHeight - bottomNavHeight),
-        centered: Math.abs(rect.left + rect.width/2 - window.innerWidth/2) < 10,
-        properZIndex: window.getComputedStyle(testBanner).zIndex === '60'
+        aboveBottomNav: rect.bottom <= viewportHeight - bottomNavHeight,
+        centered:
+          Math.abs(rect.left + rect.width / 2 - window.innerWidth / 2) < 10,
+        properZIndex: window.getComputedStyle(testBanner).zIndex === '60',
       };
 
-      console.log('📐 Positioning Results:');
+      console.warn('📐 Positioning Results:');
       Object.entries(positioning).forEach(([test, passed]) => {
-        console.log(`  ${passed ? '✅' : '❌'} ${test}: ${passed}`);
+        console.warn(`  ${passed ? '✅' : '❌'} ${test}: ${passed}`);
         if (!passed) {
           results.issues.push(`Positioning issue: ${test} failed`);
         }
@@ -248,98 +277,131 @@
 
   // Performance Tests
   function checkPerformance() {
-    console.log('⚡ Performance Tests...');
+    console.warn('⚡ Performance Tests...');
 
     const performanceTests = {
       renderTime: 0,
       memoryUsage: 0,
-      animationSupport: false
+      animationSupport: false,
     };
 
     // Test render performance
     const startTime = performance.now();
     const testDiv = document.createElement('div');
-    testDiv.className = 'fixed bottom-22 left-4 right-4 z-60 bg-primary-700 text-white p-4 rounded-lg shadow-2xl max-w-md mx-auto';
+    testDiv.className =
+      'fixed bottom-22 left-4 right-4 z-60 bg-primary-700 text-white p-4 rounded-lg shadow-2xl max-w-md mx-auto';
     testDiv.textContent = 'Performance test element';
     document.body.appendChild(testDiv);
-    
+
     requestAnimationFrame(() => {
       performanceTests.renderTime = performance.now() - startTime;
       document.body.removeChild(testDiv);
-      
-      console.log(`⚡ Render time: ${performanceTests.renderTime.toFixed(2)}ms`);
-      
+
+      console.warn(
+        `⚡ Render time: ${performanceTests.renderTime.toFixed(2)}ms`
+      );
+
       if (performanceTests.renderTime > 100) {
-        results.issues.push(`Slow render time: ${performanceTests.renderTime.toFixed(2)}ms`);
+        results.issues.push(
+          `Slow render time: ${performanceTests.renderTime.toFixed(2)}ms`
+        );
       }
     });
 
     // Test memory usage (if available)
     if (performance.memory) {
       performanceTests.memoryUsage = performance.memory.usedJSHeapSize;
-      console.log(`💾 Memory usage: ${(performanceTests.memoryUsage / 1024 / 1024).toFixed(2)}MB`);
+      console.warn(
+        `💾 Memory usage: ${(performanceTests.memoryUsage / 1024 / 1024).toFixed(2)}MB`
+      );
     }
 
     // Test animation support
-    performanceTests.animationSupport = CSS.supports('animation', 'slideUpFadeIn 0.3s ease-out');
-    console.log(`🎬 Animation support: ${performanceTests.animationSupport ? 'Yes' : 'No'}`);
+    performanceTests.animationSupport = CSS.supports(
+      'animation',
+      'slideUpFadeIn 0.3s ease-out'
+    );
+    console.warn(
+      `🎬 Animation support: ${performanceTests.animationSupport ? 'Yes' : 'No'}`
+    );
 
     results.performance = performanceTests;
   }
 
   // Generate Report
   function generateReport() {
-    console.log('\n📊 COMPATIBILITY REPORT');
-    console.log('========================');
-    
-    console.log(`\n🌐 Platform: ${results.browser.name} on ${results.browser.platform}`);
-    console.log(`📱 Device Type: ${results.browser.mobile ? 'Mobile' : 'Desktop'}`);
-    
+    console.warn('\n📊 COMPATIBILITY REPORT');
+    console.warn('========================');
+
+    console.warn(
+      `\n🌐 Platform: ${results.browser.name} on ${results.browser.platform}`
+    );
+    console.warn(
+      `📱 Device Type: ${results.browser.mobile ? 'Mobile' : 'Desktop'}`
+    );
+
     const criticalFeatures = ['serviceWorker', 'matchMedia', 'localStorage'];
-    const supportedCritical = criticalFeatures.filter(feature => results.features[feature]);
-    
-    console.log(`\n✅ Critical Features: ${supportedCritical.length}/${criticalFeatures.length} supported`);
-    
-    const cssFeatures = ['flexbox', 'customProperties', 'transforms', 'transitions'];
+    const supportedCritical = criticalFeatures.filter(
+      feature => results.features[feature]
+    );
+
+    console.warn(
+      `\n✅ Critical Features: ${supportedCritical.length}/${criticalFeatures.length} supported`
+    );
+
+    const cssFeatures = [
+      'flexbox',
+      'customProperties',
+      'transforms',
+      'transitions',
+    ];
     const supportedCSS = cssFeatures.filter(feature => results.css[feature]);
-    
-    console.log(`🎨 CSS Features: ${supportedCSS.length}/${cssFeatures.length} supported`);
-    
+
+    console.warn(
+      `🎨 CSS Features: ${supportedCSS.length}/${cssFeatures.length} supported`
+    );
+
     if (results.issues.length > 0) {
-      console.log('\n⚠️  ISSUES FOUND:');
+      console.warn('\n⚠️  ISSUES FOUND:');
       results.issues.forEach((issue, index) => {
-        console.log(`  ${index + 1}. ${issue}`);
+        console.warn(`  ${index + 1}. ${issue}`);
       });
     } else {
-      console.log('\n✅ No critical issues found!');
+      console.warn('\n✅ No critical issues found!');
     }
 
-    console.log('\n📋 RECOMMENDATIONS:');
-    
+    console.warn('\n📋 RECOMMENDATIONS:');
+
     if (results.browser.name === 'Safari' && results.browser.mobile) {
-      console.log('  • iOS Safari detected - Test "Add to Home Screen" functionality');
-      console.log('  • Verify safe area inset handling');
-    }
-    
-    if (results.browser.name === 'Firefox') {
-      console.log('  • Firefox detected - PWA install may not be available');
-      console.log('  • Focus on banner visibility and styling');
-    }
-    
-    if (!results.features.beforeInstallPrompt) {
-      console.log('  • beforeinstallprompt not supported - Banner may not appear');
-    }
-    
-    if (!results.css.safeAreaInsets) {
-      console.log('  • Safe area insets not supported - May have positioning issues on notched devices');
+      console.warn(
+        '  • iOS Safari detected - Test "Add to Home Screen" functionality'
+      );
+      console.warn('  • Verify safe area inset handling');
     }
 
-    console.log('\n🔗 Next Steps:');
-    console.log('  1. Test actual PWA install functionality');
-    console.log('  2. Verify banner positioning with bottom navigation');
-    console.log('  3. Test in different orientations (mobile)');
-    console.log('  4. Validate accessibility with screen readers');
-    console.log('  5. Test performance under load');
+    if (results.browser.name === 'Firefox') {
+      console.warn('  • Firefox detected - PWA install may not be available');
+      console.warn('  • Focus on banner visibility and styling');
+    }
+
+    if (!results.features.beforeInstallPrompt) {
+      console.warn(
+        '  • beforeinstallprompt not supported - Banner may not appear'
+      );
+    }
+
+    if (!results.css.safeAreaInsets) {
+      console.warn(
+        '  • Safe area insets not supported - May have positioning issues on notched devices'
+      );
+    }
+
+    console.warn('\n🔗 Next Steps:');
+    console.warn('  1. Test actual PWA install functionality');
+    console.warn('  2. Verify banner positioning with bottom navigation');
+    console.warn('  3. Test in different orientations (mobile)');
+    console.warn('  4. Validate accessibility with screen readers');
+    console.warn('  5. Test performance under load');
 
     // Return results for programmatic access
     return results;
@@ -352,11 +414,10 @@
   checkPWASupport();
   checkPositioning();
   checkPerformance();
-  
+
   // Generate final report after a delay to allow async operations
   setTimeout(() => {
     window.pwaCompatibilityResults = generateReport();
-    console.log('\n💾 Results saved to window.pwaCompatibilityResults');
+    console.warn('\n💾 Results saved to window.pwaCompatibilityResults');
   }, 2000);
-
 })();
