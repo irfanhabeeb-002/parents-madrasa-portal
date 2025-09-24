@@ -53,7 +53,7 @@ export const SimpleLoginForm: React.FC<SimpleLoginFormProps> = ({
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    let value = e.target.value;
     setPhoneNumber(value);
 
     // Clear errors when user starts typing

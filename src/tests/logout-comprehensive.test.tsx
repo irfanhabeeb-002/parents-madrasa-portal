@@ -391,7 +391,7 @@ describe('Comprehensive Logout Functionality Tests', () => {
         </BrowserRouter>
       );
 
-      const results = await axe(container);
+      let results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 

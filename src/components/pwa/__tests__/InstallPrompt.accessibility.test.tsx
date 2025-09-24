@@ -280,7 +280,7 @@ describe('InstallPrompt Accessibility', () => {
     test('screen reader announcement element exists', () => {
       renderWithTheme(<InstallPrompt />);
 
-      const announcement = screen.getByRole('status');
+      let announcement = screen.getByRole('status');
       expect(announcement).toBeInTheDocument();
       expect(announcement).toHaveAttribute('aria-live', 'polite');
       expect(announcement).toHaveAttribute('aria-atomic', 'true');

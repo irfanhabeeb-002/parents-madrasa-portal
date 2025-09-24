@@ -320,7 +320,7 @@ describe('Final Comprehensive Logout Tests', () => {
         </FullWrapper>
       );
 
-      const results = await axe(container);
+      let results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 

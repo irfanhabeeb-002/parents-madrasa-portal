@@ -138,7 +138,7 @@ describe('Profile Error Handling and Recovery', () => {
 
   describe('Retry Logic', () => {
     it('should implement retry logic for failed logout attempts', async () => {
-      const attemptCount = 0;
+      let attemptCount = 0;
       mockLocalStorage.removeItem.mockImplementation(() => {
         attemptCount++;
         if (attemptCount <= 2) {
@@ -195,7 +195,7 @@ describe('Profile Error Handling and Recovery', () => {
     });
 
     it('should provide retry button that works', async () => {
-      const shouldFail = true;
+      let shouldFail = true;
       mockLocalStorage.removeItem.mockImplementation(() => {
         if (shouldFail) {
           throw new Error('Temporary error');

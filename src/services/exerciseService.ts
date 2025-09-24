@@ -452,7 +452,7 @@ export class ExerciseService extends FirebaseService {
     updates: Partial<ExamAttempt>
   ): Promise<ApiResponse<ExamAttempt | null>> {
     try {
-      const attempts = await StorageService.getArray<ExamAttempt>(
+      let attempts = await StorageService.getArray<ExamAttempt>(
         this.ATTEMPTS_STORAGE_KEY
       );
       const attemptIndex = attempts.findIndex(a => a.id === attemptId);
@@ -496,7 +496,7 @@ export class ExerciseService extends FirebaseService {
       const attempts = await StorageService.getArray<ExamAttempt>(
         this.ATTEMPTS_STORAGE_KEY
       );
-      const attempt = attempts.find(a => a.id === attemptId);
+      let attempt = attempts.find(a => a.id === attemptId);
 
       if (!attempt) {
         return {

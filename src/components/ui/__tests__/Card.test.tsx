@@ -177,7 +177,7 @@ describe('Card', () => {
         icon={<MockIcon />}
       />
     );
-    const results = await axe(container);
+    let results = await axe(container);
     expect(results).toHaveNoViolations();
   });
 

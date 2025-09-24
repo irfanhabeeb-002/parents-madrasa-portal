@@ -366,7 +366,7 @@ describe('AuthContext Logout Function Unit Tests', () => {
     });
 
     it('should maintain loading state during retry attempts', async () => {
-      const callCount = 0;
+      let callCount = 0;
       localStorageMock.removeItem.mockImplementation(() => {
         callCount++;
         if (callCount <= 2) {

@@ -18,7 +18,7 @@
   console.warn('🔍 PWA Install Popup - Browser Compatibility Check');
   console.warn('================================================');
 
-  const results = {
+  let results = {
     browser: {},
     features: {},
     css: {},
@@ -177,7 +177,7 @@
     }
 
     // Check for install prompt capability
-    const installPromptAvailable = false;
+    let installPromptAvailable = false;
     const beforeInstallPromptHandler = e => {
       installPromptAvailable = true;
       results.pwa.installable = true;

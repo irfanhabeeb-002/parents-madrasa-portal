@@ -163,7 +163,7 @@ const validateProductionConfig = (config: EnvironmentConfig): void => {
   const missingFields: string[] = [];
 
   requiredFields.forEach(field => {
-    const value = getNestedValue(config, field);
+    let value = getNestedValue(config, field);
     if (!value) {
       missingFields.push(field);
     }

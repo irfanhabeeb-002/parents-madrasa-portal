@@ -171,7 +171,7 @@ export const BottomNavigation: React.FC = () => {
   // Update active tab index when location changes
   useEffect(() => {
     const currentPath = location.pathname;
-    const index = navigationItems.findIndex(item => {
+    let index = navigationItems.findIndex(item => {
       if (item.path === '/') {
         return currentPath === '/';
       }
@@ -254,7 +254,7 @@ export const BottomNavigation: React.FC = () => {
     message: string,
     priority: 'polite' | 'assertive' = 'polite'
   ) => {
-    const announcement = document.createElement('div');
+    let announcement = document.createElement('div');
     announcement.setAttribute('aria-live', priority);
     announcement.setAttribute('aria-atomic', 'true');
     announcement.className =
@@ -283,7 +283,7 @@ export const BottomNavigation: React.FC = () => {
     const currentItem = navigationItems.find(item => item.path === path);
     const hasNotifications = path === '/live-class' && classBadge.visible;
 
-    const announcement = `Navigated to ${label} page`;
+    let announcement = `Navigated to ${label} page`;
     if (hasNotifications) {
       announcement += `. ${classBadge.count} class reminder${classBadge.count > 1 ? 's' : ''} available`;
     }

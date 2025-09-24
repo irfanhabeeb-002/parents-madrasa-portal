@@ -32,7 +32,7 @@ const colorCombinations = [
 
 // Convert hex to RGB
 function hexToRgb(hex) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
         r: parseInt(result[1], 16),
@@ -75,7 +75,7 @@ function checkWCAGCompliance(ratio) {
 console.warn('🎨 Color Contrast Accessibility Audit');
 console.warn('=====================================\n');
 
-const allPassed = true;
+let allPassed = true;
 
 colorCombinations.forEach(combo => {
   const ratio = getContrastRatio(combo.foreground, combo.background);

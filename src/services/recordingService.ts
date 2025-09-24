@@ -603,7 +603,7 @@ export class RecordingService extends FirebaseService {
       // Update view count in Firestore
       try {
         const service = RecordingService.getInstance();
-        const recording = await service.getById<FirebaseRecording>(recordingId);
+        let recording = await service.getById<FirebaseRecording>(recordingId);
 
         if (recording) {
           await service.update<Partial<FirebaseRecording>>(recordingId, {

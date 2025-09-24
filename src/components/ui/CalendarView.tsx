@@ -133,7 +133,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const weekEnd = new Date(currentWeekStart);
     weekEnd.setDate(currentWeekStart.getDate() + 6);
 
-    for (const i = 0; i < 7; i++) {
+    for (let i = 0; i < 7; i++) {
       const date = new Date(currentWeekStart);
       date.setDate(currentWeekStart.getDate() + i);
 
@@ -165,7 +165,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     endDate.setDate(endDate.getDate() + 41); // 6 weeks
 
     for (
-      const date = new Date(startDate);
+      let date = new Date(startDate);
       date <= endDate;
       date.setDate(date.getDate() + 1)
     ) {
@@ -185,8 +185,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const handlePrevMonth = () => {
-    const newMonth = currentMonth - 1;
-    const newYear = currentYear;
+    let newMonth = currentMonth - 1;
+    let newYear = currentYear;
 
     if (newMonth < 1) {
       newMonth = 12;
@@ -199,8 +199,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const handleNextMonth = () => {
-    const newMonth = currentMonth + 1;
-    const newYear = currentYear;
+    let newMonth = currentMonth + 1;
+    let newYear = currentYear;
 
     if (newMonth > 12) {
       newMonth = 1;

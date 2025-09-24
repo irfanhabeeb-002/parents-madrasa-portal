@@ -56,7 +56,7 @@ class PerformanceMonitor {
     warningThreshold: number = 16
   ): T {
     this.startMeasurement(metric);
-    const result = fn();
+    let result = fn();
 
     // Use requestAnimationFrame to measure after DOM updates
     requestAnimationFrame(() => {

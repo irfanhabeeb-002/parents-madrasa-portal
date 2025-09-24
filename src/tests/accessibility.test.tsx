@@ -102,7 +102,7 @@ describe('Accessibility Tests', () => {
         </TestWrapper>
       );
 
-      const results = await axe(container);
+      let results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 

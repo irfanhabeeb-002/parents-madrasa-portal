@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const storedUser = localStorage.getItem('manualAuthUser');
     if (storedUser) {
       try {
-        const userData = JSON.parse(storedUser);
+        let userData = JSON.parse(storedUser);
         setUser(userData);
         console.warn('Restored user session:', userData.displayName);
       } catch (error) {
@@ -265,7 +265,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         // Scan and remove any keys that might contain user data
         const allLocalStorageKeys = [];
-        for (const i = 0; i < localStorage.length; i++) {
+        for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
           if (key) {
             allLocalStorageKeys.push(key);
@@ -291,7 +291,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         // Also clean sessionStorage
         const allSessionStorageKeys = [];
-        for (const i = 0; i < sessionStorage.length; i++) {
+        for (let i = 0; i < sessionStorage.length; i++) {
           const key = sessionStorage.key(i);
           if (key) {
             allSessionStorageKeys.push(key);
@@ -378,8 +378,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       // Create user-friendly error messages with actionable guidance
-      const userFriendlyMessage = 'Failed to logout completely.';
-      const actionableGuidance = 'Please try again or refresh the page.';
+      let userFriendlyMessage = 'Failed to logout completely.';
+      let actionableGuidance = 'Please try again or refresh the page.';
 
       if (
         error.message?.includes('localStorage') ||

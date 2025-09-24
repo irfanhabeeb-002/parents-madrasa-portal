@@ -152,7 +152,7 @@ describe('InstallPrompt Visual Regression Tests', () => {
         { theme: 'light', isHighContrast: true },
       ];
 
-      for (const themeConfig of themes) {
+      for (let themeConfig of themes) {
         mockThemeContext.theme = themeConfig.theme as 'light' | 'dark';
         mockThemeContext.isHighContrast = themeConfig.isHighContrast;
 
@@ -482,7 +482,7 @@ describe('InstallPrompt Visual Regression Tests', () => {
         { theme: 'light', isHighContrast: true },
       ];
 
-      for (const themeConfig of themes) {
+      for (let themeConfig of themes) {
         mockThemeContext.theme = themeConfig.theme as 'light' | 'dark';
         mockThemeContext.isHighContrast = themeConfig.isHighContrast;
 

@@ -394,7 +394,7 @@ export class SearchService {
     const keys = field.split('.');
     let value = item;
 
-    for (const key of keys) {
+    for (let key of keys) {
       value = value?.[key];
       if (value === undefined || value === null) {
         return '';
@@ -540,7 +540,7 @@ export class SearchService {
     items: T[],
     options?: PaginationOptions
   ): T[] {
-    const result = [...items];
+    let result = [...items];
 
     // Apply sorting
     if (options?.orderBy) {

@@ -235,7 +235,7 @@ describe('PWA Functionality Tests', () => {
       });
 
       // Process offline queue
-      for (const operation of offlineQueue) {
+      for (let operation of offlineQueue) {
         await fetch(operation.url, {
           method: 'POST',
           body: JSON.stringify(operation.data),

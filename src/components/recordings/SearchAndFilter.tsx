@@ -52,7 +52,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
+      let value = e.target.value;
       setLocalSearchQuery(value);
 
       // Auto-search after a short delay for better UX

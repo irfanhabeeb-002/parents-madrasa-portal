@@ -707,7 +707,7 @@ export class DataValidationService {
 
     const allErrors = validationResults.flatMap(r => r.errors);
     const totalErrors = allErrors.length;
-    const totalWarnings = validationResults.flatMap(r => r.warnings).length;
+    let totalWarnings = validationResults.flatMap(r => r.warnings).length;
 
     // Count common errors
     const errorCounts: Record<string, { count: number; message: string }> = {};

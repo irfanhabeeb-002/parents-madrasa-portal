@@ -188,7 +188,7 @@ describe('Logout Integration Tests', () => {
 
   describe('Error Handling Integration', () => {
     it('should display error message when logout fails', async () => {
-      const errorMessage = 'Network connection failed';
+      let errorMessage = 'Network connection failed';
       mockLogout.mockRejectedValue(new Error(errorMessage));
       renderProfile();
 

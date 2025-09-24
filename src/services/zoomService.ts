@@ -687,7 +687,7 @@ export class ZoomService {
         return { success: false, error: recordingsResponse.error };
       }
 
-      const recording = recordingsResponse.data.meetings.find(
+      let recording = recordingsResponse.data.meetings.find(
         rec => rec.id === recordingId
       );
       return {

@@ -79,7 +79,7 @@ export const CalendarExample: React.FC<CalendarExampleProps> = ({
     );
   }
 
-  const attendanceData = getAttendanceDataForCalendar();
+  let attendanceData = getAttendanceDataForCalendar();
 
   return (
     <div className={`space-y-4 ${className}`}>

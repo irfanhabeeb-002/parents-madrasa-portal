@@ -116,7 +116,7 @@ describe('Comprehensive Accessibility Audit', () => {
         </TestWrapper>
       );
 
-      const results = await axe(container);
+      let results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
@@ -348,7 +348,7 @@ describe('Comprehensive Accessibility Audit', () => {
       );
 
       // Test that cards are keyboard accessible
-      for (const card of navigationCards) {
+      for (let card of navigationCards) {
         await user.tab();
         if (document.activeElement === card) {
           expect(card).toHaveFocus();
@@ -389,7 +389,7 @@ describe('Comprehensive Accessibility Audit', () => {
           button.textContent?.includes('Send')
       );
 
-      for (const button of submitButtons) {
+      for (let button of submitButtons) {
         if (button.tabIndex >= 0) {
           await user.tab();
           if (document.activeElement === button) {
@@ -426,7 +426,7 @@ describe('Comprehensive Accessibility Audit', () => {
       // Test that focus is visible
       const _focusableElements = screen.getAllByRole('button');
 
-      for (const element of focusableElements.slice(0, 3)) {
+      for (let element of focusableElements.slice(0, 3)) {
         // Test first 3 elements
         await user.tab();
         if (document.activeElement === element) {

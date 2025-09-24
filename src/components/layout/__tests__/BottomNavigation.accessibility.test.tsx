@@ -270,7 +270,7 @@ describe('BottomNavigation Accessibility', () => {
   describe('WCAG Compliance', () => {
     it('should not have any accessibility violations', async () => {
       const { container } = renderWithProviders(<BottomNavigation />);
-      const results = await axe(container);
+      let results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 

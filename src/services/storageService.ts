@@ -191,7 +191,7 @@ export class StorageService {
     try {
       if (this.isLocalStorageAvailable) {
         let total = 0;
-        for (const key in localStorage) {
+        for (let key in localStorage) {
           if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
             total += localStorage[key].length + key.length;
           }

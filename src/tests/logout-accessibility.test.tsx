@@ -78,7 +78,7 @@ describe('Logout Accessibility Tests', () => {
     it('should have no accessibility violations in logout section', async () => {
       const { container } = renderProfile();
 
-      const results = await axe(container);
+      let results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 

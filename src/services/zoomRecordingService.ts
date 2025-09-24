@@ -384,7 +384,7 @@ export class ZoomRecordingService extends FirebaseService {
       'shared_screen',
     ];
 
-    for (const priority of priorities) {
+    for (let priority of priorities) {
       const file = files.find(
         f =>
           f.fileType === 'MP4' &&

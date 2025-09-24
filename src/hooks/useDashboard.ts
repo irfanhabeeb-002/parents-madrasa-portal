@@ -99,7 +99,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
         announcements,
       }));
     } catch (error) {
-      const errorMessage =
+      let errorMessage =
         error instanceof Error ? error.message : 'Failed to load announcements';
       setError('announcements', errorMessage);
     } finally {

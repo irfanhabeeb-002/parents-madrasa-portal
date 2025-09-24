@@ -391,7 +391,7 @@ export const ExerciseComponent: React.FC<ExerciseComponentProps> = ({
                   const hasAnswered = !!state.answers[currentQuestion.id];
                   const isCorrect = option.isCorrect;
 
-                  const optionClasses =
+                  let optionClasses =
                     'flex items-start space-x-3 p-3 border rounded-lg cursor-pointer transition-colors';
 
                   if (hasAnswered) {

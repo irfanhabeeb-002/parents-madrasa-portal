@@ -56,7 +56,7 @@ describe('Logout Functionality Debug', () => {
     expect(localStorageMock.setItem).toHaveBeenCalledWith('test', 'value');
 
     localStorageMock.getItem.mockReturnValue('value');
-    const result = localStorageMock.getItem('test');
+    let result = localStorageMock.getItem('test');
     expect(result).toBe('value');
 
     localStorageMock.removeItem('test');

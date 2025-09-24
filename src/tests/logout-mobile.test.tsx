@@ -476,7 +476,7 @@ describe('Logout Mobile Responsiveness and Touch Interaction Tests', () => {
       });
 
       // Simulate rapid touch events
-      for (const i = 0; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         fireEvent.touchStart(logoutButton);
         fireEvent.touchEnd(logoutButton);
       }

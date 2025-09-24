@@ -147,7 +147,7 @@ export const NotesExercises: React.FC = () => {
   };
 
   // Filter and search functionality
-  const filteredNotes = state.notes.filter(note => {
+  let filteredNotes = state.notes.filter(note => {
     const matchesSearch =
       !state.searchQuery ||
       note.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||

@@ -527,7 +527,7 @@ class NotificationService {
   }
 
   private removeScheduledNotification(notificationId: string): void {
-    const index = this.scheduledNotifications.findIndex(
+    let index = this.scheduledNotifications.findIndex(
       sn => sn.id === notificationId
     );
     if (index !== -1) {

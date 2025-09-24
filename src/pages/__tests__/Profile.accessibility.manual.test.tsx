@@ -74,7 +74,7 @@ describe('Profile Accessibility Manual Verification', () => {
     renderProfileWithAuth();
 
     // Check for screen reader announcement container
-    const announcement = screen.getByRole('status');
+    let announcement = screen.getByRole('status');
     expect(announcement).toBeInTheDocument();
     expect(announcement).toHaveAttribute('aria-live', 'assertive');
     expect(announcement).toHaveAttribute('aria-atomic', 'true');

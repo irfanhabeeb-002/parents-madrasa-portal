@@ -45,7 +45,7 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
   // Load settings from localStorage and detect system preferences
   useEffect(() => {
     const savedSettings = localStorage.getItem(ACCESSIBILITY_STORAGE_KEY);
-    const initialSettings = defaultSettings;
+    let initialSettings = defaultSettings;
 
     if (savedSettings) {
       try {

@@ -84,7 +84,7 @@ export const Recordings: React.FC = () => {
   }, [state.selectedSource]);
 
   const loadSyncStatus = useCallback(() => {
-    const syncStatus = RecordingService.getZoomSyncStatus();
+    let syncStatus = RecordingService.getZoomSyncStatus();
     setState(prev => ({
       ...prev,
       syncStatus,
@@ -198,7 +198,7 @@ export const Recordings: React.FC = () => {
   }, [loadRecordings]);
 
   // Filter recordings based on selected quality
-  const filteredRecordings = state.recordings.filter(recording => {
+  let filteredRecordings = state.recordings.filter(recording => {
     if (state.selectedQuality === 'all') {
       return true;
     }

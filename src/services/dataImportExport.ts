@@ -377,7 +377,7 @@ export class DataImportExportService {
     options: { replaceExisting?: boolean; skipDuplicates?: boolean }
   ): Promise<{ imported: number; skipped: number; errors: string[] }> {
     const { replaceExisting = false, skipDuplicates = true } = options;
-    const result = { imported: 0, skipped: 0, errors: [] };
+    let result = { imported: 0, skipped: 0, errors: [] };
 
     try {
       if (replaceExisting) {
@@ -391,7 +391,7 @@ export class DataImportExportService {
 
         const newItems: T[] = [];
 
-        for (const item of items) {
+        for (let item of items) {
           if (existingIds.has(item.id)) {
             if (skipDuplicates) {
               result.skipped++;
@@ -459,7 +459,7 @@ export class DataImportExportService {
       'attendance',
       'users',
     ];
-    for (const collection of collections) {
+    for (let collection of collections) {
       if (dataObj[collection] && !Array.isArray(dataObj[collection])) {
         return false;
       }

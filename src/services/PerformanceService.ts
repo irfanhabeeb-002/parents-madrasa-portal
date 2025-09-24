@@ -63,7 +63,7 @@ class PerformanceService {
 
     try {
       this.observer = new PerformanceObserver(list => {
-        for (const entry of list.getEntries()) {
+        for (let entry of list.getEntries()) {
           this.processPerformanceEntry(entry);
         }
       });
@@ -149,7 +149,7 @@ class PerformanceService {
     // Cumulative Layout Shift (CLS)
     this.observeMetric('layout-shift', entries => {
       let clsValue = 0;
-      for (const entry of entries) {
+      for (let entry of entries) {
         if (!(entry as any).hadRecentInput) {
           clsValue += (entry as any).value;
         }
@@ -410,8 +410,8 @@ class PerformanceService {
     webVitals: Record<string, number>;
   } {
     const webVitals: Record<string, number> = {};
-    const totalPageLoad = 0;
-    const pageLoadCount = 0;
+    let totalPageLoad = 0;
+    let pageLoadCount = 0;
 
     this.metrics.forEach(metric => {
       if (metric.context === 'web_vitals') {

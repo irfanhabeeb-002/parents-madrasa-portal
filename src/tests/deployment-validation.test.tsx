@@ -111,7 +111,7 @@ describe('Deployment Validation and Build Process Tests', () => {
       const jsDir = join(distPath, 'js');
       const jsFiles = require('fs').readdirSync(jsDir);
 
-      const totalSize = 0;
+      let totalSize = 0;
       jsFiles.forEach((file: string) => {
         const filePath = join(jsDir, file);
         const stats = statSync(filePath);

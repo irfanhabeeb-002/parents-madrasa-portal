@@ -60,8 +60,8 @@ export const Profile: React.FC = () => {
       console.error('Logout failed:', error);
 
       // Extract actionable guidance from enhanced error
-      const errorMessage = 'Failed to logout. Please try again.';
-      const actionableGuidance = '';
+      let errorMessage = 'Failed to logout. Please try again.';
+      let actionableGuidance = '';
 
       if (error instanceof Error) {
         errorMessage = error.message;

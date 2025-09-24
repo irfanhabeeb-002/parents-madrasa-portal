@@ -206,7 +206,7 @@ describe('Keyboard Navigation Tests', () => {
       // Tab navigation should reach the logout button
       await user.tab();
       // Continue tabbing until we reach the logout button or confirm it's reachable
-      const attempts = 0;
+      let attempts = 0;
       while (document.activeElement !== logoutButton && attempts < 10) {
         await user.tab();
         attempts++;
@@ -317,7 +317,7 @@ describe('Keyboard Navigation Tests', () => {
       expect(beforeButton).toHaveFocus();
 
       // Tab multiple times to get through navigation
-      for (const i = 0; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         await user.tab();
         if (document.activeElement === afterButton) {
           break;

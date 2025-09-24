@@ -22,7 +22,7 @@ describe('Data Operations Integration Tests', () => {
   describe('Dashboard Data Flow', () => {
     it('should fetch and process dashboard data correctly', async () => {
       const userId = 'test-user-123';
-      const result = await DashboardService.getDashboardData(userId);
+      let result = await DashboardService.getDashboardData(userId);
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
@@ -341,7 +341,7 @@ describe('Data Operations Integration Tests', () => {
     it('should retry failed operations', async () => {
       const { withRetry } = await import('../../services/dashboardService');
 
-      const attempts = 0;
+      let attempts = 0;
       const operation = vi.fn().mockImplementation(() => {
         attempts++;
         if (attempts < 3) {

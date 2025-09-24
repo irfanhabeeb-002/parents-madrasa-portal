@@ -276,7 +276,7 @@ describe('Core Session Cleanup and Security', () => {
 
     it('should handle retry logic for failed logout attempts', async () => {
       // Setup: Mock intermittent failure
-      const callCount = 0;
+      let callCount = 0;
       localStorageMock.removeItem.mockImplementation(() => {
         callCount++;
         if (callCount <= 2) {

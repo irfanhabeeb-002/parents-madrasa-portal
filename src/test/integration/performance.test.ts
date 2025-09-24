@@ -323,7 +323,7 @@ describe('Performance Tests', () => {
         pendingRequests.set(requestUrl, promise);
 
         try {
-          const result = await promise;
+          let result = await promise;
           return result;
         } finally {
           pendingRequests.delete(requestUrl);
@@ -349,7 +349,7 @@ describe('Performance Tests', () => {
       const startTime = performance.now();
 
       // Simulate focus management
-      const currentFocusIndex = 0;
+      let currentFocusIndex = 0;
       const nextFocus = () => {
         currentFocusIndex = (currentFocusIndex + 1) % focusableElements.length;
         return focusableElements[currentFocusIndex];

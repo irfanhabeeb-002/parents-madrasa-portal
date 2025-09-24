@@ -49,7 +49,7 @@ describe('BottomNavigation Performance Tests', () => {
       const { unmount, rerender } = renderWithProviders(<BottomNavigation />);
 
       // Render multiple times
-      for (const i = 0; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         rerender(
           <BrowserRouter>
             <NotificationProvider>
@@ -83,7 +83,7 @@ describe('BottomNavigation Performance Tests', () => {
       const startTime = performance.now();
 
       // Rapid re-renders
-      for (const i = 1; i <= 20; i++) {
+      for (let i = 1; i <= 20; i++) {
         rerender(<TestComponent key={i} />);
       }
 
@@ -252,7 +252,7 @@ describe('BottomNavigation Performance Tests', () => {
       await user.click(liveClassTab);
 
       // Announcement should be created
-      const announcements = document.querySelectorAll('.sr-only');
+      let announcements = document.querySelectorAll('.sr-only');
       expect(announcements.length).toBeGreaterThan(0);
 
       // Fast forward past cleanup timeout

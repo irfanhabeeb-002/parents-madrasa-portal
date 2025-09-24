@@ -153,8 +153,8 @@ export const EnhancedExerciseComponent: React.FC<
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
-    for (const i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
@@ -513,7 +513,7 @@ export const EnhancedExerciseComponent: React.FC<
             const isSelected = selectedAnswer === option.id;
             const isCorrect = option.id === currentQuestion.answer;
 
-            const optionClasses =
+            let optionClasses =
               'flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 min-h-[44px]';
 
             if (hasAnswered) {

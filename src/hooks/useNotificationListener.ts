@@ -43,7 +43,7 @@ export const useNotificationListener = (
     // MANUAL MODE - Simulate real-time updates with polling
     // TODO: Replace with Firebase real-time listeners when enabled
 
-    const lastCheck = new Date();
+    let lastCheck = new Date();
 
     const checkForUpdates = async () => {
       try {
@@ -179,7 +179,7 @@ export const useNotificationListener = (
     const unsubscribeAnnouncements = onSnapshot(announcementsQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'added') {
-          const announcement = change.doc.data();
+          let announcement = change.doc.data();
           notifyAnnouncement(
             announcement.title,
             announcement.message,

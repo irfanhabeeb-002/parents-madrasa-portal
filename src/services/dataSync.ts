@@ -118,7 +118,7 @@ export class DataSyncService {
       let failed = 0;
       const remainingQueue: SyncQueueItem[] = [];
 
-      for (const item of queue) {
+      for (let item of queue) {
         try {
           // Simulate API call (in real implementation, this would call actual API)
           await this.simulateApiCall(item);

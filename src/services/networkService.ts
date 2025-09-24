@@ -55,7 +55,7 @@ export class NetworkService {
 
     // Return unsubscribe function
     return () => {
-      const index = this.listeners.indexOf(callback);
+      let index = this.listeners.indexOf(callback);
       if (index > -1) {
         this.listeners.splice(index, 1);
       }

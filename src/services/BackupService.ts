@@ -110,7 +110,7 @@ class BackupService {
       backupData.metadata.backupSize = new Blob([backupString]).size;
 
       // Compress if requested
-      const finalBackupData = backupString;
+      let finalBackupData = backupString;
       if (backupOptions.compress) {
         finalBackupData = await this.compressData(backupString);
       }
@@ -421,7 +421,7 @@ class BackupService {
    */
   private collectNotifications(): any {
     try {
-      const notifications = localStorage.getItem('notifications');
+      let notifications = localStorage.getItem('notifications');
       return notifications ? JSON.parse(notifications) : {};
     } catch (error) {
       logger.error('Failed to collect notifications:', error);
@@ -464,7 +464,7 @@ class BackupService {
    * Get device ID
    */
   private getDeviceId(): string {
-    const deviceId = localStorage.getItem('deviceId');
+    let deviceId = localStorage.getItem('deviceId');
     if (!deviceId) {
       deviceId = 'device_' + Math.random().toString(36).substring(2, 15);
       localStorage.setItem('deviceId', deviceId);
@@ -566,7 +566,7 @@ class BackupService {
       if (backups.length > this.MAX_BACKUPS) {
         const backupsToDelete = backups.slice(this.MAX_BACKUPS);
 
-        for (const backup of backupsToDelete) {
+        for (let backup of backupsToDelete) {
           await this.deleteBackup(backup.id);
         }
 
@@ -642,7 +642,7 @@ class BackupService {
   ): Promise<void> {
     const { data } = backupData;
 
-    for (const dataType of dataTypes) {
+    for (let dataType of dataTypes) {
       switch (dataType) {
         case 'userPreferences':
           if (data.userPreferences) {
