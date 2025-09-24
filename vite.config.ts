@@ -19,10 +19,6 @@ export default defineConfig({
       mozjpeg: { quality: 85 },
       pngquant: { quality: [0.65, 0.8] },
       webp: { quality: 85 },
-      // Generate WebP versions of images
-      webpOptions: {
-        quality: 85,
-      },
     }),
     VitePWA({
       registerType: 'autoUpdate',
