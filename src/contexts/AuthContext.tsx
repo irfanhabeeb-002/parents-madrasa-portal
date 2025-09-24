@@ -267,7 +267,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const allLocalStorageKeys = [];
         for (const i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
-          if (key) allLocalStorageKeys.push(key);
+          if (key) {
+            allLocalStorageKeys.push(key);
+          }
         }
 
         allLocalStorageKeys.forEach(key => {
@@ -291,7 +293,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const allSessionStorageKeys = [];
         for (const i = 0; i < sessionStorage.length; i++) {
           const key = sessionStorage.key(i);
-          if (key) allSessionStorageKeys.push(key);
+          if (key) {
+            allSessionStorageKeys.push(key);
+          }
         }
 
         allSessionStorageKeys.forEach(key => {

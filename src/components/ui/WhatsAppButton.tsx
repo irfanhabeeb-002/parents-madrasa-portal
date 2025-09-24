@@ -68,7 +68,9 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
 
   // Get the appropriate message
   const getWhatsAppMessage = (): string => {
-    if (message) return message;
+    if (message) {
+      return message;
+    }
     return MESSAGE_TEMPLATES[context];
   };
 

@@ -65,7 +65,9 @@ export const ExamsAttendance: React.FC = () => {
   }, [user]);
 
   const loadData = async () => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -102,7 +104,9 @@ export const ExamsAttendance: React.FC = () => {
   };
 
   const loadAttendanceRecord = async (month: number, year: number) => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     try {
       const recordResponse = await AttendanceService.getMonthlyAttendanceRecord(
@@ -119,7 +123,9 @@ export const ExamsAttendance: React.FC = () => {
   };
 
   const handleStartExam = async (exercise: Exercise) => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     try {
       setLoading(true);
@@ -177,7 +183,9 @@ export const ExamsAttendance: React.FC = () => {
   };
 
   const handleNextQuestion = () => {
-    if (!currentExam) return;
+    if (!currentExam) {
+      return;
+    }
 
     const nextIndex = examFormData.currentQuestionIndex + 1;
     if (nextIndex < currentExam.questions.length) {
@@ -199,7 +207,9 @@ export const ExamsAttendance: React.FC = () => {
   };
 
   const handleSubmitExam = async () => {
-    if (!currentAttempt) return;
+    if (!currentAttempt) {
+      return;
+    }
 
     try {
       setLoading(true);
@@ -486,7 +496,9 @@ export const ExamsAttendance: React.FC = () => {
   );
 
   const renderExamTaking = () => {
-    if (!currentExam || !currentAttempt) return null;
+    if (!currentExam || !currentAttempt) {
+      return null;
+    }
 
     const currentQuestion =
       currentExam.questions[examFormData.currentQuestionIndex];

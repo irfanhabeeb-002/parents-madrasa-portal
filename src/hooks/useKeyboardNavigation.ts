@@ -119,13 +119,17 @@ export const useKeyboardNavigation = () => {
 
   const trapFocus = useCallback(
     (container: HTMLElement, event: KeyboardEvent): void => {
-      if (event.key !== 'Tab') return;
+      if (event.key !== 'Tab') {
+        return;
+      }
 
       const focusableElements = container.querySelectorAll(
         'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
       );
 
-      if (focusableElements.length === 0) return;
+      if (focusableElements.length === 0) {
+        return;
+      }
 
       const firstElement = focusableElements[0] as HTMLElement;
       const lastElement = focusableElements[

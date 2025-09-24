@@ -30,7 +30,9 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
     }
   }, [autoHide, duration, onDismiss]);
 
-  if (!isVisible) return null;
+  if (!isVisible) {
+    return null;
+  }
 
   const getTypeStyles = () => {
     switch (type) {

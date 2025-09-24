@@ -270,7 +270,7 @@ export class RecordingService extends FirebaseService {
       }
 
       // Apply additional filtering
-      const filteredRecordings = allRecordings;
+      let filteredRecordings = allRecordings;
 
       if (options?.classSessionId) {
         filteredRecordings = filteredRecordings.filter(
@@ -295,14 +295,18 @@ export class RecordingService extends FirebaseService {
           const bValue = b[options.orderBy as keyof Recording];
           const direction = options.orderDirection === 'desc' ? -1 : 1;
 
-          if (aValue < bValue) return -1 * direction;
-          if (aValue > bValue) return 1 * direction;
+          if (aValue < bValue) {
+            return -1 * direction;
+          }
+          if (aValue > bValue) {
+            return 1 * direction;
+          }
           return 0;
         });
       }
 
       // Apply client-side pagination if offset is specified
-      const paginatedRecordings = filteredRecordings;
+      let paginatedRecordings = filteredRecordings;
       if (options?.offset) {
         const offset = options.offset;
         const limit = options.limit || 10;
@@ -333,7 +337,7 @@ export class RecordingService extends FirebaseService {
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      const recordings = [...this.mockRecordings];
+      let recordings = [...this.mockRecordings];
 
       // Apply filters
       if (options?.classSessionId) {
@@ -357,8 +361,12 @@ export class RecordingService extends FirebaseService {
           const bValue = b[options.orderBy as keyof Recording];
           const direction = options.orderDirection === 'desc' ? -1 : 1;
 
-          if (aValue < bValue) return -1 * direction;
-          if (aValue > bValue) return 1 * direction;
+          if (aValue < bValue) {
+            return -1 * direction;
+          }
+          if (aValue > bValue) {
+            return 1 * direction;
+          }
           return 0;
         });
       }
@@ -366,7 +374,7 @@ export class RecordingService extends FirebaseService {
       // Apply pagination
       const offset = options?.offset || 0;
       const limit = options?.limit || 10;
-      const paginatedRecordings = recordings.slice(offset, offset + limit);
+      let paginatedRecordings = recordings.slice(offset, offset + limit);
 
       return {
         data: paginatedRecordings,
@@ -554,7 +562,7 @@ export class RecordingService extends FirebaseService {
       // Apply pagination
       const offset = paginationOptions?.offset || 0;
       const limit = paginationOptions?.limit || 10;
-      const paginatedRecordings = allRecordings.slice(offset, offset + limit);
+      let paginatedRecordings = allRecordings.slice(offset, offset + limit);
 
       return {
         data: paginatedRecordings,
@@ -925,7 +933,7 @@ export class RecordingService extends FirebaseService {
         return searchResponse;
       }
 
-      const filteredRecordings = searchResponse.data;
+      let filteredRecordings = searchResponse.data;
 
       // Apply additional filters
       if (options?.tags && options.tags.length > 0) {

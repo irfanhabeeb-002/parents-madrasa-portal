@@ -301,7 +301,7 @@ export class ExerciseService extends FirebaseService {
     try {
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      const exercises = [...this.mockExercises];
+      let exercises = [...this.mockExercises];
 
       // Apply filters
       if (options?.noteId) {
@@ -326,8 +326,12 @@ export class ExerciseService extends FirebaseService {
           const bValue = b[options.orderBy as keyof Exercise];
           const direction = options.orderDirection === 'desc' ? -1 : 1;
 
-          if (aValue < bValue) return -1 * direction;
-          if (aValue > bValue) return 1 * direction;
+          if (aValue < bValue) {
+            return -1 * direction;
+          }
+          if (aValue > bValue) {
+            return 1 * direction;
+          }
           return 0;
         });
       }
@@ -517,7 +521,7 @@ export class ExerciseService extends FirebaseService {
 
       // Calculate results
       const detailedResults: QuestionResult[] = [];
-      const earnedPoints = 0;
+      let earnedPoints = 0;
 
       exercise.questions.forEach(question => {
         const userAnswer = attempt.answers[question.id];
@@ -537,7 +541,7 @@ export class ExerciseService extends FirebaseService {
         });
       });
 
-      const score = Math.round((earnedPoints / exercise.totalPoints) * 100);
+      let score = Math.round((earnedPoints / exercise.totalPoints) * 100);
       const timeSpent = attempt.startedAt
         ? Math.floor(
             (new Date().getTime() - new Date(attempt.startedAt).getTime()) /
@@ -706,7 +710,7 @@ export class ExerciseService extends FirebaseService {
       } = searchOptions;
       const searchTerm = caseSensitive ? query : query.toLowerCase();
 
-      const filteredExercises = this.mockExercises.filter(exercise => {
+      let filteredExercises = this.mockExercises.filter(exercise => {
         return fields.some(field => {
           const fieldValue = exercise[field as keyof Exercise];
           if (Array.isArray(fieldValue)) {

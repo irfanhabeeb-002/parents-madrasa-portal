@@ -199,7 +199,9 @@ export const Recordings: React.FC = () => {
 
   // Filter recordings based on selected quality
   const filteredRecordings = state.recordings.filter(recording => {
-    if (state.selectedQuality === 'all') return true;
+    if (state.selectedQuality === 'all') {
+      return true;
+    }
     return recording.quality === state.selectedQuality;
   });
 

@@ -30,13 +30,17 @@ export const AnnouncementsBanner: React.FC<AnnouncementsBannerProps> = ({
 
   // Filter active announcements (not expired)
   const activeAnnouncements = announcements.filter(announcement => {
-    if (!announcement.expiresAt) return true;
+    if (!announcement.expiresAt) {
+      return true;
+    }
     return new Date() < announcement.expiresAt;
   });
 
   // Auto-scroll through announcements
   useEffect(() => {
-    if (!autoScroll || activeAnnouncements.length <= 1) return;
+    if (!autoScroll || activeAnnouncements.length <= 1) {
+      return;
+    }
 
     const interval = setInterval(() => {
       setCurrentIndex(
@@ -49,7 +53,9 @@ export const AnnouncementsBanner: React.FC<AnnouncementsBannerProps> = ({
 
   // Handle scroll animation
   useEffect(() => {
-    if (activeAnnouncements.length === 0) return;
+    if (activeAnnouncements.length === 0) {
+      return;
+    }
 
     setIsScrolling(true);
     const timer = setTimeout(() => {

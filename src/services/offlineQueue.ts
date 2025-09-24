@@ -68,7 +68,9 @@ class OfflineQueueService {
   getQueue(): QueueItem[] {
     try {
       const stored = localStorage.getItem(this.QUEUE_KEY);
-      if (!stored) return [];
+      if (!stored) {
+        return [];
+      }
 
       const queue: QueueItem[] = JSON.parse(stored);
 

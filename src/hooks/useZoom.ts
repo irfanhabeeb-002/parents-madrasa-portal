@@ -100,7 +100,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
         errorMessage: err instanceof Error ? err.message : 'Unknown error',
       };
       setError(zoomError);
-      if (onError) onError(zoomError);
+      if (onError) {
+        onError(zoomError);
+      }
       return false;
     }
   }, [onError]);
@@ -118,7 +120,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
           setIsInMeeting(true);
           setIsJoining(false);
           joinTime.current = new Date();
-          if (onMeetingStart) onMeetingStart();
+          if (onMeetingStart) {
+            onMeetingStart();
+          }
 
           // Track attendance - join
           if (trackAttendance && currentMeetingId.current) {
@@ -135,7 +139,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
             trackAttendanceAction('leave');
           }
 
-          if (onMeetingEnd) onMeetingEnd();
+          if (onMeetingEnd) {
+            onMeetingEnd();
+          }
           break;
 
         case 'connecting':
@@ -152,7 +158,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
             errorMessage: 'Meeting connection failed',
           };
           setError(failError);
-          if (onError) onError(failError);
+          if (onError) {
+            onError(failError);
+          }
           break;
       }
     });
@@ -167,7 +175,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
           errorMessage: payload.reason,
         };
         setError(connectionError);
-        if (onError) onError(connectionError);
+        if (onError) {
+          onError(connectionError);
+        }
       }
     });
 
@@ -177,14 +187,18 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
       setIsJoining(false);
       currentMeetingId.current = null;
 
-      if (onMeetingEnd) onMeetingEnd();
+      if (onMeetingEnd) {
+        onMeetingEnd();
+      }
     });
 
     // Error handling
     zoomService.on('onError', (error: ZoomError) => {
       setError(error);
       setIsJoining(false);
-      if (onError) onError(error);
+      if (onError) {
+        onError(error);
+      }
     });
   }, [trackAttendance, onMeetingStart, onMeetingEnd, onError]);
 
@@ -193,7 +207,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
    */
   const trackAttendanceAction = useCallback(
     async (action: 'join' | 'leave') => {
-      if (!currentMeetingId.current) return;
+      if (!currentMeetingId.current) {
+        return;
+      }
 
       try {
         // Get user ID from auth context or localStorage
@@ -246,7 +262,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
           error: error => {
             setError(error);
             setIsJoining(false);
-            if (onError) onError(error);
+            if (onError) {
+              onError(error);
+            }
           },
         };
 
@@ -256,7 +274,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
           setIsJoining(false);
           if (result.error) {
             setError(result.error);
-            if (onError) onError(result.error);
+            if (onError) {
+              onError(result.error);
+            }
           }
           return false;
         }
@@ -271,7 +291,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
         };
         setError(joinError);
         setIsJoining(false);
-        if (onError) onError(joinError);
+        if (onError) {
+          onError(joinError);
+        }
         return false;
       }
     },
@@ -294,7 +316,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
       } else {
         if (result.error) {
           setError(result.error);
-          if (onError) onError(result.error);
+          if (onError) {
+            onError(result.error);
+          }
         }
         return false;
       }
@@ -306,7 +330,9 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
         errorMessage: err instanceof Error ? err.message : 'Unknown error',
       };
       setError(leaveError);
-      if (onError) onError(leaveError);
+      if (onError) {
+        onError(leaveError);
+      }
       return false;
     }
   }, [onError]);

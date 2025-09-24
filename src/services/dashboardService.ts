@@ -431,10 +431,14 @@ export class DashboardService {
 
       const announcements = mockAnnouncements.filter(a => {
         // Check if announcement is active
-        if (!a.isActive) return false;
+        if (!a.isActive) {
+          return false;
+        }
 
         // Check if announcement has expired
-        if (a.expiresAt && new Date() > a.expiresAt) return false;
+        if (a.expiresAt && new Date() > a.expiresAt) {
+          return false;
+        }
 
         // Check target audience
         if (
@@ -489,7 +493,7 @@ export class DashboardService {
     try {
       await new Promise(resolve => setTimeout(resolve, 200));
 
-      const notifications = mockNotifications.filter(
+      let notifications = mockNotifications.filter(
         notif => notif.userId === userId
       );
 
@@ -870,7 +874,7 @@ export const withRetry = async <T>(
 ): Promise<T> => {
   let lastError: Error;
 
-  for (const attempt = 1; attempt <= maxRetries; attempt++) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       return await operation();
     } catch (error) {

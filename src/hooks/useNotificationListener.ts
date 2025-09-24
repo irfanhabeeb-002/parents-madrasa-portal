@@ -36,7 +36,9 @@ export const useNotificationListener = (
   } = useNotifications();
 
   useEffect(() => {
-    if (!enabled || !user) return;
+    if (!enabled || !user) {
+      return;
+    }
 
     // MANUAL MODE - Simulate real-time updates with polling
     // TODO: Replace with Firebase real-time listeners when enabled
@@ -214,7 +216,9 @@ export const useClassReminderListener = (
   const { scheduleClassReminder } = useNotifications();
 
   useEffect(() => {
-    if (!enabled || !user) return;
+    if (!enabled || !user) {
+      return;
+    }
 
     const checkUpcomingClasses = async () => {
       try {

@@ -147,13 +147,17 @@ export class DataValidationService {
         (recording as any)[field],
         field
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     });
 
     // URL validation
     if (recording.videoUrl) {
       const error = this.VALIDATION_RULES.url(recording.videoUrl, 'videoUrl');
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     if (recording.thumbnailUrl) {
@@ -161,7 +165,9 @@ export class DataValidationService {
         recording.thumbnailUrl,
         'thumbnailUrl'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     // Positive numbers
@@ -170,7 +176,9 @@ export class DataValidationService {
         recording.duration,
         'duration'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     if (recording.fileSize !== undefined) {
@@ -178,7 +186,9 @@ export class DataValidationService {
         recording.fileSize,
         'fileSize'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     // Warnings
@@ -223,20 +233,26 @@ export class DataValidationService {
     ];
     requiredFields.forEach(field => {
       const error = this.VALIDATION_RULES.required((note as any)[field], field);
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     });
 
     // URL validation
     if (note.pdfUrl) {
       const error = this.VALIDATION_RULES.url(note.pdfUrl, 'pdfUrl');
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     // Array validation
     if (note.imageUrls) {
       note.imageUrls.forEach((url, index) => {
         const error = this.VALIDATION_RULES.url(url, `imageUrls[${index}]`);
-        if (error) errors.push(error);
+        if (error) {
+          errors.push(error);
+        }
       });
     }
 
@@ -246,7 +262,9 @@ export class DataValidationService {
         note.fileSize,
         'fileSize'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     if (note.pageCount !== undefined) {
@@ -254,7 +272,9 @@ export class DataValidationService {
         note.pageCount,
         'pageCount'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     // Content length warning
@@ -292,7 +312,9 @@ export class DataValidationService {
         (exercise as any)[field],
         field
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     });
 
     // Questions validation
@@ -301,7 +323,9 @@ export class DataValidationService {
         exercise.questions,
         'questions'
       );
-      if (questionsError) errors.push(questionsError);
+      if (questionsError) {
+        errors.push(questionsError);
+      }
 
       exercise.questions.forEach((question, index) => {
         const questionErrors = this.validateQuestion(
@@ -318,7 +342,9 @@ export class DataValidationService {
         exercise.passingScore,
         'passingScore'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
 
       if (exercise.passingScore > 100) {
         errors.push({
@@ -335,7 +361,9 @@ export class DataValidationService {
         exercise.maxAttempts,
         'maxAttempts'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     if (exercise.timeLimit !== undefined) {
@@ -343,7 +371,9 @@ export class DataValidationService {
         exercise.timeLimit,
         'timeLimit'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     // Warnings
@@ -392,7 +422,9 @@ export class DataValidationService {
         (question as any)[field],
         `${prefix}${field}`
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     });
 
     // MCQ specific validation
@@ -425,7 +457,9 @@ export class DataValidationService {
         question.points,
         `${prefix}points`
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     return errors;
@@ -449,7 +483,9 @@ export class DataValidationService {
         (attendance as any)[field],
         field
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     });
 
     // Date validation
@@ -459,7 +495,9 @@ export class DataValidationService {
         attendance.leftAt,
         'attendance period'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     // Duration validation
@@ -468,7 +506,9 @@ export class DataValidationService {
         attendance.duration,
         'duration'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     // Logical validation
@@ -500,19 +540,25 @@ export class DataValidationService {
     const requiredFields = ['uid', 'displayName', 'role'];
     requiredFields.forEach(field => {
       const error = this.VALIDATION_RULES.required((user as any)[field], field);
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     });
 
     // Email validation
     if (user.email) {
       const error = this.VALIDATION_RULES.email(user.email, 'email');
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     // Phone validation
     if (user.phone) {
       const error = this.VALIDATION_RULES.phone(user.phone, 'phone');
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     // At least one contact method
@@ -531,7 +577,9 @@ export class DataValidationService {
         user.profilePictureUrl,
         'profilePictureUrl'
       );
-      if (error) errors.push(error);
+      if (error) {
+        errors.push(error);
+      }
     }
 
     return {
@@ -558,7 +606,7 @@ export class DataValidationService {
     try {
       const validItems: T[] = [];
       const invalidItems: { item: T; validation: ValidationResult }[] = [];
-      const totalWarnings = 0;
+      let totalWarnings = 0;
 
       items.forEach(item => {
         const validation = validator(item);

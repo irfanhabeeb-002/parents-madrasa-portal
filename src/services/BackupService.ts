@@ -220,7 +220,7 @@ class BackupService {
       }> = [];
 
       // Get all backup keys from localStorage
-      for (const i = 0; i < localStorage.length; i++) {
+      for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key?.startsWith(this.BACKUP_KEY_PREFIX)) {
           const backupId = key.replace(this.BACKUP_KEY_PREFIX, '');
@@ -437,7 +437,7 @@ class BackupService {
       const customSettings: Record<string, any> = {};
 
       // Collect any custom app settings
-      for (const i = 0; i < localStorage.length; i++) {
+      for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key?.startsWith('custom_') || key?.startsWith('app_')) {
           customSettings[key] = localStorage.getItem(key);

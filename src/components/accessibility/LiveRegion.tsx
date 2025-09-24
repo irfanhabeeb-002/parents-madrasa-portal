@@ -45,7 +45,9 @@ export const LiveRegion: React.FC<LiveRegionProps> = ({
     };
   }, [message, malayalamMessage, clearAfter]);
 
-  if (!currentMessage) return null;
+  if (!currentMessage) {
+    return null;
+  }
 
   return (
     <div

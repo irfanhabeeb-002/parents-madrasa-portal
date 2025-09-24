@@ -190,7 +190,7 @@ export class StorageService {
   static getStorageSize(): number {
     try {
       if (this.isLocalStorageAvailable) {
-        const total = 0;
+        let total = 0;
         for (const key in localStorage) {
           if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
             total += localStorage[key].length + key.length;
@@ -242,7 +242,7 @@ export class StorageService {
     try {
       if (this.isLocalStorageAvailable) {
         const data: Record<string, any> = {};
-        for (const i = 0; i < localStorage.length; i++) {
+        for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
           if (key) {
             data[key] = JSON.parse(localStorage.getItem(key) || 'null');
@@ -273,7 +273,7 @@ export class StorageService {
 
   // Clean expired cache entries
   static cleanExpiredCache(): number {
-    const cleanedCount = 0;
+    let cleanedCount = 0;
     try {
       const keys = this.getAllKeys();
       keys.forEach(key => {

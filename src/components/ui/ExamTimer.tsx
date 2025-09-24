@@ -44,7 +44,9 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({
     }
 
     return () => {
-      if (interval) clearInterval(interval);
+      if (interval) {
+        clearInterval(interval);
+      }
     };
   }, [isActive, timeRemaining, onTimeUp, onTimeUpdate]);
 

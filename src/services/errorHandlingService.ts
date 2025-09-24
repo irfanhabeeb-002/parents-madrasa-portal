@@ -224,7 +224,7 @@ export class ErrorHandlingService {
   ): Promise<T> {
     let lastError: Error;
 
-    for (const attempt = 0; attempt < maxRetries; attempt++) {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         return await operation();
       } catch (error) {

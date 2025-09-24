@@ -315,7 +315,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const formatDuration = (seconds?: number): string => {
-    if (!seconds) return '';
+    if (!seconds) {
+      return '';
+    }
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     return `${hours}h ${minutes}m`;

@@ -165,7 +165,9 @@ class PerformanceService {
     type: string,
     callback: (entries: PerformanceEntry[]) => void
   ): void {
-    if (!('PerformanceObserver' in window)) return;
+    if (!('PerformanceObserver' in window)) {
+      return;
+    }
 
     try {
       const observer = new PerformanceObserver(list => {
@@ -224,10 +226,16 @@ class PerformanceService {
     };
 
     const threshold = thresholds[name];
-    if (!threshold) return 'good';
+    if (!threshold) {
+      return 'good';
+    }
 
-    if (value <= threshold.good) return 'good';
-    if (value <= threshold.poor) return 'needs-improvement';
+    if (value <= threshold.good) {
+      return 'good';
+    }
+    if (value <= threshold.poor) {
+      return 'needs-improvement';
+    }
     return 'poor';
   }
 
@@ -235,12 +243,16 @@ class PerformanceService {
    * Track navigation timing
    */
   private trackNavigationTiming(): void {
-    if (!('performance' in window) || !performance.getEntriesByType) return;
+    if (!('performance' in window) || !performance.getEntriesByType) {
+      return;
+    }
 
     const navigationEntries = performance.getEntriesByType(
       'navigation'
     ) as PerformanceNavigationTiming[];
-    if (navigationEntries.length === 0) return;
+    if (navigationEntries.length === 0) {
+      return;
+    }
 
     const nav = navigationEntries[0];
 
@@ -273,7 +285,9 @@ class PerformanceService {
    * Track resource timing
    */
   private trackResourceTiming(): void {
-    if (!('performance' in window) || !performance.getEntriesByType) return;
+    if (!('performance' in window) || !performance.getEntriesByType) {
+      return;
+    }
 
     const resourceEntries = performance.getEntriesByType(
       'resource'

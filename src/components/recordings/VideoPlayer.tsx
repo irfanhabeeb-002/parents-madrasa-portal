@@ -76,7 +76,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Handle play/pause
   const togglePlayPause = useCallback(() => {
-    if (!videoRef.current) return;
+    if (!videoRef.current) {
+      return;
+    }
 
     if (state.isPlaying) {
       videoRef.current.pause();
@@ -87,7 +89,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Handle volume change
   const handleVolumeChange = useCallback((newVolume: number) => {
-    if (!videoRef.current) return;
+    if (!videoRef.current) {
+      return;
+    }
 
     videoRef.current.volume = newVolume;
     setState(prev => ({
@@ -99,7 +103,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Toggle mute
   const toggleMute = useCallback(() => {
-    if (!videoRef.current) return;
+    if (!videoRef.current) {
+      return;
+    }
 
     const newMuted = !state.isMuted;
     videoRef.current.muted = newMuted;
@@ -111,7 +117,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Handle seek
   const handleSeek = useCallback((newTime: number) => {
-    if (!videoRef.current) return;
+    if (!videoRef.current) {
+      return;
+    }
 
     videoRef.current.currentTime = newTime;
     setState(prev => ({ ...prev, currentTime: newTime }));
@@ -120,7 +128,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   // Skip forward/backward
   const skip = useCallback(
     (seconds: number) => {
-      if (!videoRef.current) return;
+      if (!videoRef.current) {
+        return;
+      }
 
       const newTime = Math.max(
         0,
@@ -133,7 +143,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Handle playback rate change
   const handlePlaybackRateChange = useCallback((rate: number) => {
-    if (!videoRef.current) return;
+    if (!videoRef.current) {
+      return;
+    }
 
     videoRef.current.playbackRate = rate;
     setState(prev => ({ ...prev, playbackRate: rate }));
@@ -141,7 +153,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Handle fullscreen toggle
   const toggleFullscreen = useCallback(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) {
+      return;
+    }
 
     if (!state.isFullscreen) {
       if (containerRef.current.requestFullscreen) {
@@ -181,7 +195,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Track viewing progress
   const trackProgress = useCallback(async () => {
-    if (!user || !videoRef.current) return;
+    if (!user || !videoRef.current) {
+      return;
+    }
 
     const currentTime = videoRef.current.currentTime;
     const duration = videoRef.current.duration;
@@ -194,7 +210,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   // Video event handlers
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) {
+      return;
+    }
 
     const handleLoadedMetadata = () => {
       setState(prev => ({
@@ -291,7 +309,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
+      if (!isOpen) {
+        return;
+      }
 
       switch (e.code) {
         case 'Space':

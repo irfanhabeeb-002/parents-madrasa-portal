@@ -91,7 +91,7 @@ export class DataManager<
       }
 
       // Get all items from storage
-      const items = StorageService.getArray<T>(this.storageKey);
+      let items = StorageService.getArray<T>(this.storageKey);
 
       // Apply filters
       if (options?.filters) {
@@ -156,7 +156,7 @@ export class DataManager<
         }
       }
 
-      const items = StorageService.getArray<T>(this.storageKey);
+      let items = StorageService.getArray<T>(this.storageKey);
       const item = items.find(i => i.id === id) || null;
 
       // Cache the result
@@ -186,7 +186,7 @@ export class DataManager<
     updates: Partial<T>
   ): Promise<ApiResponse<T | null>> {
     try {
-      const items = StorageService.getArray<T>(this.storageKey);
+      let items = StorageService.getArray<T>(this.storageKey);
       const itemIndex = items.findIndex(i => i.id === id);
 
       if (itemIndex === -1) {
@@ -321,7 +321,7 @@ export class DataManager<
     updates: { id: string; data: Partial<T> }[]
   ): Promise<ApiResponse<T[]>> {
     try {
-      const items = StorageService.getArray<T>(this.storageKey);
+      let items = StorageService.getArray<T>(this.storageKey);
       const updatedItems: T[] = [];
 
       updates.forEach(update => {
@@ -367,7 +367,7 @@ export class DataManager<
 
   async bulkDelete(ids: string[]): Promise<ApiResponse<number>> {
     try {
-      const items = StorageService.getArray<T>(this.storageKey);
+      let items = StorageService.getArray<T>(this.storageKey);
       const initialCount = items.length;
       const filteredItems = items.filter(item => !ids.includes(item.id));
       const deletedCount = initialCount - filteredItems.length;
@@ -409,7 +409,9 @@ export class DataManager<
   private applyFilters(items: T[], filters: FilterOptions): T[] {
     return items.filter(item => {
       return Object.entries(filters).every(([key, value]) => {
-        if (value === undefined || value === null) return true;
+        if (value === undefined || value === null) {
+          return true;
+        }
 
         const itemValue = (item as any)[key];
 
@@ -481,22 +483,30 @@ export class DataManager<
 
   private applySorting(items: T[], pagination: PaginationOptions): T[] {
     const { orderBy, orderDirection = 'asc' } = pagination;
-    if (!orderBy) return items;
+    if (!orderBy) {
+      return items;
+    }
 
     return [...items].sort((a, b) => {
       const aValue = (a as any)[orderBy];
       const bValue = (b as any)[orderBy];
       const direction = orderDirection === 'desc' ? -1 : 1;
 
-      if (aValue < bValue) return -1 * direction;
-      if (aValue > bValue) return 1 * direction;
+      if (aValue < bValue) {
+        return -1 * direction;
+      }
+      if (aValue > bValue) {
+        return 1 * direction;
+      }
       return 0;
     });
   }
 
   private applyPagination(items: T[], pagination: PaginationOptions): T[] {
     const { offset = 0, limit } = pagination;
-    if (!limit) return items.slice(offset);
+    if (!limit) {
+      return items.slice(offset);
+    }
     return items.slice(offset, offset + limit);
   }
 
@@ -516,7 +526,7 @@ export class DataManager<
   // Export/Import functionality
   async exportData(): Promise<ApiResponse<T[]>> {
     try {
-      const items = StorageService.getArray<T>(this.storageKey);
+      let items = StorageService.getArray<T>(this.storageKey);
       return {
         data: items,
         success: true,
@@ -572,7 +582,7 @@ export class DataManager<
     }>
   > {
     try {
-      const items = StorageService.getArray<T>(this.storageKey);
+      let items = StorageService.getArray<T>(this.storageKey);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -583,7 +593,9 @@ export class DataManager<
       }).length;
 
       const updatedToday = items.filter(item => {
-        if (!item.updatedAt) return false;
+        if (!item.updatedAt) {
+          return false;
+        }
         const updatedDate = new Date(item.updatedAt);
         updatedDate.setHours(0, 0, 0, 0);
         return updatedDate.getTime() === today.getTime();

@@ -65,7 +65,9 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
     }
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const menuItems: MenuItem[] = [
     {

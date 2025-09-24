@@ -38,7 +38,9 @@ export const truncateAnnouncement = (
   message: string,
   context: 'mobile' | 'desktop' = 'desktop'
 ): string => {
-  if (!message) return message;
+  if (!message) {
+    return message;
+  }
 
   // Different truncation lengths for different contexts
   const maxLengths = {

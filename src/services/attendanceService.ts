@@ -224,8 +224,12 @@ export class AttendanceService extends FirebaseService {
           const bValue = b[options.orderBy as keyof Attendance];
           const direction = options.orderDirection === 'desc' ? -1 : 1;
 
-          if (aValue < bValue) return -1 * direction;
-          if (aValue > bValue) return 1 * direction;
+          if (aValue < bValue) {
+            return -1 * direction;
+          }
+          if (aValue > bValue) {
+            return 1 * direction;
+          }
           return 0;
         });
       } else {
@@ -288,11 +292,11 @@ export class AttendanceService extends FirebaseService {
             this.toDate(b.joinedAt).getTime()
         );
 
-      const consecutiveDaysPresent = 0;
-      const longestStreak = 0;
-      const currentStreak = 0;
+      let consecutiveDaysPresent = 0;
+      let longestStreak = 0;
+      let currentStreak = 0;
 
-      for (const i = 0; i < sortedAttendance.length; i++) {
+      for (let i = 0; i < sortedAttendance.length; i++) {
         const currentDate = this.toDate(sortedAttendance[i].joinedAt);
         const prevDate =
           i > 0 ? this.toDate(sortedAttendance[i - 1].joinedAt) : null;
@@ -398,7 +402,9 @@ export class AttendanceService extends FirebaseService {
         };
       })
       .sort((a, b) => {
-        if (a.year !== b.year) return a.year - b.year;
+        if (a.year !== b.year) {
+          return a.year - b.year;
+        }
         return a.month - b.month;
       });
   }

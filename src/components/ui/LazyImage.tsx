@@ -207,7 +207,9 @@ export const generateWebPSource = (originalSrc: string): string => {
   // This would typically be handled by your image CDN or build process
   // For now, we'll assume WebP versions exist with .webp extension
   const lastDotIndex = originalSrc.lastIndexOf('.');
-  if (lastDotIndex === -1) return originalSrc;
+  if (lastDotIndex === -1) {
+    return originalSrc;
+  }
 
   return originalSrc.substring(0, lastDotIndex) + '.webp';
 };

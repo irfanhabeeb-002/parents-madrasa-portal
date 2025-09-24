@@ -286,7 +286,7 @@ export class SecurityUtils {
      */
     clear(): void {
       const keysToRemove: string[] = [];
-      for (const i = 0; i < localStorage.length; i++) {
+      for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key?.startsWith('secure_')) {
           keysToRemove.push(key);

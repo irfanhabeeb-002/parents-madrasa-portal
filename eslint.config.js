@@ -6,6 +6,8 @@ import tseslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import react from 'eslint-plugin-react';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import prettier from 'eslint-plugin-prettier';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
   {
@@ -50,6 +52,7 @@ export default [
       '@typescript-eslint': tseslint,
       react,
       'jsx-a11y': jsxA11y,
+      prettier,
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -58,6 +61,7 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
+      ...prettierConfig.rules,
 
       // React rules
       'react/react-in-jsx-scope': 'off',
@@ -110,6 +114,9 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+
+      // Prettier
+      'prettier/prettier': 'error',
     },
   },
   // Configuration for test files

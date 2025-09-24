@@ -26,7 +26,9 @@ export const useInitialization = (): UseInitializationResult => {
   const [isInitializing, setIsInitializing] = useState(false);
 
   const initialize = async () => {
-    if (isInitializing) return;
+    if (isInitializing) {
+      return;
+    }
 
     setIsInitializing(true);
     try {

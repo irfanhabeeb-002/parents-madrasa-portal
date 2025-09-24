@@ -17,7 +17,9 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSync = async () => {
-    if (!isOnline) return;
+    if (!isOnline) {
+      return;
+    }
 
     setIsProcessing(true);
     try {
@@ -35,26 +37,39 @@ export const SyncStatus: React.FC<SyncStatusProps> = ({
   };
 
   const formatTimestamp = (timestamp: number | null) => {
-    if (!timestamp) return 'N/A';
+    if (!timestamp) {
+      return 'N/A';
+    }
     return new Date(timestamp).toLocaleString();
   };
 
   const getStatusColor = () => {
-    if (!isOnline) return 'text-red-600';
-    if (queueStats.totalItems > 0) return 'text-yellow-600';
+    if (!isOnline) {
+      return 'text-red-600';
+    }
+    if (queueStats.totalItems > 0) {
+      return 'text-yellow-600';
+    }
     return 'text-green-600';
   };
 
   const getStatusText = () => {
-    if (!isOnline) return 'Offline';
-    if (queueStats.totalItems > 0) return `${queueStats.totalItems} pending`;
+    if (!isOnline) {
+      return 'Offline';
+    }
+    if (queueStats.totalItems > 0) {
+      return `${queueStats.totalItems} pending`;
+    }
     return 'Synced';
   };
 
   const getStatusTextMalayalam = () => {
-    if (!isOnline) return 'ഓഫ്‌ലൈൻ';
-    if (queueStats.totalItems > 0)
+    if (!isOnline) {
+      return 'ഓഫ്‌ലൈൻ';
+    }
+    if (queueStats.totalItems > 0) {
       return `${queueStats.totalItems} കാത്തിരിക്കുന്നു`;
+    }
     return 'സിങ്ക് ചെയ്തു';
   };
 

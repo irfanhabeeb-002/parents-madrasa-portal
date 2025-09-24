@@ -148,7 +148,7 @@ export class ZoomRecordingService extends FirebaseService {
       }
 
       // Get cached recordings
-      const recordings = StorageService.getArray<Recording>(
+      let recordings = StorageService.getArray<Recording>(
         `${ZoomRecordingService.SYNC_CACHE_KEY}_data`
       );
 
@@ -168,8 +168,12 @@ export class ZoomRecordingService extends FirebaseService {
           const bValue = b[options.orderBy as keyof Recording];
           const direction = options.orderDirection === 'desc' ? -1 : 1;
 
-          if (aValue < bValue) return -1 * direction;
-          if (aValue > bValue) return 1 * direction;
+          if (aValue < bValue) {
+            return -1 * direction;
+          }
+          if (aValue > bValue) {
+            return 1 * direction;
+          }
           return 0;
         });
       }
@@ -177,7 +181,7 @@ export class ZoomRecordingService extends FirebaseService {
       // Apply pagination
       const offset = options?.offset || 0;
       const limit = options?.limit || 20;
-      const paginatedRecordings = recordings.slice(offset, offset + limit);
+      let paginatedRecordings = recordings.slice(offset, offset + limit);
 
       return {
         data: paginatedRecordings,
@@ -215,12 +219,12 @@ export class ZoomRecordingService extends FirebaseService {
       } = searchOptions;
       const searchTerm = caseSensitive ? query : query.toLowerCase();
 
-      const recordings = StorageService.getArray<Recording>(
+      let recordings = StorageService.getArray<Recording>(
         `${ZoomRecordingService.SYNC_CACHE_KEY}_data`
       );
 
       // Filter recordings based on search criteria
-      const filteredRecordings = recordings.filter(recording => {
+      let filteredRecordings = recordings.filter(recording => {
         return fields.some(field => {
           const fieldValue = recording[field as keyof Recording];
           if (Array.isArray(fieldValue)) {
@@ -242,7 +246,7 @@ export class ZoomRecordingService extends FirebaseService {
       // Apply pagination
       const offset = paginationOptions?.offset || 0;
       const limit = paginationOptions?.limit || 20;
-      const paginatedRecordings = filteredRecordings.slice(
+      let paginatedRecordings = filteredRecordings.slice(
         offset,
         offset + limit
       );
@@ -387,7 +391,9 @@ export class ZoomRecordingService extends FirebaseService {
           f.recordingType === priority &&
           f.status === 'completed'
       );
-      if (file) return file;
+      if (file) {
+        return file;
+      }
     }
 
     // Fallback to any MP4 file
@@ -412,9 +418,15 @@ export class ZoomRecordingService extends FirebaseService {
     const sizeMB = sizeBytes / (1024 * 1024);
     const mbPerMinute = sizeMB / durationMinutes;
 
-    if (mbPerMinute > 15) return 'hd';
-    if (mbPerMinute > 8) return 'high';
-    if (mbPerMinute > 4) return 'medium';
+    if (mbPerMinute > 15) {
+      return 'hd';
+    }
+    if (mbPerMinute > 8) {
+      return 'high';
+    }
+    if (mbPerMinute > 4) {
+      return 'medium';
+    }
     return 'low';
   }
 
@@ -422,11 +434,17 @@ export class ZoomRecordingService extends FirebaseService {
    * Get video format from file
    */
   private getFormatFromFile(file?: ZoomRecordingFile): 'mp4' | 'webm' | 'mov' {
-    if (!file) return 'mp4';
+    if (!file) {
+      return 'mp4';
+    }
 
     const extension = file.fileExtension.toLowerCase();
-    if (extension === 'webm') return 'webm';
-    if (extension === 'mov') return 'mov';
+    if (extension === 'webm') {
+      return 'webm';
+    }
+    if (extension === 'mov') {
+      return 'mov';
+    }
     return 'mp4';
   }
 
@@ -440,9 +458,15 @@ export class ZoomRecordingService extends FirebaseService {
     const sizeMB = sizeBytes / (1024 * 1024);
     const mbPerMinute = sizeMB / durationMinutes;
 
-    if (mbPerMinute > 20) return '1920x1080';
-    if (mbPerMinute > 10) return '1280x720';
-    if (mbPerMinute > 5) return '854x480';
+    if (mbPerMinute > 20) {
+      return '1920x1080';
+    }
+    if (mbPerMinute > 10) {
+      return '1280x720';
+    }
+    if (mbPerMinute > 5) {
+      return '854x480';
+    }
     return '640x360';
   }
 
@@ -454,17 +478,36 @@ export class ZoomRecordingService extends FirebaseService {
     const topicLower = topic.toLowerCase();
 
     // Common Islamic education topics
-    if (topicLower.includes('quran') || topicLower.includes("qur'an"))
+    if (topicLower.includes('quran') || topicLower.includes("qur'an")) {
       tags.push('quran');
-    if (topicLower.includes('arabic')) tags.push('arabic');
-    if (topicLower.includes('grammar')) tags.push('grammar');
-    if (topicLower.includes('history')) tags.push('history');
-    if (topicLower.includes('islamic')) tags.push('islamic');
-    if (topicLower.includes('recitation')) tags.push('recitation');
-    if (topicLower.includes('tajweed')) tags.push('tajweed');
-    if (topicLower.includes('hadith')) tags.push('hadith');
-    if (topicLower.includes('fiqh')) tags.push('fiqh');
-    if (topicLower.includes('seerah')) tags.push('seerah');
+    }
+    if (topicLower.includes('arabic')) {
+      tags.push('arabic');
+    }
+    if (topicLower.includes('grammar')) {
+      tags.push('grammar');
+    }
+    if (topicLower.includes('history')) {
+      tags.push('history');
+    }
+    if (topicLower.includes('islamic')) {
+      tags.push('islamic');
+    }
+    if (topicLower.includes('recitation')) {
+      tags.push('recitation');
+    }
+    if (topicLower.includes('tajweed')) {
+      tags.push('tajweed');
+    }
+    if (topicLower.includes('hadith')) {
+      tags.push('hadith');
+    }
+    if (topicLower.includes('fiqh')) {
+      tags.push('fiqh');
+    }
+    if (topicLower.includes('seerah')) {
+      tags.push('seerah');
+    }
 
     // Add 'zoom' tag to identify source
     tags.push('zoom');
@@ -492,7 +535,7 @@ export class ZoomRecordingService extends FirebaseService {
     const lastSync = StorageService.get<number>(
       `${ZoomRecordingService.SYNC_CACHE_KEY}_timestamp`
     );
-    const recordings = StorageService.getArray<Recording>(
+    let recordings = StorageService.getArray<Recording>(
       `${ZoomRecordingService.SYNC_CACHE_KEY}_data`
     );
 

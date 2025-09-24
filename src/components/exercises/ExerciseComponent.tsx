@@ -85,7 +85,9 @@ export const ExerciseComponent: React.FC<ExerciseComponentProps> = ({
     answer: string | string[]
   ) => {
     // Don't allow selection if already answered
-    if (state.answers[questionId]) return;
+    if (state.answers[questionId]) {
+      return;
+    }
 
     const isCorrect = checkAnswer(currentQuestion, answer);
     const points = isCorrect ? currentQuestion.points : 0;
@@ -108,7 +110,9 @@ export const ExerciseComponent: React.FC<ExerciseComponentProps> = ({
   };
 
   const handleAnswerSubmit = () => {
-    if (!state.selectedAnswer || !currentQuestion) return;
+    if (!state.selectedAnswer || !currentQuestion) {
+      return;
+    }
 
     const isCorrect = checkAnswer(currentQuestion, state.selectedAnswer);
     const points = isCorrect ? currentQuestion.points : 0;
@@ -223,8 +227,12 @@ export const ExerciseComponent: React.FC<ExerciseComponentProps> = ({
   };
 
   const getScoreColor = (score: number): string => {
-    if (score >= exercise.passingScore) return 'text-success-600';
-    if (score >= exercise.passingScore * 0.7) return 'text-warning-600';
+    if (score >= exercise.passingScore) {
+      return 'text-success-600';
+    }
+    if (score >= exercise.passingScore * 0.7) {
+      return 'text-warning-600';
+    }
     return 'text-error-600';
   };
 
@@ -383,7 +391,8 @@ export const ExerciseComponent: React.FC<ExerciseComponentProps> = ({
                   const hasAnswered = !!state.answers[currentQuestion.id];
                   const isCorrect = option.isCorrect;
 
-                  const optionClasses = 'flex items-start space-x-3 p-3 border rounded-lg cursor-pointer transition-colors';
+                  const optionClasses =
+                    'flex items-start space-x-3 p-3 border rounded-lg cursor-pointer transition-colors';
 
                   if (hasAnswered) {
                     if (isSelected && isCorrect) {

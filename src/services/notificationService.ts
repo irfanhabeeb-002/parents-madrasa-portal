@@ -150,12 +150,16 @@ class NotificationService {
     classTitle: string,
     scheduledTime: Date
   ): void {
-    if (!this.preferences.classReminders) return;
+    if (!this.preferences.classReminders) {
+      return;
+    }
 
     const reminderTime = new Date(scheduledTime.getTime() - 15 * 60 * 1000); // 15 minutes before
     const now = new Date();
 
-    if (reminderTime <= now) return; // Don't schedule past reminders
+    if (reminderTime <= now) {
+      return;
+    } // Don't schedule past reminders
 
     const notification: AppNotification = {
       id: `class_reminder_${classId}`,
@@ -194,7 +198,9 @@ class NotificationService {
 
   // Send notification for new recording
   notifyNewRecording(recordingId: string, recordingTitle: string): void {
-    if (!this.preferences.newContent) return;
+    if (!this.preferences.newContent) {
+      return;
+    }
 
     const notification: AppNotification = {
       id: `new_recording_${recordingId}`,
@@ -219,7 +225,9 @@ class NotificationService {
 
   // Send notification for new notes
   notifyNewNotes(noteId: string, noteTitle: string): void {
-    if (!this.preferences.newContent) return;
+    if (!this.preferences.newContent) {
+      return;
+    }
 
     const notification: AppNotification = {
       id: `new_notes_${noteId}`,
@@ -244,7 +252,9 @@ class NotificationService {
 
   // Send exam reminder notification
   notifyExamReminder(examId: string, examTitle: string, examDate: Date): void {
-    if (!this.preferences.examReminders) return;
+    if (!this.preferences.examReminders) {
+      return;
+    }
 
     const notification: AppNotification = {
       id: `exam_reminder_${examId}`,
@@ -274,7 +284,9 @@ class NotificationService {
     malayalamTitle?: string,
     malayalamMessage?: string
   ): void {
-    if (!this.preferences.announcements) return;
+    if (!this.preferences.announcements) {
+      return;
+    }
 
     const notification: AppNotification = {
       id: `announcement_${Date.now()}`,

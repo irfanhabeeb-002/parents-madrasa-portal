@@ -6,7 +6,7 @@ import type { ZoomInitConfig, ZoomAuthConfig } from '../types/zoom';
  */
 export const ZOOM_SDK_CONFIG: ZoomInitConfig = {
   // Development settings
-  debug: process.env.NODE_ENV === 'development',
+  debug: import.meta.env.DEV,
 
   // Meeting behavior
   leaveOnPageUnload: true,
@@ -54,13 +54,13 @@ export const ZOOM_SDK_CONFIG: ZoomInitConfig = {
  */
 export const getZoomAuthConfig = (): ZoomAuthConfig => {
   return {
-    apiKey: process.env.VITE_ZOOM_API_KEY || '',
-    apiSecret: process.env.VITE_ZOOM_API_SECRET || '',
-    accountId: process.env.VITE_ZOOM_ACCOUNT_ID || '',
-    clientId: process.env.VITE_ZOOM_CLIENT_ID || '',
-    clientSecret: process.env.VITE_ZOOM_CLIENT_SECRET || '',
+    apiKey: import.meta.env.VITE_ZOOM_API_KEY || '',
+    apiSecret: import.meta.env.VITE_ZOOM_API_SECRET || '',
+    accountId: import.meta.env.VITE_ZOOM_ACCOUNT_ID || '',
+    clientId: import.meta.env.VITE_ZOOM_CLIENT_ID || '',
+    clientSecret: import.meta.env.VITE_ZOOM_CLIENT_SECRET || '',
     redirectUrl:
-      process.env.VITE_ZOOM_REDIRECT_URL ||
+      import.meta.env.VITE_ZOOM_REDIRECT_URL ||
       `${window.location.origin}/auth/zoom/callback`,
   };
 };

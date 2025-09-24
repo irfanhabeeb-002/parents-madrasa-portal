@@ -362,7 +362,7 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       }));
 
       // Apply client-side pagination if offset is specified
-      const paginatedNotes = notes;
+      let paginatedNotes = notes;
       if (options?.offset) {
         const offset = options.offset;
         const limit = options.limit || 10;
@@ -389,7 +389,7 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
     try {
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      const notes = [...this.mockNotes];
+      let notes = [...this.mockNotes];
 
       // Apply filters
       if (options?.classSessionId) {
@@ -417,8 +417,12 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
           const bValue = b[options.orderBy as keyof Note];
           const direction = options.orderDirection === 'desc' ? -1 : 1;
 
-          if (aValue < bValue) return -1 * direction;
-          if (aValue > bValue) return 1 * direction;
+          if (aValue < bValue) {
+            return -1 * direction;
+          }
+          if (aValue > bValue) {
+            return 1 * direction;
+          }
           return 0;
         });
       }
@@ -426,7 +430,7 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       // Apply pagination
       const offset = options?.offset || 0;
       const limit = options?.limit || 10;
-      const paginatedNotes = notes.slice(offset, offset + limit);
+      let paginatedNotes = notes.slice(offset, offset + limit);
 
       return {
         data: paginatedNotes,
@@ -488,7 +492,7 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       } = searchOptions;
       const searchTerm = caseSensitive ? query : query.toLowerCase();
 
-      const filteredNotes = this.mockNotes.filter(note => {
+      let filteredNotes = this.mockNotes.filter(note => {
         return fields.some(field => {
           const fieldValue = note[field as keyof Note];
           if (Array.isArray(fieldValue)) {

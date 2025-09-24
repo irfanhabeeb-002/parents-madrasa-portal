@@ -88,7 +88,7 @@ describe('Data Operations Integration Tests', () => {
       if (result.data.length > 1) {
         const priorityOrder = { high: 3, medium: 2, low: 1 };
 
-        for (const i = 0; i < result.data.length - 1; i++) {
+        for (let i = 0; i < result.data.length - 1; i++) {
           const current = result.data[i];
           const next = result.data[i + 1];
 
@@ -223,7 +223,7 @@ describe('Data Operations Integration Tests', () => {
 
       // Should be sorted by schedule time (earliest first)
       if (result.data.length > 1) {
-        for (const i = 0; i < result.data.length - 1; i++) {
+        for (let i = 0; i < result.data.length - 1; i++) {
           const current = new Date(result.data[i].scheduledAt).getTime();
           const next = new Date(result.data[i + 1].scheduledAt).getTime();
           expect(current).toBeLessThanOrEqual(next);

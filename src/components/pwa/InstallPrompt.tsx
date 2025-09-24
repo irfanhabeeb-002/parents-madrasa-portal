@@ -153,7 +153,9 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({
   }, [showInstallBanner, measurePositioning]);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      return;
+    }
 
     try {
       // Show the install prompt
@@ -684,7 +686,9 @@ export const useInstallPrompt = () => {
   }, []);
 
   const promptInstall = async () => {
-    if (!deferredPrompt) return false;
+    if (!deferredPrompt) {
+      return false;
+    }
 
     try {
       await deferredPrompt.prompt();

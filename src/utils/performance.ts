@@ -13,7 +13,7 @@ class PerformanceMonitor {
   private startTimes: Partial<PerformanceMetrics> = {};
 
   startMeasurement(metric: keyof PerformanceMetrics): void {
-    if (typeof process !== "undefined" ? process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       this.startTimes[metric] = performance.now();
     }
   }
@@ -22,7 +22,7 @@ class PerformanceMonitor {
     metric: keyof PerformanceMetrics,
     warningThreshold: number = 16
   ): void {
-    if (typeof process !== "undefined" ? process.env.NODE_ENV === 'development' && this.startTimes[metric]) {
+    if (import.meta.env.DEV && this.startTimes[metric]) {
       const duration = performance.now() - this.startTimes[metric]!;
       this.metrics[metric] = duration;
 

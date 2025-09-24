@@ -109,7 +109,9 @@ class AnalyticsService {
    * Configure Google Analytics
    */
   private configureAnalytics(): void {
-    if (!window.gtag || !this.measurementId) return;
+    if (!window.gtag || !this.measurementId) {
+      return;
+    }
 
     // Initialize with timestamp
     window.gtag('js', new Date());
@@ -171,7 +173,9 @@ class AnalyticsService {
    * Track page views
    */
   trackPageView(pagePath: string, pageTitle?: string): void {
-    if (!this.initialized || !window.gtag || !this.measurementId) return;
+    if (!this.initialized || !window.gtag || !this.measurementId) {
+      return;
+    }
 
     try {
       window.gtag('config', this.measurementId, {
@@ -189,7 +193,9 @@ class AnalyticsService {
    * Set user properties
    */
   setUserProperties(properties: UserProperties): void {
-    if (!this.initialized || !window.gtag) return;
+    if (!this.initialized || !window.gtag) {
+      return;
+    }
 
     try {
       window.gtag('set', {

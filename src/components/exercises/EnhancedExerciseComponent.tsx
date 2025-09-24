@@ -48,11 +48,15 @@ export const EnhancedExerciseComponent: React.FC<
 
   // Timer effect for countdown
   useEffect(() => {
-    if (!session || session.isCompleted || hasAnswered) return;
+    if (!session || session.isCompleted || hasAnswered) {
+      return;
+    }
 
     const timer = setInterval(() => {
       setSession(prev => {
-        if (!prev || prev.isCompleted || hasAnswered) return prev;
+        if (!prev || prev.isCompleted || hasAnswered) {
+          return prev;
+        }
 
         const newTimeRemaining = prev.timeRemaining - 1;
 
@@ -174,7 +178,9 @@ export const EnhancedExerciseComponent: React.FC<
   };
 
   const handleAnswerSelect = (answerId: string) => {
-    if (!session || hasAnswered) return;
+    if (!session || hasAnswered) {
+      return;
+    }
 
     const currentQuestion = session.questions[session.currentQuestionIndex];
     const isCorrect = answerId === currentQuestion.answer;
@@ -241,7 +247,9 @@ export const EnhancedExerciseComponent: React.FC<
   };
 
   const handleComplete = () => {
-    if (!session) return;
+    if (!session) {
+      return;
+    }
 
     const timeSpent = Math.floor(
       (new Date().getTime() - session.startTime.getTime()) / 1000
@@ -268,7 +276,9 @@ export const EnhancedExerciseComponent: React.FC<
   };
 
   const getProgressPercentage = (): number => {
-    if (!session) return 0;
+    if (!session) {
+      return 0;
+    }
     return Math.round(
       ((session.currentQuestionIndex + 1) / session.questions.length) * 100
     );
@@ -277,30 +287,34 @@ export const EnhancedExerciseComponent: React.FC<
   const getEncouragementMessage = (
     percentage: number
   ): { message: string; malayalam: string; emoji: string } => {
-    if (percentage >= 90)
+    if (percentage >= 90) {
       return {
         message: 'Excellent! Outstanding performance!',
         malayalam: 'മികച്ചത്! അതിമനോഹരമായ പ്രകടനം!',
         emoji: '🏆',
       };
-    if (percentage >= 80)
+    }
+    if (percentage >= 80) {
       return {
         message: 'Great job! Very good work!',
         malayalam: 'നല്ല പ്രവർത്തനം! വളരെ നല്ലത്!',
         emoji: '🎉',
       };
-    if (percentage >= 70)
+    }
+    if (percentage >= 70) {
       return {
         message: 'Good work! Keep it up!',
         malayalam: 'നല്ല പ്രവർത്തനം! തുടരുക!',
         emoji: '👍',
       };
-    if (percentage >= 60)
+    }
+    if (percentage >= 60) {
       return {
         message: 'Not bad! You can do better!',
         malayalam: 'മോശമല്ല! നിങ്ങൾക്ക് കൂടുതൽ നന്നായി ചെയ്യാൻ കഴിയും!',
         emoji: '📚',
       };
+    }
     return {
       message: "Keep practicing! You'll improve!",
       malayalam: 'അഭ്യസിക്കുന്നത് തുടരുക! നിങ്ങൾ മെച്ചപ്പെടും!',
@@ -341,7 +355,9 @@ export const EnhancedExerciseComponent: React.FC<
     );
   }
 
-  if (!session) return null;
+  if (!session) {
+    return null;
+  }
 
   // Results screen
   if (showResult && session.isCompleted) {
@@ -497,7 +513,8 @@ export const EnhancedExerciseComponent: React.FC<
             const isSelected = selectedAnswer === option.id;
             const isCorrect = option.id === currentQuestion.answer;
 
-            const optionClasses = 'flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 min-h-[44px]';
+            const optionClasses =
+              'flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 min-h-[44px]';
 
             if (hasAnswered) {
               if (isSelected && isCorrect) {

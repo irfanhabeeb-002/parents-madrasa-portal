@@ -109,7 +109,9 @@ export const useDashboard = (): DashboardState & DashboardActions => {
 
   // Refresh notifications with retry mechanism
   const refreshNotifications = useCallback(async () => {
-    if (!user?.uid) return;
+    if (!user?.uid) {
+      return;
+    }
 
     setLoading('notifications', true);
     setError('notifications', null);
@@ -204,9 +206,15 @@ export const useDashboard = (): DashboardState & DashboardActions => {
 
     // Cleanup subscriptions
     return () => {
-      if (unsubscribeAnnouncements) unsubscribeAnnouncements();
-      if (unsubscribeNotifications) unsubscribeNotifications();
-      if (unsubscribeTodaysClass) unsubscribeTodaysClass();
+      if (unsubscribeAnnouncements) {
+        unsubscribeAnnouncements();
+      }
+      if (unsubscribeNotifications) {
+        unsubscribeNotifications();
+      }
+      if (unsubscribeTodaysClass) {
+        unsubscribeTodaysClass();
+      }
     };
   }, [user?.uid, setLoading, setError]);
 

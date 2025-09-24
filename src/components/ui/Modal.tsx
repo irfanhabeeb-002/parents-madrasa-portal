@@ -55,7 +55,9 @@ export const Modal: React.FC<ModalProps> = ({
   // Keyboard event handling for Escape key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isOpen) return;
+      if (!isOpen) {
+        return;
+      }
 
       if (event.key === 'Escape' && closeOnEscape) {
         onClose();
@@ -66,7 +68,9 @@ export const Modal: React.FC<ModalProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, closeOnEscape, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const handleOverlayClick = (event: React.MouseEvent) => {
     if (event.target === event.currentTarget && closeOnOverlayClick) {

@@ -114,8 +114,8 @@ export class DataSyncService {
       });
 
       const queue = StorageService.getArray<SyncQueueItem>(this.SYNC_QUEUE_KEY);
-      const processed = 0;
-      const failed = 0;
+      let processed = 0;
+      let failed = 0;
       const remainingQueue: SyncQueueItem[] = [];
 
       for (const item of queue) {

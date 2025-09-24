@@ -4,7 +4,7 @@ import App from './App';
 import { initializeFirebase } from './config/firebaseInit';
 import { analyticsService } from './services/AnalyticsService';
 import { performanceService } from './services/PerformanceService';
-import { config, logger } from './config/environment';
+import { logger } from './config/environment';
 import { initializeSecurity } from './config/security';
 
 // Initialize services

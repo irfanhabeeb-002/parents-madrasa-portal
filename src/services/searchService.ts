@@ -109,10 +109,10 @@ export class SearchService {
   ): Promise<ApiResponse<SearchResult<Recording>>> {
     try {
       const _startTime = Date.now();
-      const recordings = StorageService.getArray<Recording>('recordings');
+      let recordings = StorageService.getArray<Recording>('recordings');
 
       // Apply search
-      const results = this.performSearch(recordings, query, {
+      let results = this.performSearch(recordings, query, {
         fields: options?.fields || ['title', 'description', 'tags'],
         caseSensitive: options?.caseSensitive || false,
         fuzzy: options?.fuzzy || false,
@@ -174,10 +174,10 @@ export class SearchService {
   ): Promise<ApiResponse<SearchResult<Note>>> {
     try {
       const _startTime = Date.now();
-      const notes = StorageService.getArray<Note>('notes');
+      let notes = StorageService.getArray<Note>('notes');
 
       // Apply search
-      const results = this.performSearch(notes, query, {
+      let results = this.performSearch(notes, query, {
         fields: options?.fields || [
           'title',
           'content',
@@ -251,10 +251,10 @@ export class SearchService {
   ): Promise<ApiResponse<SearchResult<Exercise>>> {
     try {
       const _startTime = Date.now();
-      const exercises = StorageService.getArray<Exercise>('exercises');
+      let exercises = StorageService.getArray<Exercise>('exercises');
 
       // Apply search
-      const results = this.performSearch(exercises, query, {
+      let results = this.performSearch(exercises, query, {
         fields: options?.fields || ['title', 'description', 'tags'],
         caseSensitive: options?.caseSensitive || false,
         fuzzy: options?.fuzzy || false,
@@ -320,7 +320,9 @@ export class SearchService {
       boost: Record<string, number>;
     }
   ): T[] {
-    if (!query.trim()) return items;
+    if (!query.trim()) {
+      return items;
+    }
 
     const searchTerms = query
       .toLowerCase()
@@ -328,12 +330,14 @@ export class SearchService {
       .filter(term => term.length > 0);
 
     const scoredItems = items.map(item => {
-      const score = 0;
+      let score = 0;
       const matchedFields: string[] = [];
 
       options.fields.forEach(field => {
         const fieldValue = this.getFieldValue(item, field);
-        if (!fieldValue) return;
+        if (!fieldValue) {
+          return;
+        }
 
         const fieldText = options.caseSensitive
           ? fieldValue
@@ -388,11 +392,13 @@ export class SearchService {
   // Get field value (supports nested fields)
   private static getFieldValue(item: any, field: string): string {
     const keys = field.split('.');
-    const value = item;
+    let value = item;
 
     for (const key of keys) {
       value = value?.[key];
-      if (value === undefined || value === null) return '';
+      if (value === undefined || value === null) {
+        return '';
+      }
     }
 
     if (Array.isArray(value)) {
@@ -404,7 +410,9 @@ export class SearchService {
 
   // Simple fuzzy matching
   private static fuzzyMatch(text: string, term: string): boolean {
-    if (term.length < 3) return false; // Skip fuzzy for short terms
+    if (term.length < 3) {
+      return false;
+    } // Skip fuzzy for short terms
 
     // Allow 1 character difference for terms 3-5 chars, 2 for longer
     const maxDistance = term.length <= 5 ? 1 : 2;
@@ -417,11 +425,15 @@ export class SearchService {
       .fill(null)
       .map(() => Array(str1.length + 1).fill(null));
 
-    for (const i = 0; i <= str1.length; i++) matrix[0][i] = i;
-    for (const j = 0; j <= str2.length; j++) matrix[j][0] = j;
+    for (let i = 0; i <= str1.length; i++) {
+      matrix[0][i] = i;
+    }
+    for (let j = 0; j <= str2.length; j++) {
+      matrix[j][0] = j;
+    }
 
-    for (const j = 1; j <= str2.length; j++) {
-      for (const i = 1; i <= str1.length; i++) {
+    for (let j = 1; j <= str2.length; j++) {
+      for (let i = 1; i <= str1.length; i++) {
         const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
         matrix[j][i] = Math.min(
           matrix[j][i - 1] + 1, // deletion
@@ -446,7 +458,9 @@ export class SearchService {
   ): T[] {
     return items.filter(item => {
       return Object.entries(filters).every(([key, value]) => {
-        if (value === undefined || value === null) return true;
+        if (value === undefined || value === null) {
+          return true;
+        }
 
         const itemValue = this.getFieldValue(item, key);
 
@@ -497,7 +511,7 @@ export class SearchService {
       const valueCounts: Record<string, number> = {};
 
       items.forEach(item => {
-        const value = this.getFieldValue(item, field);
+        let value = this.getFieldValue(item, field);
         if (value) {
           if (Array.isArray(value)) {
             value.forEach(v => {
@@ -535,8 +549,12 @@ export class SearchService {
         const bValue = this.getFieldValue(b, options.orderBy!);
         const direction = options.orderDirection === 'desc' ? -1 : 1;
 
-        if (aValue < bValue) return -1 * direction;
-        if (aValue > bValue) return 1 * direction;
+        if (aValue < bValue) {
+          return -1 * direction;
+        }
+        if (aValue > bValue) {
+          return 1 * direction;
+        }
         return 0;
       });
     }
@@ -587,7 +605,9 @@ export class SearchService {
 
   // Add to search history
   static addToSearchHistory(query: string): void {
-    if (!query.trim()) return;
+    if (!query.trim()) {
+      return;
+    }
 
     const history = this.getSearchHistory();
     const updatedHistory = [query, ...history.filter(h => h !== query)].slice(
@@ -615,7 +635,9 @@ export class SearchService {
 
   // Track search term usage
   static trackSearchTerm(query: string): void {
-    if (!query.trim()) return;
+    if (!query.trim()) {
+      return;
+    }
 
     const searchCounts =
       StorageService.get<Record<string, number>>('search_counts') || {};

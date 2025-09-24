@@ -62,12 +62,12 @@ export class DataImportExportService {
         data: {},
       };
 
-      const totalRecords = 0;
+      let totalRecords = 0;
       const collections: string[] = [];
 
       // Export recordings
       if (dataType === 'all' || dataType === 'recordings') {
-        const recordings = StorageService.getArray<Recording>('recordings');
+        let recordings = StorageService.getArray<Recording>('recordings');
         if (recordings.length > 0) {
           exportData.data.recordings = recordings;
           totalRecords += recordings.length;
@@ -77,7 +77,7 @@ export class DataImportExportService {
 
       // Export notes
       if (dataType === 'all' || dataType === 'notes') {
-        const notes = StorageService.getArray<Note>('notes');
+        let notes = StorageService.getArray<Note>('notes');
         if (notes.length > 0) {
           exportData.data.notes = notes;
           totalRecords += notes.length;
@@ -87,7 +87,7 @@ export class DataImportExportService {
 
       // Export exercises
       if (dataType === 'all' || dataType === 'exercises') {
-        const exercises = StorageService.getArray<Exercise>('exercises');
+        let exercises = StorageService.getArray<Exercise>('exercises');
         if (exercises.length > 0) {
           exportData.data.exercises = exercises;
           totalRecords += exercises.length;
@@ -239,7 +239,9 @@ export class DataImportExportService {
         result.imported += importResult.imported;
         result.skipped += importResult.skipped;
         result.errors.push(...importResult.errors);
-        if (importResult.imported > 0) result.collections.push('recordings');
+        if (importResult.imported > 0) {
+          result.collections.push('recordings');
+        }
       }
 
       // Import notes
@@ -252,7 +254,9 @@ export class DataImportExportService {
         result.imported += importResult.imported;
         result.skipped += importResult.skipped;
         result.errors.push(...importResult.errors);
-        if (importResult.imported > 0) result.collections.push('notes');
+        if (importResult.imported > 0) {
+          result.collections.push('notes');
+        }
       }
 
       // Import exercises
@@ -265,7 +269,9 @@ export class DataImportExportService {
         result.imported += importResult.imported;
         result.skipped += importResult.skipped;
         result.errors.push(...importResult.errors);
-        if (importResult.imported > 0) result.collections.push('exercises');
+        if (importResult.imported > 0) {
+          result.collections.push('exercises');
+        }
       }
 
       // Import attendance
@@ -278,7 +284,9 @@ export class DataImportExportService {
         result.imported += importResult.imported;
         result.skipped += importResult.skipped;
         result.errors.push(...importResult.errors);
-        if (importResult.imported > 0) result.collections.push('attendance');
+        if (importResult.imported > 0) {
+          result.collections.push('attendance');
+        }
       }
 
       // Import users
@@ -291,7 +299,9 @@ export class DataImportExportService {
         result.imported += importResult.imported;
         result.skipped += importResult.skipped;
         result.errors.push(...importResult.errors);
-        if (importResult.imported > 0) result.collections.push('users');
+        if (importResult.imported > 0) {
+          result.collections.push('users');
+        }
       }
 
       result.success = result.errors.length === 0;
@@ -416,9 +426,15 @@ export class DataImportExportService {
 
   // Validate import data structure
   private static validateImportData(data: any): data is ExportData {
-    if (!data || typeof data !== 'object') return false;
-    if (!data.version || !data.exportedAt || !data.dataType) return false;
-    if (!data.metadata || !data.data) return false;
+    if (!data || typeof data !== 'object') {
+      return false;
+    }
+    if (!data.version || !data.exportedAt || !data.dataType) {
+      return false;
+    }
+    if (!data.metadata || !data.data) {
+      return false;
+    }
 
     // Check metadata structure
     const metadata = data.metadata;
@@ -431,7 +447,9 @@ export class DataImportExportService {
 
     // Check data structure
     const dataObj = data.data;
-    if (typeof dataObj !== 'object') return false;
+    if (typeof dataObj !== 'object') {
+      return false;
+    }
 
     // Validate each collection if present
     const collections = [

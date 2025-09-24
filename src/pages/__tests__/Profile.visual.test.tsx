@@ -98,7 +98,7 @@ const captureLayoutMetrics = (container: HTMLElement) => {
     return rect.width > 0 && rect.height > 0;
   });
 
-  for (const i = 0; i < visibleCards.length - 1; i++) {
+  for (let i = 0; i < visibleCards.length - 1; i++) {
     const currentCard = visibleCards[i].getBoundingClientRect();
     const nextCard = visibleCards[i + 1].getBoundingClientRect();
     const spacing = nextCard.top - currentCard.bottom;
@@ -210,7 +210,7 @@ describe('Profile Visual Regression Tests', () => {
       });
 
       // Verify typography scales up with screen size
-      for (const i = 1; i < typographyMetrics.length; i++) {
+      for (let i = 1; i < typographyMetrics.length; i++) {
         const current = typographyMetrics[i];
         const previous = typographyMetrics[i - 1];
 

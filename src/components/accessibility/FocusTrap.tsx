@@ -17,7 +17,9 @@ export const FocusTrap: React.FC<FocusTrapProps> = ({
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive) {
+      return;
+    }
 
     // Store the previously focused element
     if (restoreFocus) {
@@ -26,7 +28,9 @@ export const FocusTrap: React.FC<FocusTrapProps> = ({
 
     // Focus the initial element or first focusable element
     const focusInitialElement = () => {
-      if (!containerRef.current) return;
+      if (!containerRef.current) {
+        return;
+      }
 
       let elementToFocus: HTMLElement | null = null;
 
@@ -58,14 +62,20 @@ export const FocusTrap: React.FC<FocusTrapProps> = ({
   }, [isActive, restoreFocus, initialFocus]);
 
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive) {
+      return;
+    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab' || !containerRef.current) return;
+      if (event.key !== 'Tab' || !containerRef.current) {
+        return;
+      }
 
       const focusableElements = getFocusableElements(containerRef.current);
 
-      if (focusableElements.length === 0) return;
+      if (focusableElements.length === 0) {
+        return;
+      }
 
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];

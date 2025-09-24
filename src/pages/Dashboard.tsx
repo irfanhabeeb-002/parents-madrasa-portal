@@ -73,7 +73,9 @@ export const Dashboard: React.FC = () => {
 
   // Format today's class time
   const todaysClassTime = useMemo(() => {
-    if (!todaysClass) return null;
+    if (!todaysClass) {
+      return null;
+    }
 
     // Handle both Date and Timestamp objects
     const toDate = (dateValue: any): Date => {

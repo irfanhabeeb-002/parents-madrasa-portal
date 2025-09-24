@@ -70,7 +70,9 @@ export const KeyboardNavigationIndicator: React.FC<
     }
   }, [isKeyboardUser]);
 
-  if (!showIndicator) return null;
+  if (!showIndicator) {
+    return null;
+  }
 
   return (
     <div

@@ -54,7 +54,9 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
     onMeetingStart: () => {
       setJoinTime(new Date());
       setShowControls(false);
-      if (onMeetingStart) onMeetingStart();
+      if (onMeetingStart) {
+        onMeetingStart();
+      }
     },
     onMeetingEnd: () => {
       setShowControls(true);
@@ -65,7 +67,9 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
         onAttendanceTracked(duration);
       }
       setJoinTime(null);
-      if (onMeetingEnd) onMeetingEnd();
+      if (onMeetingEnd) {
+        onMeetingEnd();
+      }
     },
     onError: (zoomError: ZoomError) => {
       console.error('Zoom error:', zoomError);
@@ -89,7 +93,7 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
       password: classSession.zoomPassword,
       userName,
       userEmail,
-      apiKey: process.env.VITE_ZOOM_API_KEY || '',
+      apiKey: import.meta.env.VITE_ZOOM_API_KEY || '',
     });
 
     if (!success) {
@@ -129,7 +133,9 @@ export const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
    * Get status message in appropriate language
    */
   const getStatusMessage = (): string => {
-    if (!meetingStatus) return '';
+    if (!meetingStatus) {
+      return '';
+    }
 
     const messages = MEETING_STATUS_MESSAGES[meetingStatus];
     return messages ? messages.en : '';

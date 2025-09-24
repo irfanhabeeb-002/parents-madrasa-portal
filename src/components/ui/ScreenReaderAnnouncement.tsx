@@ -24,7 +24,9 @@ export const ScreenReaderAnnouncement: React.FC<
     }
   }, [message, clearAfter]);
 
-  if (!message) return null;
+  if (!message) {
+    return null;
+  }
 
   return (
     <div

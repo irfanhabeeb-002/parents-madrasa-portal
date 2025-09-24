@@ -206,7 +206,7 @@ export class ClassService extends FirebaseService {
       }));
 
       // Apply client-side search filter if needed (Firestore doesn't support full-text search)
-      const filteredClasses = classes;
+      let filteredClasses = classes;
       if (options?.search) {
         const searchTerm = options.search.toLowerCase();
         filteredClasses = classes.filter(
@@ -254,7 +254,7 @@ export class ClassService extends FirebaseService {
     try {
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      const filteredClasses = [...this.mockClasses];
+      let filteredClasses = [...this.mockClasses];
 
       // Apply filters
       if (options?.status) {
@@ -309,8 +309,12 @@ export class ClassService extends FirebaseService {
           const direction = options.orderDirection === 'desc' ? -1 : 1;
 
           if (aValue && bValue) {
-            if (aValue < bValue) return -1 * direction;
-            if (aValue > bValue) return 1 * direction;
+            if (aValue < bValue) {
+              return -1 * direction;
+            }
+            if (aValue > bValue) {
+              return 1 * direction;
+            }
           }
           return 0;
         });

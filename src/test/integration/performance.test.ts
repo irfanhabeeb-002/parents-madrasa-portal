@@ -204,7 +204,7 @@ describe('Performance Tests', () => {
       const batchSize = 10;
 
       // Batch multiple state updates
-      for (const i = 0; i < 100; i++) {
+      for (let i = 0; i < 100; i++) {
         stateUpdates.push({ id: i, value: `update-${i}` });
 
         // Process in batches to avoid blocking
@@ -376,7 +376,7 @@ describe('Performance Tests', () => {
       };
 
       // Simulate multiple announcements
-      for (const i = 0; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         announce(`Announcement ${i}`);
       }
 
@@ -402,7 +402,9 @@ describe('Performance Tests', () => {
             const img = images.find(
               i => i.src === entry.target.getAttribute('data-src')
             );
-            if (img) img.loaded = true;
+            if (img) {
+              img.loaded = true;
+            }
           }
         });
       });

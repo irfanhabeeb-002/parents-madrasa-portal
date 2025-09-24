@@ -187,7 +187,9 @@ export const LiveClass: React.FC = () => {
         return;
       }
 
-      if (!user) return;
+      if (!user) {
+        return;
+      }
 
       setState(prev => ({
         ...prev,
@@ -253,7 +255,9 @@ export const LiveClass: React.FC = () => {
   );
 
   const handleJoinClass = async (classSession: ClassSession) => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     // Check if user can join
     const canJoinResponse = await ClassService.canJoinClass(

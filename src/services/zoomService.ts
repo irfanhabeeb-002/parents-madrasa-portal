@@ -140,7 +140,9 @@ export class ZoomService {
    * Set up event listeners for Zoom SDK events
    */
   private setupEventListeners(): void {
-    if (!this.client) return;
+    if (!this.client) {
+      return;
+    }
 
     // Meeting status events
     this.client.on(
@@ -272,11 +274,15 @@ export class ZoomService {
           leaveUrl: config.leaveUrl || window.location.origin,
           success: (result: any) => {
             this.currentMeetingId = config.meetingNumber;
-            if (config.success) config.success(result);
+            if (config.success) {
+              config.success(result);
+            }
             resolve(true);
           },
           error: (error: any) => {
-            if (config.error) config.error(error);
+            if (config.error) {
+              config.error(error);
+            }
             reject(error);
           },
         });
@@ -624,7 +630,7 @@ export class ZoomService {
       ];
 
       // Filter by meetingId if provided
-      const filteredRecordings = meetingId
+      let filteredRecordings = meetingId
         ? mockRecordings.filter(rec => rec.meetingId === meetingId)
         : mockRecordings;
 
@@ -644,7 +650,7 @@ export class ZoomService {
       const pageSize = options?.pageSize || 30;
       const pageNumber = options?.pageNumber || 1;
       const startIndex = (pageNumber - 1) * pageSize;
-      const paginatedRecordings = filteredRecordings.slice(
+      let paginatedRecordings = filteredRecordings.slice(
         startIndex,
         startIndex + pageSize
       );
@@ -719,7 +725,7 @@ export class ZoomService {
       }
 
       const searchTerm = query.toLowerCase();
-      const filteredRecordings = recordingsResponse.data.meetings.filter(
+      let filteredRecordings = recordingsResponse.data.meetings.filter(
         recording =>
           recording.topic.toLowerCase().includes(searchTerm) ||
           recording.meetingId.includes(query) ||
