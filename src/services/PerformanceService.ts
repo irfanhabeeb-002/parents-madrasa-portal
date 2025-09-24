@@ -148,7 +148,7 @@ class PerformanceService {
 
     // Cumulative Layout Shift (CLS)
     this.observeMetric('layout-shift', entries => {
-      const clsValue = 0;
+      let clsValue = 0;
       for (const entry of entries) {
         if (!(entry as any).hadRecentInput) {
           clsValue += (entry as any).value;
