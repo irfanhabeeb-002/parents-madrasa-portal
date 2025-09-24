@@ -41,8 +41,10 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({
   useEffect(() => {
     if (updateAvailable && notificationRef.current && autoShow) {
       // Announce to screen readers
-      announceToScreenReader('App update available. You can update now for the latest features.');
-      
+      announceToScreenReader(
+        'App update available. You can update now for the latest features.'
+      );
+
       // Focus the notification for accessibility
       setTimeout(() => {
         notificationRef.current?.focus();
@@ -95,7 +97,8 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({
     if (isHighContrast) {
       return {
         primary: 'bg-white text-black hover:bg-gray-200 border-2 border-black',
-        secondary: 'bg-black text-white hover:bg-gray-800 border-2 border-white',
+        secondary:
+          'bg-black text-white hover:bg-gray-800 border-2 border-white',
       };
     }
 
@@ -136,8 +139,8 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({
 
   // Check if update was recently dismissed
   const dismissedTime = sessionStorage.getItem('updateDismissed');
-  const recentlyDismissed = dismissedTime && 
-    (Date.now() - parseInt(dismissedTime)) < 300000; // 5 minutes
+  const recentlyDismissed =
+    dismissedTime && Date.now() - parseInt(dismissedTime) < 300000; // 5 minutes
 
   if (recentlyDismissed && autoShow) {
     return (
@@ -204,7 +207,8 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({
                   lang="ml"
                   aria-label="Malayalam translation: A new version is ready with improvements and bug fixes"
                 >
-                  മെച്ചപ്പെടുത്തലുകളും ബഗ് ഫിക്സുകളുമുള്ള പുതിയ പതിപ്പ് തയ്യാറാണ്
+                  മെച്ചപ്പെടുത്തലുകളും ബഗ് ഫിക്സുകളുമുള്ള പുതിയ പതിപ്പ്
+                  തയ്യാറാണ്
                 </p>
 
                 {updateError && (
@@ -224,10 +228,10 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({
               onClick={dismissUpdate}
               disabled={isUpdating}
               className={`p-1 ml-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white ${
-                isHighContrast 
-                  ? 'text-white hover:text-gray-300 hover:bg-gray-800' 
-                  : theme === 'dark' 
-                    ? 'text-blue-200 hover:text-white hover:bg-blue-500' 
+                isHighContrast
+                  ? 'text-white hover:text-gray-300 hover:bg-gray-800'
+                  : theme === 'dark'
+                    ? 'text-blue-200 hover:text-white hover:bg-blue-500'
                     : 'text-blue-200 hover:text-white hover:bg-blue-600'
               } ${
                 prefersReducedMotion
@@ -270,7 +274,7 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({
             >
               <span className="text-sm">Later</span>
             </AccessibleButton>
-            
+
             <AccessibleButton
               variant="primary"
               size="sm"
@@ -335,12 +339,8 @@ export const ManualUpdateTrigger: React.FC<{
   className?: string;
   variant?: 'button' | 'menu-item';
 }> = ({ className = '', variant = 'button' }) => {
-  const {
-    updateAvailable,
-    isUpdating,
-    updateError,
-    updateServiceWorker,
-  } = useServiceWorkerUpdate();
+  const { updateAvailable, isUpdating, updateError, updateServiceWorker } =
+    useServiceWorkerUpdate();
 
   const handleManualUpdate = async () => {
     if (updateAvailable) {
@@ -362,7 +362,9 @@ export const ManualUpdateTrigger: React.FC<{
         onClick={handleManualUpdate}
         disabled={isUpdating}
         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
-        aria-label={updateAvailable ? 'Update app now' : 'Check for app updates'}
+        aria-label={
+          updateAvailable ? 'Update app now' : 'Check for app updates'
+        }
       >
         <div className="flex items-center space-x-2">
           {isUpdating ? (
@@ -403,21 +405,21 @@ export const ManualUpdateTrigger: React.FC<{
             </svg>
           )}
           <span>
-            {isUpdating 
-              ? 'Updating...' 
-              : updateAvailable 
-                ? 'Update Available' 
-                : 'Check for Updates'
-            }
+            {isUpdating
+              ? 'Updating...'
+              : updateAvailable
+                ? 'Update Available'
+                : 'Check for Updates'}
           </span>
           {updateAvailable && (
-            <span className="ml-auto w-2 h-2 bg-blue-500 rounded-full" aria-hidden="true" />
+            <span
+              className="ml-auto w-2 h-2 bg-blue-500 rounded-full"
+              aria-hidden="true"
+            />
           )}
         </div>
         {updateError && (
-          <div className="text-xs text-red-600 mt-1">
-            {updateError}
-          </div>
+          <div className="text-xs text-red-600 mt-1">{updateError}</div>
         )}
       </button>
     );
@@ -469,21 +471,21 @@ export const ManualUpdateTrigger: React.FC<{
           </svg>
         )}
         <span>
-          {isUpdating 
-            ? 'Updating...' 
-            : updateAvailable 
-              ? 'Update Now' 
-              : 'Check Updates'
-          }
+          {isUpdating
+            ? 'Updating...'
+            : updateAvailable
+              ? 'Update Now'
+              : 'Check Updates'}
         </span>
         {updateAvailable && (
-          <span className="ml-2 w-2 h-2 bg-blue-500 rounded-full" aria-hidden="true" />
+          <span
+            className="ml-2 w-2 h-2 bg-blue-500 rounded-full"
+            aria-hidden="true"
+          />
         )}
       </div>
       {updateError && (
-        <div className="text-xs text-red-600 mt-1">
-          {updateError}
-        </div>
+        <div className="text-xs text-red-600 mt-1">{updateError}</div>
       )}
     </AccessibleButton>
   );

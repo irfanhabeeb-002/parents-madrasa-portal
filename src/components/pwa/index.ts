@@ -5,6 +5,7 @@ export {
 } from './OfflineIndicator';
 export { InstallPrompt, useInstallPrompt } from './InstallPrompt';
 export { InstallButton } from './InstallButton';
+export { FallbackInstallButton } from './FallbackInstallButton';
 export { InstallButtonExample } from './InstallButtonExample';
 export { SyncStatus, CompactSyncStatus } from './SyncStatus';
 export {

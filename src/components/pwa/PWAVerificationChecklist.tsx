@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AccessibleButton } from '../ui/AccessibleButton';
 import { Card } from '../ui/Card';
-import { 
-  runAllPWATests, 
+import {
+  runAllPWATests,
   testManifestValidation,
   testServiceWorker,
   testInstallability,
@@ -13,7 +13,7 @@ import {
   type PWATestResult,
   type ManifestValidationResult,
   type ServiceWorkerTestResult,
-  type InstallabilityTestResult
+  type InstallabilityTestResult,
 } from '../../utils/pwaTestUtils';
 
 interface PWATestResults {
@@ -39,33 +39,78 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
   description,
   status,
   details,
-  onTest
+  onTest,
 }) => {
   const getStatusIcon = () => {
     switch (status) {
       case 'passed':
         return (
-          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          <svg
+            className="w-5 h-5 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
           </svg>
         );
       case 'failed':
         return (
-          <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="w-5 h-5 text-red-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         );
       case 'running':
         return (
-          <svg className="w-5 h-5 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <svg
+            className="w-5 h-5 text-blue-600 animate-spin"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
           </svg>
         );
       default:
         return (
-          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-5 h-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         );
     }
@@ -73,10 +118,14 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
 
   const getStatusColor = () => {
     switch (status) {
-      case 'passed': return 'border-green-200 bg-green-50';
-      case 'failed': return 'border-red-200 bg-red-50';
-      case 'running': return 'border-blue-200 bg-blue-50';
-      default: return 'border-gray-200 bg-gray-50';
+      case 'passed':
+        return 'border-green-200 bg-green-50';
+      case 'failed':
+        return 'border-red-200 bg-red-50';
+      case 'running':
+        return 'border-blue-200 bg-blue-50';
+      default:
+        return 'border-gray-200 bg-gray-50';
     }
   };
 
@@ -84,13 +133,11 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
     <div className={`border rounded-lg p-4 ${getStatusColor()}`}>
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-3">
-          <div className="flex-shrink-0 mt-1">
-            {getStatusIcon()}
-          </div>
+          <div className="flex-shrink-0 mt-1">{getStatusIcon()}</div>
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-medium text-gray-900">{title}</h4>
             <p className="text-sm text-gray-600 mt-1">{description}</p>
-            
+
             {details && (
               <details className="mt-2">
                 <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
@@ -103,7 +150,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
             )}
           </div>
         </div>
-        
+
         {onTest && (
           <AccessibleButton
             onClick={onTest}
@@ -125,46 +172,51 @@ export const PWAVerificationChecklist: React.FC = () => {
   const [results, setResults] = useState<Partial<PWATestResults>>({});
   const [isRunningAll, setIsRunningAll] = useState(false);
   const [offlineSimulation, setOfflineSimulation] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set()
+  );
 
   const updateResult = useCallback((key: keyof PWATestResults, result: any) => {
     setResults(prev => ({
       ...prev,
       [key]: result,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }));
   }, []);
 
-  const runIndividualTest = useCallback(async (
-    testName: keyof PWATestResults,
-    testFunction: () => Promise<any>
-  ) => {
-    updateResult(testName, { status: 'running' });
-    
-    try {
-      const result = await testFunction();
-      updateResult(testName, result);
-    } catch (error) {
-      updateResult(testName, {
-        passed: false,
-        message: `Test failed: ${error}`,
-        error
-      });
-    }
-  }, [updateResult]);
+  const runIndividualTest = useCallback(
+    async (
+      testName: keyof PWATestResults,
+      testFunction: () => Promise<any>
+    ) => {
+      updateResult(testName, { status: 'running' });
+
+      try {
+        const result = await testFunction();
+        updateResult(testName, result);
+      } catch (error) {
+        updateResult(testName, {
+          passed: false,
+          message: `Test failed: ${error}`,
+          error,
+        });
+      }
+    },
+    [updateResult]
+  );
 
   const runAllTests = useCallback(async () => {
     setIsRunningAll(true);
-    
+
     try {
       const allResults = await runAllPWATests();
-      
+
       // Also test notifications separately
       const notificationResult = await testNotifications();
-      
+
       setResults({
         ...allResults,
-        notifications: notificationResult
+        notifications: notificationResult,
       });
     } catch (error) {
       console.error('Failed to run all tests:', error);
@@ -203,19 +255,29 @@ export const PWAVerificationChecklist: React.FC = () => {
       results.installability,
       results.offline,
       results.performance,
-      results.notifications
+      results.notifications,
     ];
 
-    const completedTests = testResults.filter(result => result && result !== 'running');
-    const passedTests = completedTests.filter(result => 
-      result && (result.passed || result.isValid || result.isInstallable || result.isRegistered)
+    const completedTests = testResults.filter(
+      result => result && result !== 'running'
+    );
+    const passedTests = completedTests.filter(
+      result =>
+        result &&
+        (result.passed ||
+          result.isValid ||
+          result.isInstallable ||
+          result.isRegistered)
     );
 
     return {
       total: testResults.length,
       completed: completedTests.length,
       passed: passedTests.length,
-      percentage: completedTests.length > 0 ? Math.round((passedTests.length / completedTests.length) * 100) : 0
+      percentage:
+        completedTests.length > 0
+          ? Math.round((passedTests.length / completedTests.length) * 100)
+          : 0,
     };
   };
 
@@ -231,17 +293,19 @@ export const PWAVerificationChecklist: React.FC = () => {
         <p className="text-gray-600 mb-4">
           Comprehensive testing for Progressive Web App functionality
         </p>
-        
+
         {/* Overall Status */}
         <div className="bg-white rounded-lg border p-4 mb-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Overall Status</span>
+            <span className="text-sm font-medium text-gray-700">
+              Overall Status
+            </span>
             <span className="text-sm text-gray-500">
               {status.passed}/{status.completed} tests passed
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-green-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${status.percentage}%` }}
             />
@@ -261,21 +325,22 @@ export const PWAVerificationChecklist: React.FC = () => {
           >
             {isRunningAll ? 'Running Tests...' : 'Run All Tests'}
           </AccessibleButton>
-          
+
           <AccessibleButton
             onClick={toggleOfflineSimulation}
             variant="secondary"
             className={offlineSimulation ? 'bg-orange-100 text-orange-800' : ''}
             ariaLabel={`${offlineSimulation ? 'Disable' : 'Enable'} offline simulation for testing`}
           >
-            {offlineSimulation ? '🔌 Disable Offline Mode' : '📱 Simulate Offline'}
+            {offlineSimulation
+              ? '🔌 Disable Offline Mode'
+              : '📱 Simulate Offline'}
           </AccessibleButton>
         </div>
       </div>
 
       {/* Test Categories */}
       <div className="space-y-6">
-        
         {/* Manifest Tests */}
         <Card className="p-6">
           <button
@@ -286,30 +351,41 @@ export const PWAVerificationChecklist: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900">
               📄 Web App Manifest
             </h3>
-            <svg 
+            <svg
               className={`w-5 h-5 transform transition-transform ${
                 expandedSections.has('manifest') ? 'rotate-180' : ''
               }`}
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
-          
+
           {expandedSections.has('manifest') && (
             <div className="mt-4 space-y-3">
               <ChecklistItem
                 title="Manifest Validation"
                 description="Validates manifest.json structure and required fields"
                 status={
-                  !results.manifest ? 'pending' :
-                  results.manifest === 'running' ? 'running' :
-                  results.manifest.isValid ? 'passed' : 'failed'
+                  !results.manifest
+                    ? 'pending'
+                    : results.manifest === 'running'
+                      ? 'running'
+                      : results.manifest.isValid
+                        ? 'passed'
+                        : 'failed'
                 }
                 details={results.manifest}
-                onTest={() => runIndividualTest('manifest', testManifestValidation)}
+                onTest={() =>
+                  runIndividualTest('manifest', testManifestValidation)
+                }
               />
             </div>
           )}
@@ -325,30 +401,41 @@ export const PWAVerificationChecklist: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900">
               ⚙️ Service Worker
             </h3>
-            <svg 
+            <svg
               className={`w-5 h-5 transform transition-transform ${
                 expandedSections.has('serviceWorker') ? 'rotate-180' : ''
               }`}
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
-          
+
           {expandedSections.has('serviceWorker') && (
             <div className="mt-4 space-y-3">
               <ChecklistItem
                 title="Service Worker Registration"
                 description="Checks if service worker is properly registered and active"
                 status={
-                  !results.serviceWorker ? 'pending' :
-                  results.serviceWorker === 'running' ? 'running' :
-                  results.serviceWorker.isRegistered ? 'passed' : 'failed'
+                  !results.serviceWorker
+                    ? 'pending'
+                    : results.serviceWorker === 'running'
+                      ? 'running'
+                      : results.serviceWorker.isRegistered
+                        ? 'passed'
+                        : 'failed'
                 }
                 details={results.serviceWorker}
-                onTest={() => runIndividualTest('serviceWorker', testServiceWorker)}
+                onTest={() =>
+                  runIndividualTest('serviceWorker', testServiceWorker)
+                }
               />
             </div>
           )}
@@ -364,30 +451,41 @@ export const PWAVerificationChecklist: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900">
               📱 App Installability
             </h3>
-            <svg 
+            <svg
               className={`w-5 h-5 transform transition-transform ${
                 expandedSections.has('installability') ? 'rotate-180' : ''
               }`}
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
-          
+
           {expandedSections.has('installability') && (
             <div className="mt-4 space-y-3">
               <ChecklistItem
                 title="Install Criteria"
                 description="Verifies all requirements for app installation are met"
                 status={
-                  !results.installability ? 'pending' :
-                  results.installability === 'running' ? 'running' :
-                  results.installability.isInstallable ? 'passed' : 'failed'
+                  !results.installability
+                    ? 'pending'
+                    : results.installability === 'running'
+                      ? 'running'
+                      : results.installability.isInstallable
+                        ? 'passed'
+                        : 'failed'
                 }
                 details={results.installability}
-                onTest={() => runIndividualTest('installability', testInstallability)}
+                onTest={() =>
+                  runIndividualTest('installability', testInstallability)
+                }
               />
             </div>
           )}
@@ -403,30 +501,41 @@ export const PWAVerificationChecklist: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900">
               🔌 Offline Functionality
             </h3>
-            <svg 
+            <svg
               className={`w-5 h-5 transform transition-transform ${
                 expandedSections.has('offline') ? 'rotate-180' : ''
               }`}
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
-          
+
           {expandedSections.has('offline') && (
             <div className="mt-4 space-y-3">
               <ChecklistItem
                 title="Cache Functionality"
                 description="Tests if essential resources are cached for offline use"
                 status={
-                  !results.offline ? 'pending' :
-                  results.offline === 'running' ? 'running' :
-                  results.offline.passed ? 'passed' : 'failed'
+                  !results.offline
+                    ? 'pending'
+                    : results.offline === 'running'
+                      ? 'running'
+                      : results.offline.passed
+                        ? 'passed'
+                        : 'failed'
                 }
                 details={results.offline}
-                onTest={() => runIndividualTest('offline', testOfflineFunctionality)}
+                onTest={() =>
+                  runIndividualTest('offline', testOfflineFunctionality)
+                }
               />
             </div>
           )}
@@ -442,30 +551,41 @@ export const PWAVerificationChecklist: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900">
               ⚡ Performance
             </h3>
-            <svg 
+            <svg
               className={`w-5 h-5 transform transition-transform ${
                 expandedSections.has('performance') ? 'rotate-180' : ''
               }`}
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
-          
+
           {expandedSections.has('performance') && (
             <div className="mt-4 space-y-3">
               <ChecklistItem
                 title="Performance Metrics"
                 description="Measures key performance indicators for PWA"
                 status={
-                  !results.performance ? 'pending' :
-                  results.performance === 'running' ? 'running' :
-                  results.performance.passed ? 'passed' : 'failed'
+                  !results.performance
+                    ? 'pending'
+                    : results.performance === 'running'
+                      ? 'running'
+                      : results.performance.passed
+                        ? 'passed'
+                        : 'failed'
                 }
                 details={results.performance}
-                onTest={() => runIndividualTest('performance', testPWAPerformance)}
+                onTest={() =>
+                  runIndividualTest('performance', testPWAPerformance)
+                }
               />
             </div>
           )}
@@ -481,30 +601,41 @@ export const PWAVerificationChecklist: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900">
               🔔 Notifications
             </h3>
-            <svg 
+            <svg
               className={`w-5 h-5 transform transition-transform ${
                 expandedSections.has('notifications') ? 'rotate-180' : ''
               }`}
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
-          
+
           {expandedSections.has('notifications') && (
             <div className="mt-4 space-y-3">
               <ChecklistItem
                 title="Push Notifications"
                 description="Tests notification permissions and functionality"
                 status={
-                  !results.notifications ? 'pending' :
-                  results.notifications === 'running' ? 'running' :
-                  results.notifications.passed ? 'passed' : 'failed'
+                  !results.notifications
+                    ? 'pending'
+                    : results.notifications === 'running'
+                      ? 'running'
+                      : results.notifications.passed
+                        ? 'passed'
+                        : 'failed'
                 }
                 details={results.notifications}
-                onTest={() => runIndividualTest('notifications', testNotifications)}
+                onTest={() =>
+                  runIndividualTest('notifications', testNotifications)
+                }
               />
             </div>
           )}
@@ -520,7 +651,9 @@ export const PWAVerificationChecklist: React.FC = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-yellow-800">Offline Simulation</p>
+                <p className="text-sm font-medium text-yellow-800">
+                  Offline Simulation
+                </p>
                 <p className="text-xs text-yellow-600">
                   Simulates network failures to test offline functionality
                 </p>
@@ -529,7 +662,9 @@ export const PWAVerificationChecklist: React.FC = () => {
                 onClick={toggleOfflineSimulation}
                 size="sm"
                 variant={offlineSimulation ? 'primary' : 'secondary'}
-                className={offlineSimulation ? 'bg-orange-600 hover:bg-orange-700' : ''}
+                className={
+                  offlineSimulation ? 'bg-orange-600 hover:bg-orange-700' : ''
+                }
               >
                 {offlineSimulation ? 'Enabled' : 'Disabled'}
               </AccessibleButton>
@@ -559,10 +694,15 @@ export const PWAVerificationChecklist: React.FC = () => {
             </div>
             <div>
               <p className="font-medium text-gray-700">PWA Score</p>
-              <p className={`font-bold ${
-                status.percentage >= 90 ? 'text-green-600' :
-                status.percentage >= 70 ? 'text-yellow-600' : 'text-red-600'
-              }`}>
+              <p
+                className={`font-bold ${
+                  status.percentage >= 90
+                    ? 'text-green-600'
+                    : status.percentage >= 70
+                      ? 'text-yellow-600'
+                      : 'text-red-600'
+                }`}
+              >
                 {status.percentage}%
               </p>
             </div>

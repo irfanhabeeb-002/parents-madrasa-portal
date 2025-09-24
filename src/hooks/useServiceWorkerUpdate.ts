@@ -18,7 +18,9 @@ export const useServiceWorkerUpdate = (): ServiceWorkerUpdateHook => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [offlineReady, setOfflineReady] = useState(false);
-  const [updateSW, setUpdateSW] = useState<((reloadPage?: boolean) => Promise<void>) | null>(null);
+  const [updateSW, setUpdateSW] = useState<
+    ((reloadPage?: boolean) => Promise<void>) | null
+  >(null);
 
   useEffect(() => {
     // Listen for service worker events from main.tsx registration
@@ -35,13 +37,18 @@ export const useServiceWorkerUpdate = (): ServiceWorkerUpdateHook => {
 
     const handleRegistrationError = (event: CustomEvent) => {
       console.error('Service worker registration error:', event.detail);
-      setUpdateError('Failed to register service worker. Some features may not work offline.');
+      setUpdateError(
+        'Failed to register service worker. Some features may not work offline.'
+      );
     };
 
     // Add event listeners for service worker events
     window.addEventListener('sw-update-available', handleUpdateAvailable);
     window.addEventListener('sw-offline-ready', handleOfflineReady);
-    window.addEventListener('sw-registration-error', handleRegistrationError as EventListener);
+    window.addEventListener(
+      'sw-registration-error',
+      handleRegistrationError as EventListener
+    );
 
     // Get the global update function set by main.tsx registration
     const globalUpdateSW = (window as any).updateServiceWorker;
@@ -53,7 +60,10 @@ export const useServiceWorkerUpdate = (): ServiceWorkerUpdateHook => {
     return () => {
       window.removeEventListener('sw-update-available', handleUpdateAvailable);
       window.removeEventListener('sw-offline-ready', handleOfflineReady);
-      window.removeEventListener('sw-registration-error', handleRegistrationError as EventListener);
+      window.removeEventListener(
+        'sw-registration-error',
+        handleRegistrationError as EventListener
+      );
     };
   }, []);
 
@@ -71,7 +81,9 @@ export const useServiceWorkerUpdate = (): ServiceWorkerUpdateHook => {
       setUpdateAvailable(false);
     } catch (error) {
       console.error('Failed to update service worker:', error);
-      setUpdateError('Failed to update the app. Please refresh the page manually.');
+      setUpdateError(
+        'Failed to update the app. Please refresh the page manually.'
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -80,7 +92,7 @@ export const useServiceWorkerUpdate = (): ServiceWorkerUpdateHook => {
   const dismissUpdate = useCallback(() => {
     setUpdateAvailable(false);
     setUpdateError(null);
-    
+
     // Store dismissal in session storage to avoid showing again immediately
     sessionStorage.setItem('updateDismissed', Date.now().toString());
   }, []);

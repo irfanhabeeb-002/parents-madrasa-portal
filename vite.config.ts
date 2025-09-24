@@ -9,7 +9,11 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/favicon.ico', 'icons/apple-touch-icon.png', 'icons/masked-icon.svg'],
+      includeAssets: [
+        'icons/favicon.ico',
+        'icons/apple-touch-icon.png',
+        'icons/masked-icon.svg',
+      ],
       manifest: {
         name: 'Parents Madrasa Portal',
         short_name: 'Madrasa Portal',
@@ -26,25 +30,25 @@ export default defineConfig({
           {
             src: 'icons/pwa-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'icons/pwa-512x512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'icons/pwa-512x512-maskable.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'maskable'
+            purpose: 'maskable',
           },
           {
             src: 'icons/apple-touch-icon.png',
             sizes: '180x180',
-            type: 'image/png'
-          }
-        ]
+            type: 'image/png',
+          },
+        ],
       },
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg}'],
@@ -56,14 +60,14 @@ export default defineConfig({
       filename: 'sw.ts',
       strategies: 'injectManifest',
       devOptions: {
-        enabled: false
-      }
-    })
+        enabled: false,
+      },
+    }),
   ],
   build: {
     outDir: 'dist',
     rollupOptions: {
-      input: './index.html'
-    }
-  }
+      input: './index.html',
+    },
+  },
 });

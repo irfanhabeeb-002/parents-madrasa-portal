@@ -224,7 +224,7 @@ export class SecurityUtils {
    * Rate limiting utility
    */
   static createRateLimiter(maxAttempts: number, windowMs: number) {
-    let attempts = new Map<string, { count: number; resetTime: number }>();
+    const attempts = new Map<string, { count: number; resetTime: number }>();
 
     return (identifier: string): boolean => {
       const now = Date.now();

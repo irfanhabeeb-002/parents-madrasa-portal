@@ -271,7 +271,7 @@ export class AttendanceService extends FirebaseService {
     try {
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      let userAttendance = this.mockAttendance.filter(
+      const userAttendance = this.mockAttendance.filter(
         att => att.userId === userId
       );
       const totalClasses = userAttendance.length;
@@ -418,7 +418,7 @@ export class AttendanceService extends FirebaseService {
     try {
       await new Promise(resolve => setTimeout(resolve, 250));
 
-      let userAttendance = this.mockAttendance.filter(att => {
+      const userAttendance = this.mockAttendance.filter(att => {
         const attDate = this.toDate(att.joinedAt);
         return (
           att.userId === userId &&

@@ -1,4 +1,5 @@
 // Mobile-optimized notification manager for Parents Madrasa Portal
+import { INSTALL_LOCALIZATION } from '../constants/installLocalization';
 
 export class MobileNotificationManager {
   private static instance: MobileNotificationManager;
@@ -268,9 +269,9 @@ export class MobileNotificationManager {
       <div class="p-4">
         <div class="flex items-center justify-between">
           <div class="flex-1">
-            <h4 class="font-semibold text-sm mb-1">Install App for Better Notifications</h4>
+            <h4 class="font-semibold text-sm mb-1">${INSTALL_LOCALIZATION.english.buttonText} for Better Notifications</h4>
             <p class="text-xs opacity-90">Get reliable class reminders and updates</p>
-            <p class="text-xs opacity-75 mt-1" lang="ml">മികച്ച അറിയിപ്പുകൾക്കായി ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യുക</p>
+            <p class="text-xs opacity-75 mt-1" lang="ml">${INSTALL_LOCALIZATION.malayalam.description}</p>
           </div>
           <div class="flex space-x-2 ml-3">
             <button class="bg-white text-blue-600 px-3 py-1 rounded text-xs font-medium" onclick="this.parentElement.parentElement.parentElement.parentElement.remove()">

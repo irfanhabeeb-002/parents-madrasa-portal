@@ -109,7 +109,7 @@ export class SearchService {
   ): Promise<ApiResponse<SearchResult<Recording>>> {
     try {
       const _startTime = Date.now();
-      let recordings = StorageService.getArray<Recording>('recordings');
+      const recordings = StorageService.getArray<Recording>('recordings');
 
       // Apply search
       let results = this.performSearch(recordings, query, {
@@ -133,7 +133,7 @@ export class SearchService {
       const totalCount = results.length;
       results = this.applySortingAndPagination(results, options);
 
-      const searchTime = Date.now() - startTime;
+      const searchTime = Date.now() - _startTime;
       const suggestions = this.generateSuggestions(query, recordings, [
         'title',
         'description',
@@ -174,7 +174,7 @@ export class SearchService {
   ): Promise<ApiResponse<SearchResult<Note>>> {
     try {
       const _startTime = Date.now();
-      let notes = StorageService.getArray<Note>('notes');
+      const notes = StorageService.getArray<Note>('notes');
 
       // Apply search
       let results = this.performSearch(notes, query, {
@@ -210,7 +210,7 @@ export class SearchService {
       const totalCount = results.length;
       results = this.applySortingAndPagination(results, options);
 
-      const searchTime = Date.now() - startTime;
+      const searchTime = Date.now() - _startTime;
       const suggestions = this.generateSuggestions(query, notes, [
         'title',
         'content',
@@ -251,7 +251,7 @@ export class SearchService {
   ): Promise<ApiResponse<SearchResult<Exercise>>> {
     try {
       const _startTime = Date.now();
-      let exercises = StorageService.getArray<Exercise>('exercises');
+      const exercises = StorageService.getArray<Exercise>('exercises');
 
       // Apply search
       let results = this.performSearch(exercises, query, {
@@ -275,7 +275,7 @@ export class SearchService {
       const totalCount = results.length;
       results = this.applySortingAndPagination(results, options);
 
-      const searchTime = Date.now() - startTime;
+      const searchTime = Date.now() - _startTime;
       const suggestions = this.generateSuggestions(query, exercises, [
         'title',
         'description',
@@ -394,7 +394,7 @@ export class SearchService {
     const keys = field.split('.');
     let value = item;
 
-    for (let key of keys) {
+    for (const key of keys) {
       value = value?.[key];
       if (value === undefined || value === null) {
         return '';
@@ -511,7 +511,7 @@ export class SearchService {
       const valueCounts: Record<string, number> = {};
 
       items.forEach(item => {
-        let value = this.getFieldValue(item, field);
+        const value = this.getFieldValue(item, field);
         if (value) {
           if (Array.isArray(value)) {
             value.forEach(v => {

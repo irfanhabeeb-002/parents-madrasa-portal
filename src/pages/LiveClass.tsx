@@ -63,7 +63,7 @@ export const LiveClass: React.FC = () => {
       if (state.zoomEnabled) {
         try {
           if (!zoomService.isSDKInitialized()) {
-            let result = await zoomService.initialize({
+            const result = await zoomService.initialize({
               debug: false,
               leaveOnPageUnload: true,
               showMeetingHeader: false,

@@ -650,7 +650,7 @@ export class ZoomService {
       const pageSize = options?.pageSize || 30;
       const pageNumber = options?.pageNumber || 1;
       const startIndex = (pageNumber - 1) * pageSize;
-      let paginatedRecordings = filteredRecordings.slice(
+      const paginatedRecordings = filteredRecordings.slice(
         startIndex,
         startIndex + pageSize
       );
@@ -687,7 +687,7 @@ export class ZoomService {
         return { success: false, error: recordingsResponse.error };
       }
 
-      let recording = recordingsResponse.data.meetings.find(
+      const recording = recordingsResponse.data.meetings.find(
         rec => rec.id === recordingId
       );
       return {
@@ -725,7 +725,7 @@ export class ZoomService {
       }
 
       const searchTerm = query.toLowerCase();
-      let filteredRecordings = recordingsResponse.data.meetings.filter(
+      const filteredRecordings = recordingsResponse.data.meetings.filter(
         recording =>
           recording.topic.toLowerCase().includes(searchTerm) ||
           recording.meetingId.includes(query) ||

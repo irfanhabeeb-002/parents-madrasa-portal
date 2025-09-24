@@ -30,14 +30,14 @@ describe('PWAVerificationChecklist', () => {
       isValid: true,
       errors: [],
       warnings: [],
-      manifest: { name: 'Test App' }
+      manifest: { name: 'Test App' },
     },
     serviceWorker: {
       isRegistered: true,
       isActive: true,
       scope: '/',
       updateAvailable: false,
-      cacheNames: ['test-cache']
+      cacheNames: ['test-cache'],
     },
     installability: {
       isInstallable: true,
@@ -47,27 +47,29 @@ describe('PWAVerificationChecklist', () => {
         hasServiceWorker: true,
         hasIcons: true,
         hasStartUrl: true,
-        hasDisplay: true
-      }
+        hasDisplay: true,
+      },
     },
     offline: {
       passed: true,
-      message: 'Offline functionality ready'
+      message: 'Offline functionality ready',
     },
     performance: {
       passed: true,
-      message: 'Performance metrics within acceptable ranges'
+      message: 'Performance metrics within acceptable ranges',
     },
     notifications: {
       passed: true,
-      message: 'Notifications working correctly'
+      message: 'Notifications working correctly',
     },
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   beforeEach(() => {
     vi.mocked(pwaTestUtils.runAllPWATests).mockResolvedValue(mockTestResults);
-    vi.mocked(pwaTestUtils.testNotifications).mockResolvedValue(mockTestResults.notifications);
+    vi.mocked(pwaTestUtils.testNotifications).mockResolvedValue(
+      mockTestResults.notifications
+    );
   });
 
   afterEach(() => {
@@ -76,14 +78,18 @@ describe('PWAVerificationChecklist', () => {
 
   it('renders PWA verification checklist', async () => {
     render(<PWAVerificationChecklist />);
-    
+
     expect(screen.getByText('PWA Verification Checklist')).toBeInTheDocument();
-    expect(screen.getByText('Comprehensive testing for Progressive Web App functionality')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Comprehensive testing for Progressive Web App functionality'
+      )
+    ).toBeInTheDocument();
   });
 
   it('runs all tests on mount', async () => {
     render(<PWAVerificationChecklist />);
-    
+
     await waitFor(() => {
       expect(pwaTestUtils.runAllPWATests).toHaveBeenCalled();
       expect(pwaTestUtils.testNotifications).toHaveBeenCalled();
@@ -92,7 +98,7 @@ describe('PWAVerificationChecklist', () => {
 
   it('displays overall status correctly', async () => {
     render(<PWAVerificationChecklist />);
-    
+
     await waitFor(() => {
       expect(screen.getByText(/tests passed/)).toBeInTheDocument();
       expect(screen.getByText(/PWA compliance/)).toBeInTheDocument();
@@ -101,10 +107,10 @@ describe('PWAVerificationChecklist', () => {
 
   it('allows running all tests manually', async () => {
     render(<PWAVerificationChecklist />);
-    
+
     const runAllButton = screen.getByLabelText('Run all PWA tests');
     fireEvent.click(runAllButton);
-    
+
     await waitFor(() => {
       expect(pwaTestUtils.runAllPWATests).toHaveBeenCalledTimes(2); // Once on mount, once on click
     });
@@ -112,12 +118,14 @@ describe('PWAVerificationChecklist', () => {
 
   it('toggles offline simulation', async () => {
     render(<PWAVerificationChecklist />);
-    
-    const offlineButton = screen.getByLabelText('Enable offline simulation for testing');
+
+    const offlineButton = screen.getByLabelText(
+      'Enable offline simulation for testing'
+    );
     fireEvent.click(offlineButton);
-    
+
     expect(pwaTestUtils.simulateOfflineMode).toHaveBeenCalledWith(true);
-    
+
     // Button text should change
     await waitFor(() => {
       expect(screen.getByText(/disable offline mode/i)).toBeInTheDocument();
@@ -126,18 +134,20 @@ describe('PWAVerificationChecklist', () => {
 
   it('expands and collapses test sections', async () => {
     render(<PWAVerificationChecklist />);
-    
+
     // Wait for initial load
     await waitFor(() => {
       expect(screen.getByText('📄 Web App Manifest')).toBeInTheDocument();
     });
-    
-    const manifestSection = screen.getByText('📄 Web App Manifest').closest('button');
+
+    const manifestSection = screen
+      .getByText('📄 Web App Manifest')
+      .closest('button');
     expect(manifestSection).toBeInTheDocument();
-    
+
     if (manifestSection) {
       fireEvent.click(manifestSection);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Manifest Validation')).toBeInTheDocument();
       });
@@ -145,25 +155,29 @@ describe('PWAVerificationChecklist', () => {
   });
 
   it('runs individual tests', async () => {
-    vi.mocked(pwaTestUtils.testManifestValidation).mockResolvedValue(mockTestResults.manifest);
-    
+    vi.mocked(pwaTestUtils.testManifestValidation).mockResolvedValue(
+      mockTestResults.manifest
+    );
+
     render(<PWAVerificationChecklist />);
-    
+
     // Wait for initial load and expand manifest section
     await waitFor(() => {
       expect(screen.getByText('📄 Web App Manifest')).toBeInTheDocument();
     });
-    
-    const manifestSection = screen.getByText('📄 Web App Manifest').closest('button');
+
+    const manifestSection = screen
+      .getByText('📄 Web App Manifest')
+      .closest('button');
     if (manifestSection) {
       fireEvent.click(manifestSection);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Manifest Validation')).toBeInTheDocument();
         const testButton = screen.getByLabelText('Test Manifest Validation');
         fireEvent.click(testButton);
       });
-      
+
       await waitFor(() => {
         expect(pwaTestUtils.testManifestValidation).toHaveBeenCalled();
       });
@@ -172,14 +186,16 @@ describe('PWAVerificationChecklist', () => {
 
   it('displays test results with details', async () => {
     render(<PWAVerificationChecklist />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('📄 Web App Manifest')).toBeInTheDocument();
     });
-    
-    const manifestSection = screen.getByRole('button', { name: /web app manifest/i });
+
+    const manifestSection = screen.getByRole('button', {
+      name: /web app manifest/i,
+    });
     fireEvent.click(manifestSection);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Manifest Validation')).toBeInTheDocument();
       expect(screen.getByText('View Details')).toBeInTheDocument();
@@ -189,14 +205,14 @@ describe('PWAVerificationChecklist', () => {
   it('shows development tools in development mode', async () => {
     const originalEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'development';
-    
+
     render(<PWAVerificationChecklist />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('🛠️ Development Tools')).toBeInTheDocument();
       expect(screen.getByText('Offline Simulation')).toBeInTheDocument();
     });
-    
+
     process.env.NODE_ENV = originalEnv;
   });
 
@@ -206,14 +222,14 @@ describe('PWAVerificationChecklist', () => {
       manifest: {
         isValid: false,
         errors: ['Missing required field: name'],
-        warnings: []
-      }
+        warnings: [],
+      },
     };
-    
+
     vi.mocked(pwaTestUtils.runAllPWATests).mockResolvedValue(failedResults);
-    
+
     render(<PWAVerificationChecklist />);
-    
+
     await waitFor(() => {
       expect(screen.getByText(/PWA compliance/)).toBeInTheDocument();
     });
@@ -221,7 +237,7 @@ describe('PWAVerificationChecklist', () => {
 
   it('displays test summary with timestamp', async () => {
     render(<PWAVerificationChecklist />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('📊 Test Summary')).toBeInTheDocument();
       expect(screen.getByText('Last Run')).toBeInTheDocument();
@@ -235,14 +251,14 @@ describe('PWAVerificationChecklist', () => {
       ...mockTestResults,
       offline: {
         passed: false,
-        message: 'Offline functionality not working'
-      }
+        message: 'Offline functionality not working',
+      },
     };
-    
+
     vi.mocked(pwaTestUtils.runAllPWATests).mockResolvedValue(partialResults);
-    
+
     render(<PWAVerificationChecklist />);
-    
+
     await waitFor(() => {
       // Should show less than 100% since one test failed
       const scoreElements = screen.getAllByText(/\d+%/);

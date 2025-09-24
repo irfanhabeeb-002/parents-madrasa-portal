@@ -130,7 +130,7 @@ export const InstallButtonExample: React.FC = () => {
       {/* Usage in different contexts */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Context Examples</h3>
-        
+
         {/* Header/Navigation context */}
         <div className="bg-primary-700 text-white p-4 rounded-lg">
           <div className="flex items-center justify-between">

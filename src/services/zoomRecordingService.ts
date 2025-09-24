@@ -181,7 +181,7 @@ export class ZoomRecordingService extends FirebaseService {
       // Apply pagination
       const offset = options?.offset || 0;
       const limit = options?.limit || 20;
-      let paginatedRecordings = recordings.slice(offset, offset + limit);
+      const paginatedRecordings = recordings.slice(offset, offset + limit);
 
       return {
         data: paginatedRecordings,
@@ -219,12 +219,12 @@ export class ZoomRecordingService extends FirebaseService {
       } = searchOptions;
       const searchTerm = caseSensitive ? query : query.toLowerCase();
 
-      let recordings = StorageService.getArray<Recording>(
+      const recordings = StorageService.getArray<Recording>(
         `${ZoomRecordingService.SYNC_CACHE_KEY}_data`
       );
 
       // Filter recordings based on search criteria
-      let filteredRecordings = recordings.filter(recording => {
+      const filteredRecordings = recordings.filter(recording => {
         return fields.some(field => {
           const fieldValue = recording[field as keyof Recording];
           if (Array.isArray(fieldValue)) {
@@ -246,7 +246,7 @@ export class ZoomRecordingService extends FirebaseService {
       // Apply pagination
       const offset = paginationOptions?.offset || 0;
       const limit = paginationOptions?.limit || 20;
-      let paginatedRecordings = filteredRecordings.slice(
+      const paginatedRecordings = filteredRecordings.slice(
         offset,
         offset + limit
       );
@@ -384,7 +384,7 @@ export class ZoomRecordingService extends FirebaseService {
       'shared_screen',
     ];
 
-    for (let priority of priorities) {
+    for (const priority of priorities) {
       const file = files.find(
         f =>
           f.fileType === 'MP4' &&
@@ -535,7 +535,7 @@ export class ZoomRecordingService extends FirebaseService {
     const lastSync = StorageService.get<number>(
       `${ZoomRecordingService.SYNC_CACHE_KEY}_timestamp`
     );
-    let recordings = StorageService.getArray<Recording>(
+    const recordings = StorageService.getArray<Recording>(
       `${ZoomRecordingService.SYNC_CACHE_KEY}_data`
     );
 

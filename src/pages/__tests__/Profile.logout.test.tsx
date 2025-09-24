@@ -154,7 +154,7 @@ describe('Profile Logout Functionality', () => {
   });
 
   it('should show error message when logout fails', async () => {
-    let errorMessage = 'Network error';
+    const errorMessage = 'Network error';
     mockLogout.mockRejectedValue(new Error(errorMessage));
     renderProfile();
 

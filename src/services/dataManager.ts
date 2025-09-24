@@ -156,7 +156,7 @@ export class DataManager<
         }
       }
 
-      let items = StorageService.getArray<T>(this.storageKey);
+      const items = StorageService.getArray<T>(this.storageKey);
       const item = items.find(i => i.id === id) || null;
 
       // Cache the result
@@ -186,7 +186,7 @@ export class DataManager<
     updates: Partial<T>
   ): Promise<ApiResponse<T | null>> {
     try {
-      let items = StorageService.getArray<T>(this.storageKey);
+      const items = StorageService.getArray<T>(this.storageKey);
       const itemIndex = items.findIndex(i => i.id === id);
 
       if (itemIndex === -1) {
@@ -321,7 +321,7 @@ export class DataManager<
     updates: { id: string; data: Partial<T> }[]
   ): Promise<ApiResponse<T[]>> {
     try {
-      let items = StorageService.getArray<T>(this.storageKey);
+      const items = StorageService.getArray<T>(this.storageKey);
       const updatedItems: T[] = [];
 
       updates.forEach(update => {
@@ -367,7 +367,7 @@ export class DataManager<
 
   async bulkDelete(ids: string[]): Promise<ApiResponse<number>> {
     try {
-      let items = StorageService.getArray<T>(this.storageKey);
+      const items = StorageService.getArray<T>(this.storageKey);
       const initialCount = items.length;
       const filteredItems = items.filter(item => !ids.includes(item.id));
       const deletedCount = initialCount - filteredItems.length;
@@ -526,7 +526,7 @@ export class DataManager<
   // Export/Import functionality
   async exportData(): Promise<ApiResponse<T[]>> {
     try {
-      let items = StorageService.getArray<T>(this.storageKey);
+      const items = StorageService.getArray<T>(this.storageKey);
       return {
         data: items,
         success: true,
@@ -582,7 +582,7 @@ export class DataManager<
     }>
   > {
     try {
-      let items = StorageService.getArray<T>(this.storageKey);
+      const items = StorageService.getArray<T>(this.storageKey);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 

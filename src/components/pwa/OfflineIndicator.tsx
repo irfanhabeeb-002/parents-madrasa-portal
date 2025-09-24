@@ -14,13 +14,9 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
   showConnectionQuality = false,
   showQueueStatus = false,
 }) => {
-  const { 
-    isOnline, 
-    isSlowConnection, 
-    effectiveType, 
-    retryConnection 
-  } = useOnlineStatus();
-  
+  const { isOnline, isSlowConnection, effectiveType, retryConnection } =
+    useOnlineStatus();
+
   const [showOfflineMessage, setShowOfflineMessage] = useState(false);
   const [showOnlineMessage, setShowOnlineMessage] = useState(false);
   const [queueStats, setQueueStats] = useState(offlineQueue.getQueueStats());
@@ -61,16 +57,19 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
   };
 
   const getConnectionQualityMessage = () => {
-    if (!isOnline) return null;
-    
+    if (!isOnline) {
+      return null;
+    }
+
     if (isSlowConnection) {
       return {
         type: 'warning' as const,
         message: 'Slow connection detected. Some features may load slowly.',
-        malayalamMessage: 'മന്ദഗതിയിലുള്ള കണക്ഷൻ കണ്ടെത്തി. ചില ഫീച്ചറുകൾ സാവധാനത്തിൽ ലോഡ് ആകാം.'
+        malayalamMessage:
+          'മന്ദഗതിയിലുള്ള കണക്ഷൻ കണ്ടെത്തി. ചില ഫീച്ചറുകൾ സാവധാനത്തിൽ ലോഡ് ആകാം.',
       };
     }
-    
+
     return null;
   };
 
@@ -96,7 +95,8 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
                     {queueStats.totalItems} actions waiting to sync when online
                   </p>
                   <p className="text-xs text-yellow-600 mt-1" lang="ml">
-                    ഓൺലൈനായാൽ സിങ്ക് ചെയ്യാൻ {queueStats.totalItems} പ്രവർത്തനങ്ങൾ കാത്തിരിക്കുന്നു
+                    ഓൺലൈനായാൽ സിങ്ക് ചെയ്യാൻ {queueStats.totalItems}{' '}
+                    പ്രവർത്തനങ്ങൾ കാത്തിരിക്കുന്നു
                   </p>
                 </div>
               </div>
@@ -150,24 +150,29 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
 export { useOnlineStatus } from '../../hooks/useOnlineStatus';
 
 // Network status indicator component with connection quality
-export const NetworkStatus: React.FC<{ 
+export const NetworkStatus: React.FC<{
   className?: string;
   showConnectionType?: boolean;
-}> = ({
-  className = '',
-  showConnectionType = false,
-}) => {
+}> = ({ className = '', showConnectionType = false }) => {
   const { isOnline, effectiveType, isSlowConnection } = useOnlineStatus();
 
   const getConnectionColor = () => {
-    if (!isOnline) return 'bg-red-500';
-    if (isSlowConnection) return 'bg-yellow-500';
+    if (!isOnline) {
+      return 'bg-red-500';
+    }
+    if (isSlowConnection) {
+      return 'bg-yellow-500';
+    }
     return 'bg-green-500';
   };
 
   const getConnectionText = () => {
-    if (!isOnline) return { en: 'Offline', ml: 'ഓഫ്‌ലൈൻ' };
-    if (isSlowConnection) return { en: 'Slow', ml: 'മന്ദം' };
+    if (!isOnline) {
+      return { en: 'Offline', ml: 'ഓഫ്‌ലൈൻ' };
+    }
+    if (isSlowConnection) {
+      return { en: 'Slow', ml: 'മന്ദം' };
+    }
     return { en: 'Online', ml: 'ഓൺലൈൻ' };
   };
 
@@ -181,7 +186,9 @@ export const NetworkStatus: React.FC<{
       />
       <span className="text-xs text-gray-600">
         {connectionText.en}
-        {showConnectionType && effectiveType && ` (${effectiveType.toUpperCase()})`}
+        {showConnectionType &&
+          effectiveType &&
+          ` (${effectiveType.toUpperCase()})`}
       </span>
       <span className="text-xs text-gray-500" lang="ml">
         {connectionText.ml}

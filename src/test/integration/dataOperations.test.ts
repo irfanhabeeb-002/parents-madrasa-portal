@@ -22,7 +22,7 @@ describe('Data Operations Integration Tests', () => {
   describe('Dashboard Data Flow', () => {
     it('should fetch and process dashboard data correctly', async () => {
       const userId = 'test-user-123';
-      let result = await DashboardService.getDashboardData(userId);
+      const result = await DashboardService.getDashboardData(userId);
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();

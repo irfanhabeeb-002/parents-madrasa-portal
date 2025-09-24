@@ -18,7 +18,7 @@
   console.warn('🔍 PWA Install Popup - Browser Compatibility Check');
   console.warn('================================================');
 
-  let results = {
+  const results = {
     browser: {},
     features: {},
     css: {},

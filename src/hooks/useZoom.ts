@@ -75,7 +75,7 @@ export const useZoom = (options: UseZoomOptions = {}): UseZoomReturn => {
         return true;
       }
 
-      let result = await zoomService.initialize(ZOOM_SDK_CONFIG);
+      const result = await zoomService.initialize(ZOOM_SDK_CONFIG);
 
       if (result.success) {
         setIsInitialized(true);

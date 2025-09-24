@@ -421,7 +421,7 @@ class BackupService {
    */
   private collectNotifications(): any {
     try {
-      let notifications = localStorage.getItem('notifications');
+      const notifications = localStorage.getItem('notifications');
       return notifications ? JSON.parse(notifications) : {};
     } catch (error) {
       logger.error('Failed to collect notifications:', error);
@@ -566,7 +566,7 @@ class BackupService {
       if (backups.length > this.MAX_BACKUPS) {
         const backupsToDelete = backups.slice(this.MAX_BACKUPS);
 
-        for (let backup of backupsToDelete) {
+        for (const backup of backupsToDelete) {
           await this.deleteBackup(backup.id);
         }
 
@@ -642,7 +642,7 @@ class BackupService {
   ): Promise<void> {
     const { data } = backupData;
 
-    for (let dataType of dataTypes) {
+    for (const dataType of dataTypes) {
       switch (dataType) {
         case 'userPreferences':
           if (data.userPreferences) {

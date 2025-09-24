@@ -43,7 +43,7 @@ export const useNotificationListener = (
     // MANUAL MODE - Simulate real-time updates with polling
     // TODO: Replace with Firebase real-time listeners when enabled
 
-    let lastCheck = new Date();
+    let _lastCheck = new Date();
 
     const checkForUpdates = async () => {
       try {
@@ -226,7 +226,7 @@ export const useClassReminderListener = (
         // TODO: Replace with Firebase query when enabled
 
         const now = new Date();
-        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        const _tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
         // Mock upcoming classes
         const mockClasses = [

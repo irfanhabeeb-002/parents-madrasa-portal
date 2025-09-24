@@ -67,7 +67,7 @@ export class DataImportExportService {
 
       // Export recordings
       if (dataType === 'all' || dataType === 'recordings') {
-        let recordings = StorageService.getArray<Recording>('recordings');
+        const recordings = StorageService.getArray<Recording>('recordings');
         if (recordings.length > 0) {
           exportData.data.recordings = recordings;
           totalRecords += recordings.length;
@@ -77,7 +77,7 @@ export class DataImportExportService {
 
       // Export notes
       if (dataType === 'all' || dataType === 'notes') {
-        let notes = StorageService.getArray<Note>('notes');
+        const notes = StorageService.getArray<Note>('notes');
         if (notes.length > 0) {
           exportData.data.notes = notes;
           totalRecords += notes.length;
@@ -87,7 +87,7 @@ export class DataImportExportService {
 
       // Export exercises
       if (dataType === 'all' || dataType === 'exercises') {
-        let exercises = StorageService.getArray<Exercise>('exercises');
+        const exercises = StorageService.getArray<Exercise>('exercises');
         if (exercises.length > 0) {
           exportData.data.exercises = exercises;
           totalRecords += exercises.length;
@@ -377,7 +377,7 @@ export class DataImportExportService {
     options: { replaceExisting?: boolean; skipDuplicates?: boolean }
   ): Promise<{ imported: number; skipped: number; errors: string[] }> {
     const { replaceExisting = false, skipDuplicates = true } = options;
-    let result = { imported: 0, skipped: 0, errors: [] };
+    const result = { imported: 0, skipped: 0, errors: [] };
 
     try {
       if (replaceExisting) {
@@ -391,7 +391,7 @@ export class DataImportExportService {
 
         const newItems: T[] = [];
 
-        for (let item of items) {
+        for (const item of items) {
           if (existingIds.has(item.id)) {
             if (skipDuplicates) {
               result.skipped++;
@@ -459,7 +459,7 @@ export class DataImportExportService {
       'attendance',
       'users',
     ];
-    for (let collection of collections) {
+    for (const collection of collections) {
       if (dataObj[collection] && !Array.isArray(dataObj[collection])) {
         return false;
       }
@@ -564,7 +564,7 @@ export class DataImportExportService {
     try {
       const _backupData = StorageService.get<ExportData>(backupKey);
 
-      if (!backupData) {
+      if (!_backupData) {
         return {
           data: {
             success: false,
@@ -579,7 +579,7 @@ export class DataImportExportService {
         };
       }
 
-      return this.importData(backupData, {
+      return this.importData(_backupData, {
         replaceExisting: true,
         validateData: true,
       });

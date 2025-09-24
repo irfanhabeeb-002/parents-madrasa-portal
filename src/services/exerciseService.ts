@@ -452,7 +452,7 @@ export class ExerciseService extends FirebaseService {
     updates: Partial<ExamAttempt>
   ): Promise<ApiResponse<ExamAttempt | null>> {
     try {
-      let attempts = await StorageService.getArray<ExamAttempt>(
+      const attempts = await StorageService.getArray<ExamAttempt>(
         this.ATTEMPTS_STORAGE_KEY
       );
       const attemptIndex = attempts.findIndex(a => a.id === attemptId);
@@ -496,7 +496,7 @@ export class ExerciseService extends FirebaseService {
       const attempts = await StorageService.getArray<ExamAttempt>(
         this.ATTEMPTS_STORAGE_KEY
       );
-      let attempt = attempts.find(a => a.id === attemptId);
+      const attempt = attempts.find(a => a.id === attemptId);
 
       if (!attempt) {
         return {
@@ -541,7 +541,7 @@ export class ExerciseService extends FirebaseService {
         });
       });
 
-      let score = Math.round((earnedPoints / exercise.totalPoints) * 100);
+      const score = Math.round((earnedPoints / exercise.totalPoints) * 100);
       const timeSpent = attempt.startedAt
         ? Math.floor(
             (new Date().getTime() - new Date(attempt.startedAt).getTime()) /

@@ -18,7 +18,7 @@ module.exports = {
           cpuSlowdownMultiplier: 1,
           requestLatencyMs: 0,
           downloadThroughputKbps: 0,
-          uploadThroughputKbps: 0
+          uploadThroughputKbps: 0,
         },
         // Additional PWA-specific settings
         locale: 'en-US',
@@ -36,7 +36,7 @@ module.exports = {
           'offline-start-url',
           'apple-touch-icon',
           'maskable-icon',
-          
+
           // Performance audits relevant to PWA
           'first-contentful-paint',
           'largest-contentful-paint',
@@ -44,25 +44,25 @@ module.exports = {
           'interactive',
           'total-blocking-time',
           'cumulative-layout-shift',
-          
+
           // Best practices for PWA
           'uses-https',
           'redirects-http',
           'is-on-https',
-          
+
           // Accessibility for PWA
           'color-contrast',
           'meta-viewport',
           'document-title',
-          'html-has-lang'
-        ]
+          'html-has-lang',
+        ],
       },
     },
     assert: {
       assertions: {
         // Strict PWA requirements
         'categories:pwa': ['error', { minScore: 1.0 }], // Perfect PWA score required
-        
+
         // Core PWA audits must pass
         'installable-manifest': 'error',
         'service-worker': 'error',
@@ -70,31 +70,31 @@ module.exports = {
         'splash-screen': 'error',
         'themed-omnibox': 'error',
         'content-width': 'error',
-        'viewport': 'error',
+        viewport: 'error',
         'without-javascript': 'error',
         'apple-touch-icon': 'error',
-        
+
         // Performance thresholds for PWA
         'first-contentful-paint': ['error', { maxNumericValue: 1800 }],
         'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
         'speed-index': ['error', { maxNumericValue: 3000 }],
-        'interactive': ['error', { maxNumericValue: 3800 }],
+        interactive: ['error', { maxNumericValue: 3800 }],
         'total-blocking-time': ['error', { maxNumericValue: 300 }],
         'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
-        
+
         // Security requirements
         'uses-https': 'error',
         'is-on-https': 'error',
-        
+
         // Accessibility requirements
         'color-contrast': 'error',
         'meta-viewport': 'error',
         'document-title': 'error',
         'html-has-lang': 'error',
-        
+
         // Optional but recommended
         'maskable-icon': 'warn',
-        'redirects-http': 'warn'
+        'redirects-http': 'warn',
       },
     },
     upload: {

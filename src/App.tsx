@@ -19,7 +19,10 @@ import {
 import { useLiveRegion } from './components/accessibility/LiveRegion';
 import { SkeletonLoader } from './components/ui';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { OfflineIndicator, InstallPrompt, UpdateNotification } from './components/pwa';
+import {
+  OfflineIndicator,
+  UpdateNotification,
+} from './components/pwa';
 import { offlineQueue } from './services/offlineQueue';
 import { AppIcons } from './assets/icons';
 import './App.css';
@@ -110,7 +113,6 @@ function App() {
                   <div className="App min-h-screen bg-gray-50">
                     {/* PWA Components */}
                     <OfflineIndicator />
-                    <InstallPrompt />
                     <UpdateNotification />
 
                     {/* Keyboard Navigation Indicator */}

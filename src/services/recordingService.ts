@@ -374,7 +374,7 @@ export class RecordingService extends FirebaseService {
       // Apply pagination
       const offset = options?.offset || 0;
       const limit = options?.limit || 10;
-      let paginatedRecordings = recordings.slice(offset, offset + limit);
+      const paginatedRecordings = recordings.slice(offset, offset + limit);
 
       return {
         data: paginatedRecordings,
@@ -562,7 +562,7 @@ export class RecordingService extends FirebaseService {
       // Apply pagination
       const offset = paginationOptions?.offset || 0;
       const limit = paginationOptions?.limit || 10;
-      let paginatedRecordings = allRecordings.slice(offset, offset + limit);
+      const paginatedRecordings = allRecordings.slice(offset, offset + limit);
 
       return {
         data: paginatedRecordings,
@@ -603,7 +603,7 @@ export class RecordingService extends FirebaseService {
       // Update view count in Firestore
       try {
         const service = RecordingService.getInstance();
-        let recording = await service.getById<FirebaseRecording>(recordingId);
+        const recording = await service.getById<FirebaseRecording>(recordingId);
 
         if (recording) {
           await service.update<Partial<FirebaseRecording>>(recordingId, {

@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const storedUser = localStorage.getItem('manualAuthUser');
     if (storedUser) {
       try {
-        let userData = JSON.parse(storedUser);
+        const userData = JSON.parse(storedUser);
         setUser(userData);
         console.warn('Restored user session:', userData.displayName);
       } catch (error) {

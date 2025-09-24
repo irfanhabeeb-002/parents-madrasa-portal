@@ -12,7 +12,7 @@ export class NotificationTester {
 
     if (permission === 'default') {
       console.warn('Requesting permission...');
-      let result = await Notification.requestPermission();
+      const result = await Notification.requestPermission();
       console.warn(`Permission result: ${result}`);
     }
 

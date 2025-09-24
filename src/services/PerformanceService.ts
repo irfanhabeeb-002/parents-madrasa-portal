@@ -63,7 +63,7 @@ class PerformanceService {
 
     try {
       this.observer = new PerformanceObserver(list => {
-        for (let entry of list.getEntries()) {
+        for (const entry of list.getEntries()) {
           this.processPerformanceEntry(entry);
         }
       });
@@ -149,7 +149,7 @@ class PerformanceService {
     // Cumulative Layout Shift (CLS)
     this.observeMetric('layout-shift', entries => {
       let clsValue = 0;
-      for (let entry of entries) {
+      for (const entry of entries) {
         if (!(entry as any).hadRecentInput) {
           clsValue += (entry as any).value;
         }

@@ -6,14 +6,13 @@ import { ThemeProvider } from '../../../contexts/ThemeContext';
 
 // Mock the service worker update hook
 jest.mock('../../../hooks/useServiceWorkerUpdate');
-const mockUseServiceWorkerUpdate = useServiceWorkerUpdate as jest.MockedFunction<typeof useServiceWorkerUpdate>;
+const mockUseServiceWorkerUpdate =
+  useServiceWorkerUpdate as jest.MockedFunction<typeof useServiceWorkerUpdate>;
 
 // Mock theme context
-const MockThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    {children}
-  </ThemeProvider>
-);
+const MockThemeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => <ThemeProvider>{children}</ThemeProvider>;
 
 describe('UpdateNotification', () => {
   const mockUpdateServiceWorker = jest.fn();
@@ -58,7 +57,9 @@ describe('UpdateNotification', () => {
     );
 
     expect(screen.getByText('App Update Available')).toBeInTheDocument();
-    expect(screen.getByText('A new version is ready with improvements and bug fixes')).toBeInTheDocument();
+    expect(
+      screen.getByText('A new version is ready with improvements and bug fixes')
+    ).toBeInTheDocument();
     expect(screen.getByText('Later')).toBeInTheDocument();
     expect(screen.getByText('Update Now')).toBeInTheDocument();
   });

@@ -9,11 +9,17 @@ module.exports = {
       settings: {
         chromeFlags: '--no-sandbox --disable-dev-shm-usage',
         // Enhanced PWA testing settings
-        onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo', 'pwa'],
+        onlyCategories: [
+          'performance',
+          'accessibility',
+          'best-practices',
+          'seo',
+          'pwa',
+        ],
         skipAudits: [
           // Skip audits that may be flaky in CI
           'uses-http2',
-          'bf-cache'
+          'bf-cache',
         ],
         // PWA-specific settings
         emulatedFormFactor: 'mobile',
@@ -23,8 +29,8 @@ module.exports = {
           cpuSlowdownMultiplier: 1,
           requestLatencyMs: 0,
           downloadThroughputKbps: 0,
-          uploadThroughputKbps: 0
-        }
+          uploadThroughputKbps: 0,
+        },
       },
     },
     assert: {

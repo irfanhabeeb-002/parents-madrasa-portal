@@ -430,7 +430,7 @@ Tajweed (تجويد) means "to make better" or "to improve." It refers to the ru
       // Apply pagination
       const offset = options?.offset || 0;
       const limit = options?.limit || 10;
-      let paginatedNotes = notes.slice(offset, offset + limit);
+      const paginatedNotes = notes.slice(offset, offset + limit);
 
       return {
         data: paginatedNotes,

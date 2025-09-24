@@ -82,7 +82,7 @@ const BottomNavigation = () => {
   // Determine active tab based on current route
   const getActiveTabIndex = useCallback(() => {
     const currentPath = location.pathname;
-    let index = navigationItems.findIndex(item => {
+    const index = navigationItems.findIndex(item => {
       if (item.path === '/') {
         return currentPath === '/';
       }
@@ -102,7 +102,7 @@ const BottomNavigation = () => {
     navigate(path);
 
     // Announce navigation to screen readers
-    let announcement = `Navigated to ${label}`;
+    const announcement = `Navigated to ${label}`;
     const ariaLiveRegion = document.createElement('div');
     ariaLiveRegion.setAttribute('aria-live', 'polite');
     ariaLiveRegion.setAttribute('aria-atomic', 'true');

@@ -142,14 +142,16 @@ Object.defineProperty(window, 'performance', {
   writable: true,
   value: {
     ...window.performance,
-    getEntriesByType: vi.fn().mockImplementation((type) => {
+    getEntriesByType: vi.fn().mockImplementation(type => {
       if (type === 'navigation') {
-        return [{
-          domContentLoadedEventStart: 100,
-          domContentLoadedEventEnd: 200,
-          loadEventStart: 300,
-          loadEventEnd: 400,
-        }];
+        return [
+          {
+            domContentLoadedEventStart: 100,
+            domContentLoadedEventEnd: 200,
+            loadEventStart: 300,
+            loadEventEnd: 400,
+          },
+        ];
       }
       if (type === 'paint') {
         return [

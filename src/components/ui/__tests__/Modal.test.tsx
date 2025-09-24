@@ -70,7 +70,7 @@ describe('Modal', () => {
     );
 
     expect(screen.getByText('Test Modal')).toBeInTheDocument();
-    let malayalamTitle = screen.getByText('ടെസ്റ്റ് മോഡൽ');
+    const malayalamTitle = screen.getByText('ടെസ്റ്റ് മോഡൽ');
     expect(malayalamTitle).toBeInTheDocument();
     expect(malayalamTitle).toHaveAttribute('lang', 'bn');
   });
@@ -302,7 +302,7 @@ describe('Modal', () => {
       </Modal>
     );
 
-    let results = await axe(container);
+    const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
 

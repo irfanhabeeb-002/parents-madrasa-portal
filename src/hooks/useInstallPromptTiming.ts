@@ -29,9 +29,11 @@ const DEFAULT_CONFIG: InstallPromptTimingConfig = {
   returnUserDelay: 60000, // 1 minute for return users
 };
 
-export const useInstallPromptTiming = (config: Partial<InstallPromptTimingConfig> = {}) => {
+export const useInstallPromptTiming = (
+  config: Partial<InstallPromptTimingConfig> = {}
+) => {
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
-  
+
   const [state, setState] = useState<InstallPromptTimingState>({
     canShowPrompt: false,
     dismissalCount: 0,
@@ -42,10 +44,14 @@ export const useInstallPromptTiming = (config: Partial<InstallPromptTimingConfig
 
   // Load persisted state from localStorage
   useEffect(() => {
-    const dismissalCount = parseInt(localStorage.getItem('installBannerDismissCount') || '0');
+    const dismissalCount = parseInt(
+      localStorage.getItem('installBannerDismissCount') || '0'
+    );
     const lastDismissed = localStorage.getItem('installBannerLastDismissed');
-    const sessionStartTime = parseInt(sessionStorage.getItem('sessionStartTime') || '0');
-    
+    const sessionStartTime = parseInt(
+      sessionStorage.getItem('sessionStartTime') || '0'
+    );
+
     setState(prev => ({
       ...prev,
       dismissalCount,
@@ -57,9 +63,13 @@ export const useInstallPromptTiming = (config: Partial<InstallPromptTimingConfig
   // Update engagement tracking
   useEffect(() => {
     const interval = setInterval(() => {
-      const sessionStartTime = parseInt(sessionStorage.getItem('sessionStartTime') || '0');
-      const currentEngagement = sessionStartTime ? Date.now() - sessionStartTime : 0;
-      
+      const sessionStartTime = parseInt(
+        sessionStorage.getItem('sessionStartTime') || '0'
+      );
+      const currentEngagement = sessionStartTime
+        ? Date.now() - sessionStartTime
+        : 0;
+
       setState(prev => ({
         ...prev,
         sessionEngagement: currentEngagement,
@@ -79,7 +89,10 @@ export const useInstallPromptTiming = (config: Partial<InstallPromptTimingConfig
       }
 
       // Don't show if dismissed recently
-      if (state.lastDismissed && Date.now() - state.lastDismissed < finalConfig.dismissalCooldown) {
+      if (
+        state.lastDismissed &&
+        Date.now() - state.lastDismissed < finalConfig.dismissalCooldown
+      ) {
         return false;
       }
 
@@ -107,7 +120,13 @@ export const useInstallPromptTiming = (config: Partial<InstallPromptTimingConfig
       }
       return prev;
     });
-  }, [state.dismissalCount, state.lastDismissed, state.isEngaged, finalConfig.maxDismissals, finalConfig.dismissalCooldown]);
+  }, [
+    state.dismissalCount,
+    state.lastDismissed,
+    state.isEngaged,
+    finalConfig.maxDismissals,
+    finalConfig.dismissalCooldown,
+  ]);
 
   // Calculate appropriate delay for showing prompt
   const getPromptDelay = useCallback(() => {
@@ -118,33 +137,44 @@ export const useInstallPromptTiming = (config: Partial<InstallPromptTimingConfig
   }, [state.dismissalCount, finalConfig]);
 
   // Handle prompt dismissal
-  const handleDismissal = useCallback((method: 'close_button' | 'outside_click' | 'escape_key' = 'close_button') => {
-    const newDismissalCount = state.dismissalCount + 1;
-    const dismissalTime = Date.now();
+  const handleDismissal = useCallback(
+    (
+      method: 'close_button' | 'outside_click' | 'escape_key' = 'close_button'
+    ) => {
+      const newDismissalCount = state.dismissalCount + 1;
+      const dismissalTime = Date.now();
 
-    // Update localStorage
-    localStorage.setItem('installBannerDismissCount', newDismissalCount.toString());
-    localStorage.setItem('installBannerLastDismissed', dismissalTime.toString());
-    
-    // Update session storage
-    sessionStorage.setItem('installBannerDismissed', 'true');
+      // Update localStorage
+      localStorage.setItem(
+        'installBannerDismissCount',
+        newDismissalCount.toString()
+      );
+      localStorage.setItem(
+        'installBannerLastDismissed',
+        dismissalTime.toString()
+      );
 
-    // Update state
-    setState(prev => ({
-      ...prev,
-      dismissalCount: newDismissalCount,
-      lastDismissed: dismissalTime,
-      canShowPrompt: false,
-    }));
+      // Update session storage
+      sessionStorage.setItem('installBannerDismissed', 'true');
 
-    // Track dismissal
-    analyticsService.trackPWAInstallFunnel('banner_clicked', 'dismissal', {
-      dismissal_method: method,
-      dismissal_count: newDismissalCount,
-      session_engagement: state.sessionEngagement,
-      will_show_again: newDismissalCount < finalConfig.maxDismissals,
-    });
-  }, [state.dismissalCount, state.sessionEngagement, finalConfig.maxDismissals]);
+      // Update state
+      setState(prev => ({
+        ...prev,
+        dismissalCount: newDismissalCount,
+        lastDismissed: dismissalTime,
+        canShowPrompt: false,
+      }));
+
+      // Track dismissal
+      analyticsService.trackPWAInstallFunnel('banner_clicked', 'dismissal', {
+        dismissal_method: method,
+        dismissal_count: newDismissalCount,
+        session_engagement: state.sessionEngagement,
+        will_show_again: newDismissalCount < finalConfig.maxDismissals,
+      });
+    },
+    [state.dismissalCount, state.sessionEngagement, finalConfig.maxDismissals]
+  );
 
   // Handle successful installation
   const handleInstallation = useCallback(() => {
@@ -168,28 +198,34 @@ export const useInstallPromptTiming = (config: Partial<InstallPromptTimingConfig
   }, [state.sessionEngagement, state.dismissalCount]);
 
   // Handle prompt shown
-  const handlePromptShown = useCallback((source: string = 'automatic') => {
-    analyticsService.trackPWAInstallFunnel('banner_shown', source, {
-      dismissal_count: state.dismissalCount,
-      session_engagement: state.sessionEngagement,
-      timing_delay: getPromptDelay(),
-      is_return_user: state.dismissalCount > 0,
-    });
-  }, [state.dismissalCount, state.sessionEngagement, getPromptDelay]);
+  const handlePromptShown = useCallback(
+    (source: string = 'automatic') => {
+      analyticsService.trackPWAInstallFunnel('banner_shown', source, {
+        dismissal_count: state.dismissalCount,
+        session_engagement: state.sessionEngagement,
+        timing_delay: getPromptDelay(),
+        is_return_user: state.dismissalCount > 0,
+      });
+    },
+    [state.dismissalCount, state.sessionEngagement, getPromptDelay]
+  );
 
   // Handle prompt interaction
-  const handlePromptInteraction = useCallback((action: 'learn_more' | 'install_now', source: string = 'banner') => {
-    const eventMap = {
-      learn_more: 'modal_opened',
-      install_now: 'install_clicked',
-    } as const;
+  const handlePromptInteraction = useCallback(
+    (action: 'learn_more' | 'install_now', source: string = 'banner') => {
+      const eventMap = {
+        learn_more: 'modal_opened',
+        install_now: 'install_clicked',
+      } as const;
 
-    analyticsService.trackPWAInstallFunnel(eventMap[action], source, {
-      dismissal_count: state.dismissalCount,
-      session_engagement: state.sessionEngagement,
-      user_engagement_level: state.isEngaged ? 'high' : 'low',
-    });
-  }, [state.dismissalCount, state.sessionEngagement, state.isEngaged]);
+      analyticsService.trackPWAInstallFunnel(eventMap[action], source, {
+        dismissal_count: state.dismissalCount,
+        session_engagement: state.sessionEngagement,
+        user_engagement_level: state.isEngaged ? 'high' : 'low',
+      });
+    },
+    [state.dismissalCount, state.sessionEngagement, state.isEngaged]
+  );
 
   return {
     // State
@@ -197,16 +233,16 @@ export const useInstallPromptTiming = (config: Partial<InstallPromptTimingConfig
     dismissalCount: state.dismissalCount,
     sessionEngagement: state.sessionEngagement,
     isEngaged: state.isEngaged,
-    
+
     // Timing
     promptDelay: getPromptDelay(),
-    
+
     // Actions
     handleDismissal,
     handleInstallation,
     handlePromptShown,
     handlePromptInteraction,
-    
+
     // Config
     config: finalConfig,
   };

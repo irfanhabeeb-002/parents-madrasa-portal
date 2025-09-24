@@ -402,7 +402,12 @@ class AnalyticsService {
    * Track PWA install funnel events
    */
   trackPWAInstallFunnel(
-    stage: 'banner_shown' | 'banner_clicked' | 'modal_opened' | 'install_clicked' | 'install_completed',
+    stage:
+      | 'banner_shown'
+      | 'banner_clicked'
+      | 'modal_opened'
+      | 'install_clicked'
+      | 'install_completed',
     source?: string,
     additionalData?: Record<string, any>
   ): void {
@@ -415,6 +420,277 @@ class AnalyticsService {
         source,
         timestamp: new Date().toISOString(),
         ...additionalData,
+      },
+    });
+  }
+
+  /**
+   * Track comprehensive PWA install events with enhanced analytics
+   */
+  trackPWAInstallEvent(eventData: {
+    action:
+      | 'prompt_available'
+      | 'prompt_shown'
+      | 'prompt_dismissed'
+      | 'install_started'
+      | 'install_completed'
+      | 'install_failed'
+      | 'install_cancelled'
+      | 'fallback_shown'
+      | 'automatic_prompt_failed'
+      | 'manual_install_triggered'
+      | 'install_state_changed';
+    source:
+      | 'automatic_banner'
+      | 'settings_button'
+      | 'fallback_button'
+      | 'modal'
+      | 'hook'
+      | 'system';
+    context?: {
+      placement?: 'banner' | 'settings' | 'navbar' | 'inline' | 'modal';
+      trigger?:
+        | 'user_click'
+        | 'automatic_timing'
+        | 'fallback_detection'
+        | 'system_event';
+      installMethod?: 'beforeinstallprompt' | 'manual' | 'not-supported';
+      displayMode?: string;
+      browserInfo?: Record<string, any>;
+      confidence?: 'high' | 'medium' | 'low';
+      retryCount?: number;
+      sessionDuration?: number;
+      userAgent?: string;
+      platforms?: string[];
+      errorType?: string;
+      errorMessage?: string;
+      duration?: number;
+      outcome?: 'accepted' | 'dismissed';
+      platform?: string;
+    };
+  }): void {
+    const { action, source, context = {} } = eventData;
+
+    // Generate session ID if not exists
+    if (!sessionStorage.getItem('pwa_install_session_id')) {
+      sessionStorage.setItem(
+        'pwa_install_session_id',
+        `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+      );
+    }
+
+    const sessionId = sessionStorage.getItem('pwa_install_session_id');
+    const sessionStartTime =
+      parseInt(sessionStorage.getItem('sessionStartTime') || '0') || Date.now();
+    const currentSessionDuration = Date.now() - sessionStartTime;
+
+    this.trackEvent({
+      action: `pwa_install_${action}`,
+      category: 'pwa_install_analytics',
+      label: source,
+      custom_parameters: {
+        // Core event data
+        install_action: action,
+        install_source: source,
+
+        // Session tracking
+        session_id: sessionId,
+        session_duration: currentSessionDuration,
+        timestamp: new Date().toISOString(),
+
+        // Context data
+        placement: context.placement,
+        trigger: context.trigger,
+        install_method: context.installMethod,
+        display_mode: context.displayMode,
+        confidence: context.confidence,
+        retry_count: context.retryCount || 0,
+
+        // Browser and platform info
+        user_agent: context.userAgent || navigator.userAgent,
+        platforms: context.platforms,
+        browser_info: context.browserInfo,
+
+        // Error tracking
+        error_type: context.errorType,
+        error_message: context.errorMessage,
+
+        // Performance tracking
+        duration_ms: context.duration,
+
+        // User choice tracking
+        outcome: context.outcome,
+        platform: context.platform,
+
+        // App context
+        app_version: config.APP_VERSION,
+        environment: config.APP_ENV,
+      },
+    });
+  }
+
+  /**
+   * Track install success/failure rates with aggregated metrics
+   */
+  trackPWAInstallMetrics(metrics: {
+    type:
+      | 'success_rate'
+      | 'failure_rate'
+      | 'abandonment_rate'
+      | 'conversion_rate'
+      | 'retry_rate';
+    value: number;
+    timeframe: 'session' | 'daily' | 'weekly';
+    source?: string;
+    context?: Record<string, any>;
+  }): void {
+    const { type, value, timeframe, source, context = {} } = metrics;
+
+    this.trackEvent({
+      action: `pwa_install_metric_${type}`,
+      category: 'pwa_install_metrics',
+      label: `${timeframe}_${source || 'all'}`,
+      value: Math.round(value * 100), // Convert to percentage
+      custom_parameters: {
+        metric_type: type,
+        metric_value: value,
+        timeframe,
+        source,
+        timestamp: new Date().toISOString(),
+        app_version: config.APP_VERSION,
+        ...context,
+      },
+    });
+  }
+
+  /**
+   * Track user interaction patterns for install flow
+   */
+  trackPWAInstallUserPattern(pattern: {
+    type:
+      | 'funnel_progression'
+      | 'abandonment_point'
+      | 'retry_behavior'
+      | 'source_switching'
+      | 'timing_preference';
+    stage: string;
+    previousStage?: string;
+    timeBetweenStages?: number;
+    totalFunnelTime?: number;
+    abandonmentReason?: string;
+    retryAttempts?: number;
+    sourceSequence?: string[];
+    userBehavior?: Record<string, any>;
+  }): void {
+    const sessionId =
+      sessionStorage.getItem('pwa_install_session_id') || 'unknown';
+
+    this.trackEvent({
+      action: `pwa_install_pattern_${pattern.type}`,
+      category: 'pwa_install_patterns',
+      label: pattern.stage,
+      custom_parameters: {
+        pattern_type: pattern.type,
+        current_stage: pattern.stage,
+        previous_stage: pattern.previousStage,
+        stage_transition_time: pattern.timeBetweenStages,
+        total_funnel_time: pattern.totalFunnelTime,
+        abandonment_reason: pattern.abandonmentReason,
+        retry_attempts: pattern.retryAttempts,
+        source_sequence: pattern.sourceSequence,
+        session_id: sessionId,
+        timestamp: new Date().toISOString(),
+        user_behavior: pattern.userBehavior,
+      },
+    });
+  }
+
+  /**
+   * Track install errors with comprehensive categorization
+   */
+  trackPWAInstallError(error: {
+    type:
+      | 'event_listener_failed'
+      | 'prompt_failed'
+      | 'user_choice_timeout'
+      | 'installation_failed'
+      | 'state_detection_failed'
+      | 'browser_not_supported'
+      | 'already_installed'
+      | 'permission_denied'
+      | 'network_error'
+      | 'unknown_error';
+    source: string;
+    stage: string;
+    errorDetails: {
+      message: string;
+      stack?: string;
+      code?: string | number;
+      browserInfo?: Record<string, any>;
+      installState?: string;
+      retryCount?: number;
+      context?: Record<string, any>;
+    };
+  }): void {
+    const sessionId =
+      sessionStorage.getItem('pwa_install_session_id') || 'unknown';
+
+    this.trackEvent({
+      action: `pwa_install_error_${error.type}`,
+      category: 'pwa_install_errors',
+      label: `${error.source}_${error.stage}`,
+      custom_parameters: {
+        error_type: error.type,
+        error_source: error.source,
+        error_stage: error.stage,
+        error_message: error.errorDetails.message,
+        error_stack: error.errorDetails.stack,
+        error_code: error.errorDetails.code,
+        browser_info: error.errorDetails.browserInfo,
+        install_state: error.errorDetails.installState,
+        retry_count: error.errorDetails.retryCount || 0,
+        session_id: sessionId,
+        timestamp: new Date().toISOString(),
+        context: error.errorDetails.context,
+        app_version: config.APP_VERSION,
+        environment: config.APP_ENV,
+      },
+    });
+  }
+
+  /**
+   * Track install source effectiveness and conversion rates
+   */
+  trackPWAInstallSourceAnalytics(sourceData: {
+    source:
+      | 'automatic_banner'
+      | 'settings_button'
+      | 'fallback_button'
+      | 'modal'
+      | 'hook'
+      | 'system';
+    placement: 'banner' | 'settings' | 'navbar' | 'inline' | 'modal';
+    action: 'shown' | 'clicked' | 'converted' | 'abandoned';
+    conversionTime?: number;
+    userJourney?: string[];
+    context?: Record<string, any>;
+  }): void {
+    const sessionId =
+      sessionStorage.getItem('pwa_install_session_id') || 'unknown';
+
+    this.trackEvent({
+      action: `pwa_install_source_${sourceData.action}`,
+      category: 'pwa_install_sources',
+      label: `${sourceData.source}_${sourceData.placement}`,
+      custom_parameters: {
+        install_source: sourceData.source,
+        source_placement: sourceData.placement,
+        source_action: sourceData.action,
+        conversion_time: sourceData.conversionTime,
+        user_journey: sourceData.userJourney,
+        session_id: sessionId,
+        timestamp: new Date().toISOString(),
+        context: sourceData.context,
       },
     });
   }
@@ -435,7 +711,10 @@ class AnalyticsService {
       custom_parameters: {
         context,
         timestamp: new Date().toISOString(),
-        session_time: Date.now() - (parseInt(sessionStorage.getItem('sessionStartTime') || '0') || Date.now()),
+        session_time:
+          Date.now() -
+          (parseInt(sessionStorage.getItem('sessionStartTime') || '0') ||
+            Date.now()),
       },
     });
   }

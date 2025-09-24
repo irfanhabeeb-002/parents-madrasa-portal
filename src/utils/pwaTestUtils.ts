@@ -42,7 +42,7 @@ export interface InstallabilityTestResult {
 export async function testManifestValidation(): Promise<ManifestValidationResult> {
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   try {
     // Fetch the manifest
     const manifestResponse = await fetch('/manifest.json');
@@ -54,7 +54,13 @@ export async function testManifestValidation(): Promise<ManifestValidationResult
     const manifest = await manifestResponse.json();
 
     // Required fields validation
-    const requiredFields = ['name', 'short_name', 'start_url', 'display', 'icons'];
+    const requiredFields = [
+      'name',
+      'short_name',
+      'start_url',
+      'display',
+      'icons',
+    ];
     for (const field of requiredFields) {
       if (!manifest[field]) {
         errors.push(`Missing required field: ${field}`);
@@ -63,32 +69,46 @@ export async function testManifestValidation(): Promise<ManifestValidationResult
 
     // Icons validation
     if (manifest.icons && Array.isArray(manifest.icons)) {
-      const hasRequiredSizes = manifest.icons.some((icon: any) => 
-        icon.sizes && (icon.sizes.includes('192x192') || icon.sizes.includes('512x512'))
+      const hasRequiredSizes = manifest.icons.some(
+        (icon: any) =>
+          icon.sizes &&
+          (icon.sizes.includes('192x192') || icon.sizes.includes('512x512'))
       );
       if (!hasRequiredSizes) {
-        errors.push('Manifest must include icons with sizes 192x192 or 512x512');
+        errors.push(
+          'Manifest must include icons with sizes 192x192 or 512x512'
+        );
       }
 
       // Check for maskable icons
-      const hasMaskableIcon = manifest.icons.some((icon: any) => 
-        icon.purpose && icon.purpose.includes('maskable')
+      const hasMaskableIcon = manifest.icons.some(
+        (icon: any) => icon.purpose && icon.purpose.includes('maskable')
       );
       if (!hasMaskableIcon) {
-        warnings.push('Consider adding maskable icons for better Android integration');
+        warnings.push(
+          'Consider adding maskable icons for better Android integration'
+        );
       }
     } else {
       errors.push('Manifest must include an icons array');
     }
 
     // Display mode validation
-    const validDisplayModes = ['fullscreen', 'standalone', 'minimal-ui', 'browser'];
+    const validDisplayModes = [
+      'fullscreen',
+      'standalone',
+      'minimal-ui',
+      'browser',
+    ];
     if (manifest.display && !validDisplayModes.includes(manifest.display)) {
       errors.push(`Invalid display mode: ${manifest.display}`);
     }
 
     // Theme color validation
-    if (manifest.theme_color && !/^#[0-9A-Fa-f]{6}$/.test(manifest.theme_color)) {
+    if (
+      manifest.theme_color &&
+      !/^#[0-9A-Fa-f]{6}$/.test(manifest.theme_color)
+    ) {
       warnings.push('Theme color should be a valid hex color');
     }
 
@@ -101,7 +121,7 @@ export async function testManifestValidation(): Promise<ManifestValidationResult
       isValid: errors.length === 0,
       errors,
       warnings,
-      manifest
+      manifest,
     };
   } catch (error) {
     errors.push(`Failed to validate manifest: ${error}`);
@@ -118,7 +138,7 @@ export async function testServiceWorker(): Promise<ServiceWorkerTestResult> {
     isActive: false,
     scope: '',
     updateAvailable: false,
-    cacheNames: []
+    cacheNames: [],
   };
 
   if (!('serviceWorker' in navigator)) {
@@ -127,7 +147,7 @@ export async function testServiceWorker(): Promise<ServiceWorkerTestResult> {
 
   try {
     const registration = await navigator.serviceWorker.getRegistration();
-    
+
     if (registration) {
       result.isRegistered = true;
       result.scope = registration.scope;
@@ -157,11 +177,12 @@ export async function testInstallability(): Promise<InstallabilityTestResult> {
     hasServiceWorker: false,
     hasIcons: false,
     hasStartUrl: false,
-    hasDisplay: false
+    hasDisplay: false,
   };
 
   // Check if served over HTTPS
-  criteria.isSecure = location.protocol === 'https:' || location.hostname === 'localhost';
+  criteria.isSecure =
+    location.protocol === 'https:' || location.hostname === 'localhost';
 
   // Check for service worker
   criteria.hasServiceWorker = 'serviceWorker' in navigator;
@@ -170,9 +191,10 @@ export async function testInstallability(): Promise<InstallabilityTestResult> {
   try {
     const manifestValidation = await testManifestValidation();
     criteria.hasManifest = manifestValidation.isValid;
-    
+
     if (manifestValidation.manifest) {
-      criteria.hasIcons = manifestValidation.manifest.icons && 
+      criteria.hasIcons =
+        manifestValidation.manifest.icons &&
         manifestValidation.manifest.icons.length > 0;
       criteria.hasStartUrl = !!manifestValidation.manifest.start_url;
       criteria.hasDisplay = !!manifestValidation.manifest.display;
@@ -185,7 +207,7 @@ export async function testInstallability(): Promise<InstallabilityTestResult> {
 
   return {
     isInstallable,
-    criteria
+    criteria,
   };
 }
 
@@ -196,17 +218,17 @@ export async function testOfflineFunctionality(): Promise<PWATestResult> {
   if (!('caches' in window)) {
     return {
       passed: false,
-      message: 'Cache API not supported'
+      message: 'Cache API not supported',
     };
   }
 
   try {
     const cacheNames = await caches.keys();
-    
+
     if (cacheNames.length === 0) {
       return {
         passed: false,
-        message: 'No caches found - offline functionality may not work'
+        message: 'No caches found - offline functionality may not work',
       };
     }
 
@@ -217,34 +239,34 @@ export async function testOfflineFunctionality(): Promise<PWATestResult> {
     for (const cacheName of cacheNames) {
       const cache = await caches.open(cacheName);
       const requests = await cache.keys();
-      
+
       for (const request of requests) {
         cachedResources.push(request.url);
       }
     }
 
-    const missingResources = essentialResources.filter(resource => 
-      !cachedResources.some(cached => cached.endsWith(resource))
+    const missingResources = essentialResources.filter(
+      resource => !cachedResources.some(cached => cached.endsWith(resource))
     );
 
     if (missingResources.length > 0) {
       return {
         passed: false,
         message: `Essential resources not cached: ${missingResources.join(', ')}`,
-        details: { cachedResources, missingResources }
+        details: { cachedResources, missingResources },
       };
     }
 
     return {
       passed: true,
       message: `Offline functionality ready - ${cacheNames.length} cache(s) with ${cachedResources.length} resources`,
-      details: { cacheNames, cachedResources }
+      details: { cacheNames, cachedResources },
     };
   } catch (error) {
     return {
       passed: false,
       message: `Offline test failed: ${error}`,
-      details: { error }
+      details: { error },
     };
   }
 }
@@ -256,25 +278,30 @@ export async function testPWAPerformance(): Promise<PWATestResult> {
   if (!('performance' in window)) {
     return {
       passed: false,
-      message: 'Performance API not supported'
+      message: 'Performance API not supported',
     };
   }
 
   try {
-    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    
+    const navigation = performance.getEntriesByType(
+      'navigation'
+    )[0] as PerformanceNavigationTiming;
+
     if (!navigation) {
       return {
         passed: false,
-        message: 'Navigation timing not available'
+        message: 'Navigation timing not available',
       };
     }
 
     const metrics = {
-      domContentLoaded: (navigation.domContentLoadedEventEnd || 0) - (navigation.domContentLoadedEventStart || 0),
-      loadComplete: (navigation.loadEventEnd || 0) - (navigation.loadEventStart || 0),
+      domContentLoaded:
+        (navigation.domContentLoadedEventEnd || 0) -
+        (navigation.domContentLoadedEventStart || 0),
+      loadComplete:
+        (navigation.loadEventEnd || 0) - (navigation.loadEventStart || 0),
       firstPaint: 0,
-      firstContentfulPaint: 0
+      firstContentfulPaint: 0,
     };
 
     // Get paint metrics if available
@@ -291,35 +318,38 @@ export async function testPWAPerformance(): Promise<PWATestResult> {
     const thresholds = {
       domContentLoaded: 1500,
       loadComplete: 2500,
-      firstContentfulPaint: 1800
+      firstContentfulPaint: 1800,
     };
 
     const issues: string[] = [];
-    
+
     if (metrics.domContentLoaded > thresholds.domContentLoaded) {
       issues.push(`DOM Content Loaded too slow: ${metrics.domContentLoaded}ms`);
     }
-    
+
     if (metrics.loadComplete > thresholds.loadComplete) {
       issues.push(`Load Complete too slow: ${metrics.loadComplete}ms`);
     }
-    
+
     if (metrics.firstContentfulPaint > thresholds.firstContentfulPaint) {
-      issues.push(`First Contentful Paint too slow: ${metrics.firstContentfulPaint}ms`);
+      issues.push(
+        `First Contentful Paint too slow: ${metrics.firstContentfulPaint}ms`
+      );
     }
 
     return {
       passed: issues.length === 0,
-      message: issues.length === 0 
-        ? 'Performance metrics within acceptable ranges'
-        : `Performance issues found: ${issues.join(', ')}`,
-      details: metrics
+      message:
+        issues.length === 0
+          ? 'Performance metrics within acceptable ranges'
+          : `Performance issues found: ${issues.join(', ')}`,
+      details: metrics,
     };
   } catch (error) {
     return {
       passed: false,
       message: `Performance test failed: ${error}`,
-      details: { error }
+      details: { error },
     };
   }
 }
@@ -329,19 +359,19 @@ export async function testPWAPerformance(): Promise<PWATestResult> {
  */
 export async function runAllPWATests() {
   console.log('🔍 Running PWA tests...');
-  
+
   const results = {
     manifest: await testManifestValidation(),
     serviceWorker: await testServiceWorker(),
     installability: await testInstallability(),
     offline: await testOfflineFunctionality(),
     performance: await testPWAPerformance(),
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   // Log results to console for development
   console.log('📊 PWA Test Results:', results);
-  
+
   return results;
 }
 
@@ -361,7 +391,7 @@ export function simulateOfflineMode(enabled: boolean = true) {
       console.log('🚫 Simulating offline - blocking fetch request:', args[0]);
       throw new Error('Simulated offline mode');
     };
-    
+
     // Store original fetch for restoration
     (window as any).__originalFetch = originalFetch;
     console.log('🔌 Offline mode simulation enabled');
@@ -382,16 +412,16 @@ export async function testNotifications(): Promise<PWATestResult> {
   if (!('Notification' in window)) {
     return {
       passed: false,
-      message: 'Notifications not supported in this browser'
+      message: 'Notifications not supported in this browser',
     };
   }
 
   const permission = Notification.permission;
-  
+
   if (permission === 'denied') {
     return {
       passed: false,
-      message: 'Notification permission denied by user'
+      message: 'Notification permission denied by user',
     };
   }
 
@@ -399,7 +429,7 @@ export async function testNotifications(): Promise<PWATestResult> {
     return {
       passed: false,
       message: 'Notification permission not requested yet',
-      details: { permission }
+      details: { permission },
     };
   }
 
@@ -412,20 +442,20 @@ export async function testNotifications(): Promise<PWATestResult> {
         await registration.showNotification('PWA Test', {
           body: 'Testing notification functionality',
           tag: 'pwa-test',
-          silent: true
+          silent: true,
         });
-        
+
         return {
           passed: true,
           message: 'Notifications working correctly',
-          details: { permission }
+          details: { permission },
         };
       }
     } catch (error) {
       return {
         passed: false,
         message: `Notification test failed: ${error}`,
-        details: { permission, error }
+        details: { permission, error },
       };
     }
   }
@@ -433,6 +463,6 @@ export async function testNotifications(): Promise<PWATestResult> {
   return {
     passed: true,
     message: 'Basic notification support available',
-    details: { permission }
+    details: { permission },
   };
 }

@@ -323,7 +323,7 @@ describe('Performance Tests', () => {
         pendingRequests.set(requestUrl, promise);
 
         try {
-          let result = await promise;
+          const result = await promise;
           return result;
         } finally {
           pendingRequests.delete(requestUrl);

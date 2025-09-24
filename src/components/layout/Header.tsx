@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { CompactSyncStatus } from '../pwa/SyncStatus';
 import { InstallButton } from '../pwa/InstallButton';
 import { AppIcons } from '../../assets/icons';
+import { INSTALL_LOCALIZATION } from '../../constants/installLocalization';
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -84,11 +85,15 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Right side - Install button, sync status and user menu */}
           <div className="flex items-center space-x-2">
             {/* Install Button - Mobile */}
-            <InstallButton 
-              variant="minimal"
+            <InstallButton
+              variant="secondary"
               size="sm"
               source="header_mobile"
+              placement="navbar"
+              fallbackBehavior="hide"
               showIcon={true}
+              showLoadingState={false}
+              showErrorState={false}
               className="!min-h-[44px] !min-w-[44px] !p-2 text-primary-600 hover:text-primary-700"
             />
 
@@ -182,14 +187,18 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Right side - Install button, user info and menu */}
           <div className="flex items-center space-x-4">
             {/* Install Button - Desktop */}
-            <InstallButton 
+            <InstallButton
               variant="secondary"
               size="md"
               source="header_desktop"
+              placement="navbar"
+              fallbackBehavior="hide"
               showIcon={true}
+              showLoadingState={true}
+              showErrorState={false}
               className="!min-h-[48px] px-4 py-2 text-sm border border-primary-300 hover:border-primary-400 text-primary-700 hover:bg-primary-50"
             >
-              Install App
+              {INSTALL_LOCALIZATION.english.buttonText}
             </InstallButton>
 
             {/* Sync Status - Desktop */}

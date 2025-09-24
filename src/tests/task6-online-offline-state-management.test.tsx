@@ -1,9 +1,24 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
-import { useOnlineStatus, useOfflineGracefulDegradation } from '../hooks/useOnlineStatus';
-import { OfflineIndicator, NetworkStatus } from '../components/pwa/OfflineIndicator';
-import { OfflineGracefulFallback, SlowConnectionWarning } from '../components/pwa/OfflineGracefulFallback';
+import {
+  useOnlineStatus,
+  useOfflineGracefulDegradation,
+} from '../hooks/useOnlineStatus';
+import {
+  OfflineIndicator,
+  NetworkStatus,
+} from '../components/pwa/OfflineIndicator';
+import {
+  OfflineGracefulFallback,
+  SlowConnectionWarning,
+} from '../components/pwa/OfflineGracefulFallback';
 import { NetworkService } from '../services/networkService';
 
 // Mock NetworkService
@@ -13,12 +28,12 @@ vi.mock('../services/networkService', () => ({
     getNetworkStatus: vi.fn(() => ({
       isOnline: true,
       connectionType: '4g',
-      effectiveType: '4g'
+      effectiveType: '4g',
     })),
     subscribe: vi.fn(() => vi.fn()),
     isSlowConnection: vi.fn(() => false),
     isFastConnection: vi.fn(() => true),
-  }
+  },
 }));
 
 // Mock offlineQueue
@@ -28,18 +43,26 @@ vi.mock('../services/offlineQueue', () => ({
       totalItems: 0,
       itemsByType: {},
       oldestItem: null,
-      failedItems: 0
+      failedItems: 0,
     })),
-    processQueue: vi.fn()
-  }
+    processQueue: vi.fn(),
+  },
 }));
 
 // Mock AlertBanner component
 vi.mock('../components/ui/AlertBanner', () => ({
-  AlertBanner: ({ type, message, malayalamMessage, onDismiss, children }: any) => (
+  AlertBanner: ({
+    type,
+    message,
+    malayalamMessage,
+    onDismiss,
+    children,
+  }: any) => (
     <div data-testid="alert-banner" data-type={type}>
       <div>{message}</div>
-      {malayalamMessage && <div data-testid="malayalam-message">{malayalamMessage}</div>}
+      {malayalamMessage && (
+        <div data-testid="malayalam-message">{malayalamMessage}</div>
+      )}
       {onDismiss && (
         <button onClick={onDismiss} data-testid="dismiss-button">
           Dismiss
@@ -47,7 +70,7 @@ vi.mock('../components/ui/AlertBanner', () => ({
       )}
       {children}
     </div>
-  )
+  ),
 }));
 
 describe('Task 6: Online/Offline State Management', () => {
@@ -62,12 +85,12 @@ describe('Task 6: Online/Offline State Management', () => {
         type: '4g',
         effectiveType: '4g',
         addEventListener: vi.fn(),
-        removeEventListener: vi.fn()
-      }
+        removeEventListener: vi.fn(),
+      },
     };
     Object.defineProperty(global, 'navigator', {
       value: mockNavigator,
-      writable: true
+      writable: true,
     });
 
     // Mock window.addEventListener and removeEventListener
@@ -81,7 +104,7 @@ describe('Task 6: Online/Offline State Management', () => {
   afterEach(() => {
     Object.defineProperty(global, 'navigator', {
       value: originalNavigator,
-      writable: true
+      writable: true,
     });
     vi.restoreAllMocks();
   });
@@ -108,7 +131,7 @@ describe('Task 6: Online/Offline State Management', () => {
       const { result } = renderHook(() => useOnlineStatus());
 
       expect(typeof result.current.retryConnection).toBe('function');
-      
+
       // Test retry function doesn't throw
       expect(() => result.current.retryConnection()).not.toThrow();
     });
@@ -119,7 +142,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
       const { result } = renderHook(() => useOnlineStatus());
@@ -148,13 +171,19 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
-      const { result: offlineResult } = renderHook(() => useOfflineGracefulDegradation());
-      
-      expect(offlineResult.current.shouldShowOfflineMessage('live-class')).toBe(true);
-      expect(offlineResult.current.shouldShowOfflineMessage('regular-content')).toBe(false);
+      const { result: offlineResult } = renderHook(() =>
+        useOfflineGracefulDegradation()
+      );
+
+      expect(offlineResult.current.shouldShowOfflineMessage('live-class')).toBe(
+        true
+      );
+      expect(
+        offlineResult.current.shouldShowOfflineMessage('regular-content')
+      ).toBe(false);
     });
 
     it('should provide appropriate offline messages', () => {
@@ -164,7 +193,8 @@ describe('Task 6: Online/Offline State Management', () => {
       expect(liveClassMessage.en).toContain('Live classes require');
       expect(liveClassMessage.ml).toContain('ലൈവ് ക്ലാസുകൾക്ക്');
 
-      const defaultMessage = result.current.getOfflineMessage('unknown-feature');
+      const defaultMessage =
+        result.current.getOfflineMessage('unknown-feature');
       expect(defaultMessage.en).toContain('This feature requires');
       expect(defaultMessage.ml).toContain('ഈ ഫീച്ചറിന്');
     });
@@ -176,7 +206,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
       render(<OfflineIndicator />);
@@ -193,7 +223,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
       // Mock queue with items
@@ -202,7 +232,7 @@ describe('Task 6: Online/Offline State Management', () => {
         totalItems: 3,
         itemsByType: { attendance: 2, 'exam-result': 1 },
         oldestItem: Date.now() - 1000,
-        failedItems: 0
+        failedItems: 0,
       });
 
       render(<OfflineIndicator showQueueStatus={true} />);
@@ -218,13 +248,15 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: true,
         connectionType: '2g',
-        effectiveType: '2g'
+        effectiveType: '2g',
       });
 
       render(<OfflineIndicator showConnectionQuality={true} />);
 
       await waitFor(() => {
-        expect(screen.getByText(/Slow connection detected/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Slow connection detected/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -233,7 +265,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
       render(<OfflineIndicator />);
@@ -244,7 +276,7 @@ describe('Task 6: Online/Offline State Management', () => {
 
       const dismissButton = screen.getByTestId('dismiss-button');
       expect(dismissButton).toBeInTheDocument();
-      
+
       // Verify the dismiss button is functional (doesn't throw error when clicked)
       expect(() => fireEvent.click(dismissButton)).not.toThrow();
     });
@@ -263,7 +295,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
       render(<NetworkStatus />);
@@ -276,7 +308,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: true,
         connectionType: '4g',
-        effectiveType: '4g'
+        effectiveType: '4g',
       });
 
       render(<NetworkStatus showConnectionType={true} />);
@@ -289,7 +321,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: true,
         connectionType: '2g',
-        effectiveType: '2g'
+        effectiveType: '2g',
       });
 
       render(<NetworkStatus />);
@@ -315,7 +347,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
       render(
@@ -333,13 +365,15 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
       render(
-        <OfflineGracefulFallback 
+        <OfflineGracefulFallback
           feature="live-class"
-          fallbackContent={<div data-testid="fallback-content">Offline Fallback</div>}
+          fallbackContent={
+            <div data-testid="fallback-content">Offline Fallback</div>
+          }
         >
           <div data-testid="online-content">Live Class Content</div>
         </OfflineGracefulFallback>
@@ -354,7 +388,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
       const mockRetry = vi.fn();
@@ -378,7 +412,9 @@ describe('Task 6: Online/Offline State Management', () => {
 
       render(<SlowConnectionWarning />);
 
-      expect(screen.queryByText(/Slow connection detected/)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Slow connection detected/)
+      ).not.toBeInTheDocument();
     });
 
     it('should render warning for slow connections', () => {
@@ -386,13 +422,15 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: true,
         connectionType: '2g',
-        effectiveType: '2g'
+        effectiveType: '2g',
       });
 
       render(<SlowConnectionWarning />);
 
       expect(screen.getByText(/Slow connection detected/)).toBeInTheDocument();
-      expect(screen.getByText(/മന്ദഗതിയിലുള്ള കണക്ഷൻ കണ്ടെത്തി/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/മന്ദഗതിയിലുള്ള കണക്ഷൻ കണ്ടെത്തി/)
+      ).toBeInTheDocument();
     });
 
     it('should handle optimize functionality', () => {
@@ -419,7 +457,7 @@ describe('Task 6: Online/Offline State Management', () => {
 
     it('should integrate with offline queue service', async () => {
       const mockOfflineQueue = await import('../services/offlineQueue');
-      
+
       render(<OfflineIndicator showQueueStatus={true} />);
 
       expect(mockOfflineQueue.offlineQueue.getQueueStats).toHaveBeenCalled();
@@ -432,7 +470,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
       render(<OfflineIndicator />);
@@ -448,7 +486,7 @@ describe('Task 6: Online/Offline State Management', () => {
       vi.mocked(NetworkService.getNetworkStatus).mockReturnValue({
         isOnline: false,
         connectionType: undefined,
-        effectiveType: undefined
+        effectiveType: undefined,
       });
 
       render(<OfflineIndicator />);

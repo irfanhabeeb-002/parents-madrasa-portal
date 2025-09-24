@@ -33,7 +33,7 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({
     if (bytes === 0) {
       return '0 B';
     }
-    let i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${sizes[i]}`;
   };
 

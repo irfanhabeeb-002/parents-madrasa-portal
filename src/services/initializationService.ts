@@ -44,7 +44,7 @@ export class InitializationService {
 
       return this.status;
     } catch (error) {
-      let errorMessage =
+      const errorMessage =
         error instanceof Error ? error.message : 'Unknown initialization error';
       console.error('❌ Service initialization failed:', errorMessage);
 

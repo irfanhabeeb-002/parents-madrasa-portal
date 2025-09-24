@@ -627,8 +627,8 @@ export class ClassService extends FirebaseService {
 
       // Mock user schedules - in real app, this would be fetched from database
       const mockSchedules: ClassSchedule[] = this.mockClasses.map(cls => ({
-        id: `schedule-${userId}-${cls.id}`,
-        userId,
+        id: `schedule-${_userId}-${cls.id}`,
+        userId: _userId,
         classSessionId: cls.id,
         isEnrolled: true,
         enrolledAt: this.toDate(cls.createdAt),

@@ -154,7 +154,7 @@ describe('AccessibleButton', () => {
 
   it('has proper touch target classes', () => {
     render(<AccessibleButton>Touch me</AccessibleButton>);
-    let button = screen.getByRole('button');
+    const button = screen.getByRole('button');
 
     expect(button).toHaveClass('touch-target', 'min-h-[44px]');
   });
@@ -163,7 +163,7 @@ describe('AccessibleButton', () => {
     const { container } = render(
       <AccessibleButton>Accessible button</AccessibleButton>
     );
-    let results = await axe(container);
+    const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
 

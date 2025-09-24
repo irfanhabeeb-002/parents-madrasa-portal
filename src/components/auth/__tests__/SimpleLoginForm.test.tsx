@@ -196,7 +196,7 @@ describe('SimpleLoginForm', () => {
     expect(phoneInput).toHaveAttribute('aria-invalid', 'true');
     expect(phoneInput).toHaveAttribute('aria-describedby', 'phone-error');
 
-    let errorMessage = screen.getByRole('alert');
+    const errorMessage = screen.getByRole('alert');
     expect(errorMessage).toHaveAttribute('id', 'phone-error');
   });
 

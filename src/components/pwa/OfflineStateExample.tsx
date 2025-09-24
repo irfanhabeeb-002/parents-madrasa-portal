@@ -1,11 +1,14 @@
 import React from 'react';
-import { 
-  OfflineIndicator, 
-  NetworkStatus, 
-  OfflineGracefulFallback, 
-  SlowConnectionWarning 
+import {
+  OfflineIndicator,
+  NetworkStatus,
+  OfflineGracefulFallback,
+  SlowConnectionWarning,
 } from './index';
-import { useOnlineStatus, useOfflineGracefulDegradation } from '../../hooks/useOnlineStatus';
+import {
+  useOnlineStatus,
+  useOfflineGracefulDegradation,
+} from '../../hooks/useOnlineStatus';
 
 /**
  * Example component demonstrating online/offline state management features
@@ -24,24 +27,22 @@ export const OfflineStateExample: React.FC = () => {
       <h2 className="text-2xl font-bold text-gray-900">
         Online/Offline State Management Demo
       </h2>
-      
+
       {/* Global offline indicator */}
-      <OfflineIndicator 
-        showConnectionQuality={true}
-        showQueueStatus={true}
-      />
-      
+      <OfflineIndicator showConnectionQuality={true} showQueueStatus={true} />
+
       {/* Slow connection warning */}
       <SlowConnectionWarning />
-      
+
       {/* Network status display */}
       <div className="bg-white p-4 rounded-lg border">
         <h3 className="text-lg font-semibold mb-2">Network Status</h3>
         <NetworkStatus showConnectionType={true} />
-        
+
         <div className="mt-4 space-y-2">
           <p className="text-sm text-gray-600">
-            Connection Status: <span className={isOnline ? 'text-green-600' : 'text-red-600'}>
+            Connection Status:{' '}
+            <span className={isOnline ? 'text-green-600' : 'text-red-600'}>
               {isOnline ? 'Online' : 'Offline'}
             </span>
           </p>
@@ -62,12 +63,13 @@ export const OfflineStateExample: React.FC = () => {
       {/* Feature that requires internet */}
       <div className="bg-white p-4 rounded-lg border">
         <h3 className="text-lg font-semibold mb-2">Live Class Feature</h3>
-        <OfflineGracefulFallback 
+        <OfflineGracefulFallback
           feature="live-class"
           fallbackContent={
             <div className="text-center py-4">
               <p className="text-gray-600">
-                📚 You can still access downloaded materials and notes while offline
+                📚 You can still access downloaded materials and notes while
+                offline
               </p>
             </div>
           }
@@ -99,12 +101,13 @@ export const OfflineStateExample: React.FC = () => {
       {/* Form with offline handling */}
       <div className="bg-white p-4 rounded-lg border">
         <h3 className="text-lg font-semibold mb-2">Submit Assignment</h3>
-        <OfflineGracefulFallback 
+        <OfflineGracefulFallback
           feature="file-upload"
           fallbackContent={
             <div className="text-center py-4">
               <p className="text-gray-600">
-                💾 Your work will be saved locally and uploaded when you're back online
+                💾 Your work will be saved locally and uploaded when you're back
+                online
               </p>
               <button
                 onClick={handleOfflineAction}
@@ -152,7 +155,9 @@ export const OfflineStateExample: React.FC = () => {
         <h3 className="text-lg font-semibold mb-2">How to Test</h3>
         <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
           <li>Open browser developer tools (F12)</li>
-          <li>Go to Network tab and set to "Offline" to simulate offline state</li>
+          <li>
+            Go to Network tab and set to "Offline" to simulate offline state
+          </li>
           <li>Observe how different features behave when offline</li>
           <li>Set back to "Online" to see reconnection behavior</li>
           <li>Try "Slow 3G" to test slow connection warnings</li>

@@ -39,7 +39,7 @@ describe('DashboardService', () => {
   describe('getDashboardData', () => {
     it('should return comprehensive dashboard data for a user', async () => {
       const userId = 'test-user-123';
-      let result = await DashboardService.getDashboardData(userId);
+      const result = await DashboardService.getDashboardData(userId);
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();

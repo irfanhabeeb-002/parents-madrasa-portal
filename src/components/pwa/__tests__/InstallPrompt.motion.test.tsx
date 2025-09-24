@@ -13,7 +13,7 @@ import { InstallPrompt } from '../InstallPrompt';
 
 // Mock beforeinstallprompt event
 const createMockInstallPromptEvent = () => {
-  let mockEvent = new Event('beforeinstallprompt') as any;
+  const mockEvent = new Event('beforeinstallprompt') as any;
   mockEvent.platforms = ['web'];
   mockEvent.userChoice = Promise.resolve({
     outcome: 'accepted',

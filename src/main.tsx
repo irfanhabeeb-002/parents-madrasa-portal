@@ -12,7 +12,7 @@ const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
     try {
       const { registerSW } = await import('virtual:pwa-register');
-      
+
       const updateSW = registerSW({
         onNeedRefresh() {
           logger.log('Service worker update available');
@@ -26,7 +26,7 @@ const registerServiceWorker = async () => {
         },
         onRegistered(registration) {
           logger.log('Service worker registered successfully', registration);
-          
+
           // Check for updates periodically (every 60 seconds)
           if (registration) {
             setInterval(() => {
@@ -37,18 +37,22 @@ const registerServiceWorker = async () => {
         onRegisterError(error) {
           logger.error('Service worker registration failed:', error);
           // Dispatch error event for useServiceWorkerUpdate hook to handle
-          window.dispatchEvent(new CustomEvent('sw-registration-error', { detail: error }));
-        }
+          window.dispatchEvent(
+            new CustomEvent('sw-registration-error', { detail: error })
+          );
+        },
       });
 
       // Store the update function globally for useServiceWorkerUpdate hook to access
       (window as any).updateServiceWorker = updateSW;
-      
+
       logger.log('Service worker registration completed');
     } catch (error) {
       logger.error('Failed to register service worker:', error);
       // Dispatch error event for useServiceWorkerUpdate hook to handle
-      window.dispatchEvent(new CustomEvent('sw-registration-error', { detail: error }));
+      window.dispatchEvent(
+        new CustomEvent('sw-registration-error', { detail: error })
+      );
     }
   } else {
     logger.warn('Service workers are not supported in this browser');

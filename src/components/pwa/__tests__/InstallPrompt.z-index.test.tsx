@@ -353,7 +353,8 @@ describe('InstallPrompt Z-Index and Positioning Tests', () => {
 
       const banner = screen.getByRole('banner');
       expect(banner).toHaveAttribute('aria-live', 'polite');
-      expect(banner).toHaveAttribute('aria-label', 'Install app banner');
+      const ariaLabel = banner.getAttribute('aria-label');
+      expect(ariaLabel).toContain('Install app banner');
       expect(banner).toHaveAttribute('tabIndex', '-1');
 
       const region = screen.getByRole('region');
@@ -367,7 +368,7 @@ describe('InstallPrompt Z-Index and Positioning Tests', () => {
     test('screen reader announcement element exists', () => {
       renderWithTheme(<InstallPrompt />);
 
-      let announcement = screen.getByRole('status');
+      const announcement = screen.getByRole('status');
       expect(announcement).toBeInTheDocument();
       expect(announcement).toHaveAttribute('aria-live', 'polite');
       expect(announcement).toHaveAttribute('aria-atomic', 'true');

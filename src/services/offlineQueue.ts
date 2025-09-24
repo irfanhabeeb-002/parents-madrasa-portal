@@ -104,7 +104,7 @@ class OfflineQueueService {
     const queue = this.getQueue();
     const processedIds: string[] = [];
 
-    for (let item of queue) {
+    for (const item of queue) {
       try {
         const success = await this.processItem(item);
         if (success) {

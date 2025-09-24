@@ -6,7 +6,7 @@ import { SkeletonLoader } from '../components/ui/SkeletonLoader';
 import { NotificationBanner } from '../components/ui/NotificationBanner';
 import { WhatsAppButton } from '../components/ui/WhatsAppButton';
 import { DailyBanner, AnnouncementsBanner } from '../components/notifications';
-import { InstallButton } from '../components/pwa/InstallButton';
+
 import { useDashboard } from '../hooks/useDashboard';
 import { useNotifications } from '../contexts/NotificationContext';
 import {
@@ -15,6 +15,7 @@ import {
 } from '../hooks/useNotificationListener';
 import { useAuth } from '../contexts/AuthContext';
 import { truncateAnnouncement } from '../utils/textUtils';
+
 import {
   VideoCameraIcon,
   PlayIcon,
@@ -150,19 +151,8 @@ export const Dashboard: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Welcome {user?.displayName || 'User'} 👋
           </h1>
-          
-          {/* Install App Suggestion - Mobile */}
-          <div className="mt-4 mb-2">
-            <InstallButton 
-              variant="secondary"
-              size="sm"
-              source="dashboard_mobile"
-              showIcon={true}
-              className="!min-h-[40px] px-4 py-2 text-sm border border-primary-300 hover:border-primary-400 text-primary-700 hover:bg-primary-50"
-            >
-              📱 Install App
-            </InstallButton>
-          </div>
+
+
         </div>
 
         {/* ARIA Live Region for Screen Reader Announcements */}
@@ -244,17 +234,8 @@ export const Dashboard: React.FC = () => {
             >
               Welcome {user?.displayName || 'User'} 👋
             </h1>
-            
-            {/* Install App Suggestion - Desktop */}
-            <InstallButton 
-              variant="secondary"
-              size="md"
-              source="dashboard_desktop"
-              showIcon={true}
-              className="!min-h-[44px] px-4 py-2 text-sm border border-primary-300 hover:border-primary-400 text-primary-700 hover:bg-primary-50"
-            >
-              📱 Install App for Better Experience
-            </InstallButton>
+
+
           </div>
         </div>
 
@@ -418,6 +399,8 @@ export const Dashboard: React.FC = () => {
           malayalamLabel="അധ്യാപകനെ ചോദിക്കുക"
         />
       </div>
+
+
     </Layout>
   );
 };

@@ -32,7 +32,10 @@ interface ServiceWorkerRegistration {
   unregister(): Promise<boolean>;
   addEventListener<K extends keyof ServiceWorkerRegistrationEventMap>(
     type: K,
-    listener: (this: ServiceWorkerRegistration, ev: ServiceWorkerRegistrationEventMap[K]) => any,
+    listener: (
+      this: ServiceWorkerRegistration,
+      ev: ServiceWorkerRegistrationEventMap[K]
+    ) => any,
     options?: boolean | AddEventListenerOptions
   ): void;
 }

@@ -35,22 +35,34 @@ export const PWATestPage: React.FC = () => {
               PWA Development Testing
             </h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              This page provides comprehensive testing tools for Progressive Web App functionality.
-              Use these tools to verify that all PWA features are working correctly during development.
+              This page provides comprehensive testing tools for Progressive Web
+              App functionality. Use these tools to verify that all PWA features
+              are working correctly during development.
             </p>
-            
+
             {/* Development Notice */}
             <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-2xl mx-auto">
               <div className="flex items-center">
-                <svg className="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                <svg
+                  className="w-5 h-5 text-yellow-600 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 15.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
                 </svg>
                 <div className="text-left">
                   <p className="text-sm font-medium text-yellow-800">
                     Development Mode Only
                   </p>
                   <p className="text-xs text-yellow-700 mt-1">
-                    This page is only accessible during development and will not be available in production.
+                    This page is only accessible during development and will not
+                    be available in production.
                   </p>
                 </div>
               </div>
@@ -65,7 +77,7 @@ export const PWATestPage: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               🛠️ Development Guidelines
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-3">
@@ -98,32 +110,40 @@ export const PWATestPage: React.FC = () => {
                   </li>
                 </ul>
               </div>
-              
+
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-3">
                   Build Commands
                 </h3>
                 <div className="space-y-3">
                   <div className="bg-gray-50 rounded p-3">
-                    <code className="text-sm text-gray-800">npm run build:pwa</code>
+                    <code className="text-sm text-gray-800">
+                      npm run build:pwa
+                    </code>
                     <p className="text-xs text-gray-600 mt-1">
                       Build with PWA validation
                     </p>
                   </div>
                   <div className="bg-gray-50 rounded p-3">
-                    <code className="text-sm text-gray-800">npm run build:pwa:full</code>
+                    <code className="text-sm text-gray-800">
+                      npm run build:pwa:full
+                    </code>
                     <p className="text-xs text-gray-600 mt-1">
                       Build with PWA validation and Lighthouse audit
                     </p>
                   </div>
                   <div className="bg-gray-50 rounded p-3">
-                    <code className="text-sm text-gray-800">npm run test:pwa</code>
+                    <code className="text-sm text-gray-800">
+                      npm run test:pwa
+                    </code>
                     <p className="text-xs text-gray-600 mt-1">
                       Run PWA-specific unit tests
                     </p>
                   </div>
                   <div className="bg-gray-50 rounded p-3">
-                    <code className="text-sm text-gray-800">npm run lighthouse:pwa</code>
+                    <code className="text-sm text-gray-800">
+                      npm run lighthouse:pwa
+                    </code>
                     <p className="text-xs text-gray-600 mt-1">
                       Run Lighthouse PWA audit only
                     </p>
@@ -131,7 +151,7 @@ export const PWATestPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-6 pt-6 border-t border-gray-200">
               <h3 className="text-lg font-medium text-gray-900 mb-3">
                 Browser Testing
@@ -146,7 +166,8 @@ export const PWATestPage: React.FC = () => {
                 <div className="bg-orange-50 rounded p-3">
                   <h4 className="font-medium text-orange-900">Firefox</h4>
                   <p className="text-orange-700 mt-1">
-                    Service worker and manifest support, limited install features
+                    Service worker and manifest support, limited install
+                    features
                   </p>
                 </div>
                 <div className="bg-purple-50 rounded p-3">

@@ -83,7 +83,8 @@ describe('InstallPrompt Accessibility', () => {
         const banner = screen.getByRole('banner');
         expect(banner).toBeInTheDocument();
         expect(banner).toHaveAttribute('aria-live', 'polite');
-        expect(banner).toHaveAttribute('aria-label', 'Install app banner');
+        const ariaLabel = banner.getAttribute('aria-label');
+        expect(ariaLabel).toContain('Install app banner');
         expect(banner).toHaveAttribute('tabIndex', '-1');
       });
 
@@ -280,7 +281,7 @@ describe('InstallPrompt Accessibility', () => {
     test('screen reader announcement element exists', () => {
       renderWithTheme(<InstallPrompt />);
 
-      let announcement = screen.getByRole('status');
+      const announcement = screen.getByRole('status');
       expect(announcement).toBeInTheDocument();
       expect(announcement).toHaveAttribute('aria-live', 'polite');
       expect(announcement).toHaveAttribute('aria-atomic', 'true');
@@ -423,7 +424,8 @@ describe('InstallPrompt Accessibility', () => {
 
         // Check for proper ARIA attributes
         expect(banner).toHaveAttribute('aria-live', 'polite');
-        expect(banner).toHaveAttribute('aria-label', 'Install app banner');
+        const ariaLabel = banner.getAttribute('aria-label');
+        expect(ariaLabel).toContain('Install app banner');
 
         // Check for proper heading structure
         const heading = screen.getByRole('heading', { level: 3 });

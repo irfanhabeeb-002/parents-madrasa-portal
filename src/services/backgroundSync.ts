@@ -45,7 +45,7 @@ class BackgroundSyncService {
 
       // Register sync event
       const syncTag = `${this.SYNC_TAG_PREFIX}-${type}-${Date.now()}`;
-      await registration.sync.register(syncTag);
+      await _registration.sync.register(syncTag);
 
       console.warn(`Background sync registered: ${syncTag}`);
     } catch (error) {

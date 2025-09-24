@@ -124,7 +124,7 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
         'Mozilla/5.0 (Android 10; Mobile; rv:89.0) Gecko/89.0 Firefox/89.0',
       ];
 
-      for (let userAgent of userAgents) {
+      for (const userAgent of userAgents) {
         Object.defineProperty(window.navigator, 'userAgent', {
           value: userAgent,
           configurable: true,
@@ -164,7 +164,7 @@ describe('Task 8: Comprehensive Logout Functionality Verification', () => {
         { width: 1920, height: 1080 }, // Desktop
       ];
 
-      for (let size of screenSizes) {
+      for (const size of screenSizes) {
         // Mock window dimensions
         Object.defineProperty(window, 'innerWidth', {
           writable: true,
